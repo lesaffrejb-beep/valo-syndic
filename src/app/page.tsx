@@ -193,7 +193,7 @@ export default function HomePage() {
                             </p>
                         </div>
 
-                        <div className="glass-panel p-6 md:p-10">
+                        <div className="card-bento p-8 md:p-12 mb-12 shadow-none rounded-3xl">
                             <DiagnosticForm onSubmit={handleSubmit} isLoading={isLoading} />
                         </div>
 
@@ -236,23 +236,21 @@ export default function HomePage() {
                                         </div>
                                         <div className="flex items-center gap-6">
                                             <div className="text-center">
-                                                <p className="label-mono mb-1">DPE Actuel</p>
-                                                <div
-                                                    className={`dpe-badge dpe-badge-${result.input.currentDPE.toLowerCase()} transform hover:scale-110 transition-transform`}
-                                                >
-                                                    {result.input.currentDPE}
+                                                <p className="label-technical mb-1">DPE Actuel</p>
+                                                <div className="flex justify-center">
+                                                    <DPEGauge score={result.input.currentDPE} />
                                                 </div>
+                                                <p className="text-sm font-medium mt-2 tabular-nums">{result.input.currentDPE} kWh/m²/an</p>
                                             </div>
                                             <div className="flex flex-col items-center">
                                                 <span className="text-3xl text-gray-300">→</span>
                                             </div>
                                             <div className="text-center">
-                                                <p className="label-mono mb-1">DPE Cible</p>
-                                                <div
-                                                    className={`dpe-badge dpe-badge-${result.input.targetDPE.toLowerCase()} transform hover:scale-110 transition-transform ring-2 ring-offset-2 ring-success-500`}
-                                                >
-                                                    {result.input.targetDPE}
+                                                <p className="label-technical mb-1">DPE Cible</p>
+                                                <div className="flex justify-center">
+                                                    <DPEGauge score={result.input.targetDPE} />
                                                 </div>
+                                                <p className="text-sm font-medium mt-2 tabular-nums">{result.input.targetDPE} kWh/m²/an</p>
                                             </div>
                                         </div>
                                     </div>
