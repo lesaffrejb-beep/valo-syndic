@@ -40,6 +40,10 @@ const config: Config = {
                 'xl': '16px',
                 '2xl': '24px',
             },
+            spacing: {
+                'section': '48px',
+                'card-pad': '32px', // Padding interne des cartes (aéré)
+            },
             fontFamily: {
                 sans: ["Inter", "Geist Sans", "system-ui", "sans-serif"],
                 mono: ["JetBrains Mono", "monospace"],
