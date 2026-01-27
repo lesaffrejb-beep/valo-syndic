@@ -41,30 +41,35 @@ import { generateDiagnostic } from "@/lib/calculator";
 import { LEGAL } from "@/lib/constants";
 import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema } from "@/lib/schemas";
 
+import { BrandingModal } from "@/components/BrandingModal";
+import { useBrand } from "@/context/BrandContext";
+
 export default function HomePage() {
     const [result, setResult] = useState<DiagnosticResult | null>(null);
     const [currentInput, setCurrentInput] = useState<DiagnosticInput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { playSound } = useSoundEffects();
     const [activeTab, setActiveTab] = useState<"flash" | "mass">("flash");
+    const [showBrandingModal, setShowBrandingModal] = useState(false);
+    const { brand } = useBrand();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = (data: DiagnosticInput) => {
+        // ... (unchanged)
         playSound("click");
         setIsLoading(true);
         setCurrentInput(data);
 
-        // Simulation d'un temps de calcul (pour le feedback utilisateur)
         setTimeout(() => {
             const diagnostic = generateDiagnostic(data);
             setResult(diagnostic);
             setIsLoading(false);
-
-            // Scroll vers les résultats
             document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
         }, 800);
     };
+
+    // ... (keep handleReset, handleSave, handleLoad)
 
     const handleReset = () => {
         setResult(null);
@@ -100,16 +105,10 @@ export default function HomePage() {
         reader.onload = (e) => {
             try {
                 const data = JSON.parse(e.target?.result as string);
-
-                // Validation avec Zod
                 const validatedInput = DiagnosticInputSchema.parse(data.input);
-
-                // Régénérer le diagnostic avec les données chargées
                 setCurrentInput(validatedInput);
                 const diagnostic = generateDiagnostic(validatedInput);
                 setResult(diagnostic);
-
-                // Scroll vers les résultats
                 setTimeout(() => {
                     document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
                 }, 100);
@@ -119,27 +118,42 @@ export default function HomePage() {
             }
         };
         reader.readAsText(file);
-
-        // Reset input pour permettre de recharger le même fichier
         event.target.value = "";
     };
 
     return (
         <div className="min-h-screen bg-app">
+            <BrandingModal isOpen={showBrandingModal} onClose={() => setShowBrandingModal(false)} />
+
             {/* Header — Glass & Steel */}
             <header className="glass sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                            <div className="w-11 h-11 bg-gradient-to-br from-primary-700 to-primary-900 rounded-lg flex items-center justify-center shadow-glow">
-                                <span className="text-primary-foreground font-sans font-bold text-xl">V</span>
-                            </div>
+                            {brand.logoUrl ? (
+                                <img src={brand.logoUrl} alt="Logo Agence" className="h-11 object-contain rounded-lg" />
+                            ) : (
+                                <div className="w-11 h-11 bg-gradient-to-br from-primary-700 to-primary-900 rounded-lg flex items-center justify-center shadow-glow">
+                                    <span className="text-primary-foreground font-sans font-bold text-xl">
+                                        {brand.agencyName.charAt(0)}
+                                    </span>
+                                </div>
+                            )}
                             <div>
-                                <h1 className="text-xl font-bold text-main tracking-tight">VALO-SYNDIC</h1>
+                                <h1 className="text-xl font-bold text-main tracking-tight">{brand.agencyName}</h1>
                                 <p className="text-xs text-muted">Diagnostic Patrimonial</p>
                             </div>
                         </a>
                         <div className="flex items-center gap-3">
+                            {/* Settings Button */}
+                            <button
+                                onClick={() => setShowBrandingModal(true)}
+                                className="btn-ghost p-2"
+                                title="Personnalisation"
+                            >
+                                ⚙️
+                            </button>
+
                             {/* Boutons Sauvegarder/Charger */}
                             <div className="hidden sm:flex items-center gap-2">
                                 <button
@@ -197,8 +211,8 @@ export default function HomePage() {
                             <button
                                 onClick={() => setActiveTab("flash")}
                                 className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === "flash"
-                                        ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
-                                        : "text-muted hover:text-main"
+                                    ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
+                                    : "text-muted hover:text-main"
                                     }`}
                             >
                                 ⚡ Diagnostic Flash
@@ -206,8 +220,8 @@ export default function HomePage() {
                             <button
                                 onClick={() => setActiveTab("mass")}
                                 className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === "mass"
-                                        ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
-                                        : "text-muted hover:text-main"
+                                    ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
+                                    : "text-muted hover:text-main"
                                     }`}
                             >
                                 🌐 Audit de Parc
