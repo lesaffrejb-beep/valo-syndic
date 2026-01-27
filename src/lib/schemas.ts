@@ -165,9 +165,10 @@ export function estimateEnergyGain(
     const steps = targetIndex - currentIndex;
 
     if (steps <= 0) return 0;
+    if (steps === 1) return 0.15; // 15% pour 1 classe (ex: E->D)
+    if (steps === 2) return 0.40; // 40% pour 2 classes (ex: E->C)
+    if (steps >= 3) return 0.55;  // 55% pour 3 classes ou + (ex: F->C)
 
-    // Estimation conservative : 15% par saut de classe
-    // Plafonné à 70% pour rester réaliste
     return Math.min(steps * 0.15, 0.70);
 }
 
