@@ -3,17 +3,52 @@
 > **Outil de Diagnostic Flash Immobilier**  
 > Générez un plan de valorisation patrimoniale en 60 secondes.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/VOTRE-USERNAME/valo-syndic)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/lesaffrejb-beep/valo-syndic)
 
 ---
 
 ## 🎯 Objectif
 
-Aider les gestionnaires de copropriété à :
+Aider les gestionnaires de copropriété à **débloquer les votes en AG** grâce à :
+
 1. **Visualiser l'urgence** réglementaire (Loi Climat 2025-2034)
-2. **Chiffrer le coût** de l'inaction
-3. **Proposer un financement** clé-en-main (MaPrimeRénov' + éco-prêt)
-4. **Calculer la valeur verte** post-travaux
+2. **Individualiser l'effort** (Calculateur de tantièmes → XX €/mois)
+3. **Proposer un financement** clé-en-main (MaPrimeRénov' + Éco-PTZ 0%)
+4. **Contrer les objections** (Module Avocat du Diable)
+5. **Générer un PDF premium** pour projection en séance
+
+---
+
+## ✨ Fonctionnalités
+
+| Feature | Description |
+|---------|-------------|
+| 🧮 **Calculateur Tantièmes** | Convertit "300k€" en "87€/mois pour vous" |
+| 📊 **Benchmark Régional** | Compare à la moyenne DPE Angers |
+| ⚔️ **Avocat du Diable** | Réponses aux 3 objections classiques |
+| 📱 **QR Code Vote** | Engagement en temps réel en AG |
+| 📄 **PDF 3 pages** | Synthèse, Financement, Argumentaire |
+| 💾 **Sauvegarde JSON** | Export/Import de simulations (.valo) |
+
+---
+
+## 🚀 Démarrage Rapide
+
+```bash
+# Cloner le repo
+git clone https://github.com/lesaffrejb-beep/valo-syndic.git
+cd valo-syndic
+
+# Installer les dépendances
+npm install
+
+# Lancer en développement
+npm run dev
+```
+
+Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
+
+> 💡 **Le MVP fonctionne sans aucune configuration** — Calcul 100% client-side.
 
 ---
 
@@ -22,10 +57,20 @@ Aider les gestionnaires de copropriété à :
 ```
 .
 ├── docs/
-│   ├── SPECS.md      # Spécifications techniques complètes
-│   └── ROADMAP.md    # Feuille de route stratégique
-├── src/              # Code source (à développer)
-└── README.md         # Ce fichier
+│   ├── PROJECT_DNA.md    # Vision & Stratégie
+│   ├── DATABASE_SETUP.md # Guide Supabase
+│   ├── SPECS.md          # Spécifications techniques
+│   └── ROADMAP.md        # Feuille de route
+├── src/
+│   ├── app/              # Pages Next.js
+│   ├── components/
+│   │   ├── business/     # Tantièmes, Benchmark, Objections
+│   │   ├── pdf/          # Templates PDF + QR Code
+│   │   └── [...]         # Autres composants
+│   └── lib/              # Calculateur, Constantes, Schemas
+├── supabase/
+│   └── schema.sql        # Schema DB prêt pour V2
+└── README.md
 ```
 
 ---
@@ -36,46 +81,34 @@ Aider les gestionnaires de copropriété à :
 |-----------|-------------|
 | Framework | Next.js 14 (App Router) |
 | Styling | Tailwind CSS |
-| Database | Supabase |
+| Charts | Recharts |
 | PDF | @react-pdf/renderer |
+| QR Code | qrcode |
+| Validation | Zod |
+| Database (V2) | Supabase |
 | Deploy | Vercel |
-
----
-
-## 🚀 Démarrage Rapide
-
-```bash
-# Cloner le repo
-git clone https://github.com/VOTRE-USERNAME/valo-syndic.git
-cd valo-syndic
-
-# Installer les dépendances
-npm install
-
-# Configurer les variables d'environnement
-cp .env.example .env.local
-# Éditer .env.local avec vos clés API
-
-# Lancer en développement
-npm run dev
-```
-
----
-
-## 📊 APIs Utilisées
-
-| API | Usage | Coût |
-|-----|-------|------|
-| [API Adresse](https://api-adresse.data.gouv.fr) | Normalisation adresse | Gratuit |
-| [DVF](https://api.cquest.org/dvf) | Valeurs foncières | Gratuit |
-| [RNCP](https://www.registre-coproprietes.gouv.fr) | Données copropriété | Gratuit |
 
 ---
 
 ## 📖 Documentation
 
-- **[SPECS.md](docs/SPECS.md)** — Architecture technique et fonctionnelle
-- **[ROADMAP.md](docs/ROADMAP.md)** — Feuille de route du projet
+- **[PROJECT_DNA.md](docs/PROJECT_DNA.md)** — Vision, Genèse, Stratégie d'usage
+- **[DATABASE_SETUP.md](docs/DATABASE_SETUP.md)** — Guide configuration Supabase
+- **[SPECS.md](docs/SPECS.md)** — Architecture technique
+- **[ROADMAP.md](docs/ROADMAP.md)** — Feuille de route
+
+---
+
+## 🔧 Configuration (Optionnel)
+
+Pour activer les fonctionnalités V2+ :
+
+```bash
+cp .env.example .env.local
+# Éditer .env.local avec vos clés Supabase
+```
+
+Voir [DATABASE_SETUP.md](docs/DATABASE_SETUP.md) pour le guide complet.
 
 ---
 
@@ -85,4 +118,5 @@ MIT — Libre d'utilisation et de modification.
 
 ---
 
-*Créé le 27/01/2026*
+*Créé le 27/01/2026 — Angers, France*  
+*Mainteneur : @lesaffrejb-beep*

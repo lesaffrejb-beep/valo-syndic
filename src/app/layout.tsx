@@ -1,17 +1,26 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
+// Typographie Sans-Serif : Lisibilité corps de texte & chiffres
 const inter = Inter({
     subsets: ["latin"],
     display: "swap",
     variable: "--font-inter",
 });
 
+// Typographie Serif : Titres prestige (Contrat, Officiel)
+const playfair = Playfair_Display({
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-playfair",
+    weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-    title: "VALO-SYNDIC | Diagnostic Flash Immobilier",
+    title: "VALO-SYNDIC | Diagnostic Patrimonial",
     description:
-        "Générez votre plan de valorisation patrimoniale en 60 secondes. Simulation MaPrimeRénov' Copropriété et Éco-PTZ.",
+        "Votre plan de valorisation patrimoniale en 60 secondes. Simulation MaPrimeRénov' Copropriété et Éco-PTZ.",
     keywords: [
         "syndic",
         "copropriété",
@@ -19,6 +28,7 @@ export const metadata: Metadata = {
         "DPE",
         "MaPrimeRénov",
         "financement travaux",
+        "patrimoine immobilier",
     ],
     authors: [{ name: "VALO-SYNDIC" }],
     robots: "noindex, nofollow", // MVP privé
@@ -30,8 +40,8 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="fr" className={inter.variable}>
-            <body className="min-h-screen bg-gray-50">
+        <html lang="fr" className={`${inter.variable} ${playfair.variable}`}>
+            <body className="min-h-screen bg-background font-sans antialiased">
                 {children}
             </body>
         </html>

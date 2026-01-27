@@ -4,12 +4,20 @@
 
 /* ========================================
    VALO-SYNDIC — Global Styles
+   Direction Artistique : "Private Equity"
    ======================================== */
 
 @layer base {
   :root {
-    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    /* Typographie Premium */
+    --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+    --font-serif: var(--font-playfair), Georgia, serif;
     --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+    /* Background Off-White Alabaster */
+    --bg-default: #f9fafb;
+    --bg-paper: #ffffff;
+    --bg-muted: #f1f5f9;
   }
 
   html {
@@ -18,106 +26,180 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-[#f9fafb] text-slate-900 antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+  /* Titres : Serif Prestige */
+  h1,
+  h2 {
+    font-family: var(--font-serif);
+    @apply font-semibold tracking-tight text-slate-900;
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight text-slate-800;
   }
 }
 
 @layer components {
+
   /* Container */
   .container-custom {
     @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Cards */
+  /* Cards — Glass & Steel */
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+    @apply bg-white rounded-lg border border-slate-200 p-6;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
   }
 
-  /* Inputs */
+  .card-premium {
+    @apply bg-white rounded-lg border border-slate-200 p-6;
+    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.05), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+  }
+
+  /* Inputs — Refined */
   .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg 
-           focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-           transition-all duration-200;
+    @apply w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-700 transition-all duration-200;
   }
 
-  /* Buttons */
+  /* Buttons — Premium Gradient */
   .btn-primary {
-    @apply px-6 py-3 bg-primary-600 hover:bg-primary-700 
-           text-white font-semibold rounded-lg shadow-md
-           transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply px-6 py-3 bg-gradient-to-r from-primary-800 to-primary-700 hover:from-primary-900 hover:to-primary-800 text-white font-semibold rounded-lg border border-primary-900/10 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 active:scale-[0.98];
+    box-shadow: 0 4px 14px 0 rgba(15, 23, 42, 0.15);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-gray-100 hover:bg-gray-200
-           text-gray-800 font-medium rounded-lg
-           transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
+    @apply px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 font-medium rounded-lg border border-slate-300 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 active:scale-[0.98];
+    box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
   }
 
-  /* DPE Badges */
+  .btn-accent {
+    @apply px-6 py-3 bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white font-semibold rounded-lg transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 active:scale-[0.98];
+    box-shadow: 0 4px 14px 0 rgba(180, 134, 11, 0.25);
+  }
+
+  .btn-danger {
+    @apply px-6 py-3 bg-gradient-to-r from-danger-600 to-danger-500 hover:from-danger-700 hover:to-danger-600 text-white font-semibold rounded-lg transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-danger-500 focus:ring-offset-2 active:scale-[0.98];
+    box-shadow: 0 4px 14px 0 rgba(185, 28, 28, 0.2);
+  }
+
+  .btn-success {
+    @apply px-6 py-3 bg-gradient-to-r from-success-500 to-success-600 hover:from-success-600 hover:to-success-700 text-white font-semibold rounded-lg transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-success-500 focus:ring-offset-2 active:scale-[0.98];
+    box-shadow: 0 4px 14px 0 rgba(22, 101, 52, 0.2);
+  }
+
+  /* DPE Badges — Refined */
   .dpe-badge {
-    @apply inline-flex items-center justify-center 
-           w-10 h-10 rounded-lg font-bold text-lg;
+    @apply inline-flex items-center justify-center w-11 h-11 rounded-lg font-bold text-lg border border-white/20;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
   }
 
-  .dpe-badge-a { @apply bg-green-600 text-white; }
-  .dpe-badge-b { @apply bg-green-500 text-white; }
-  .dpe-badge-c { @apply bg-lime-400 text-gray-900; }
-  .dpe-badge-d { @apply bg-yellow-400 text-gray-900; }
-  .dpe-badge-e { @apply bg-orange-400 text-gray-900; }
-  .dpe-badge-f { @apply bg-orange-600 text-white; }
-  .dpe-badge-g { @apply bg-red-600 text-white; }
+  .dpe-badge-a {
+    @apply bg-success-500 text-white;
+  }
+
+  .dpe-badge-b {
+    @apply bg-success-600 text-white;
+  }
+
+  .dpe-badge-c {
+    @apply bg-lime-600 text-white;
+  }
+
+  .dpe-badge-d {
+    @apply bg-yellow-600 text-white;
+  }
+
+  .dpe-badge-e {
+    @apply bg-orange-600 text-white;
+  }
+
+  .dpe-badge-f {
+    @apply bg-orange-700 text-white;
+  }
+
+  .dpe-badge-g {
+    @apply bg-danger-600 text-white;
+  }
 }
 
 @layer utilities {
+
+  /* Gradient text — Gold accent */
   .text-gradient {
-    @apply bg-clip-text text-transparent 
-           bg-gradient-to-r from-primary-600 to-primary-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-800 to-accent-500;
   }
-  
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent-400 to-accent-600;
+  }
+
   /* Animation fade-in */
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out forwards;
   }
-  
+
   @keyframes fadeIn {
     from {
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
-  
+
   /* Staggered animations for children */
-  .animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
-  .animate-stagger > *:nth-child(2) { animation-delay: 0.2s; }
-  .animate-stagger > *:nth-child(3) { animation-delay: 0.3s; }
-  .animate-stagger > *:nth-child(4) { animation-delay: 0.4s; }
-  .animate-stagger > *:nth-child(5) { animation-delay: 0.5s; }
-  
-  /* Glassmorphism */
-  .glass {
-    @apply bg-white/70 backdrop-blur-lg;
+  .animate-stagger>*:nth-child(1) {
+    animation-delay: 0.1s;
   }
-  
+
+  .animate-stagger>*:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .animate-stagger>*:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .animate-stagger>*:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+
+  .animate-stagger>*:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+
+  /* Glassmorphism — Premium */
+  .glass {
+    @apply bg-white/80 backdrop-blur-lg border border-slate-200/50;
+  }
+
   /* Hover lift effect */
   .hover-lift {
     @apply transition-all duration-300;
   }
+
   .hover-lift:hover {
-    @apply -translate-y-1 shadow-xl;
+    @apply -translate-y-0.5;
+    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
   }
-  
-  /* Neo-bank card style */
+
+  /* Neo-bank → Private Equity card style */
   .neo-card {
-    @apply bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100;
+    @apply bg-white rounded-lg border border-slate-200;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  }
+
+  /* Premium dividers */
+  .divider-premium {
+    @apply border-t border-slate-200;
   }
 }
