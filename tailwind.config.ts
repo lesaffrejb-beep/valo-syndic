@@ -9,13 +9,26 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                // 1. BASES (Le "Canvas")
-                app: '#0B0C0E',           // Le fond de page (Anthracite profond Finary)
-                surface: '#161719',       // Les cartes (Léger détachement)
-                'surface-hover': '#1F2125', // Interaction
+                // 1. BASES (Le "Canvas" — Cockpit Jet Privé)
+                app: '#0B0C0E',           // Fond de page (Anthracite profond Finary)
+                'app-darker': '#06070A',  // Inputs (Encore plus profond)
+                surface: '#161719',       // Cartes (Léger détachement)
+                'surface-hover': '#1F2125', // Interaction card
+                'surface-highlight': '#1A1B1E', // Pour details/accordion
 
-                // 2. BRAND (L'Identité)
-                primary: '#D4B679',       // Champagne Mat (L'Or Finary)
+                // 2. BRAND (L'Identité Champagne Mat)
+                primary: {
+                    DEFAULT: '#D4B679',     // Champagne Mat (L'Or Finary)
+                    50: '#FAF6ED',
+                    100: '#F2E9D4',
+                    200: '#E8D5B0',
+                    400: '#C9A85C',         // Hover state
+                    600: '#B89B4A',         // Active state
+                    700: '#9A7F3A',
+                    800: '#7A642D',
+                    900: '#5A4A22',
+                    glow: 'rgba(212, 182, 121, 0.15)', // Effet lumineux
+                },
                 'primary-foreground': '#000000',    // Texte sur bouton primary
 
                 // 3. TEXT (Hiérarchie)
@@ -27,12 +40,32 @@ const config: Config = {
                 boundary: 'rgba(255, 255, 255, 0.04)', // Ligne quasi invisible
                 'boundary-active': 'rgba(255, 255, 255, 0.1)',
 
+                // 5. SEMANTIC (États — Neon subtil)
+                success: {
+                    DEFAULT: '#10B981',
+                    50: 'rgba(16, 185, 129, 0.05)',
+                    100: 'rgba(16, 185, 129, 0.1)',
+                    500: '#10B981',
+                    600: '#059669',
+                },
+                warning: {
+                    DEFAULT: '#F59E0B',
+                    50: 'rgba(245, 158, 11, 0.05)',
+                    100: 'rgba(245, 158, 11, 0.1)',
+                    500: '#F59E0B',
+                    600: '#D97706',
+                },
+                danger: {
+                    DEFAULT: '#EF4444',
+                    50: 'rgba(239, 68, 68, 0.05)',
+                    100: 'rgba(239, 68, 68, 0.1)',
+                    500: '#EF4444',
+                    600: '#DC2626',
+                },
+
                 // Legacy / Compat
                 background: '#0B0C0E',
                 foreground: '#FFFFFF',
-                success: '#10B981',
-                warning: '#F59E0B',
-                danger: '#EF4444',
             },
             borderRadius: {
                 'card': '24px',

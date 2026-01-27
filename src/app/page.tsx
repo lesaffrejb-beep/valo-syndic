@@ -21,6 +21,7 @@ import { DPEGauge } from "@/components/DPEGauge";
 import { FinancingBreakdownChart } from "@/components/FinancingBreakdownChart";
 import { ArgumentairePanel } from "@/components/ArgumentairePanel";
 import { DownloadPdfButton } from "@/components/pdf/DownloadPdfButton";
+import { DownloadPptxButton } from "@/components/pdf/DownloadPptxButton";
 import { UrgencyScore } from "@/components/UrgencyScore";
 
 // Nouveaux composants Persuasion
@@ -30,6 +31,9 @@ import { ObjectionHandler } from "@/components/business/ObjectionHandler";
 import { VoteQR, generateQRDataUrl } from "@/components/pdf/VoteQR";
 import { ReportTemplate } from "@/components/pdf/ReportTemplate";
 import { AnimatedButton, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedCard";
+import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
+import { SoundToggle } from "@/components/ui/SoundToggle";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 import { generateDiagnostic } from "@/lib/calculator";
 import { LEGAL } from "@/lib/constants";
@@ -39,10 +43,12 @@ export default function HomePage() {
     const [result, setResult] = useState<DiagnosticResult | null>(null);
     const [currentInput, setCurrentInput] = useState<DiagnosticInput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const { playSound } = useSoundEffects();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = (data: DiagnosticInput) => {
+        playSound("click");
         setIsLoading(true);
         setCurrentInput(data);
 
@@ -118,34 +124,40 @@ export default function HomePage() {
 
 
     return (
-        <div className="min-h-screen bg-[#f9fafb]">
+        <div className="min-h-screen bg-app">
             {/* Header — Glass & Steel */}
             <header className="glass sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-11 h-11 bg-gradient-to-br from-primary-800 to-primary-900 rounded-lg flex items-center justify-center shadow-premium">
-                                <span className="text-white font-serif font-bold text-xl">V</span>
+                            <div className="w-11 h-11 bg-gradient-to-br from-primary-700 to-primary-900 rounded-lg flex items-center justify-center shadow-glow">
+                                <span className="text-primary-foreground font-sans font-bold text-xl">V</span>
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-slate-900 tracking-tight font-serif">VALO-SYNDIC</h1>
-                                <p className="text-xs text-slate-500">Diagnostic Patrimonial</p>
+                                <h1 className="text-xl font-bold text-main tracking-tight">VALO-SYNDIC</h1>
+                                <p className="text-xs text-muted">Diagnostic Patrimonial</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
                             {/* Boutons Sauvegarder/Charger */}
                             <div className="hidden sm:flex items-center gap-2">
                                 <button
-                                    onClick={handleSave}
+                                    onClick={() => {
+                                        playSound("click");
+                                        handleSave();
+                                    }}
                                     disabled={!result}
-                                    className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="btn-ghost disabled:opacity-50 disabled:cursor-not-allowed"
                                     title="Sauvegarder la simulation"
                                 >
                                     💾 Sauvegarder
                                 </button>
                                 <button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-primary-800 hover:bg-slate-100 rounded-lg transition-colors"
+                                    onClick={() => {
+                                        playSound("click");
+                                        fileInputRef.current?.click();
+                                    }}
+                                    className="btn-ghost"
                                     title="Charger une simulation"
                                 >
                                     📂 Charger
@@ -159,12 +171,16 @@ export default function HomePage() {
                                 />
                             </div>
 
-                            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-success-50 rounded-lg border border-success-200">
+                            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-success-100 rounded-lg border border-success/30">
                                 <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
-                                <span className="text-xs font-medium text-success-600">Calcul 100% local</span>
+                                <span className="text-xs font-medium text-success-500">Calcul 100% local</span>
                             </div>
                             <div className="text-right">
-                                <p className="text-xs text-slate-400">v{LEGAL.version}</p>
+                                <p className="text-xs text-muted">v{LEGAL.version}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <SoundToggle />
+                                <ProjectionModeToggle />
                             </div>
                         </div>
                     </div>
@@ -176,20 +192,20 @@ export default function HomePage() {
                 {!result && (
                     <section className="mb-12">
                         <div className="text-center mb-10">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-lg border border-slate-200 mb-6">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-surface rounded-lg border border-boundary mb-6">
                                 <span className="text-sm">🏛️</span>
-                                <span className="text-sm font-medium text-slate-700">
+                                <span className="text-sm font-medium text-muted">
                                     Solution utilisée par +200 cabinets de syndic
                                 </span>
                             </div>
-                            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight font-serif">
+                            <h2 className="text-4xl md:text-5xl font-bold text-main mb-4 tracking-tight">
                                 Votre diagnostic patrimonial
                                 <br />
                                 <span className="text-gradient">en 60 secondes</span>
                             </h2>
-                            <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                            <p className="text-lg text-muted max-w-2xl mx-auto leading-relaxed">
                                 Analysez le potentiel de financement de vos travaux de rénovation
-                                énergétique avec <span className="font-medium text-slate-800">MaPrimeRénov' Copropriété</span> et <span className="font-medium text-slate-800">l'Éco-PTZ</span>.
+                                énergétique avec <span className="font-medium text-main">MaPrimeRénov' Copropriété</span> et <span className="font-medium text-main">l'Éco-PTZ</span>.
                             </p>
                         </div>
 
@@ -214,21 +230,21 @@ export default function HomePage() {
                         >
                             <StaggerContainer staggerDelay={0.1}>
                                 {/* Summary Header */}
-                                <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6">
+                                <div className="card-bento">
                                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
-                                                <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full">
+                                                <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
                                                     Diagnostic Flash
                                                 </span>
-                                                <span className="text-xs text-gray-400">
+                                                <span className="text-xs text-muted">
                                                     Généré le {new Date().toLocaleDateString("fr-FR")}
                                                 </span>
                                             </div>
-                                            <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                                            <h2 className="text-2xl font-bold text-main mb-1">
                                                 📊 Évaluation Préliminaire
                                             </h2>
-                                            <p className="text-gray-600">
+                                            <p className="text-muted">
                                                 {result.input.address && `${result.input.address}, `}
                                                 {result.input.city || "Votre copropriété"} •{" "}
                                                 <span className="font-medium">{result.input.numberOfUnits} lots</span>
@@ -240,17 +256,17 @@ export default function HomePage() {
                                                 <div className="flex justify-center">
                                                     <DPEGauge currentDPE={result.input.currentDPE} targetDPE={result.input.targetDPE} />
                                                 </div>
-                                                <p className="text-sm font-medium mt-2 tabular-nums">{result.input.currentDPE} kWh/m²/an</p>
+                                                <p className="text-sm font-medium text-main mt-2 tabular-nums">{result.input.currentDPE} kWh/m²/an</p>
                                             </div>
                                             <div className="flex flex-col items-center">
-                                                <span className="text-3xl text-gray-300">→</span>
+                                                <span className="text-3xl text-muted">→</span>
                                             </div>
                                             <div className="text-center">
                                                 <p className="label-technical mb-1">DPE Cible</p>
                                                 <div className="flex justify-center">
                                                     <DPEGauge currentDPE={result.input.targetDPE} targetDPE={result.input.targetDPE} />
                                                 </div>
-                                                <p className="text-sm font-medium mt-2 tabular-nums">{result.input.targetDPE} kWh/m²/an</p>
+                                                <p className="text-sm font-medium text-main mt-2 tabular-nums">{result.input.targetDPE} kWh/m²/an</p>
                                             </div>
                                         </div>
                                     </div>
@@ -299,14 +315,14 @@ export default function HomePage() {
                                 <ArgumentairePanel result={result} />
 
                                 {/* 🆕 QR Code Vote en séance */}
-                                <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6">
+                                <div className="card-bento">
                                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                                         <div className="flex-1">
-                                            <h3 className="text-lg font-bold text-gray-900 mb-2">📱 Vote en Séance</h3>
-                                            <p className="text-gray-600 text-sm">
+                                            <h3 className="text-lg font-bold text-main mb-2">📱 Vote en Séance</h3>
+                                            <p className="text-muted text-sm">
                                                 Projetez ce QR Code lors de l'AG pour recueillir l'avis consultatif des copropriétaires en temps réel.
                                             </p>
-                                            <p className="text-xs text-gray-400 mt-2">
+                                            <p className="text-xs text-subtle mt-2">
                                                 💡 Astuce : Ne pas envoyer par mail, projeter en séance pour maximiser l'impact.
                                             </p>
                                         </div>
@@ -329,6 +345,7 @@ export default function HomePage() {
                                         💾 Sauvegarder (.valo)
                                     </button>
                                     <DownloadPdfButton result={result} />
+                                    <DownloadPptxButton result={result} />
                                 </div>
 
                                 {/* Legal Footer */}
@@ -340,16 +357,16 @@ export default function HomePage() {
             </main>
 
             {/* Footer */}
-            <footer className="bg-white border-t border-gray-200 mt-12">
+            <footer className="bg-surface border-t border-boundary mt-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <span className="text-gray-600 font-bold text-sm">V</span>
+                            <div className="w-8 h-8 bg-surface-hover rounded-lg flex items-center justify-center">
+                                <span className="text-muted font-bold text-sm">V</span>
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-gray-900">VALO-SYNDIC</p>
-                                <p className="text-xs text-gray-500">Outil d'aide à la décision • 2026</p>
+                                <p className="text-sm font-medium text-main">VALO-SYNDIC</p>
+                                <p className="text-xs text-muted">Outil d'aide à la décision • 2026</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-6">
@@ -358,25 +375,25 @@ export default function HomePage() {
                                 <button
                                     onClick={handleSave}
                                     disabled={!result}
-                                    className="px-2 py-1 text-xs text-gray-500 hover:text-primary-600 disabled:opacity-50"
+                                    className="btn-ghost text-xs disabled:opacity-50"
                                 >
                                     💾
                                 </button>
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="px-2 py-1 text-xs text-gray-500 hover:text-primary-600"
+                                    className="btn-ghost text-xs"
                                 >
                                     📂
                                 </button>
                             </div>
                             <a
                                 href="/legal"
-                                className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                                className="text-sm text-muted hover:text-main transition-colors"
                             >
                                 Mentions légales
                             </a>
-                            <span className="text-gray-300">|</span>
-                            <span className="text-xs text-gray-400">
+                            <span className="text-subtle">|</span>
+                            <span className="text-xs text-muted">
                                 Données réglementaires au {LEGAL.lastUpdate.toLocaleDateString("fr-FR")}
                             </span>
                         </div>

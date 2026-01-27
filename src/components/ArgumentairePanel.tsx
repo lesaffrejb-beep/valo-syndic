@@ -89,11 +89,11 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
     return (
         <div className="card overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-primary/20 to-primary/5 px-6 py-4 border-b border-borders">
-                <h3 className="text-lg font-semibold text-text-main flex items-center gap-2">
+            <div className="bg-gradient-to-r from-primary/20 to-primary/5 px-6 py-4 border-b border-boundary">
+                <h3 className="text-lg font-semibold text-main flex items-center gap-2">
                     📋 Argumentaire AG — Éléments de Langage
                 </h3>
-                <p className="text-sm text-text-muted mt-1">
+                <p className="text-sm text-muted mt-1">
                     Points clés pour convaincre votre Assemblée Générale
                 </p>
             </div>
@@ -109,7 +109,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                         {legalArgs.map((arg, i) => (
                             <div
                                 key={i}
-                                className="p-3 bg-surface rounded-lg text-sm text-text-main border-l-4 border-danger-500"
+                                className="p-3 bg-surface rounded-lg text-sm text-main border-l-4 border-danger-500"
                             >
                                 {arg}
                             </div>
@@ -130,8 +130,8 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                                 className="p-4 bg-warning/10 rounded-lg border border-warning/20 hover:bg-warning/20 transition-colors"
                             >
                                 <div className="text-2xl mb-2">{arg.icon}</div>
-                                <h5 className="font-semibold text-text-main text-sm mb-1">{arg.title}</h5>
-                                <p className="text-xs text-text-muted">{arg.text}</p>
+                                <h5 className="font-semibold text-main text-sm mb-1">{arg.title}</h5>
+                                <p className="text-xs text-muted">{arg.text}</p>
                             </div>
                         ))}
                     </div>
@@ -150,8 +150,8 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                                 className="p-4 bg-success/10 rounded-lg border border-success/20 hover:bg-success/20 transition-colors"
                             >
                                 <div className="text-2xl mb-2">{arg.icon}</div>
-                                <h5 className="font-semibold text-text-main text-sm mb-1">{arg.title}</h5>
-                                <p className="text-xs text-text-muted">{arg.text}</p>
+                                <h5 className="font-semibold text-main text-sm mb-1">{arg.title}</h5>
+                                <p className="text-xs text-muted">{arg.text}</p>
                             </div>
                         ))}
                     </div>

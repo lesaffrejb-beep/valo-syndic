@@ -100,13 +100,13 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
 
             {/* Reste à charge */}
             <div className="flex justify-between items-baseline mb-3">
-                <span className="font-medium text-text-muted">Reste à charge</span>
-                <span className="text-2xl font-bold text-text-main tabular-nums">
+                <span className="font-medium text-muted">Reste à charge</span>
+                <span className="text-2xl font-bold text-main tabular-nums">
                     <AnimatedCurrency value={financing.remainingCost} duration={1.5} />
                 </span>
             </div>
 
-            <div className="flex items-center justify-between text-sm text-text-muted p-3 bg-surface rounded-lg border border-borders">
+            <div className="flex items-center justify-between text-sm text-muted p-3 bg-surface rounded-lg border border-boundary">
                 <span>Mensualité Éco-PTZ</span>
                 <motion.span
                     className="font-bold text-primary text-lg tabular-nums"
@@ -117,7 +117,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                 </motion.span>
             </div>
 
-            <p className="text-xs text-text-muted mt-3">
+            <p className="text-xs text-muted mt-3">
                 Soit <AnimatedCurrency value={financing.remainingCostPerUnit} duration={1.3} /> à financer par lot
             </p>
 

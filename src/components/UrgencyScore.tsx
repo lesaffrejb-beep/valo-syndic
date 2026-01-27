@@ -10,6 +10,7 @@
 import { useEffect, useState } from "react";
 import { type ComplianceStatus } from "@/lib/schemas";
 import { type DPELetter } from "@/lib/constants";
+import { ParticleEmitter } from "@/components/ui/ParticleEmitter";
 
 interface UrgencyScoreProps {
     compliance: ComplianceStatus;
@@ -39,10 +40,10 @@ function calculateUrgencyScore(compliance: ComplianceStatus, dpe: DPELetter): nu
 
 // Couleur selon le score
 function getScoreColor(score: number): { bg: string; text: string; stroke: string } {
-    if (score >= 80) return { bg: "bg-danger/10", text: "text-danger-500", stroke: "#FF453A" };
-    if (score >= 60) return { bg: "bg-warning/10", text: "text-warning-500", stroke: "#FFD60A" };
-    if (score >= 40) return { bg: "bg-warning/10", text: "text-warning-500", stroke: "#FFD60A" };
-    return { bg: "bg-success/10", text: "text-success-500", stroke: "#32D74B" };
+    if (score >= 80) return { bg: "bg-danger/10", text: "text-danger-500", stroke: "#EF4444" };
+    if (score >= 60) return { bg: "bg-warning/10", text: "text-warning-500", stroke: "#F59E0B" };
+    if (score >= 40) return { bg: "bg-warning/10", text: "text-warning-500", stroke: "#F59E0B" };
+    return { bg: "bg-success/10", text: "text-success-500", stroke: "#10B981" };
 }
 
 // Message selon le score
@@ -86,11 +87,14 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
     const offset = circumference - (animatedScore / 100) * circumference;
 
     return (
-        <div className={`card ${colors.bg} rounded-xl p-6 border border-borders relative transition-colors duration-300`}>
+        <div className={`card-bento ${colors.bg} rounded-xl p-6 border border-boundary relative transition-colors duration-300 overflow-hidden`}>
+            {/* Particle System for Critical Scores */}
+            <ParticleEmitter active={score >= 80} color={colors.stroke} />
+
             {/* Glow based on score */}
             <div className={`absolute inset-0 bg-${colors.stroke}/5 rounded-xl`} />
 
-            <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center gap-2 relative z-10">
+            <h3 className="text-lg font-semibold text-main mb-4 flex items-center gap-2 relative z-10">
                 🎯 Score d'Urgence
             </h3>
 
@@ -133,12 +137,12 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                 {/* Message */}
                 <div>
                     <p className={`text-xl font-bold ${colors.text}`}>{message.title}</p>
-                    <p className="text-sm text-text-muted mt-1">{message.subtitle}</p>
+                    <p className="text-sm text-muted mt-1">{message.subtitle}</p>
 
                     {compliance.daysUntilProhibition && compliance.daysUntilProhibition > 0 && (
-                        <div className="mt-3 p-2 bg-surface/50 rounded-lg border border-borders">
-                            <p className="text-xs text-text-muted">Temps restant</p>
-                            <p className="font-semibold text-text-main tabular-nums">
+                        <div className="mt-3 p-2 bg-surface/50 rounded-lg border border-boundary">
+                            <p className="text-xs text-muted">Temps restant</p>
+                            <p className="font-semibold text-main tabular-nums">
                                 {Math.floor(compliance.daysUntilProhibition / 30)} mois
                             </p>
                         </div>

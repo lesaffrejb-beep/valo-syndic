@@ -44,10 +44,11 @@
   }
 
   /* ================================================
-     SOFT BENTO — Les Cartes
+     SOFT BENTO — Les Cartes (Glassmorphism Subtil)
      ================================================ */
   .card-bento {
-    @apply bg-surface rounded-card p-card-pad border border-boundary transition-colors duration-200;
+    @apply bg-surface rounded-card p-card-pad border border-boundary transition-all duration-200;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
   }
 
   .card-bento:hover {
@@ -59,31 +60,68 @@
   .glass-panel,
   .glass-panel-spotlight {
     @apply card-bento;
-    box-shadow: none !important;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03) !important;
+  }
+
+  /* Glass Header Style */
+  .glass {
+    @apply bg-app/95 backdrop-blur-md border-b border-boundary;
   }
 
   /* ================================================
-     INPUTS & FORMS
+     INPUTS & FORMS — Dalles Gravées Premium
      ================================================ */
   .input {
-    @apply w-full px-4 py-3 rounded-input text-main placeholder-subtle bg-app border border-boundary transition-all duration-200 outline-none;
+    @apply w-full h-12 px-4 py-3 rounded-input text-main placeholder-subtle bg-app-darker border border-boundary transition-all duration-200 outline-none;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .input:hover {
+    @apply border-boundary-active;
   }
 
   .input:focus {
-    @apply ring-1 ring-primary border-primary;
+    @apply ring-2 ring-primary/50 border-primary;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(212, 182, 121, 0.1);
+  }
+
+  /* Select styling */
+  .input.appearance-none {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    padding-right: 44px;
   }
 
   /* ================================================
-     BUTTONS — Matte & Solid
+     BUTTONS — Feedback Haptique Visuel
      ================================================ */
   .btn-primary {
-    @apply px-6 py-3 bg-primary text-primary-foreground font-medium rounded-input hover:opacity-90 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-app active:scale-[0.98];
-    background-image: none !important;
-    box-shadow: none !important;
+    @apply px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-input transition-all duration-200 outline-none;
+    @apply hover:brightness-110 hover:-translate-y-0.5;
+    @apply focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-app;
+    @apply active:scale-[0.98] active:brightness-100;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:brightness-100;
+    box-shadow: 0 4px 14px 0 rgba(212, 182, 121, 0.25);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 6px 20px 0 rgba(212, 182, 121, 0.35);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-surface text-main font-medium rounded-input border border-boundary hover:bg-surface-hover transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-subtle focus:ring-offset-2 focus:ring-offset-app active:scale-[0.98];
+    @apply px-6 py-3 bg-surface text-main font-medium rounded-input border border-boundary transition-all duration-200 outline-none;
+    @apply hover:bg-surface-hover hover:border-boundary-active hover:-translate-y-0.5;
+    @apply focus:ring-2 focus:ring-subtle focus:ring-offset-2 focus:ring-offset-app;
+    @apply active:scale-[0.98];
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply px-4 py-2 text-muted font-medium rounded-input transition-all duration-200;
+    @apply hover:text-main hover:bg-surface;
+    @apply active:scale-[0.98];
   }
 
   /* ================================================
@@ -102,12 +140,17 @@
     @apply text-4xl font-medium text-main tabular-nums tracking-tight;
   }
 
+  /* Gradient text for hero */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-400 bg-clip-text text-transparent;
+  }
+
   /* Override des gradients Or précédents par la couleur unie */
   .text-gold-premium {
-    @apply text-primary !important;
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    text-shadow: none !important;
+    @apply text-primary;
+    background: none;
+    -webkit-background-clip: unset;
+    text-shadow: none;
   }
 }
 
@@ -116,5 +159,100 @@
   /* Utilitaires spécifiques si besoin */
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* ================================================
+   MODE PROJECTION AG — Présentation Grand Écran
+   ================================================ */
+.projection-mode {
+  /* Augmentation générale de la taille */
+  font-size: 125%;
+
+  /* Transition douce pour tout */
+  * {
+    transition-duration: 400ms !important;
+  }
+}
+
+.projection-mode body {
+  /* Contraste renforcé */
+  background-color: #000 !important;
+}
+
+.projection-mode .card-bento {
+  /* Cards plus visibles */
+  border-width: 2px;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.projection-mode h1,
+.projection-mode h2,
+.projection-mode h3 {
+  /* Titres plus grands et plus espacés */
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.projection-mode .text-value-xl {
+  font-size: 3.5rem;
+}
+
+.projection-mode .text-value-lg {
+  font-size: 2.5rem;
+}
+
+.projection-mode .label-technical {
+  font-size: 0.875rem;
+  letter-spacing: 0.15em;
+}
+
+/* QR Code toujours visible en mode projection */
+.projection-mode [data-qr-container] {
+  position: fixed !important;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid rgba(212, 182, 121, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Animations plus lentes */
+.projection-mode [data-motion] {
+  --motion-duration: 0.8s;
+}
+
+/* Focus states plus visibles */
+.projection-mode :focus-visible {
+  outline: 3px solid #D4B679;
+  outline-offset: 4px;
+}
+
+/* Badge mode projection */
+.projection-mode::after {
+  content: "📽️ MODE PROJECTION";
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #D4B679, #B89B4A);
+  color: #000;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  z-index: 9999;
+  box-shadow: 0 4px 20px rgba(212, 182, 121, 0.4);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .projection-mode * {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
   }
 }

@@ -15,12 +15,12 @@ export function LegalWarning({
     className = "",
 }: LegalWarningProps) {
     const baseStyles =
-        "text-xs text-text-muted border-l-2 border-borders pl-3 italic";
+        "text-xs text-muted border-l-2 border-boundary pl-3 italic";
 
     const variantStyles = {
         inline: "py-2",
-        banner: "bg-surface py-3 px-4 rounded-md border border-borders",
-        footer: "py-4 text-center border-t border-borders mt-8 text-text-muted",
+        banner: "bg-surface py-3 px-4 rounded-md border border-boundary",
+        footer: "py-4 text-center border-t border-boundary mt-8 text-muted",
     };
 
     return (
@@ -35,7 +35,7 @@ export function LegalWarning({
  */
 export function DVFDisclaimer({ className = "" }: { className?: string }) {
     return (
-        <p className={`text-xs text-text-muted/70 italic ${className}`}>
+        <p className={`text-xs text-muted/70 italic ${className}`}>
             📊 {LEGAL.dvfDisclaimer}
         </p>
     );
