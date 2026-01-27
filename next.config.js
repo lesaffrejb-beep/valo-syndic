@@ -2,10 +2,11 @@
 const nextConfig = {
     reactStrictMode: true,
     transpilePackages: ['@react-pdf/renderer'],
-    webpack: (config, { isServer }) => {
+    webpack: (config, { isServer, webpack }) => {
         config.resolve.alias.canvas = false;
 
         if (!isServer) {
+            // FALLBACKS
             config.resolve.fallback = {
                 ...config.resolve.fallback,
                 fs: false,
@@ -17,12 +18,13 @@ const nextConfig = {
                 tls: false,
                 net: false,
             };
-            config.resolve.alias = {
-                ...config.resolve.alias,
-                "node:fs": false,
-                "node:https": false,
-                "node:http": false,
-            }
+
+            // IGNORE PLUGIN for node: schemes (Nuclear Option for Webpack 5)
+            config.plugins.push(
+                new webpack.IgnorePlugin({
+                    resourceRegExp: /^node:/,
+                })
+            );
         }
         return config;
     },
