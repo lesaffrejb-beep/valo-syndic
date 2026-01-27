@@ -232,18 +232,18 @@ export default function HomePage() {
                         >
                             <StaggerContainer staggerDelay={0.1}>
                                 {/* Summary Header */}
-                                <div className="card-bento">
-                                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                                <div className="card-bento p-8 md:p-10 gap-8">
+                                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                                         <div>
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <span className="px-3 py-1 bg-primary-900/30 text-primary-400 border border-primary-500/20 text-xs font-medium rounded-full">
                                                     Diagnostic Flash
                                                 </span>
                                                 <span className="text-xs text-muted">
                                                     Généré le {new Date().toLocaleDateString("fr-FR")}
                                                 </span>
                                             </div>
-                                            <h2 className="text-2xl font-bold text-main mb-1">
+                                            <h2 className="text-3xl md:text-4xl font-bold text-main mb-2 tracking-tight">
                                                 📊 Évaluation Préliminaire
                                             </h2>
                                             <p className="text-muted">

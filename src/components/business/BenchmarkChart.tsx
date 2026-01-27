@@ -71,15 +71,15 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
     const avgBarWidth = (analysis.avgConsumption / 600) * 100;
 
     return (
-        <div className={`bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 ${className}`}>
+        <div className={`card-bento p-6 ${className}`}>
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
-                    <span className="text-white text-lg">📊</span>
+                <div className="w-10 h-10 bg-gradient-to-br from-amber-600/40 to-orange-700/40 rounded-xl flex items-center justify-center border border-orange-500/20">
+                    <span className="text-orange-400 text-lg">📊</span>
                 </div>
                 <div>
-                    <h3 className="text-lg font-bold text-gray-900">Benchmark Régional</h3>
-                    <p className="text-sm text-gray-500">Comparaison avec {city}</p>
+                    <h3 className="text-lg font-bold text-main">Benchmark Régional</h3>
+                    <p className="text-sm text-muted">Comparaison avec {city}</p>
                 </div>
             </div>
 
@@ -88,10 +88,10 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                 {/* Votre copro */}
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Votre Copro ({currentDPE})</span>
-                        <span className="text-sm font-bold text-gray-900">{analysis.yourConsumption} kWh/m²</span>
+                        <span className="text-sm font-medium text-secondary">Votre Copro ({currentDPE})</span>
+                        <span className="text-sm font-bold text-main">{analysis.yourConsumption} kWh/m²</span>
                     </div>
-                    <div className="h-8 bg-gray-100 rounded-lg overflow-hidden">
+                    <div className="h-8 bg-boundary rounded-lg overflow-hidden">
                         <div
                             className="h-full rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
                             style={{
@@ -99,7 +99,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                                 backgroundColor: getDPEColor(currentDPE),
                             }}
                         >
-                            <span className="text-xs font-bold text-white drop-shadow-sm">
+                            <span className="text-xs font-bold text-black drop-shadow-sm">
                                 {currentDPE}
                             </span>
                         </div>
@@ -109,12 +109,12 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                 {/* Moyenne régionale */}
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-secondary">
                             Moyenne {REGIONAL_BENCHMARK.city} ({REGIONAL_BENCHMARK.averageDPE})
                         </span>
-                        <span className="text-sm font-bold text-gray-900">{analysis.avgConsumption} kWh/m²</span>
+                        <span className="text-sm font-bold text-main">{analysis.avgConsumption} kWh/m²</span>
                     </div>
-                    <div className="h-8 bg-gray-100 rounded-lg overflow-hidden">
+                    <div className="h-8 bg-boundary rounded-lg overflow-hidden">
                         <div
                             className="h-full rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
                             style={{
@@ -122,7 +122,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                                 backgroundColor: getDPEColor(REGIONAL_BENCHMARK.averageDPE),
                             }}
                         >
-                            <span className="text-xs font-bold text-white drop-shadow-sm">
+                            <span className="text-xs font-bold text-black drop-shadow-sm">
                                 {REGIONAL_BENCHMARK.averageDPE}
                             </span>
                         </div>
@@ -132,14 +132,14 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
 
             {/* Message clé */}
             {analysis.isAboveAverage ? (
-                <div className="p-4 bg-danger-50 rounded-xl border border-danger-200">
+                <div className="p-4 bg-danger-900/20 rounded-xl border border-danger-500/30">
                     <div className="flex items-start gap-3">
                         <span className="text-2xl">⚠️</span>
                         <div>
-                            <p className="text-lg font-bold text-danger-700 mb-1">
+                            <p className="text-lg font-bold text-danger-400 mb-1">
                                 Vous sur-consommez de {analysis.excessPercent}%
                             </p>
-                            <p className="text-sm text-danger-600">
+                            <p className="text-sm text-danger-300">
                                 par rapport à vos voisins angevins.
                                 {analysis.scoreDiff >= 2 && " C'est " + analysis.scoreDiff + " classes DPE d'écart !"}
                             </p>
@@ -147,14 +147,14 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                     </div>
                 </div>
             ) : (
-                <div className="p-4 bg-success-50 rounded-xl border border-success-200">
+                <div className="p-4 bg-success-900/20 rounded-xl border border-success-500/30">
                     <div className="flex items-start gap-3">
                         <span className="text-2xl">✅</span>
                         <div>
-                            <p className="text-lg font-bold text-success-700 mb-1">
+                            <p className="text-lg font-bold text-success-400 mb-1">
                                 Vous êtes {analysis.excessPercent}% sous la moyenne
                             </p>
-                            <p className="text-sm text-success-600">
+                            <p className="text-sm text-success-300">
                                 Votre copropriété est plus performante que la moyenne régionale.
                             </p>
                         </div>
@@ -163,7 +163,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
             )}
 
             {/* Source */}
-            <p className="text-xs text-gray-400 mt-4 text-right">
+            <p className="text-xs text-muted/50 mt-4 text-right">
                 Source : {REGIONAL_BENCHMARK.source}
             </p>
         </div>

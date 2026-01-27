@@ -62,15 +62,20 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
     // Calcul du taux de couverture par les aides
     const aidesCoverage = ((financing.mprAmount + financing.ecoPtzAmount) / financing.totalCostHT) * 100;
 
+    // Custom Label for Recharts
+    const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+        return null;
+    };
+
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="card-bento p-6">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-main flex items-center gap-2">
                     💰 Répartition du Financement
                 </h3>
                 <div className="text-right">
-                    <p className="text-xs text-gray-500 uppercase">Couverture Aides</p>
-                    <p className="text-lg font-bold text-success-600">{aidesCoverage.toFixed(0)}%</p>
+                    <p className="text-xs text-muted uppercase">Couverture Aides</p>
+                    <p className="text-lg font-bold text-success-500">{aidesCoverage.toFixed(0)}%</p>
                 </div>
             </div>
 
@@ -88,30 +93,32 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
                             dataKey="value"
                             animationDuration={1200}
                             animationEasing="ease-out"
+                            stroke="none"
                         >
                             {data.map((entry, index) => (
                                 <Cell
                                     key={`cell-${index}`}
                                     fill={entry.color}
-                                    stroke={entry.color}
-                                    strokeWidth={2}
+                                    strokeWidth={0}
                                 />
                             ))}
                         </Pie>
                         <Tooltip
                             formatter={(value: number | undefined) => formatCurrency(value ?? 0)}
                             contentStyle={{
-                                backgroundColor: "#1f2937",
-                                border: "none",
+                                backgroundColor: "#171717", // Neutral-900 like
+                                border: "1px solid #262626", // Neutral-800
                                 borderRadius: "8px",
                                 color: "#fff",
+                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                             }}
+                            itemStyle={{ color: "#e5e5e5" }}
                         />
                         <Legend
                             formatter={(value, entry) => {
                                 const item = data.find((d) => d.name === value);
                                 return (
-                                    <span className="text-sm text-gray-700">
+                                    <span className="text-sm text-secondary">
                                         {value} ({item ? formatPercent(item.value) : ""})
                                     </span>
                                 );
@@ -123,12 +130,12 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
 
             {/* Centre du donut - Total */}
             <div className="text-center -mt-4 mb-4">
-                <p className="text-xs text-gray-500 uppercase">Coût Total</p>
-                <p className="text-xl font-bold text-gray-900">{formatCurrency(financing.totalCostHT)}</p>
+                <p className="text-xs text-muted uppercase">Coût Total</p>
+                <p className="text-xl font-bold text-main">{formatCurrency(financing.totalCostHT)}</p>
             </div>
 
             {/* Breakdown détaillé */}
-            <div className="space-y-3 mt-4 pt-4 border-t border-gray-100">
+            <div className="space-y-3 mt-4 pt-4 border-t border-boundary">
                 {data.map((item) => (
                     <div key={item.name} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -136,13 +143,13 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
                                 className="w-3 h-3 rounded-full"
                                 style={{ backgroundColor: item.color }}
                             />
-                            <span className="text-sm text-gray-600">{item.name}</span>
+                            <span className="text-sm text-secondary">{item.name}</span>
                         </div>
                         <div className="text-right">
-                            <span className="font-semibold text-gray-900">
+                            <span className="font-semibold text-main">
                                 {formatCurrency(item.value)}
                             </span>
-                            <span className="text-xs text-gray-500 ml-2">
+                            <span className="text-xs text-muted ml-2">
                                 ({formatPercent(item.value)})
                             </span>
                         </div>

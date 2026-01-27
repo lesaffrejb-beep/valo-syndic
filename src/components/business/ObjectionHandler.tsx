@@ -99,37 +99,37 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
     const getColorClasses = (color: Objection["color"], isOpen: boolean) => {
         const base = {
             danger: {
-                bg: isOpen ? "bg-danger-50" : "bg-white hover:bg-danger-50/50",
-                border: "border-danger-200",
-                icon: "bg-danger-100 text-danger-600",
-                title: "text-danger-700",
+                bg: isOpen ? "bg-danger-900/20" : "bg-card hover:bg-danger-900/10",
+                border: "border-danger-500/30",
+                icon: "bg-danger-900/30 text-danger-400",
+                title: "text-danger-400",
             },
             warning: {
-                bg: isOpen ? "bg-warning-50" : "bg-white hover:bg-warning-50/50",
-                border: "border-warning-200",
-                icon: "bg-warning-100 text-warning-600",
-                title: "text-warning-700",
+                bg: isOpen ? "bg-warning-900/20" : "bg-card hover:bg-warning-900/10",
+                border: "border-warning-500/30",
+                icon: "bg-warning-900/30 text-warning-400",
+                title: "text-warning-400",
             },
             info: {
-                bg: isOpen ? "bg-primary-50" : "bg-white hover:bg-primary-50/50",
-                border: "border-primary-200",
-                icon: "bg-primary-100 text-primary-600",
-                title: "text-primary-700",
+                bg: isOpen ? "bg-primary-900/20" : "bg-card hover:bg-primary-900/10",
+                border: "border-primary-500/30",
+                icon: "bg-primary-900/30 text-primary-400",
+                title: "text-primary-400",
             },
         };
         return base[color];
     };
 
     return (
-        <div className={`bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6 ${className}`}>
+        <div className={`card-bento p-6 ${className}`}>
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-                    <span className="text-white text-lg">⚔️</span>
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-indigo-600/30 rounded-xl flex items-center justify-center border border-indigo-500/20">
+                    <span className="text-indigo-300 text-lg">⚔️</span>
                 </div>
                 <div>
-                    <h3 className="text-lg font-bold text-gray-900">Avocat du Diable</h3>
-                    <p className="text-sm text-gray-500">Les réponses aux 3 objections classiques</p>
+                    <h3 className="text-lg font-bold text-main">Avocat du Diable</h3>
+                    <p className="text-sm text-muted">Les réponses aux 3 objections classiques</p>
                 </div>
             </div>
 
@@ -156,11 +156,11 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
                                     </span>
                                     <div>
                                         <p className={`font-bold ${colors.title}`}>{objection.title}</p>
-                                        <p className="text-xs text-gray-500">{objection.subtitle}</p>
+                                        <p className="text-xs text-muted/70">{objection.subtitle}</p>
                                     </div>
                                 </div>
                                 <span
-                                    className={`text-2xl text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-45" : ""
+                                    className={`text-2xl text-muted transition-transform duration-300 ${isOpen ? "rotate-45" : ""
                                         }`}
                                 >
                                     +
@@ -174,9 +174,9 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
                             >
                                 <div className="px-4 pb-4 space-y-3">
                                     {objection.arguments.map((arg, idx) => (
-                                        <div key={idx} className="pl-4 border-l-2 border-gray-200">
-                                            <p className="font-semibold text-gray-800 text-sm">{arg.heading}</p>
-                                            <p className="text-sm text-gray-600 mt-1">{arg.content}</p>
+                                        <div key={idx} className="pl-4 border-l-2 border-boundary">
+                                            <p className="font-semibold text-main text-sm">{arg.heading}</p>
+                                            <p className="text-sm text-secondary mt-1">{arg.content}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -187,7 +187,7 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
             </div>
 
             {/* Footer */}
-            <p className="text-xs text-gray-400 mt-6 text-center">
+            <p className="text-xs text-muted/50 mt-6 text-center">
                 💡 Conseil : Projeter ces réponses en AG, pas les envoyer par mail
             </p>
         </div>
