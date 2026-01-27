@@ -12,7 +12,7 @@
     "@react-pdf/renderer": "^4.1.6",
     "@types/qrcode": "^1.5.6",
     "framer-motion": "^12.29.2",
-    "next": "14.2.21",
+    "next": "^14.2.23",
     "pptxgenjs": "^4.0.1",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",
@@ -27,9 +27,12 @@
     "@types/react-dom": "^18.3.5",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.21",
+    "eslint-config-next": "14.2.23",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3"
+  },
+  "overrides": {
+    "scheduler": "^0.23.2"
   }
 }

@@ -33,7 +33,7 @@ export default function LegalPage() {
                             1. Nature du Service
                         </h2>
                         <p className="text-gray-700 mb-4">
-                            VALO-SYNDIC est un <strong>outil d'aide à la décision</strong>{" "}
+                            VALO-SYNDIC est un <strong>outil d&apos;aide à la décision</strong>{" "}
                             destiné aux professionnels de la gestion immobilière. Il fournit
                             des simulations indicatives basées sur les barèmes publics en
                             vigueur.
@@ -52,7 +52,7 @@ export default function LegalPage() {
                             </p>
                             <p className="text-warning-700 text-sm mt-2">
                                 Les résultats affichés sont des <strong>estimations</strong>{" "}
-                                basées sur les informations fournies par l'utilisateur et les
+                                basées sur les informations fournies par l&apos;utilisateur et les
                                 barèmes publics. Ils ne constituent en aucun cas :
                             </p>
                             <ul className="list-disc list-inside text-warning-700 text-sm mt-2 space-y-1">
@@ -65,7 +65,7 @@ export default function LegalPage() {
                         <p className="text-gray-700">
                             Pour tout projet de rénovation, il est impératif de faire appel à
                             des professionnels qualifiés (auditeurs OPQIBI 1905, maîtres
-                            d'œuvre, bureaux d'études thermiques).
+                            d&apos;œuvre, bureaux d&apos;études thermiques).
                         </p>
                     </section>
 
@@ -136,7 +136,7 @@ export default function LegalPage() {
                                 </tr>
                                 <tr>
                                     <td className="border border-gray-300 px-4 py-2">
-                                        Barème MaPrimeRénov'
+                                        Barème MaPrimeRénov&apos;
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2">
                                         ANAH / Service-Public.fr
@@ -177,8 +177,8 @@ export default function LegalPage() {
                             5. Propriété Intellectuelle
                         </h2>
                         <p className="text-gray-700">
-                            L'outil VALO-SYNDIC, son code source, son design et ses contenus
-                            sont protégés par le droit d'auteur. Toute reproduction ou
+                            L&apos;outil VALO-SYNDIC, son code source, son design et ses contenus
+                            sont protégés par le droit d&apos;auteur. Toute reproduction ou
                             utilisation non autorisée est interdite.
                         </p>
                     </section>

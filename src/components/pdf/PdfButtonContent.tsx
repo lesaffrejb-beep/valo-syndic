@@ -13,7 +13,7 @@ export function PdfButtonContent({ result }: PdfButtonContentProps) {
         <PDFDownloadLink
             document={<PDFDocument result={result} />}
             fileName={`audit-valo-syndic-${new Date().toISOString().split('T')[0]}.pdf`}
-            className="btn-primary flex items-center justify-center gap-2 group"
+            className="btn-primary flex items-center justify-center gap-2 group cursor-pointer"
         >
             {/* @ts-ignore */}
             {({ blob, url, loading, error }: any) =>

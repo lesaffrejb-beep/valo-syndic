@@ -65,7 +65,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                             💰
                         </motion.span>
                         <div>
-                            <p className="font-medium text-primary">MaPrimeRénov' Copro</p>
+                            <p className="font-medium text-primary">MaPrimeRénov&apos; Copro</p>
                             <p className="text-xs text-primary-400">
                                 Taux : {formatPercent(financing.mprRate)}
                                 {financing.exitPassoireBonus > 0 && " (dont +10% sortie passoire)"}

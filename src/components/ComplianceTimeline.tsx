@@ -90,9 +90,9 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                                     initial={{ scale: 0 }}
                                     animate={isInView ? {
                                         scale: 1,
-                                        boxShadow: isCurrentDPE
-                                            ? ["0 0 0 0 rgba(212, 182, 121, 0)", "0 0 0 8px rgba(212, 182, 121, 0.3)", "0 0 0 0 rgba(212, 182, 121, 0)"]
-                                            : undefined
+                                        ...(isCurrentDPE ? {
+                                            boxShadow: ["0 0 0 0 rgba(212, 182, 121, 0)", "0 0 0 8px rgba(212, 182, 121, 0.3)", "0 0 0 0 rgba(212, 182, 121, 0)"]
+                                        } : {})
                                     } : {}}
                                     transition={isCurrentDPE
                                         ? { scale: { delay: 0.3 + index * 0.15 }, boxShadow: { repeat: Infinity, duration: 2 } }

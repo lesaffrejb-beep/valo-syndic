@@ -131,8 +131,8 @@ export function TantiemeCalculator({ financing, className = "" }: TantiemeCalcul
             {/* Message persuasif */}
             <div className="mt-6 p-4 bg-success-900/20 rounded-lg border border-success-500/30">
                 <p className="text-sm text-success-300 text-center">
-                    💡 <strong>Moins qu'un abonnement télécom</strong> pour valoriser votre patrimoine
-                    et sécuriser sa location jusqu'en 2034+
+                    💡 <strong>Moins qu&apos;un abonnement télécom</strong> pour valoriser votre patrimoine
+                    et sécuriser sa location jusqu&apos;en 2034+
                 </p>
             </div>
         </div>

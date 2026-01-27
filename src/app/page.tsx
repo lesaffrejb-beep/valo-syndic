@@ -207,7 +207,7 @@ export default function HomePage() {
                             </h2>
                             <p className="text-lg text-muted max-w-2xl mx-auto leading-relaxed">
                                 Analysez le potentiel de financement de vos travaux de rénovation
-                                énergétique avec <span className="font-medium text-main">MaPrimeRénov' Copropriété</span> et <span className="font-medium text-main">l'Éco-PTZ</span>.
+                                énergétique avec <span className="font-medium text-main">MaPrimeRénov&apos; Copropriété</span> et <span className="font-medium text-main">l&apos;Éco-PTZ</span>.
                             </p>
                         </div>
 
@@ -230,7 +230,7 @@ export default function HomePage() {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                         >
-                            <StaggerContainer staggerDelay={0.1}>
+                            <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-6 md:gap-8">
                                 {/* Summary Header */}
                                 <div className="card-bento p-8 md:p-10 gap-8">
                                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
@@ -322,10 +322,10 @@ export default function HomePage() {
                                         <div className="flex-1">
                                             <h3 className="text-lg font-bold text-main mb-2">📱 Vote en Séance</h3>
                                             <p className="text-muted text-sm">
-                                                Projetez ce QR Code lors de l'AG pour recueillir l'avis consultatif des copropriétaires en temps réel.
+                                                Projetez ce QR Code lors de l&apos;AG pour recueillir l&apos;avis consultatif des copropriétaires en temps réel.
                                             </p>
                                             <p className="text-xs text-subtle mt-2">
-                                                💡 Astuce : Ne pas envoyer par mail, projeter en séance pour maximiser l'impact.
+                                                💡 Astuce : Ne pas envoyer par mail, projeter en séance pour maximiser l&apos;impact.
                                             </p>
                                         </div>
                                         <VoteQR simulationId={`SIM_${Date.now()}`} size={120} />
@@ -333,7 +333,7 @@ export default function HomePage() {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                                <div className="flex flex-wrap gap-4 mt-12 justify-center items-center pt-4">
                                     <button
                                         onClick={handleReset}
                                         className="btn-secondary flex items-center justify-center gap-2 hover:scale-105 transition-transform"
@@ -351,7 +351,7 @@ export default function HomePage() {
                                 </div>
 
                                 {/* Legal Footer */}
-                                <LegalWarning variant="banner" />
+                                <LegalWarning variant="banner" className="mt-8" />
                             </StaggerContainer>
                         </motion.section>
                     )}
@@ -368,7 +368,7 @@ export default function HomePage() {
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-main">VALO-SYNDIC</p>
-                                <p className="text-xs text-muted">Outil d'aide à la décision • 2026</p>
+                                <p className="text-xs text-muted">Outil d&apos;aide à la décision • 2026</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-6">

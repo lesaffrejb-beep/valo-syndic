@@ -168,10 +168,10 @@ export const PDFDocument = ({ result }: PDFDocumentProps) => (
                     <Text style={styles.value}>{formatCurrency(result.financing.totalCostHT)}</Text>
                 </View>
 
-                <Text style={[styles.label, { marginTop: 10 }]}>Ce que vous perdez en n'agissant pas (3 ans) :</Text>
+                <Text style={[styles.label, { marginTop: 10 }]}>Ce que vous perdez en n&apos;agissant pas (3 ans) :</Text>
                 <Text style={styles.bigNumber}>{formatCurrency(result.inactionCost.totalInactionCost)}</Text>
                 <Text style={{ fontSize: 10, color: '#52525b' }}>
-                    *Inclut l'inflation des travaux et la perte de valeur locative potentielle.
+                    *Inclut l&apos;inflation des travaux et la perte de valeur locative potentielle.
                 </Text>
             </View>
 
@@ -179,7 +179,7 @@ export const PDFDocument = ({ result }: PDFDocumentProps) => (
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>🚀 Plan de Financement Optimisé</Text>
                 <View style={styles.row}>
-                    <Text style={styles.label}>MaPrimeRénov' (Est.)</Text>
+                    <Text style={styles.label}>MaPrimeRénov&apos; (Est.)</Text>
                     <Text style={[styles.value, { color: '#16a34a' }]}>{formatCurrency(result.financing.mprAmount)}</Text>
                 </View>
                 <View style={styles.row}>

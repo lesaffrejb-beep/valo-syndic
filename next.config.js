@@ -20,6 +20,7 @@ const nextConfig = {
             };
 
             // IGNORE PLUGIN for node: schemes (Nuclear Option for Webpack 5)
+            // Fixes "node:https" errors from pptxgenjs/other libs
             config.plugins.push(
                 new webpack.IgnorePlugin({
                     resourceRegExp: /^node:/,

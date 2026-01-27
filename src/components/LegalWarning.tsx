@@ -14,13 +14,12 @@ export function LegalWarning({
     variant = "inline",
     className = "",
 }: LegalWarningProps) {
-    const baseStyles =
-        "text-xs text-muted border-l-2 border-boundary pl-3 italic";
+    const baseStyles = "text-xs text-muted";
 
     const variantStyles = {
-        inline: "py-2",
-        banner: "bg-surface py-3 px-4 rounded-md border border-boundary",
-        footer: "py-4 text-center border-t border-boundary mt-8 text-muted",
+        inline: "border-l-2 border-boundary pl-3 italic py-2",
+        banner: "bg-surface py-3 px-4 rounded-md border border-boundary italic",
+        footer: "py-4 text-center border-t border-boundary mt-8",
     };
 
     return (

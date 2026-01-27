@@ -49,7 +49,7 @@ export function EnergyInflationChart({
         });
     }
 
-    const maxCost = data[data.length - 1].cost;
+    const maxCost = data[data.length - 1]!.cost;
     const costIncrease = maxCost - currentCost;
     const increasePercent = ((maxCost / currentCost - 1) * 100).toFixed(0);
 
@@ -149,7 +149,7 @@ export function EnergyInflationChart({
             </div>
 
             <p className="text-xs text-muted mt-6 text-center">
-                Projection basée sur l'indice BT01 — inflation construction {(inflationRate * 100).toFixed(1)}%/an
+                Projection basée sur l&apos;indice BT01 — inflation construction {(inflationRate * 100).toFixed(1)}%/an
             </p>
         </div>
     );

@@ -349,7 +349,7 @@ export function ReportTemplate({ result, qrDataUrl }: ReportTemplateProps) {
                     </View>
 
                     <View style={styles.tableRow}>
-                        <Text style={styles.tableCell}>MaPrimeRénov' Copropriété ({Math.round(financing.mprRate * 100)}%)</Text>
+                        <Text style={styles.tableCell}>MaPrimeRénov&apos; Copropriété ({Math.round(financing.mprRate * 100)}%)</Text>
                         <Text style={[styles.tableCellRight, { color: "#22c55e" }]}>
                             - {formatCurrency(financing.mprAmount)}
                         </Text>
@@ -402,7 +402,7 @@ export function ReportTemplate({ result, qrDataUrl }: ReportTemplateProps) {
                 {/* Note */}
                 <View style={[styles.alertBox, { backgroundColor: "#eff6ff", borderColor: "#bfdbfe", borderWidth: 1 }]}>
                     <Text style={{ fontSize: 9 }}>
-                        💡 L'effort réel dépend de vos tantièmes. Utilisez le calculateur en ligne pour personnaliser.
+                        💡 L&apos;effort réel dépend de vos tantièmes. Utilisez le calculateur en ligne pour personnaliser.
                     </Text>
                 </View>
 
@@ -423,7 +423,7 @@ export function ReportTemplate({ result, qrDataUrl }: ReportTemplateProps) {
                 <Text style={styles.title}>Pourquoi Agir Maintenant ?</Text>
 
                 {/* Coût de l'inaction */}
-                <Text style={styles.sectionTitle}>Le Coût de l'Inaction</Text>
+                <Text style={styles.sectionTitle}>Le Coût de l&apos;Inaction</Text>
                 <View style={[styles.alertBox, styles.alertDanger]}>
                     <Text style={{ fontSize: 11, fontWeight: "bold", color: "#dc2626", marginBottom: 8 }}>
                         ⚠️ Attendre 3 ans vous coûtera :
@@ -453,26 +453,27 @@ export function ReportTemplate({ result, qrDataUrl }: ReportTemplateProps) {
                 <View style={styles.card}>
                     <Text style={{ fontSize: 10, fontWeight: "bold", marginBottom: 6 }}>1. Obligations légales</Text>
                     <Text style={{ fontSize: 9, color: "#4b5563", marginBottom: 12 }}>
-                        La Loi Climat impose l'interdiction de location pour les DPE G (2025), F (2028), E (2034).
+                        La Loi Climat impose l&apos;interdiction de location pour les DPE G (2025), F (2028), E (2034).
                         Ces dates sont non négociables.
                     </Text>
 
                     <Text style={{ fontSize: 10, fontWeight: "bold", marginBottom: 6 }}>2. Financement avantageux</Text>
                     <Text style={{ fontSize: 9, color: "#4b5563", marginBottom: 12 }}>
-                        MaPrimeRénov' + Éco-PTZ permettent de financer jusqu'à 55% des travaux à taux 0.
+                        MaPrimeRénov&apos; + Éco-PTZ permettent de financer jusqu&apos;à 55% des travaux à taux 0.
                         Ces aides peuvent diminuer dans le futur.
                     </Text>
 
                     <Text style={{ fontSize: 10, fontWeight: "bold", marginBottom: 6 }}>3. Valorisation immédiate</Text>
                     <Text style={{ fontSize: 9, color: "#4b5563" }}>
-                        La "Valeur Verte" représente +10-15% de prix de vente pour un bien rénové.
-                        C'est un investissement, pas une dépense.
+                        La &quot;Valeur Verte&quot; représente +10-15% de prix de vente pour un bien rénové.
+                        C&apos;est un investissement, pas une dépense.
                     </Text>
                 </View>
 
                 {/* QR Code Vote */}
                 {qrDataUrl && (
                     <View style={styles.qrSection}>
+                        {/* eslint-disable-next-line jsx-a11y/alt-text */}
                         <Image src={qrDataUrl} style={{ width: 100, height: 100, marginBottom: 8 }} />
                         <Text style={{ fontSize: 9, color: "#6b7280", textAlign: "center" }}>
                             📱 Scannez pour donner votre avis consultatif

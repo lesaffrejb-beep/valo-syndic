@@ -184,7 +184,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                     transition={{ delay: 1.5 }}
                 >
                     <p className="text-sm text-success-500">
-                        <span className="font-bold">🎯 Bonus Sortie Passoire :</span> +10% de MaPrimeRénov'
+                        <span className="font-bold">🎯 Bonus Sortie Passoire :</span> +10% de MaPrimeRénov&apos;
                         pour passer de {currentDPE} à {targetDPE}
                     </p>
                 </motion.div>

@@ -10,8 +10,8 @@ import { type DPELetter, DPE_NUMERIC_VALUE } from "@/lib/constants";
 
 interface BenchmarkChartProps {
     currentDPE: DPELetter;
-    city?: string;
-    className?: string;
+    city?: string | undefined;
+    className?: string | undefined;
 }
 
 // Données benchmark Angers (Maine-et-Loire)

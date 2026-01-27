@@ -95,7 +95,7 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
             <div className={`absolute inset-0 bg-${colors.stroke}/5 rounded-xl`} />
 
             <h3 className="text-lg font-semibold text-main mb-4 flex items-center gap-2 relative z-10">
-                🎯 Score d'Urgence
+                🎯 Score d&apos;Urgence
             </h3>
 
             <div className="flex items-center gap-6 relative z-10">

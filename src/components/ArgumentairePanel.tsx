@@ -121,7 +121,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                 <div>
                     <h4 className="text-sm font-semibold text-warning-500 uppercase tracking-wide mb-3 flex items-center gap-2">
                         <span className="w-2 h-2 bg-warning-500 rounded-full"></span>
-                        Coût de l'Inaction
+                        Coût de l&apos;Inaction
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {commercialArgs.map((arg, i) => (
@@ -141,7 +141,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                 <div>
                     <h4 className="text-sm font-semibold text-success-500 uppercase tracking-wide mb-3 flex items-center gap-2">
                         <span className="w-2 h-2 bg-success-500 rounded-full"></span>
-                        Bénéfices de l'Action
+                        Bénéfices de l&apos;Action
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {actionArgs.map((arg, i) => (
@@ -161,9 +161,9 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                 {isPassoire && (
                     <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/20 rounded-lg border border-primary/30">
                         <p className="text-sm text-primary-200 font-medium">
-                            💡 <span className="font-bold text-primary">Phrase clé pour l'AG :</span> "En votant cette
-                            résolution aujourd'hui, vous sécurisez la valeur locative de vos biens et
-                            bénéficiez d'aides qui ne seront plus disponibles demain."
+                            💡 <span className="font-bold text-primary">Phrase clé pour l&apos;AG :</span> &quot;En votant cette
+                            résolution aujourd&apos;hui, vous sécurisez la valeur locative de vos biens et
+                            bénéficiez d&apos;aides qui ne seront plus disponibles demain.&quot;
                         </p>
                     </div>
                 )}

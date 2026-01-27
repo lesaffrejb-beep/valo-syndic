@@ -170,3 +170,20 @@ export function estimateEnergyGain(
     // Plafonné à 70% pour rester réaliste
     return Math.min(steps * 0.15, 0.70);
 }
+
+// =============================================================================
+// 4. SCHÉMA DE SAUVEGARDE (VERSIONNÉ)
+// =============================================================================
+
+export const ValoSaveSchema = z.object({
+    version: z.literal("1.0"),
+    savedAt: z.string().datetime().optional(), // ISO string
+    metadata: z.object({
+        appName: z.literal("VALO-SYNDIC").optional(),
+        createdAt: z.coerce.date().optional(),
+    }).optional(),
+    input: DiagnosticInputSchema,
+    result: DiagnosticResultSchema.optional(), // On peut sauvegarder juste l'input ou le résultat complet
+});
+
+export type ValoSaveData = z.infer<typeof ValoSaveSchema>;

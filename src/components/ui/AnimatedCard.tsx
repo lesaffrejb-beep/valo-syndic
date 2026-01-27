@@ -44,11 +44,13 @@ export function AnimatedCard({
             animate="visible"
             variants={cardVariants}
             transition={{ delay }}
-            whileHover={interactive ? {
-                scale: 1.01,
-                y: -2,
-                transition: { duration: 0.2 }
-            } : undefined}
+            {...(interactive ? {
+                whileHover: {
+                    scale: 1.01,
+                    y: -2,
+                    transition: { duration: 0.2 }
+                }
+            } : {})}
             className={`${className} ${interactive ? "cursor-default" : ""}`}
         >
             {children}
@@ -79,8 +81,10 @@ export function AnimatedButton({
             type={type}
             onClick={onClick}
             disabled={disabled}
-            whileHover={disabled ? undefined : { scale: 1.02 }}
-            whileTap={disabled ? undefined : { scale: 0.97 }}
+            {...(!disabled ? {
+                whileHover: { scale: 1.02 },
+                whileTap: { scale: 0.97 }
+            } : {})}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
             className={className}
         >

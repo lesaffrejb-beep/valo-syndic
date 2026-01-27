@@ -26,7 +26,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
             <h3 className="text-xl font-semibold text-main mb-6 flex items-center gap-3 relative z-10">
-                <span className="text-2xl">💸</span> Coût de l'Inaction
+                <span className="text-2xl">💸</span> Coût de l&apos;Inaction
             </h3>
 
             <p className="text-sm text-muted mb-8 relative z-10 leading-relaxed">
@@ -42,7 +42,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                     transition={{ delay: 0.2 }}
                 >
                     <p className="label-technical">
-                        Coût aujourd'hui
+                        Coût aujourd&apos;hui
                     </p>
                     <p className="text-xl font-medium text-main mt-2 tabular-nums">
                         <AnimatedCurrency value={inactionCost.currentCost} duration={1.2} />
@@ -102,7 +102,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
             <div className="mt-4 p-4 rounded-xl border border-border bg-app/50 relative z-10">
                 <p className="text-xs text-muted italic">
                     <strong className="text-warning">Important :</strong> Ce montant inclut
-                    l'inflation BT01 et la perte de valeur locative.
+                    l&apos;inflation BT01 et la perte de valeur locative.
                 </p>
             </div>
         </motion.div>
