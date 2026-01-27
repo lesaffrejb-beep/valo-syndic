@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   VALO-SYNDIC — Global Styles
+   ======================================== */
+
+@layer base {
+  :root {
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Container */
+  .container-custom {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+
+  /* Inputs */
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg 
+           focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+           transition-all duration-200;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply px-6 py-3 bg-primary-600 hover:bg-primary-700 
+           text-white font-semibold rounded-lg shadow-md
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-gray-100 hover:bg-gray-200
+           text-gray-800 font-medium rounded-lg
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
+  }
+
+  /* DPE Badges */
+  .dpe-badge {
+    @apply inline-flex items-center justify-center 
+           w-10 h-10 rounded-lg font-bold text-lg;
+  }
+
+  .dpe-badge-a { @apply bg-green-600 text-white; }
+  .dpe-badge-b { @apply bg-green-500 text-white; }
+  .dpe-badge-c { @apply bg-lime-400 text-gray-900; }
+  .dpe-badge-d { @apply bg-yellow-400 text-gray-900; }
+  .dpe-badge-e { @apply bg-orange-400 text-gray-900; }
+  .dpe-badge-f { @apply bg-orange-600 text-white; }
+  .dpe-badge-g { @apply bg-red-600 text-white; }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent 
+           bg-gradient-to-r from-primary-600 to-primary-400;
+  }
+  
+  /* Animation fade-in */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Staggered animations for children */
+  .animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+  .animate-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+  .animate-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+  .animate-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+  .animate-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+  
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/70 backdrop-blur-lg;
+  }
+  
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+  .hover-lift:hover {
+    @apply -translate-y-1 shadow-xl;
+  }
+  
+  /* Neo-bank card style */
+  .neo-card {
+    @apply bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100;
+  }
+}

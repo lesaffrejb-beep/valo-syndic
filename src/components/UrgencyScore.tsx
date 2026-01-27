@@ -1,0 +1,154 @@
+/**
+ * UrgencyScore — Indicateur d'Urgence Visuel
+ * ==========================================
+ * Score de 0 à 100 avec jauge circulaire.
+ * Design néo-banque avec code couleur dynamique.
+ */
+
+"use client";
+
+import { useEffect, useState } from "react";
+import { type ComplianceStatus } from "@/lib/schemas";
+import { type DPELetter } from "@/lib/constants";
+
+interface UrgencyScoreProps {
+    compliance: ComplianceStatus;
+    currentDPE: DPELetter;
+}
+
+// Calcul du score d'urgence (0-100)
+function calculateUrgencyScore(compliance: ComplianceStatus, dpe: DPELetter): number {
+    // DPE G déjà interdit = 100
+    if (compliance.isProhibited) return 100;
+
+    // DPE A-D sans interdiction = score bas
+    if (!compliance.prohibitionDate) {
+        const scores: Record<string, number> = { D: 20, C: 10, B: 5, A: 0 };
+        return scores[dpe] || 15;
+    }
+
+    // Score basé sur le temps restant
+    const days = compliance.daysUntilProhibition || 0;
+    if (days <= 0) return 100;
+    if (days <= 365) return 95; // < 1 an
+    if (days <= 730) return 85; // < 2 ans
+    if (days <= 1095) return 70; // < 3 ans
+    if (days <= 1825) return 55; // < 5 ans
+    return 40;
+}
+
+// Couleur selon le score
+function getScoreColor(score: number): { bg: string; text: string; stroke: string } {
+    if (score >= 80) return { bg: "bg-danger-50", text: "text-danger-600", stroke: "#dc2626" };
+    if (score >= 60) return { bg: "bg-warning-50", text: "text-warning-600", stroke: "#d97706" };
+    if (score >= 40) return { bg: "bg-yellow-50", text: "text-yellow-600", stroke: "#ca8a04" };
+    return { bg: "bg-success-50", text: "text-success-600", stroke: "#16a34a" };
+}
+
+// Message selon le score
+function getScoreMessage(score: number): { title: string; subtitle: string } {
+    if (score >= 90) return { title: "CRITIQUE", subtitle: "Action immédiate requise" };
+    if (score >= 70) return { title: "URGENT", subtitle: "Délai de réaction court" };
+    if (score >= 50) return { title: "ATTENTION", subtitle: "Anticipation recommandée" };
+    if (score >= 30) return { title: "MODÉRÉ", subtitle: "Planification conseillée" };
+    return { title: "SEREIN", subtitle: "Bien conforme" };
+}
+
+export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
+    const [animatedScore, setAnimatedScore] = useState(0);
+    const score = calculateUrgencyScore(compliance, currentDPE);
+    const colors = getScoreColor(score);
+    const message = getScoreMessage(score);
+
+    // Animation du score
+    useEffect(() => {
+        const duration = 1500;
+        const steps = 60;
+        const increment = score / steps;
+        let current = 0;
+
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= score) {
+                setAnimatedScore(score);
+                clearInterval(timer);
+            } else {
+                setAnimatedScore(Math.round(current));
+            }
+        }, duration / steps);
+
+        return () => clearInterval(timer);
+    }, [score]);
+
+    // Calcul du cercle SVG
+    const radius = 45;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (animatedScore / 100) * circumference;
+
+    return (
+        <div className={`${colors.bg} rounded-xl p-6 border border-gray-200`}>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                🎯 Score d'Urgence
+            </h3>
+
+            <div className="flex items-center gap-6">
+                {/* Cercle SVG */}
+                <div className="relative">
+                    <svg width="120" height="120" className="transform -rotate-90">
+                        {/* Background circle */}
+                        <circle
+                            cx="60"
+                            cy="60"
+                            r={radius}
+                            fill="none"
+                            stroke="#e5e7eb"
+                            strokeWidth="10"
+                        />
+                        {/* Progress circle */}
+                        <circle
+                            cx="60"
+                            cy="60"
+                            r={radius}
+                            fill="none"
+                            stroke={colors.stroke}
+                            strokeWidth="10"
+                            strokeLinecap="round"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={offset}
+                            className="transition-all duration-1000 ease-out"
+                        />
+                    </svg>
+                    {/* Score au centre */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <span className={`text-3xl font-black ${colors.text}`}>
+                            {animatedScore}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Message */}
+                <div>
+                    <p className={`text-xl font-bold ${colors.text}`}>{message.title}</p>
+                    <p className="text-sm text-gray-600 mt-1">{message.subtitle}</p>
+
+                    {compliance.daysUntilProhibition && compliance.daysUntilProhibition > 0 && (
+                        <div className="mt-3 p-2 bg-white/70 rounded-lg">
+                            <p className="text-xs text-gray-500">Temps restant</p>
+                            <p className="font-semibold text-gray-900">
+                                {Math.floor(compliance.daysUntilProhibition / 30)} mois
+                            </p>
+                        </div>
+                    )}
+
+                    {compliance.isProhibited && (
+                        <div className="mt-3 p-2 bg-danger-100 rounded-lg">
+                            <p className="text-xs text-danger-600 font-semibold">
+                                🔴 INTERDICTION EN VIGUEUR
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}

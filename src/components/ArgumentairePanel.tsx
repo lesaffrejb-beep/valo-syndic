@@ -1,0 +1,173 @@
+/**
+ * ArgumentairePanel — Module de Persuasion Intelligente
+ * ======================================================
+ * Arguments commerciaux et juridiques pour convaincre.
+ * Wording "Commercial & Juridique" calibré.
+ */
+
+"use client";
+
+import { type DiagnosticResult } from "@/lib/schemas";
+import { formatCurrency } from "@/lib/calculator";
+
+interface ArgumentairePanelProps {
+    result: DiagnosticResult;
+}
+
+// AI DECISION: Arguments pré-calibrés pour MVP
+// En V2, ces arguments seront générés dynamiquement par le module AI
+const LEGAL_ARGUMENTS = {
+    G: [
+        "⚖️ Article L. 173-2 du Code de la construction : Interdiction de location en vigueur depuis le 1er janvier 2025.",
+        "📉 Maintenir le bien en l'état expose les bailleurs à une impossibilité légale de relouer.",
+        "💸 Risque de contentieux locatif en cas de renouvellement de bail non conforme.",
+    ],
+    F: [
+        "⚖️ Loi Climat & Résilience : Interdiction de location au 1er janvier 2028 (dans moins de 2 ans).",
+        "📋 Les diagnostiqueurs anticipent déjà cette échéance dans leurs rapports.",
+        "🏦 Les banques intègrent le DPE dans leurs critères d'octroi de prêt.",
+    ],
+    E: [
+        "⚖️ Horizon 2034 : Votre bien sera impacté dans moins de 8 ans.",
+        "📈 Anticiper permet de bénéficier des aides au plus haut historique.",
+        "🔮 Les taux d'aide ont déjà baissé de 5% entre 2024 et 2025 — la tendance continue.",
+    ],
+    DEFAULT: [
+        "✅ Votre bien est conforme aux obligations actuelles.",
+        "📈 Une rénovation améliorerait sa valeur locative et patrimoniale.",
+        "💡 Les aides restent accessibles pour optimiser votre investissement.",
+    ],
+};
+
+const COMMERCIAL_ARGUMENTS = {
+    inaction: (cost: number) => [
+        {
+            icon: "🔥",
+            title: "L'Inflation Travaille Contre Vous",
+            text: `Chaque année d'attente ajoute +4.5% au coût des travaux. Sur 3 ans, vous perdez ${formatCurrency(cost)}.`,
+        },
+        {
+            icon: "📉",
+            title: "La Décote Passoire",
+            text: "Les biens F/G se vendent 12% moins cher que leurs équivalents rénovés en zone tendue.",
+        },
+        {
+            icon: "⏰",
+            title: "Le Moment Optimal",
+            text: "MaPrimeRénov' Copropriété est à son maximum historique. Les taux baissent chaque année.",
+        },
+    ],
+    action: [
+        {
+            icon: "💰",
+            title: "Jusqu'à 55% de Subvention",
+            text: "MaPrimeRénov' Copropriété + Bonus Sortie Passoire couvrent plus de la moitié du projet.",
+        },
+        {
+            icon: "🏦",
+            title: "Éco-PTZ Collectif",
+            text: "50 000€ par logement à taux 0% sur 20 ans. Soit un autofinancement quasi-total des travaux.",
+        },
+        {
+            icon: "📈",
+            title: "Valeur Verte +12%",
+            text: "Un bien rénové prend 12% de valeur en moyenne. L'investissement se rembourse à la revente.",
+        },
+    ],
+};
+
+export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
+    const { currentDPE } = result.input;
+    const legalArgs =
+        LEGAL_ARGUMENTS[currentDPE as keyof typeof LEGAL_ARGUMENTS] ||
+        LEGAL_ARGUMENTS.DEFAULT;
+    const commercialArgs = COMMERCIAL_ARGUMENTS.inaction(result.inactionCost.totalInactionCost);
+    const actionArgs = COMMERCIAL_ARGUMENTS.action;
+
+    const isPassoire = currentDPE === "F" || currentDPE === "G";
+
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    📋 Argumentaire AG — Éléments de Langage
+                </h3>
+                <p className="text-sm text-gray-400 mt-1">
+                    Points clés pour convaincre votre Assemblée Générale
+                </p>
+            </div>
+
+            <div className="p-6 space-y-6">
+                {/* Section Juridique */}
+                <div>
+                    <h4 className="text-sm font-semibold text-danger-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-danger-500 rounded-full"></span>
+                        Fondements Juridiques
+                    </h4>
+                    <div className="space-y-2">
+                        {legalArgs.map((arg, i) => (
+                            <div
+                                key={i}
+                                className="p-3 bg-gray-50 rounded-lg text-sm text-gray-700 border-l-4 border-danger-400"
+                            >
+                                {arg}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Section Coût Inaction */}
+                <div>
+                    <h4 className="text-sm font-semibold text-warning-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-warning-500 rounded-full"></span>
+                        Coût de l'Inaction
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {commercialArgs.map((arg, i) => (
+                            <div
+                                key={i}
+                                className="p-4 bg-warning-50 rounded-lg border border-warning-100"
+                            >
+                                <div className="text-2xl mb-2">{arg.icon}</div>
+                                <h5 className="font-semibold text-gray-900 text-sm mb-1">{arg.title}</h5>
+                                <p className="text-xs text-gray-600">{arg.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Section Bénéfices */}
+                <div>
+                    <h4 className="text-sm font-semibold text-success-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-success-500 rounded-full"></span>
+                        Bénéfices de l'Action
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {actionArgs.map((arg, i) => (
+                            <div
+                                key={i}
+                                className="p-4 bg-success-50 rounded-lg border border-success-100"
+                            >
+                                <div className="text-2xl mb-2">{arg.icon}</div>
+                                <h5 className="font-semibold text-gray-900 text-sm mb-1">{arg.title}</h5>
+                                <p className="text-xs text-gray-600">{arg.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Call to Action */}
+                {isPassoire && (
+                    <div className="p-4 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
+                        <p className="text-sm text-primary-900 font-medium">
+                            💡 <span className="font-bold">Phrase clé pour l'AG :</span> "En votant cette
+                            résolution aujourd'hui, vous sécurisez la valeur locative de vos biens et
+                            bénéficiez d'aides qui ne seront plus disponibles demain."
+                        </p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
