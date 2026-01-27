@@ -130,7 +130,7 @@ export default function HomePage() {
             <header className="glass sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                        <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                             <div className="w-11 h-11 bg-gradient-to-br from-primary-700 to-primary-900 rounded-lg flex items-center justify-center shadow-glow">
                                 <span className="text-primary-foreground font-sans font-bold text-xl">V</span>
                             </div>
@@ -138,7 +138,7 @@ export default function HomePage() {
                                 <h1 className="text-xl font-bold text-main tracking-tight">VALO-SYNDIC</h1>
                                 <p className="text-xs text-muted">Diagnostic Patrimonial</p>
                             </div>
-                        </div>
+                        </a>
                         <div className="flex items-center gap-3">
                             {/* Boutons Sauvegarder/Charger */}
                             <div className="hidden sm:flex items-center gap-2">
@@ -275,7 +275,7 @@ export default function HomePage() {
                                 </div>
 
                                 {/* Score & Gauge Row */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                     <UrgencyScore
                                         compliance={result.compliance}
                                         currentDPE={result.input.currentDPE}
@@ -287,19 +287,19 @@ export default function HomePage() {
                                 </div>
 
                                 {/* 🆕 Calculateur Tantièmes + Benchmark */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                     <TantiemeCalculator financing={result.financing} />
                                     <BenchmarkChart currentDPE={result.input.currentDPE} city={result.input.city} />
                                 </div>
 
                                 {/* Charts Row */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                     <EnergyInflationChart currentCost={result.input.estimatedCostHT} />
                                     <FinancingBreakdownChart financing={result.financing} />
                                 </div>
 
                                 {/* Financing & Timeline Row */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                     <ComplianceTimeline currentDPE={result.input.currentDPE} />
                                     <FinancingCard
                                         financing={result.financing}

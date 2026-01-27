@@ -37,7 +37,7 @@ const config: Config = {
                 subtle: '#4B5563',        // Bordures discrètes ou placeholder
 
                 // 4. BORDERS (Structure)
-                boundary: 'rgba(255, 255, 255, 0.04)', // Ligne quasi invisible
+                boundary: 'rgba(255, 255, 255, 0.08)', // Ligne plus visible pour séparation bento
                 'boundary-active': 'rgba(255, 255, 255, 0.1)',
 
                 // 5. SEMANTIC (États — Neon subtil)
