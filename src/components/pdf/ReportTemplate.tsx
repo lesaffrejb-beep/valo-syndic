@@ -343,7 +343,7 @@ export function ReportTemplate({ result, qrDataUrl }: ReportTemplateProps) {
                     </View>
 
                     <View style={styles.tableRow}>
-                        <Text style={styles.tableCell}>Coût travaux HT</Text>
+                        <Text style={styles.tableCell}>Coût Projet Global (Travaux + Frais)</Text>
                         <Text style={styles.tableCellRight}>{formatCurrency(financing.totalCostHT)}</Text>
                         <Text style={styles.tableCellRight}>{formatCurrency(financing.costPerUnit)}</Text>
                     </View>
@@ -366,6 +366,18 @@ export function ReportTemplate({ result, qrDataUrl }: ReportTemplateProps) {
                             </Text>
                             <Text style={[styles.tableCellRight, { color: "#22c55e" }]}>
                                 - {formatCurrency(financing.exitPassoireBonus / input.numberOfUnits)}
+                            </Text>
+                        </View>
+                    )}
+
+                    {financing.localAidAmount > 0 && (
+                        <View style={styles.tableRow}>
+                            <Text style={styles.tableCell}>Aides Locales (Angers/Nantes)</Text>
+                            <Text style={[styles.tableCellRight, { color: "#10b981" }]}>
+                                - {formatCurrency(financing.localAidAmount)}
+                            </Text>
+                            <Text style={[styles.tableCellRight, { color: "#10b981" }]}>
+                                - {formatCurrency(financing.localAidAmount / input.numberOfUnits)}
                             </Text>
                         </View>
                     )}

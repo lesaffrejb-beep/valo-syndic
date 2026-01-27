@@ -26,7 +26,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
             <h3 className="text-xl font-semibold text-main mb-6 flex items-center gap-3 relative z-10">
-                <span className="text-2xl">💸</span> Coût de l&apos;Inaction
+                <span className="text-2xl">💸</span> Coût de l&apos;inaction
             </h3>
 
             <p className="text-sm text-muted mb-8 relative z-10 leading-relaxed">

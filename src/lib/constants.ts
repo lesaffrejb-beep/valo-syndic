@@ -89,7 +89,22 @@ export const TECHNICAL_PARAMS = {
 } as const;
 
 // =============================================================================
-// 5. CONSTANTES LÉGALES & COMPLIANCE
+// 5. FRAIS ANNEXES & HONORAIRES (Coûts Invisibles)
+// =============================================================================
+
+export const PROJECT_FEES = {
+    /** Honoraires Syndic de copropriété (gestion travaux) */
+    syndicRate: 0.03, // 3%
+
+    /** Assurance Dommage Ouvrage (DO) */
+    doRate: 0.02, // 2%
+
+    /** Aléas & Imprévus de chantier */
+    contingencyRate: 0.03, // 3%
+} as const;
+
+// =============================================================================
+// 6. CONSTANTES LÉGALES & COMPLIANCE
 // =============================================================================
 
 export const LEGAL = {

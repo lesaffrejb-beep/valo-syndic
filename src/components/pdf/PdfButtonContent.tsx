@@ -16,15 +16,22 @@ export function PdfButtonContent({ result }: PdfButtonContentProps) {
             className="btn-primary flex items-center justify-center gap-2 group cursor-pointer"
         >
             {/* @ts-ignore */}
-            {({ blob, url, loading, error }: any) =>
-                loading ? (
-                    '⏳ Génération...'
-                ) : (
+            {({ blob, url, loading, error }: any) => {
+                if (loading) {
+                    return (
+                        <>
+                            <span className="animate-spin">⏳</span>
+                            <span>Génération...</span>
+                        </>
+                    );
+                }
+                return (
                     <>
-                        📄 Télécharger le Rapport
+                        <span>📄</span>
+                        <span>Télécharger le Rapport</span>
                     </>
-                )
-            }
+                );
+            }}
         </PDFDownloadLink>
     );
 }

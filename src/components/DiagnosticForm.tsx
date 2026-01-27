@@ -32,6 +32,21 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
     const [errors, setErrors] = useState<Record<string, string>>({});
     const formRef = useRef<HTMLFormElement>(null);
 
+    // State pour la gestion des zones locales (49/44)
+    const [localZone, setLocalZone] = useState<string | null>(null);
+
+    // Détection auto du Code Postal
+    const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const cp = e.target.value;
+        if (cp.startsWith("49")) {
+            setLocalZone("ANGERS");
+        } else if (cp.startsWith("44")) {
+            setLocalZone("NANTES");
+        } else {
+            setLocalZone(null);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setErrors({});
@@ -45,7 +60,13 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             currentDPE: formData.get("currentDPE") as DPELetter,
             targetDPE: formData.get("targetDPE") as DPELetter,
             numberOfUnits: parseInt(formData.get("numberOfUnits") as string, 10),
+            commercialLots: formData.get("commercialLots")
+                ? parseInt(formData.get("commercialLots") as string, 10)
+                : 0,
             estimatedCostHT: parseFloat(formData.get("estimatedCostHT") as string),
+            localAidAmount: formData.get("localAidAmount")
+                ? parseFloat(formData.get("localAidAmount") as string)
+                : 0,
             averagePricePerSqm: formData.get("averagePricePerSqm")
                 ? parseFloat(formData.get("averagePricePerSqm") as string)
                 : undefined,
@@ -76,11 +97,14 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
         const form = formRef.current;
         (form.elements.namedItem("address") as HTMLInputElement).value = DEMO_DATA.address;
         (form.elements.namedItem("postalCode") as HTMLInputElement).value = DEMO_DATA.postalCode;
+        setLocalZone("ANGERS"); // Force update state
         (form.elements.namedItem("city") as HTMLInputElement).value = DEMO_DATA.city;
         (form.elements.namedItem("currentDPE") as HTMLSelectElement).value = DEMO_DATA.currentDPE;
         (form.elements.namedItem("targetDPE") as HTMLSelectElement).value = DEMO_DATA.targetDPE;
         (form.elements.namedItem("numberOfUnits") as HTMLInputElement).value = String(DEMO_DATA.numberOfUnits);
+        (form.elements.namedItem("commercialLots") as HTMLInputElement).value = "2"; // 2 lots commerciaux
         (form.elements.namedItem("estimatedCostHT") as HTMLInputElement).value = String(DEMO_DATA.estimatedCostHT);
+        (form.elements.namedItem("localAidAmount") as HTMLInputElement).value = "0";
         (form.elements.namedItem("averagePricePerSqm") as HTMLInputElement).value = String(DEMO_DATA.averagePricePerSqm);
         (form.elements.namedItem("averageUnitSurface") as HTMLInputElement).value = String(DEMO_DATA.averageUnitSurface);
     };
@@ -122,6 +146,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                         placeholder="49100"
                         maxLength={5}
                         className="input"
+                        onChange={handlePostalCodeChange}
                     />
                 </div>
 
@@ -137,6 +162,21 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                     />
                 </div>
             </div>
+
+            {/* Aides Locales Badge (Conditionnel) */}
+            {localZone && (
+                <div className="bg-primary-900/10 border border-primary-500/20 rounded-lg p-3 flex items-start gap-3 animate-fade-in">
+                    <span className="text-xl">📍</span>
+                    <div>
+                        <p className="text-sm font-bold text-main">
+                            Zone {localZone === "ANGERS" ? "Angers Loire Métropole" : "Nantes Métropole"} détectée
+                        </p>
+                        <p className="text-xs text-muted mt-1">
+                            Pensez à vérifier les aides locales spécifiques (Mieux Chez Moi, etc.).
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* DPE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -187,24 +227,6 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-muted mb-1">
-                        Nombre de lots <span className="text-danger-500">*</span>
-                    </label>
-                    <input
-                        type="number"
-                        name="numberOfUnits"
-                        required
-                        min={2}
-                        max={500}
-                        defaultValue={20}
-                        className="input"
-                    />
-                    {errors.numberOfUnits && (
-                        <p className="text-danger-500 text-xs mt-1">{errors.numberOfUnits}</p>
-                    )}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
                         Coût estimé travaux HT (€) <span className="text-danger-500">*</span>
                     </label>
                     <input
@@ -220,12 +242,74 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                         <p className="text-danger-500 text-xs mt-1">{errors.estimatedCostHT}</p>
                     )}
                 </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-muted mb-1">
+                        Nombre total de lots <span className="text-danger-500">*</span>
+                    </label>
+                    <input
+                        type="number"
+                        name="numberOfUnits"
+                        required
+                        min={2}
+                        max={500}
+                        defaultValue={20}
+                        className="input"
+                    />
+                    {errors.numberOfUnits && (
+                        <p className="text-danger-500 text-xs mt-1">{errors.numberOfUnits}</p>
+                    )}
+                </div>
             </div>
+
+            {/* Options Avancées (Structure & Aides) */}
+            <details className="bg-surface-highlight rounded-lg p-4 border border-boundary group">
+                <summary className="text-sm font-medium text-main cursor-pointer hover:text-primary transition-colors flex items-center justify-between">
+                    <span>⚙️ Options Techniques & Aides Locales</span>
+                    <span className="text-xs text-muted group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label className="block text-sm font-medium text-muted mb-1">
+                            Dont lots commerciaux
+                        </label>
+                        <input
+                            type="number"
+                            name="commercialLots"
+                            min={0}
+                            placeholder="0"
+                            className="input"
+                        />
+                        <p className="text-[10px] text-muted mt-1">
+                            Exclus des aides MaPrimeRénov&apos;.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-muted mb-1">
+                            Montant Aides Locales (€)
+                        </label>
+                        <input
+                            type="number"
+                            name="localAidAmount"
+                            min={0}
+                            step={100}
+                            placeholder="0"
+                            className="input"
+                        />
+                        <p className="text-[10px] text-muted mt-1">
+                            Subventions ville/région (ex: Mieux Chez Moi).
+                        </p>
+                    </div>
+                </div>
+            </details>
 
             {/* Données optionnelles pour valeur verte */}
             <details className="bg-surface-highlight rounded-lg p-4 border border-boundary group">
-                <summary className="text-sm font-medium text-main cursor-pointer hover:text-primary transition-colors">
-                    📊 Données optionnelles (calcul valeur verte)
+                <summary className="text-sm font-medium text-main cursor-pointer hover:text-primary transition-colors flex items-center justify-between">
+                    <span>📊 Données Valorisation (Optionnel)</span>
+                    <span className="text-xs text-muted group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>

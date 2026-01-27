@@ -43,34 +43,34 @@ const COMMERCIAL_ARGUMENTS = {
     inaction: (cost: number) => [
         {
             icon: "🔥",
-            title: "L'Inflation Travaille Contre Vous",
+            title: "L'inflation travaille contre vous",
             text: `Chaque année d'attente ajoute +4.5% au coût des travaux. Sur 3 ans, vous perdez ${formatCurrency(cost)}.`,
         },
         {
             icon: "📉",
-            title: "La Décote Passoire",
+            title: "La décote passoire",
             text: "Les biens F/G se vendent 12% moins cher que leurs équivalents rénovés en zone tendue.",
         },
         {
             icon: "⏰",
-            title: "Le Moment Optimal",
+            title: "Le moment optimal",
             text: "MaPrimeRénov' Copropriété est à son maximum historique. Les taux baissent chaque année.",
         },
     ],
     action: [
         {
             icon: "💰",
-            title: "Jusqu'à 55% de Subvention",
+            title: "Jusqu'à 55% de subvention",
             text: "MaPrimeRénov' Copropriété + Bonus Sortie Passoire couvrent plus de la moitié du projet.",
         },
         {
             icon: "🏦",
-            title: "Éco-PTZ Collectif",
+            title: "Éco-PTZ collectif",
             text: "50 000€ par logement à taux 0% sur 20 ans. Soit un autofinancement quasi-total des travaux.",
         },
         {
             icon: "📈",
-            title: "Valeur Verte +12%",
+            title: "Valeur verte +12%",
             text: "Un bien rénové prend 12% de valeur en moyenne. L'investissement se rembourse à la revente.",
         },
     ],

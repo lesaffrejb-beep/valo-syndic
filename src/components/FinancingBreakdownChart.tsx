@@ -36,6 +36,12 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
             description: "Subvention de l'État",
         },
         {
+            name: "Aides Locales",
+            value: financing.localAidAmount,
+            color: "#10b981", // Emerald-500
+            description: "Subventions 49/44",
+        },
+        {
             name: "Éco-PTZ",
             value: financing.ecoPtzAmount,
             color: COLORS.ptz,
@@ -60,7 +66,7 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
         ((value / financing.totalCostHT) * 100).toFixed(0) + "%";
 
     // Calcul du taux de couverture par les aides
-    const aidesCoverage = ((financing.mprAmount + financing.ecoPtzAmount) / financing.totalCostHT) * 100;
+    const aidesCoverage = ((financing.mprAmount + financing.localAidAmount + financing.ecoPtzAmount) / financing.totalCostHT) * 100;
 
     // Custom Label for Recharts
     const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {

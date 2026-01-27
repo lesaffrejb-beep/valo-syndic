@@ -41,6 +41,14 @@ export const DiagnosticInputSchema = z.object({
         .min(2, "Minimum 2 lots pour une copropriété")
         .max(500, "Maximum 500 lots"),
 
+    /** Nombre de lots commerciaux (non éligibles MPR) */
+    commercialLots: z
+        .number()
+        .int()
+        .min(0, "Ne peut pas être négatif")
+        .optional()
+        .default(0),
+
     /** Coût estimé des travaux HT (€) */
     estimatedCostHT: z
         .number()
@@ -52,6 +60,9 @@ export const DiagnosticInputSchema = z.object({
 
     /** Surface moyenne d'un lot (m²) - optionnel */
     averageUnitSurface: z.number().positive().optional(),
+
+    /** Montant des aides locales (Angers/Nantes) */
+    localAidAmount: z.number().min(0).optional().default(0),
 });
 
 export type DiagnosticInput = z.infer<typeof DiagnosticInputSchema>;
@@ -74,8 +85,20 @@ export type ComplianceStatus = z.infer<typeof ComplianceStatusSchema>;
 
 /** Plan de financement détaillé */
 export const FinancingPlanSchema = z.object({
-    /** Coût total HT des travaux */
+    /** Coût travaux HT (base) */
+    worksCostHT: z.number(),
+
+    /** Coût total HT (Travaux + Honoraires + Aléas) */
     totalCostHT: z.number(),
+
+    /** Honoraires Syndic (3%) */
+    syndicFees: z.number(),
+
+    /** Assurance DO (2%) */
+    doFees: z.number(),
+
+    /** Aléas (3%) */
+    contingencyFees: z.number(),
 
     /** Coût par lot */
     costPerUnit: z.number(),
@@ -85,6 +108,9 @@ export const FinancingPlanSchema = z.object({
 
     /** Montant MaPrimeRénov' */
     mprAmount: z.number(),
+
+    /** Montant Aides Locales */
+    localAidAmount: z.number(),
 
     /** Taux MPR appliqué */
     mprRate: z.number(),

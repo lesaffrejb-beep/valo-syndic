@@ -98,23 +98,41 @@ export function calculateComplianceStatus(
 // 2. SIMULATION DE FINANCEMENT
 // =============================================================================
 
+// =============================================================================
+// 2. SIMULATION DE FINANCEMENT
+// =============================================================================
+
 /**
  * Calcule le plan de financement complet pour des travaux de rénovation.
  *
- * @param costHT - Coût total des travaux HT (€)
- * @param nbLots - Nombre de lots dans la copropriété
+ * @param costHT - Coût des travaux HT (€) (Travaux purs)
+ * @param nbLots - Nombre total de lots
  * @param currentDPE - Classe DPE actuelle
  * @param targetDPE - Classe DPE cible
+ * @param commercialLots - Nombre de lots commerciaux (non éligibles MPR)
+ * @param localAidAmount - Montant des aides locales
  * @returns Plan de financement détaillé
  */
 export function simulateFinancing(
     costHT: number,
     nbLots: number,
     currentDPE: DPELetter,
-    targetDPE: DPELetter
+    targetDPE: DPELetter,
+    commercialLots: number = 0,
+    localAidAmount: number = 0
 ): FinancingPlan {
-    // Coût par lot
-    const costPerUnit = costHT / nbLots;
+    // 1. Calcul des Frais Annexes (Coûts Invisibles)
+    const { PROJECT_FEES } = require("./constants"); // Import dynamique pour éviter doublons imports
+
+    const syndicFees = costHT * PROJECT_FEES.syndicRate;
+    const doFees = costHT * PROJECT_FEES.doRate;
+    const contingencyFees = costHT * PROJECT_FEES.contingencyRate;
+
+    // Coût Total Projet = Travaux + Frais
+    const totalCostHT = costHT + syndicFees + doFees + contingencyFees;
+
+    // Coût par lot (sur base du total projet)
+    const costPerUnit = totalCostHT / nbLots;
 
     // Gain énergétique estimé
     const energyGainPercent = estimateEnergyGain(currentDPE, targetDPE);
@@ -143,33 +161,43 @@ export function simulateFinancing(
     }
 
     // Assiette éligible (plafonnée)
-    const eligibleCeiling = nbLots * MPR_COPRO.ceilingPerUnit;
-    const eligibleBase = Math.min(costHT, eligibleCeiling);
+    // Seuls les lots d'habitation sont éligibles au plafond MPR
+    const residentialLots = Math.max(0, nbLots - commercialLots);
+    const eligibleCeiling = residentialLots * MPR_COPRO.ceilingPerUnit;
+
+    // L'assiette MPR comprend le montant des travaux HT + MOE (frais syndic approx)
+    // Pour simplifier, on prend le Total Cost HT comme base de dépense éligible, plafonnée.
+    const eligibleBase = Math.min(totalCostHT, eligibleCeiling);
 
     // Montant MPR
     const mprAmount = eligibleBase * (mprRate + exitPassoireBonus);
 
     // --- Éco-PTZ Copropriété ---
 
-    // Plafond Éco-PTZ
+    // Plafond Éco-PTZ (sur lots totaux ou résidentiels ? En pratique souvent résidentiels, mais simplifions sur nbLots pour l'instant)
     const ecoPtzCeiling = nbLots * ECO_PTZ_COPRO.ceilingPerUnit;
 
-    // Montant empruntable (reste après MPR, plafonné)
-    const remainingAfterMPR = costHT - mprAmount;
-    const ecoPtzAmount = Math.min(remainingAfterMPR, ecoPtzCeiling);
+    // Montant empruntable (reste après MPR + Aides Locales, plafonné)
+    const remainingAfterAids = totalCostHT - mprAmount - localAidAmount;
+    const ecoPtzAmount = Math.min(remainingAfterAids, ecoPtzCeiling);
 
     // Reste à charge final
-    const remainingCost = costHT - mprAmount - ecoPtzAmount;
+    const remainingCost = totalCostHT - mprAmount - localAidAmount - ecoPtzAmount;
 
     // Mensualité Éco-PTZ (taux 0%, donc simple division)
     const monthlyPayments = ECO_PTZ_COPRO.maxDurationYears * 12;
     const monthlyPayment = ecoPtzAmount / monthlyPayments;
 
     return {
-        totalCostHT: costHT,
+        worksCostHT: costHT,
+        totalCostHT,
+        syndicFees,
+        doFees,
+        contingencyFees,
         costPerUnit,
         energyGainPercent,
         mprAmount,
+        localAidAmount,
         mprRate: mprRate + exitPassoireBonus,
         exitPassoireBonus,
         ecoPtzAmount,
@@ -244,7 +272,9 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
         input.estimatedCostHT,
         input.numberOfUnits,
         input.currentDPE,
-        input.targetDPE
+        input.targetDPE,
+        input.commercialLots,
+        input.localAidAmount
     );
 
     const inactionCost = calculateInactionCost(
