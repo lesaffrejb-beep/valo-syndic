@@ -43,20 +43,20 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
     return (
         <motion.div
             ref={ref}
-            className="card group"
+            className="card-bento group"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             whileHover={{ scale: 1.005 }}
         >
-            <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-main mb-4 flex items-center gap-2">
                 ⏳ Calendrier Loi Climat
             </h3>
 
             <div className="relative">
                 {/* Ligne de temps animée */}
                 <motion.div
-                    className="absolute left-4 top-0 w-0.5 bg-gradient-to-b from-danger-500 via-warning-500 to-borders"
+                    className="absolute left-4 top-0 w-0.5 bg-gradient-to-b from-danger via-warning to-boundary"
                     initial={{ height: 0 }}
                     animate={isInView ? { height: "100%" } : {}}
                     transition={{ duration: 1, ease: "easeOut" }}
@@ -82,16 +82,16 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                                 {/* Point sur la timeline avec pulse */}
                                 <motion.div
                                     className={`absolute left-2.5 w-3 h-3 rounded-full border-2 ${isPast
-                                        ? "bg-danger-500 border-danger-500"
+                                        ? "bg-danger border-danger"
                                         : isCurrentDPE
-                                            ? "bg-warning-500 border-warning-500"
-                                            : "bg-surface border-borders"
+                                            ? "bg-warning border-warning"
+                                            : "bg-surface border-boundary"
                                         }`}
                                     initial={{ scale: 0 }}
                                     animate={isInView ? {
                                         scale: 1,
                                         boxShadow: isCurrentDPE
-                                            ? ["0 0 0 0 rgba(234, 179, 8, 0)", "0 0 0 8px rgba(234, 179, 8, 0.3)", "0 0 0 0 rgba(234, 179, 8, 0)"]
+                                            ? ["0 0 0 0 rgba(212, 182, 121, 0)", "0 0 0 8px rgba(212, 182, 121, 0.3)", "0 0 0 0 rgba(212, 182, 121, 0)"]
                                             : undefined
                                     } : {}}
                                     transition={isCurrentDPE
@@ -102,10 +102,10 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
 
                                 <motion.div
                                     className={`p-4 rounded-xl border ${isCurrentDPE
-                                        ? "bg-warning/10 border-warning/30 shadow-md shadow-warning-500/10"
+                                        ? "bg-warning/10 border-warning/30 shadow-md shadow-warning/10"
                                         : isPast
                                             ? "bg-danger/10 border-danger/30"
-                                            : "bg-surface border-borders"
+                                            : "bg-surface border-boundary"
                                         }`}
                                     whileHover={{ scale: 1.01 }}
                                 >
@@ -118,10 +118,10 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                                             >
                                                 {status.emoji}
                                             </motion.span>
-                                            <span className="font-bold text-text-main">DPE {dpe}</span>
+                                            <span className="font-bold text-main">DPE {dpe}</span>
                                             {isCurrentDPE && (
                                                 <motion.span
-                                                    className="text-xs bg-primary text-black px-2 py-0.5 rounded-full font-bold"
+                                                    className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-bold"
                                                     initial={{ scale: 0 }}
                                                     animate={{ scale: 1 }}
                                                     transition={{ delay: 0.5 + index * 0.15, type: "spring" }}
@@ -131,7 +131,7 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                                             )}
                                         </div>
                                         <span
-                                            className={`text-sm font-medium ${isPast ? "text-danger-500" : "text-text-muted"
+                                            className={`text-sm font-medium ${isPast ? "text-danger" : "text-muted"
                                                 }`}
                                         >
                                             {formatDate(date)}
@@ -139,7 +139,7 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                                     </div>
 
                                     <p
-                                        className={`mt-2 text-sm ${isPast ? "text-danger-500 font-semibold" : "text-text-muted"
+                                        className={`mt-2 text-sm ${isPast ? "text-danger font-semibold" : "text-muted"
                                             }`}
                                     >
                                         {isPast
@@ -163,7 +163,7 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                     animate={isInView ? { opacity: 1, scale: 1 } : {}}
                     transition={{ delay: 0.8 }}
                 >
-                    <p className="text-danger-500 font-medium text-sm">
+                    <p className="text-danger font-medium text-sm">
                         ⚠️ Votre bien est concerné par les interdictions de location.
                         {currentDPE === "G" && " La location est déjà interdite depuis le 1er janvier 2025."}
                     </p>
