@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { ProjectionModeProvider } from "@/components/ui/ProjectionModeProvider";
+import { AppProviders } from "@/components/AppProviders";
 
 // Typographie Sans-Serif : Lisibilité corps de texte & chiffres
 const inter = Inter({
@@ -35,17 +35,13 @@ export const metadata: Metadata = {
     robots: "noindex, nofollow", // MVP privé
 };
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="fr" className={`${inter.variable} ${playfair.variable}`}>
             <body className="min-h-screen bg-background font-sans antialiased">
-                <ProjectionModeProvider>
+                <AppProviders>
                     {children}
-                </ProjectionModeProvider>
+                </AppProviders>
             </body>
         </html>
     );

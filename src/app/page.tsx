@@ -33,6 +33,7 @@ import { ReportTemplate } from "@/components/pdf/ReportTemplate";
 import { AnimatedButton, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedCard";
 import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
 import { SoundToggle } from "@/components/ui/SoundToggle";
+import { ShareButton } from "@/components/ui/ShareButton";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 import { generateDiagnostic } from "@/lib/calculator";
@@ -179,6 +180,7 @@ export default function HomePage() {
                                 <p className="text-xs text-muted">v{LEGAL.version}</p>
                             </div>
                             <div className="flex items-center gap-2">
+                                <ShareButton />
                                 <SoundToggle />
                                 <ProjectionModeToggle />
                             </div>
