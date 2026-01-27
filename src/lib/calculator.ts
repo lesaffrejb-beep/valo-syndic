@@ -329,3 +329,69 @@ export function formatDate(date: Date): string {
         year: "numeric",
     }).format(date);
 }
+
+// =============================================================================
+// 6. GOD VIEW (AUDIT DE PARC)
+// =============================================================================
+
+/**
+ * Estime le DPE probable d'une copropriété en fonction de son année de construction
+ */
+export function estimateDPEByYear(year: number): DPELetter {
+    if (year < 1948) return "G";
+    if (year < 1975) return "F";
+    if (year < 1982) return "E";
+    if (year < 2000) return "D";
+    if (year < 2012) return "C";
+    if (year < 2020) return "B";
+    return "A";
+}
+
+export interface BuildingAuditResult {
+    id: string;
+    address: string;
+    numberOfUnits: number;
+    constructionYear: number;
+    currentDPE: DPELetter;
+    compliance: {
+        status: "danger" | "warning" | "success";
+        label: string;
+        deadline?: string;
+    };
+    coordinates: [number, number]; // [lat, lng]
+}
+
+/**
+ * Traitement par lot de plusieurs bâtiments pour le "God View"
+ */
+export function batchProcessBuildings(buildings: Array<{
+    adresse: string;
+    lots: number;
+    annee: number;
+}>): BuildingAuditResult[] {
+    // Coordonnées de base pour Angers (pour la simulation)
+    const ANGERS_CENTER = { lat: 47.47, lng: -0.55 };
+
+    return buildings.map((b, index) => {
+        const dpe = estimateDPEByYear(b.annee);
+        const compliance = calculateComplianceStatus(dpe);
+
+        // Simulation de géocodage : on disperse autour du centre d'Angers
+        const lat = ANGERS_CENTER.lat + (Math.random() - 0.5) * 0.05;
+        const lng = ANGERS_CENTER.lng + (Math.random() - 0.5) * 0.05;
+
+        return {
+            id: `build-${index}`,
+            address: b.adresse,
+            numberOfUnits: b.lots,
+            constructionYear: b.annee,
+            currentDPE: dpe,
+            compliance: {
+                status: compliance.statusColor as "danger" | "warning" | "success",
+                label: compliance.statusLabel,
+                ...(compliance.prohibitionDate ? { deadline: formatDate(compliance.prohibitionDate) } : {})
+            },
+            coordinates: [lat, lng]
+        };
+    });
+}

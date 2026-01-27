@@ -8,7 +8,6 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-// import { pdf } from "@react-pdf/renderer"; // Removed manual generation
 
 // Composants existants
 import { DiagnosticForm } from "@/components/DiagnosticForm";
@@ -28,13 +27,15 @@ import { UrgencyScore } from "@/components/UrgencyScore";
 import { TantiemeCalculator } from "@/components/business/TantiemeCalculator";
 import { BenchmarkChart } from "@/components/business/BenchmarkChart";
 import { ObjectionHandler } from "@/components/business/ObjectionHandler";
-import { VoteQR, generateQRDataUrl } from "@/components/pdf/VoteQR";
-import { ReportTemplate } from "@/components/pdf/ReportTemplate";
+import { VoteQR } from "@/components/pdf/VoteQR";
 import { AnimatedButton, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedCard";
 import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+
+// Feature God View
+import { MassAudit } from "@/components/business/MassAudit";
 
 import { generateDiagnostic } from "@/lib/calculator";
 import { LEGAL } from "@/lib/constants";
@@ -45,6 +46,7 @@ export default function HomePage() {
     const [currentInput, setCurrentInput] = useState<DiagnosticInput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const { playSound } = useSoundEffects();
+    const [activeTab, setActiveTab] = useState<"flash" | "mass">("flash");
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,8 +124,6 @@ export default function HomePage() {
         event.target.value = "";
     };
 
-
-
     return (
         <div className="min-h-screen bg-app">
             {/* Header — Glass & Steel */}
@@ -190,8 +190,34 @@ export default function HomePage() {
             </header>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-                {/* Hero Section */}
+                {/* Mode Selector */}
                 {!result && (
+                    <div className="flex justify-center mb-12">
+                        <div className="p-1 bg-surface border border-boundary rounded-xl flex gap-1">
+                            <button
+                                onClick={() => setActiveTab("flash")}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === "flash"
+                                        ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
+                                        : "text-muted hover:text-main"
+                                    }`}
+                            >
+                                ⚡ Diagnostic Flash
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("mass")}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === "mass"
+                                        ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
+                                        : "text-muted hover:text-main"
+                                    }`}
+                            >
+                                🌐 Audit de Parc
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Hero Section Flash */}
+                {!result && activeTab === "flash" && (
                     <section className="mb-12">
                         <div className="text-center mb-10">
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-surface rounded-lg border border-boundary mb-6">
@@ -215,6 +241,14 @@ export default function HomePage() {
                             <DiagnosticForm onSubmit={handleSubmit} isLoading={isLoading} />
                         </div>
 
+                        <LegalWarning variant="footer" className="mt-8" />
+                    </section>
+                )}
+
+                {/* Hero Section Mass Audit */}
+                {!result && activeTab === "mass" && (
+                    <section className="mb-12">
+                        <MassAudit />
                         <LegalWarning variant="footer" className="mt-8" />
                     </section>
                 )}

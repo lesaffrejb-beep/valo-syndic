@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
 import { AppProviders } from "@/components/AppProviders";
 
 // Typographie Sans-Serif : Lisibilité corps de texte & chiffres
