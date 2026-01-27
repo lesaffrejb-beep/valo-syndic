@@ -17,6 +17,12 @@ const nextConfig = {
                 tls: false,
                 net: false,
             };
+            config.resolve.alias = {
+                ...config.resolve.alias,
+                "node:fs": false,
+                "node:https": false,
+                "node:http": false,
+            }
         }
         return config;
     },

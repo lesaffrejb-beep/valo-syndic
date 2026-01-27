@@ -1,6 +1,5 @@
 "use client";
 
-import pptxgen from "pptxgenjs";
 import { type DiagnosticResult } from "@/lib/schemas";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { motion } from "framer-motion";
@@ -15,6 +14,8 @@ export function DownloadPptxButton({ result }: DownloadPptxButtonProps) {
     const generatePptx = async () => {
         playSound("click");
 
+        // Dynamic import to avoid SSR/Build issues with node modules
+        const pptxgen = (await import("pptxgenjs")).default;
         // 1. Init Presentation
         const pres = new pptxgen();
         pres.layout = "LAYOUT_16x9";
