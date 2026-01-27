@@ -150,12 +150,36 @@ export const InactionCostSchema = z.object({
 
 export type InactionCost = z.infer<typeof InactionCostSchema>;
 
+/** Valorisation Patrimoniale (DVF) **/
+export const ValuationResultSchema = z.object({
+    /** Valeur estimée actuelle (€) */
+    currentValue: z.number(),
+
+    /** Valeur estimée après travaux (€) */
+    projectedValue: z.number(),
+
+    /** Plus-value "Valeur Verte" (€) */
+    greenValueGain: z.number(),
+
+    /** Plus-value en pourcentage */
+    greenValueGainPercent: z.number(),
+
+    /** Retour sur investissement net (Plus-value - Reste à charge) */
+    netROI: z.number(),
+
+    /** Prix au m2 utilisé pour l'estimation */
+    pricePerSqm: z.number(),
+});
+
+export type ValuationResult = z.infer<typeof ValuationResultSchema>;
+
 /** Résultat complet du diagnostic */
 export const DiagnosticResultSchema = z.object({
     input: DiagnosticInputSchema,
     compliance: ComplianceStatusSchema,
     financing: FinancingPlanSchema,
     inactionCost: InactionCostSchema,
+    valuation: ValuationResultSchema,
     generatedAt: z.date(),
 });
 

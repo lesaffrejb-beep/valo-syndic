@@ -9,12 +9,13 @@ import { useState, useEffect } from "react";
 import QRCode from "qrcode";
 
 interface VoteQRProps {
-    simulationId?: string;
+    simulationId: string;
     size?: number;
     className?: string;
 }
 
-export function VoteQR({ simulationId = "DEMO_001", size = 150, className = "" }: VoteQRProps) {
+// TODO: This QR Code currently points to a static URL. For V2, implement a dynamic route /vote/[simulationId] to collect real votes.
+export function VoteQR({ simulationId, size = 120, className = "" }: VoteQRProps) {
     const [qrDataUrl, setQrDataUrl] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
 

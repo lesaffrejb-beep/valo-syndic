@@ -1,3 +1,4 @@
+-- WARNING: RLS Policies are currently permissive for development. Lock down before production.
 -- ============================================================================
 -- VALO-SYNDIC — Schema Supabase
 -- Version: 1.0.0

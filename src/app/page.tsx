@@ -7,9 +7,14 @@
 "use client";
 
 import { useState, useRef } from "react";
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from "framer-motion";
 
-// Composants existants
+// Structural Components
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+
+// Feature Components
 import { DiagnosticForm } from "@/components/DiagnosticForm";
 import { ComplianceTimeline } from "@/components/ComplianceTimeline";
 import { FinancingCard } from "@/components/FinancingCard";
@@ -19,30 +24,46 @@ import { EnergyInflationChart } from "@/components/EnergyInflationChart";
 import { DPEGauge } from "@/components/DPEGauge";
 import { FinancingBreakdownChart } from "@/components/FinancingBreakdownChart";
 import { ArgumentairePanel } from "@/components/ArgumentairePanel";
-import { DownloadPdfButton } from "@/components/pdf/DownloadPdfButton";
-import { DownloadPptxButton } from "@/components/pdf/DownloadPptxButton";
 import { UrgencyScore } from "@/components/UrgencyScore";
 
-// Nouveaux composants Persuasion
+// Persuasion Components
 import { TantiemeCalculator } from "@/components/business/TantiemeCalculator";
 import { BenchmarkChart } from "@/components/business/BenchmarkChart";
 import { ObjectionHandler } from "@/components/business/ObjectionHandler";
+import { ValuationCard } from "@/components/business/ValuationCard";
 import { VoteQR } from "@/components/pdf/VoteQR";
-import { AnimatedButton, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedCard";
-import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
-import { SoundToggle } from "@/components/ui/SoundToggle";
-import { ShareButton } from "@/components/ui/ShareButton";
+import { StaggerContainer } from "@/components/ui/AnimatedCard";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 
-// Feature God View
+// God View
 import { MassAudit } from "@/components/business/MassAudit";
 
+// Core Logic
 import { generateDiagnostic } from "@/lib/calculator";
-import { LEGAL } from "@/lib/constants";
 import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema } from "@/lib/schemas";
-
 import { BrandingModal } from "@/components/BrandingModal";
-import { useBrand } from "@/context/BrandContext";
+
+// Lazy Loaded Components (Heavy Buttons)
+const DownloadPdfButton = dynamic(
+    () => import('@/components/pdf/DownloadPdfButton').then(mod => mod.DownloadPdfButton),
+    { ssr: false, loading: () => <BtnLoading /> }
+);
+
+const DownloadConvocationButton = dynamic(
+    () => import('@/components/pdf/DownloadConvocationButton').then(mod => mod.DownloadConvocationButton),
+    { ssr: false, loading: () => <BtnLoading /> }
+);
+
+const DownloadPptxButton = dynamic(
+    () => import('@/components/pdf/DownloadPptxButton').then(mod => mod.DownloadPptxButton),
+    { ssr: false, loading: () => <BtnLoading /> }
+);
+
+const BtnLoading = () => (
+    <div className="btn-secondary opacity-50 cursor-not-allowed flex items-center gap-2">
+        ⏳ <span className="hidden sm:inline">Chargement...</span>
+    </div>
+);
 
 export default function HomePage() {
     const [result, setResult] = useState<DiagnosticResult | null>(null);
@@ -51,12 +72,15 @@ export default function HomePage() {
     const { playSound } = useSoundEffects();
     const [activeTab, setActiveTab] = useState<"flash" | "mass">("flash");
     const [showBrandingModal, setShowBrandingModal] = useState(false);
-    const { brand } = useBrand();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = (data: DiagnosticInput) => {
-        // ... (unchanged)
+        // Mode démo caché
+        if (data.address?.toLowerCase().includes("demo")) {
+            // ... (demo logic could be here if needed)
+        }
+
         playSound("click");
         setIsLoading(true);
         setCurrentInput(data);
@@ -68,8 +92,6 @@ export default function HomePage() {
             document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
         }, 800);
     };
-
-    // ... (keep handleReset, handleSave, handleLoad)
 
     const handleReset = () => {
         setResult(null);
@@ -101,6 +123,7 @@ export default function HomePage() {
         const file = event.target.files?.[0];
         if (!file) return;
 
+        playSound("click");
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
@@ -125,83 +148,13 @@ export default function HomePage() {
         <div className="min-h-screen bg-app">
             <BrandingModal isOpen={showBrandingModal} onClose={() => setShowBrandingModal(false)} />
 
-            {/* Header — Glass & Steel */}
-            <header className="glass sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                            {brand.logoUrl ? (
-                                <img src={brand.logoUrl} alt="Logo Agence" className="h-11 object-contain rounded-lg" />
-                            ) : (
-                                <div className="w-11 h-11 bg-gradient-to-br from-primary-700 to-primary-900 rounded-lg flex items-center justify-center shadow-glow">
-                                    <span className="text-primary-foreground font-sans font-bold text-xl">
-                                        {brand.agencyName.charAt(0)}
-                                    </span>
-                                </div>
-                            )}
-                            <div>
-                                <h1 className="text-xl font-bold text-main tracking-tight">{brand.agencyName}</h1>
-                                <p className="text-xs text-muted">Diagnostic Patrimonial</p>
-                            </div>
-                        </a>
-                        <div className="flex items-center gap-3">
-                            {/* Settings Button */}
-                            <button
-                                onClick={() => setShowBrandingModal(true)}
-                                className="btn-ghost p-2"
-                                title="Personnalisation"
-                            >
-                                ⚙️
-                            </button>
-
-                            {/* Boutons Sauvegarder/Charger */}
-                            <div className="hidden sm:flex items-center gap-2">
-                                <button
-                                    onClick={() => {
-                                        playSound("click");
-                                        handleSave();
-                                    }}
-                                    disabled={!result}
-                                    className="btn-ghost disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title="Sauvegarder la simulation"
-                                >
-                                    💾 Sauvegarder
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        playSound("click");
-                                        fileInputRef.current?.click();
-                                    }}
-                                    className="btn-ghost"
-                                    title="Charger une simulation"
-                                >
-                                    📂 Charger
-                                </button>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept=".valo,.json"
-                                    onChange={handleLoad}
-                                    className="hidden"
-                                />
-                            </div>
-
-                            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-success-100 rounded-lg border border-success/30">
-                                <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
-                                <span className="text-xs font-medium text-success-500">Calcul 100% local</span>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-xs text-muted">v{LEGAL.version}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <ShareButton />
-                                <SoundToggle />
-                                <ProjectionModeToggle />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <Header
+                onOpenBranding={() => setShowBrandingModal(true)}
+                onSave={handleSave}
+                onLoad={handleLoad}
+                hasResult={!!result}
+                fileInputRef={fileInputRef}
+            />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                 {/* Mode Selector */}
@@ -358,6 +311,9 @@ export default function HomePage() {
                                 {/* Inaction Cost - Full Width */}
                                 <InactionCostCard inactionCost={result.inactionCost} />
 
+                                {/* 🆕 Valuation Card */}
+                                <ValuationCard valuation={result.valuation} />
+
                                 {/* 🆕 Avocat du Diable */}
                                 <ObjectionHandler />
 
@@ -376,7 +332,9 @@ export default function HomePage() {
                                                 💡 Astuce : Ne pas envoyer par mail, projeter en séance pour maximiser l&apos;impact.
                                             </p>
                                         </div>
-                                        <VoteQR simulationId={`SIM_${Date.now()}`} size={120} />
+                                        <div className="scale-75 md:scale-100 origin-center">
+                                            <VoteQR simulationId={`SIM_${Date.now()}`} size={120} />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -395,6 +353,7 @@ export default function HomePage() {
                                         💾 Sauvegarder (.valo)
                                     </button>
                                     <DownloadPdfButton result={result} />
+                                    <DownloadConvocationButton result={result} />
                                     <DownloadPptxButton result={result} />
                                 </div>
 
@@ -406,50 +365,14 @@ export default function HomePage() {
                 </AnimatePresence>
             </main>
 
-            {/* Footer */}
-            <footer className="bg-surface border-t border-boundary mt-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-surface-hover rounded-lg flex items-center justify-center">
-                                <span className="text-muted font-bold text-sm">V</span>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-main">VALO-SYNDIC</p>
-                                <p className="text-xs text-muted">Outil d&apos;aide à la décision • 2026</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-6">
-                            {/* Mobile save/load buttons */}
-                            <div className="flex sm:hidden items-center gap-2">
-                                <button
-                                    onClick={handleSave}
-                                    disabled={!result}
-                                    className="btn-ghost text-xs disabled:opacity-50"
-                                >
-                                    💾
-                                </button>
-                                <button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="btn-ghost text-xs"
-                                >
-                                    📂
-                                </button>
-                            </div>
-                            <a
-                                href="/legal"
-                                className="text-sm text-muted hover:text-main transition-colors"
-                            >
-                                Mentions légales
-                            </a>
-                            <span className="text-subtle">|</span>
-                            <span className="text-xs text-muted">
-                                Données réglementaires au {LEGAL.lastUpdate.toLocaleDateString("fr-FR")}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer
+                onSave={() => {
+                    playSound("click");
+                    handleSave();
+                }}
+                onLoad={() => fileInputRef.current?.click()}
+                hasResult={!!result}
+            />
         </div>
     );
 }

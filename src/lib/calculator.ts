@@ -21,6 +21,7 @@ import {
     type InactionCost,
     type DiagnosticInput,
     type DiagnosticResult,
+    type ValuationResult,
     estimateEnergyGain,
 } from "./schemas";
 
@@ -260,14 +261,73 @@ export function calculateInactionCost(
 // =============================================================================
 
 /**
+ * Calcule la valorisation patrimoniale et la Valeur Verte
+ */
+export function calculateValuation(
+    input: DiagnosticInput,
+    financing: FinancingPlan
+): ValuationResult {
+    // 1. Estimation de la surface
+    // Si la surface moyenne n'est pas connue, on l'estime à 65m2 par lot
+    const averageSurface = input.averageUnitSurface || 65;
+    const totalSurface = input.numberOfUnits * averageSurface;
+
+    // 2. Prix de base au m2 (Angers/Nantes - Moyenne conservatrice)
+    // Idéalement, ce prix devrait venir d'une API externe ou d'une base de données par ville
+    const BASE_PRICE_PER_SQM = 3500;
+
+    // 3. Impact DPE sur la valeur (Décote/Surcote par rapport à D)
+    // G: -15%, F: -10%, E: -5%, D: 0%, C: +5%, B: +10%, A: +15%
+    const dpeImpact: Record<string, number> = {
+        G: -0.15,
+        F: -0.10,
+        E: -0.05,
+        D: 0,
+        C: 0.05,
+        B: 0.10,
+        A: 0.15,
+    };
+
+    const currentImpact = dpeImpact[input.currentDPE] || 0;
+    const targetImpact = dpeImpact[input.targetDPE] || 0;
+
+    // 4. Calcul des valeurs
+    const currentPricePerSqm = BASE_PRICE_PER_SQM * (1 + currentImpact);
+    const targetPricePerSqm = BASE_PRICE_PER_SQM * (1 + targetImpact);
+
+    const currentValue = totalSurface * currentPricePerSqm;
+    const projectedValue = totalSurface * targetPricePerSqm;
+
+    // 5. Calcul de la Value Verte
+    const greenValueGain = projectedValue - currentValue;
+    const greenValueGainPercent = (greenValueGain / currentValue);
+
+    // 6. ROI Net
+    // Gain de valeur - Coût des travaux (Reste à charge global)
+    // Reste à charge global = remainingCost (qui est déjà le total pour la copro après aides)
+    const netROI = greenValueGain - financing.remainingCost;
+
+    return {
+        currentValue,
+        projectedValue,
+        greenValueGain,
+        greenValueGainPercent,
+        netROI,
+        pricePerSqm: BASE_PRICE_PER_SQM,
+    };
+}
+
+/**
  * Génère un diagnostic complet à partir des entrées utilisateur.
  *
  * @param input - Données d'entrée validées
  * @returns Résultat complet du diagnostic
  */
 export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
+    // 1. Calcul conformité
     const compliance = calculateComplianceStatus(input.currentDPE);
 
+    // 2. Simulation financement
     const financing = simulateFinancing(
         input.estimatedCostHT,
         input.numberOfUnits,
@@ -277,6 +337,7 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
         input.localAidAmount
     );
 
+    // 3. Coût de l'inaction (Inflation énergie)
     const inactionCost = calculateInactionCost(
         input.estimatedCostHT,
         input.numberOfUnits,
@@ -285,11 +346,15 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
         input.averageUnitSurface
     );
 
+    // 4. Valorisation (NEW)
+    const valuation = calculateValuation(input, financing);
+
     return {
         input,
         compliance,
         financing,
         inactionCost,
+        valuation,
         generatedAt: new Date(),
     };
 }
