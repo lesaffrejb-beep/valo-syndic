@@ -8,7 +8,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { pdf } from "@react-pdf/renderer";
+// import { pdf } from "@react-pdf/renderer"; // Removed manual generation
 
 // Composants existants
 import { DiagnosticForm } from "@/components/DiagnosticForm";
@@ -20,6 +20,7 @@ import { EnergyInflationChart } from "@/components/EnergyInflationChart";
 import { DPEGauge } from "@/components/DPEGauge";
 import { FinancingBreakdownChart } from "@/components/FinancingBreakdownChart";
 import { ArgumentairePanel } from "@/components/ArgumentairePanel";
+import { DownloadPdfButton } from "@/components/pdf/DownloadPdfButton";
 import { UrgencyScore } from "@/components/UrgencyScore";
 
 // Nouveaux composants Persuasion
@@ -38,7 +39,7 @@ export default function HomePage() {
     const [result, setResult] = useState<DiagnosticResult | null>(null);
     const [currentInput, setCurrentInput] = useState<DiagnosticInput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [isPdfLoading, setIsPdfLoading] = useState(false);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = (data: DiagnosticInput) => {
@@ -114,36 +115,7 @@ export default function HomePage() {
         event.target.value = "";
     };
 
-    // === GÉNÉRATION PDF ===
-    const handleGeneratePDF = async () => {
-        if (!result) return;
 
-        setIsPdfLoading(true);
-
-        try {
-            // Générer le QR Code
-            const qrDataUrl = await generateQRDataUrl(
-                `https://valo-syndic.app/vote?sim_id=SIM_${Date.now()}`,
-                120
-            );
-
-            // Générer le PDF
-            const blob = await pdf(<ReportTemplate result={result} qrDataUrl={qrDataUrl} />).toBlob();
-
-            // Télécharger
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `VALO-SYNDIC_Rapport_${result.input.city || "Copro"}_${new Date().toISOString().split("T")[0]}.pdf`;
-            a.click();
-            URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error("Erreur génération PDF:", err);
-            alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
-        } finally {
-            setIsPdfLoading(false);
-        }
-    };
 
     return (
         <div className="min-h-screen bg-[#f9fafb]">
@@ -221,7 +193,7 @@ export default function HomePage() {
                             </p>
                         </div>
 
-                        <div className="neo-card p-6 md:p-10">
+                        <div className="glass-panel p-6 md:p-10">
                             <DiagnosticForm onSubmit={handleSubmit} isLoading={isLoading} />
                         </div>
 
@@ -264,7 +236,7 @@ export default function HomePage() {
                                         </div>
                                         <div className="flex items-center gap-6">
                                             <div className="text-center">
-                                                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">DPE Actuel</p>
+                                                <p className="label-mono mb-1">DPE Actuel</p>
                                                 <div
                                                     className={`dpe-badge dpe-badge-${result.input.currentDPE.toLowerCase()} transform hover:scale-110 transition-transform`}
                                                 >
@@ -275,7 +247,7 @@ export default function HomePage() {
                                                 <span className="text-3xl text-gray-300">→</span>
                                             </div>
                                             <div className="text-center">
-                                                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">DPE Cible</p>
+                                                <p className="label-mono mb-1">DPE Cible</p>
                                                 <div
                                                     className={`dpe-badge dpe-badge-${result.input.targetDPE.toLowerCase()} transform hover:scale-110 transition-transform ring-2 ring-offset-2 ring-success-500`}
                                                 >
@@ -358,20 +330,7 @@ export default function HomePage() {
                                     >
                                         💾 Sauvegarder (.valo)
                                     </button>
-                                    <button
-                                        onClick={handleGeneratePDF}
-                                        disabled={isPdfLoading}
-                                        className="btn-primary flex items-center justify-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-primary-500/30 disabled:opacity-70"
-                                    >
-                                        {isPdfLoading ? (
-                                            <>
-                                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                Génération...
-                                            </>
-                                        ) : (
-                                            <>📄 Télécharger le rapport AG</>
-                                        )}
-                                    </button>
+                                    <DownloadPdfButton result={result} />
                                 </div>
 
                                 {/* Legal Footer */}

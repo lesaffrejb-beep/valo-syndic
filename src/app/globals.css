@@ -4,43 +4,74 @@
 
 /* ========================================
    VALO-SYNDIC — Global Styles
-   Direction Artistique : "Private Equity"
+   Direction Artistique : "Fintech Editorial" / Awwwards-Level
+   Références : Linear + Finary + Cron + Vercel
    ======================================== */
 
 @layer base {
   :root {
     /* Typographie Premium */
-    --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
-    --font-serif: var(--font-playfair), Georgia, serif;
-    --font-mono: "JetBrains Mono", "Fira Code", monospace;
-
-    /* Background Off-White Alabaster */
-    --bg-default: #f9fafb;
-    --bg-paper: #ffffff;
-    --bg-muted: #f1f5f9;
+    --font-sans: "Inter", "Geist Sans", system-ui, -apple-system, sans-serif;
+    --font-serif: "Playfair Display", Georgia, serif;
+    --font-mono: "JetBrains Mono", "Geist Mono", monospace;
   }
 
   html {
     font-family: var(--font-sans);
     scroll-behavior: smooth;
+    background-color: #020202;
+    /* Obsidian */
   }
 
   body {
-    @apply bg-[#f9fafb] text-slate-900 antialiased;
+    @apply bg-background text-text-main antialiased selection:bg-primary-500/30 selection:text-primary-500;
+    position: relative;
   }
 
-  /* Titres : Serif Prestige */
+  /* Noise Overlay — Le Grain Cinématographique */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.03;
+    z-index: 9999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  /* Ambient Glow — La Lumière Zénithale */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center,
+        rgba(99, 102, 241, 0.08) 0%,
+        rgba(139, 92, 246, 0.04) 30%,
+        transparent 70%);
+    z-index: 0;
+  }
+
+  /* Titres : Serif Prestige Editorial */
   h1,
   h2 {
     font-family: var(--font-serif);
-    @apply font-semibold tracking-tight text-slate-900;
+    @apply font-semibold tracking-tight text-text-main;
   }
 
   h3,
   h4,
   h5,
   h6 {
-    @apply font-semibold tracking-tight text-slate-800;
+    @apply font-semibold tracking-tight text-text-main;
   }
 }
 
@@ -51,135 +82,197 @@
     @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Cards — Glass & Steel */
-  .card {
-    @apply bg-white rounded-lg border border-slate-200 p-6;
-    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  /* ================================================
+     GLASS & STEEL — Le Matériau Signature
+     ================================================ */
+  .glass-panel {
+    @apply relative bg-white/[0.02] backdrop-blur-md rounded-xl p-6 transition-all duration-300;
+    /* L'Inner Border Light (Inset Shadow) */
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
+  .glass-panel:hover {
+    @apply bg-white/[0.04];
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+      0 12px 48px 0 rgba(0, 0, 0, 0.48);
+    border-color: rgba(224, 185, 118, 0.2);
+  }
+
+  /* Spotlight Hover Effect */
+  .glass-panel-spotlight {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-panel-spotlight::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(224, 185, 118, 0.15) 0%,
+        transparent 70%);
+    transition: width 0.6s ease, height 0.6s ease;
+    pointer-events: none;
+  }
+
+  .glass-panel-spotlight:hover::before {
+    width: 400px;
+    height: 400px;
+  }
+
+  /* Legacy Cards — Mapped to Glass Panel */
+  .card,
+  .neo-card,
   .card-premium {
-    @apply bg-white rounded-lg border border-slate-200 p-6;
-    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.05), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+    @apply glass-panel;
   }
 
-  /* Inputs — Refined */
+  /* Inputs — Dark Mode Premium */
   .input {
-    @apply w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-700 transition-all duration-200;
+    @apply w-full px-4 py-3 rounded-lg text-text-main placeholder-text-muted transition-all duration-200;
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
-  /* Buttons — Premium Gradient */
+  .input:focus {
+    @apply ring-1 ring-primary border-primary/50 outline-none;
+    background: rgba(10, 10, 10, 0.9);
+  }
+
+  /* Buttons — Premium Gold */
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-primary-800 to-primary-700 hover:from-primary-900 hover:to-primary-800 text-white font-semibold rounded-lg border border-primary-900/10 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 active:scale-[0.98];
-    box-shadow: 0 4px 14px 0 rgba(15, 23, 42, 0.15);
+    @apply px-6 py-3 font-semibold rounded-lg transition-all duration-200 ease-out focus:outline-none active:scale-[0.98];
+    background: linear-gradient(135deg, #E0B976 0%, #C69D59 100%);
+    color: #020202;
+    border: 1px solid rgba(224, 185, 118, 0.3);
+    box-shadow:
+      0 0 20px rgba(224, 185, 118, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #F9E2AF 0%, #E0B976 100%);
+    box-shadow:
+      0 0 30px rgba(224, 185, 118, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 font-medium rounded-lg border border-slate-300 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 active:scale-[0.98];
-    box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    @apply px-6 py-3 font-medium rounded-lg transition-all duration-200 ease-out focus:outline-none active:scale-[0.98];
+    background: rgba(10, 10, 10, 0.8);
+    color: #EDEDED;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
-  .btn-accent {
-    @apply px-6 py-3 bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white font-semibold rounded-lg transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 active:scale-[0.98];
-    box-shadow: 0 4px 14px 0 rgba(180, 134, 11, 0.25);
+  .btn-secondary:hover {
+    background: rgba(30, 30, 30, 0.9);
+    border-color: rgba(224, 185, 118, 0.3);
   }
 
-  .btn-danger {
-    @apply px-6 py-3 bg-gradient-to-r from-danger-600 to-danger-500 hover:from-danger-700 hover:to-danger-600 text-white font-semibold rounded-lg transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-danger-500 focus:ring-offset-2 active:scale-[0.98];
-    box-shadow: 0 4px 14px 0 rgba(185, 28, 28, 0.2);
-  }
-
-  .btn-success {
-    @apply px-6 py-3 bg-gradient-to-r from-success-500 to-success-600 hover:from-success-600 hover:to-success-700 text-white font-semibold rounded-lg transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-success-500 focus:ring-offset-2 active:scale-[0.98];
-    box-shadow: 0 4px 14px 0 rgba(22, 101, 52, 0.2);
-  }
-
-  /* DPE Badges — Refined */
+  /* DPE Badges — LED Neon Style */
   .dpe-badge {
-    @apply inline-flex items-center justify-center w-11 h-11 rounded-lg font-bold text-lg border border-white/20;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    @apply inline-flex items-center justify-center w-11 h-11 rounded-lg font-bold text-lg shadow-lg;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .dpe-badge-a {
-    @apply bg-success-500 text-white;
+    background: #10B981;
+    color: #020202;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
   }
 
   .dpe-badge-b {
-    @apply bg-success-600 text-white;
+    background: #34D399;
+    color: #020202;
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
   }
 
   .dpe-badge-c {
-    @apply bg-lime-600 text-white;
+    background: #FDE047;
+    color: #020202;
+    box-shadow: 0 0 20px rgba(253, 224, 71, 0.4);
   }
 
   .dpe-badge-d {
-    @apply bg-yellow-600 text-white;
+    background: #FACC15;
+    color: #020202;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.4);
   }
 
   .dpe-badge-e {
-    @apply bg-orange-600 text-white;
+    background: #FB923C;
+    color: #020202;
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.4);
   }
 
   .dpe-badge-f {
-    @apply bg-orange-700 text-white;
+    background: #F97316;
+    color: #FFFFFF;
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
   }
 
   .dpe-badge-g {
-    @apply bg-danger-600 text-white;
+    background: #EF4444;
+    color: #FFFFFF;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
   }
 }
 
 @layer utilities {
 
-  /* Gradient text — Gold accent */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-800 to-accent-500;
+  /* ================================================
+     L'OR ALCHIMIQUE — Text Gradients Premium
+     ================================================ */
+  .text-gold-premium {
+    background-image: linear-gradient(to bottom right, #F9E2AF, #C69D59, #8C6A36);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(198, 157, 89, 0.3);
   }
 
-  .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent-400 to-accent-600;
+  .text-shine {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right,
+        rgba(237, 237, 237, 0.5) 0%,
+        rgba(237, 237, 237, 1) 50%,
+        rgba(237, 237, 237, 0.5) 100%);
+    background-size: 200% auto;
+    animation: shine 3s linear infinite;
   }
 
-  /* Animation fade-in */
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
+  @keyframes shine {
     to {
-      opacity: 1;
-      transform: translateY(0);
+      background-position: 200% center;
     }
   }
 
-  /* Staggered animations for children */
-  .animate-stagger>*:nth-child(1) {
-    animation-delay: 0.1s;
+  /* Labels Mono — Terminal de Trading */
+  .label-mono {
+    font-family: var(--font-mono);
+    @apply uppercase tracking-widest text-xs text-text-muted font-medium;
   }
 
-  .animate-stagger>*:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-
-  .animate-stagger>*:nth-child(3) {
-    animation-delay: 0.3s;
-  }
-
-  .animate-stagger>*:nth-child(4) {
-    animation-delay: 0.4s;
-  }
-
-  .animate-stagger>*:nth-child(5) {
-    animation-delay: 0.5s;
-  }
-
-  /* Glassmorphism — Premium */
+  /* Glassmorphism — Dark */
   .glass {
-    @apply bg-white/80 backdrop-blur-lg border border-slate-200/50;
+    @apply bg-background/80 backdrop-blur-xl border-b;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Background Noise (pour usage ponctuel si besoin) */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
   }
 
   /* Hover lift effect */
@@ -188,18 +281,11 @@
   }
 
   .hover-lift:hover {
-    @apply -translate-y-0.5;
-    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+    @apply -translate-y-1;
   }
 
-  /* Neo-bank → Private Equity card style */
-  .neo-card {
-    @apply bg-white rounded-lg border border-slate-200;
-    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
-  }
-
-  /* Premium dividers */
+  /* Dividers */
   .divider-premium {
-    @apply border-t border-slate-200;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
 }

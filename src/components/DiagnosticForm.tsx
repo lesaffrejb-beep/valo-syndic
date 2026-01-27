@@ -92,7 +92,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                 <button
                     type="button"
                     onClick={loadDemo}
-                    className="text-sm text-primary-600 hover:text-primary-700 hover:underline flex items-center gap-1"
+                    className="text-sm text-primary hover:text-primary-400 hover:underline flex items-center gap-1 transition-colors"
                 >
                     📋 Charger un exemple
                 </button>
@@ -101,19 +101,19 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             {/* Adresse (optionnelle) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-3">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                         Adresse de la copropriété
                     </label>
                     <input
                         type="text"
                         name="address"
                         placeholder="12 rue des Lices"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="input"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                         Code postal
                     </label>
                     <input
@@ -121,19 +121,19 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                         name="postalCode"
                         placeholder="49100"
                         maxLength={5}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="input"
                     />
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                         Ville
                     </label>
                     <input
                         type="text"
                         name="city"
                         placeholder="Angers"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="input"
                     />
                 </div>
             </div>
@@ -141,14 +141,14 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             {/* DPE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                         DPE actuel <span className="text-danger-500">*</span>
                     </label>
                     <select
                         name="currentDPE"
                         required
                         defaultValue="F"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="input appearance-none"
                     >
                         {DPE_OPTIONS.map((dpe) => (
                             <option key={dpe} value={dpe}>
@@ -162,14 +162,14 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                         DPE cible après travaux <span className="text-danger-500">*</span>
                     </label>
                     <select
                         name="targetDPE"
                         required
                         defaultValue="C"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="input appearance-none"
                     >
                         {DPE_OPTIONS.map((dpe) => (
                             <option key={dpe} value={dpe}>
@@ -186,7 +186,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             {/* Données financières */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                         Nombre de lots <span className="text-danger-500">*</span>
                     </label>
                     <input
@@ -196,7 +196,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                         min={2}
                         max={500}
                         defaultValue={20}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="input"
                     />
                     {errors.numberOfUnits && (
                         <p className="text-danger-500 text-xs mt-1">{errors.numberOfUnits}</p>
@@ -204,7 +204,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-text-muted mb-1">
                         Coût estimé travaux HT (€) <span className="text-danger-500">*</span>
                     </label>
                     <input
@@ -214,7 +214,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                         min={1000}
                         step={1000}
                         defaultValue={300000}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        className="input"
                     />
                     {errors.estimatedCostHT && (
                         <p className="text-danger-500 text-xs mt-1">{errors.estimatedCostHT}</p>
@@ -223,13 +223,13 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             </div>
 
             {/* Données optionnelles pour valeur verte */}
-            <details className="bg-gray-50 rounded-lg p-4">
-                <summary className="text-sm font-medium text-gray-700 cursor-pointer">
+            <details className="bg-surface-highlight rounded-lg p-4 border border-borders group">
+                <summary className="text-sm font-medium text-text-main cursor-pointer hover:text-primary transition-colors">
                     📊 Données optionnelles (calcul valeur verte)
                 </summary>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                        <label className="block text-sm font-medium text-text-muted mb-1">
                             Prix moyen m² quartier (€)
                         </label>
                         <input
@@ -238,11 +238,11 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                             min={500}
                             step={100}
                             placeholder="3200"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            className="input"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                        <label className="block text-sm font-medium text-text-muted mb-1">
                             Surface moyenne lot (m²)
                         </label>
                         <input
@@ -251,7 +251,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                             min={10}
                             step={5}
                             placeholder="65"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            className="input"
                         />
                     </div>
                 </div>
@@ -261,12 +261,12 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-6 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 px-6 bg-primary hover:bg-primary-600 text-gray-900 font-bold rounded-lg shadow-glow hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
             >
                 {isLoading ? "Analyse en cours..." : "🚀 Lancer le Diagnostic Flash"}
             </button>
 
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-text-muted text-center">
                 Calcul 100% local — Aucune donnée envoyée à un serveur
             </p>
         </form>

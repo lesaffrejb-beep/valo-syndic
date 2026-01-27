@@ -39,10 +39,10 @@ function calculateUrgencyScore(compliance: ComplianceStatus, dpe: DPELetter): nu
 
 // Couleur selon le score
 function getScoreColor(score: number): { bg: string; text: string; stroke: string } {
-    if (score >= 80) return { bg: "bg-danger-50", text: "text-danger-600", stroke: "#dc2626" };
-    if (score >= 60) return { bg: "bg-warning-50", text: "text-warning-600", stroke: "#d97706" };
-    if (score >= 40) return { bg: "bg-yellow-50", text: "text-yellow-600", stroke: "#ca8a04" };
-    return { bg: "bg-success-50", text: "text-success-600", stroke: "#16a34a" };
+    if (score >= 80) return { bg: "bg-danger/10", text: "text-danger-500", stroke: "#FF453A" };
+    if (score >= 60) return { bg: "bg-warning/10", text: "text-warning-500", stroke: "#FFD60A" };
+    if (score >= 40) return { bg: "bg-warning/10", text: "text-warning-500", stroke: "#FFD60A" };
+    return { bg: "bg-success/10", text: "text-success-500", stroke: "#32D74B" };
 }
 
 // Message selon le score
@@ -86,12 +86,15 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
     const offset = circumference - (animatedScore / 100) * circumference;
 
     return (
-        <div className={`${colors.bg} rounded-xl p-6 border border-gray-200`}>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className={`card ${colors.bg} rounded-xl p-6 border border-borders relative transition-colors duration-300`}>
+            {/* Glow based on score */}
+            <div className={`absolute inset-0 bg-${colors.stroke}/5 rounded-xl`} />
+
+            <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center gap-2 relative z-10">
                 🎯 Score d'Urgence
             </h3>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 relative z-10">
                 {/* Cercle SVG */}
                 <div className="relative">
                     <svg width="120" height="120" className="transform -rotate-90">
@@ -101,8 +104,8 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                             cy="60"
                             r={radius}
                             fill="none"
-                            stroke="#e5e7eb"
-                            strokeWidth="10"
+                            stroke="#2A2A2A"
+                            strokeWidth="8"
                         />
                         {/* Progress circle */}
                         <circle
@@ -111,16 +114,17 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                             r={radius}
                             fill="none"
                             stroke={colors.stroke}
-                            strokeWidth="10"
+                            strokeWidth="8"
                             strokeLinecap="round"
                             strokeDasharray={circumference}
                             strokeDashoffset={offset}
                             className="transition-all duration-1000 ease-out"
+                            style={{ filter: `drop-shadow(0 0 4px ${colors.stroke})` }}
                         />
                     </svg>
                     {/* Score au centre */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <span className={`text-3xl font-black ${colors.text}`}>
+                        <span className={`text-3xl font-black ${colors.text} tabular-nums`}>
                             {animatedScore}
                         </span>
                     </div>
@@ -129,20 +133,20 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                 {/* Message */}
                 <div>
                     <p className={`text-xl font-bold ${colors.text}`}>{message.title}</p>
-                    <p className="text-sm text-gray-600 mt-1">{message.subtitle}</p>
+                    <p className="text-sm text-text-muted mt-1">{message.subtitle}</p>
 
                     {compliance.daysUntilProhibition && compliance.daysUntilProhibition > 0 && (
-                        <div className="mt-3 p-2 bg-white/70 rounded-lg">
-                            <p className="text-xs text-gray-500">Temps restant</p>
-                            <p className="font-semibold text-gray-900">
+                        <div className="mt-3 p-2 bg-surface/50 rounded-lg border border-borders">
+                            <p className="text-xs text-text-muted">Temps restant</p>
+                            <p className="font-semibold text-text-main tabular-nums">
                                 {Math.floor(compliance.daysUntilProhibition / 30)} mois
                             </p>
                         </div>
                     )}
 
                     {compliance.isProhibited && (
-                        <div className="mt-3 p-2 bg-danger-100 rounded-lg">
-                            <p className="text-xs text-danger-600 font-semibold">
+                        <div className="mt-3 p-2 bg-danger/20 rounded-lg border border-danger/30">
+                            <p className="text-xs text-danger-500 font-semibold">
                                 🔴 INTERDICTION EN VIGUEUR
                             </p>
                         </div>

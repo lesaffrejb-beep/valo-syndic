@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
-    // Désactiver SSR pour react-pdf (client-side only)
+    transpilePackages: ['@react-pdf/renderer'],
     webpack: (config) => {
         config.resolve.alias.canvas = false;
         return config;

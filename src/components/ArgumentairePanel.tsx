@@ -87,13 +87,13 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
     const isPassoire = currentDPE === "F" || currentDPE === "G";
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="card overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-4">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <div className="bg-gradient-to-r from-primary/20 to-primary/5 px-6 py-4 border-b border-borders">
+                <h3 className="text-lg font-semibold text-text-main flex items-center gap-2">
                     📋 Argumentaire AG — Éléments de Langage
                 </h3>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-text-muted mt-1">
                     Points clés pour convaincre votre Assemblée Générale
                 </p>
             </div>
@@ -101,7 +101,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
             <div className="p-6 space-y-6">
                 {/* Section Juridique */}
                 <div>
-                    <h4 className="text-sm font-semibold text-danger-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-danger-500 uppercase tracking-wide mb-3 flex items-center gap-2">
                         <span className="w-2 h-2 bg-danger-500 rounded-full"></span>
                         Fondements Juridiques
                     </h4>
@@ -109,7 +109,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                         {legalArgs.map((arg, i) => (
                             <div
                                 key={i}
-                                className="p-3 bg-gray-50 rounded-lg text-sm text-gray-700 border-l-4 border-danger-400"
+                                className="p-3 bg-surface rounded-lg text-sm text-text-main border-l-4 border-danger-500"
                             >
                                 {arg}
                             </div>
@@ -119,7 +119,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
 
                 {/* Section Coût Inaction */}
                 <div>
-                    <h4 className="text-sm font-semibold text-warning-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-warning-500 uppercase tracking-wide mb-3 flex items-center gap-2">
                         <span className="w-2 h-2 bg-warning-500 rounded-full"></span>
                         Coût de l'Inaction
                     </h4>
@@ -127,11 +127,11 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                         {commercialArgs.map((arg, i) => (
                             <div
                                 key={i}
-                                className="p-4 bg-warning-50 rounded-lg border border-warning-100"
+                                className="p-4 bg-warning/10 rounded-lg border border-warning/20 hover:bg-warning/20 transition-colors"
                             >
                                 <div className="text-2xl mb-2">{arg.icon}</div>
-                                <h5 className="font-semibold text-gray-900 text-sm mb-1">{arg.title}</h5>
-                                <p className="text-xs text-gray-600">{arg.text}</p>
+                                <h5 className="font-semibold text-text-main text-sm mb-1">{arg.title}</h5>
+                                <p className="text-xs text-text-muted">{arg.text}</p>
                             </div>
                         ))}
                     </div>
@@ -139,7 +139,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
 
                 {/* Section Bénéfices */}
                 <div>
-                    <h4 className="text-sm font-semibold text-success-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-success-500 uppercase tracking-wide mb-3 flex items-center gap-2">
                         <span className="w-2 h-2 bg-success-500 rounded-full"></span>
                         Bénéfices de l'Action
                     </h4>
@@ -147,11 +147,11 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                         {actionArgs.map((arg, i) => (
                             <div
                                 key={i}
-                                className="p-4 bg-success-50 rounded-lg border border-success-100"
+                                className="p-4 bg-success/10 rounded-lg border border-success/20 hover:bg-success/20 transition-colors"
                             >
                                 <div className="text-2xl mb-2">{arg.icon}</div>
-                                <h5 className="font-semibold text-gray-900 text-sm mb-1">{arg.title}</h5>
-                                <p className="text-xs text-gray-600">{arg.text}</p>
+                                <h5 className="font-semibold text-text-main text-sm mb-1">{arg.title}</h5>
+                                <p className="text-xs text-text-muted">{arg.text}</p>
                             </div>
                         ))}
                     </div>
@@ -159,9 +159,9 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
 
                 {/* Call to Action */}
                 {isPassoire && (
-                    <div className="p-4 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
-                        <p className="text-sm text-primary-900 font-medium">
-                            💡 <span className="font-bold">Phrase clé pour l'AG :</span> "En votant cette
+                    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/20 rounded-lg border border-primary/30">
+                        <p className="text-sm text-primary-200 font-medium">
+                            💡 <span className="font-bold text-primary">Phrase clé pour l'AG :</span> "En votant cette
                             résolution aujourd'hui, vous sécurisez la valeur locative de vos biens et
                             bénéficiez d'aides qui ne seront plus disponibles demain."
                         </p>

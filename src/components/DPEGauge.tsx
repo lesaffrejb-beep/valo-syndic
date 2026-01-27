@@ -45,13 +45,13 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
     return (
         <motion.div
             ref={ref}
-            className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 p-6"
+            className="card group"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ scale: 1.005 }}
         >
-            <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-text-main mb-6 flex items-center gap-2">
                 🌡️ Performance Énergétique
             </h3>
 
@@ -60,14 +60,14 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                 {/* Gauge actuelle */}
                 <div>
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">DPE Actuel</span>
+                        <span className="text-sm font-medium text-text-muted">DPE Actuel</span>
                         <motion.div
-                            className={`${currentConfig.bgClass} text-white px-3 py-1.5 rounded-lg font-bold text-lg shadow-lg`}
+                            className={`${currentConfig.bgClass} text-black px-3 py-1.5 rounded-lg font-bold text-lg shadow-lg border border-white/20`}
                             animate={isPassoire ? {
                                 scale: [1, 1.05, 1],
                                 boxShadow: [
                                     "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                                    "0 10px 15px -3px rgba(220, 38, 38, 0.3)",
+                                    "0 0 15px rgba(220, 38, 38, 0.5)",
                                     "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                                 ],
                             } : {}}
@@ -76,26 +76,25 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                             {currentDPE}
                         </motion.div>
                     </div>
-                    <div className="relative h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="relative h-5 bg-background rounded-full overflow-hidden border border-borders">
                         {/* Gradient background */}
                         <div
                             className="absolute inset-0"
                             style={{
                                 background:
-                                    "linear-gradient(to right, #dc2626, #f97316, #eab308, #84cc16, #22c55e)",
+                                    "linear-gradient(to right, #FF453A, #FFD60A, #32D74B)", // Neon Gradient
                             }}
                         />
                         {/* Overlay animé */}
                         <motion.div
-                            className="absolute right-0 top-0 bottom-0 bg-gray-100"
+                            className="absolute right-0 top-0 bottom-0 bg-background/90 backdrop-blur-sm"
                             initial={{ width: "100%" }}
                             animate={isInView ? { width: `${100 - currentConfig.position}%` } : {}}
                             transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
                         />
                         {/* Indicator avec glow */}
                         <motion.div
-                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-gray-800 rounded-full shadow-lg"
-                            style={{ boxShadow: "0 0 10px rgba(0,0,0,0.2)" }}
+                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-black rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                             initial={{ left: "-10px", opacity: 0 }}
                             animate={isInView ? {
                                 left: `calc(${currentConfig.position}% - 12px)`,
@@ -113,15 +112,15 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                     animate={isInView ? { opacity: 1, scale: 1 } : {}}
                     transition={{ delay: 1, duration: 0.4, type: "spring" }}
                 >
-                    <div className="flex items-center gap-2 px-4 py-2 bg-success-50 rounded-full border border-success-200">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-success/10 rounded-full border border-success/30">
                         <motion.span
-                            className="text-success-600 text-xl"
+                            className="text-success-500 text-xl"
                             animate={{ y: [0, 3, 0] }}
                             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                         >
                             ↓
                         </motion.span>
-                        <span className="font-semibold text-success-700">
+                        <span className="font-semibold text-success-500">
                             Gain de {classesGained} classe{classesGained > 1 ? "s" : ""}
                         </span>
                     </div>
@@ -130,9 +129,9 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                 {/* Gauge cible */}
                 <div>
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">DPE Cible</span>
+                        <span className="text-sm font-medium text-text-muted">DPE Cible</span>
                         <motion.div
-                            className={`${targetConfig.bgClass} text-white px-3 py-1.5 rounded-lg font-bold text-lg ring-2 ring-offset-2 ring-success-500 shadow-lg`}
+                            className={`${targetConfig.bgClass} text-black px-3 py-1.5 rounded-lg font-bold text-lg ring-2 ring-offset-2 ring-offset-surface ring-success-500 shadow-lg border border-white/20`}
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={isInView ? { scale: 1, opacity: 1 } : {}}
                             transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
@@ -140,26 +139,25 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                             {targetDPE}
                         </motion.div>
                     </div>
-                    <div className="relative h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="relative h-5 bg-background rounded-full overflow-hidden border border-borders">
                         {/* Gradient background */}
                         <div
                             className="absolute inset-0"
                             style={{
                                 background:
-                                    "linear-gradient(to right, #dc2626, #f97316, #eab308, #84cc16, #22c55e)",
+                                    "linear-gradient(to right, #FF453A, #FFD60A, #32D74B)",
                             }}
                         />
                         {/* Overlay animé */}
                         <motion.div
-                            className="absolute right-0 top-0 bottom-0 bg-gray-100"
+                            className="absolute right-0 top-0 bottom-0 bg-background/90"
                             initial={{ width: "100%" }}
                             animate={isInView ? { width: `${100 - targetConfig.position}%` } : {}}
                             transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.6 }}
                         />
                         {/* Indicator */}
                         <motion.div
-                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-success-600 rounded-full shadow-lg"
-                            style={{ boxShadow: "0 0 12px rgba(34, 197, 94, 0.4)" }}
+                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-success-600 rounded-full shadow-[0_0_12px_rgba(50,215,75,0.6)]"
                             initial={{ left: "-10px", opacity: 0 }}
                             animate={isInView ? {
                                 left: `calc(${targetConfig.position}% - 12px)`,
@@ -172,7 +170,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
             </div>
 
             {/* Légende */}
-            <div className="mt-6 flex justify-between text-xs text-gray-500">
+            <div className="mt-6 flex justify-between text-xs text-text-muted">
                 <span>G (Passoire)</span>
                 <span>A (Performant)</span>
             </div>
@@ -180,13 +178,13 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
             {/* Message commercial avec animation */}
             {isPassoire && (
                 <motion.div
-                    className="mt-4 p-4 bg-success-50 rounded-xl border border-success-200"
+                    className="mt-4 p-4 bg-success/10 rounded-xl border border-success/20"
                     initial={{ opacity: 0, y: 10 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ delay: 1.5 }}
                 >
-                    <p className="text-sm text-success-800">
-                        <span className="font-semibold">🎯 Bonus Sortie Passoire :</span> +10% de MaPrimeRénov'
+                    <p className="text-sm text-success-500">
+                        <span className="font-bold">🎯 Bonus Sortie Passoire :</span> +10% de MaPrimeRénov'
                         pour passer de {currentDPE} à {targetDPE}
                     </p>
                 </motion.div>
