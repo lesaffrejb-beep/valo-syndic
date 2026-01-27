@@ -45,13 +45,13 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
     return (
         <motion.div
             ref={ref}
-            className="card group"
+            className="card-bento group"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             whileHover={{ scale: 1.005 }}
         >
-            <h3 className="text-lg font-semibold text-text-main mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-main mb-6 flex items-center gap-2">
                 🌡️ Performance Énergétique
             </h3>
 
@@ -60,7 +60,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                 {/* Gauge actuelle */}
                 <div>
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-text-muted">DPE Actuel</span>
+                        <span className="text-sm font-medium text-muted">DPE Actuel</span>
                         <motion.div
                             className={`${currentConfig.bgClass} text-black px-3 py-1.5 rounded-lg font-bold text-lg shadow-lg border border-white/20`}
                             animate={isPassoire ? {
@@ -76,7 +76,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                             {currentDPE}
                         </motion.div>
                     </div>
-                    <div className="relative h-5 bg-background rounded-full overflow-hidden border border-borders">
+                    <div className="relative h-5 bg-app rounded-full overflow-hidden border border-boundary">
                         {/* Gradient background */}
                         <div
                             className="absolute inset-0"
@@ -87,7 +87,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                         />
                         {/* Overlay animé */}
                         <motion.div
-                            className="absolute right-0 top-0 bottom-0 bg-background/90 backdrop-blur-sm"
+                            className="absolute right-0 top-0 bottom-0 bg-app/90 backdrop-blur-sm"
                             initial={{ width: "100%" }}
                             animate={isInView ? { width: `${100 - currentConfig.position}%` } : {}}
                             transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
@@ -129,7 +129,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                 {/* Gauge cible */}
                 <div>
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-text-muted">DPE Cible</span>
+                        <span className="text-sm font-medium text-muted">DPE Cible</span>
                         <motion.div
                             className={`${targetConfig.bgClass} text-black px-3 py-1.5 rounded-lg font-bold text-lg ring-2 ring-offset-2 ring-offset-surface ring-success-500 shadow-lg border border-white/20`}
                             initial={{ scale: 0.9, opacity: 0 }}
@@ -139,7 +139,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                             {targetDPE}
                         </motion.div>
                     </div>
-                    <div className="relative h-5 bg-background rounded-full overflow-hidden border border-borders">
+                    <div className="relative h-5 bg-app rounded-full overflow-hidden border border-boundary">
                         {/* Gradient background */}
                         <div
                             className="absolute inset-0"
@@ -170,7 +170,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
             </div>
 
             {/* Légende */}
-            <div className="mt-6 flex justify-between text-xs text-text-muted">
+            <div className="mt-6 flex justify-between text-xs text-muted">
                 <span>G (Passoire)</span>
                 <span>A (Performant)</span>
             </div>

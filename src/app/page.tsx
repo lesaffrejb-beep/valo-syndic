@@ -238,7 +238,7 @@ export default function HomePage() {
                                             <div className="text-center">
                                                 <p className="label-technical mb-1">DPE Actuel</p>
                                                 <div className="flex justify-center">
-                                                    <DPEGauge score={result.input.currentDPE} />
+                                                    <DPEGauge currentDPE={result.input.currentDPE} targetDPE={result.input.targetDPE} />
                                                 </div>
                                                 <p className="text-sm font-medium mt-2 tabular-nums">{result.input.currentDPE} kWh/m²/an</p>
                                             </div>
@@ -248,7 +248,7 @@ export default function HomePage() {
                                             <div className="text-center">
                                                 <p className="label-technical mb-1">DPE Cible</p>
                                                 <div className="flex justify-center">
-                                                    <DPEGauge score={result.input.targetDPE} />
+                                                    <DPEGauge currentDPE={result.input.targetDPE} targetDPE={result.input.targetDPE} />
                                                 </div>
                                                 <p className="text-sm font-medium mt-2 tabular-nums">{result.input.targetDPE} kWh/m²/an</p>
                                             </div>
