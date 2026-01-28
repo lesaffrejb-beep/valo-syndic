@@ -14,6 +14,7 @@ import {
     TECHNICAL_PARAMS,
     PROJECT_FEES,
     AMO_PARAMS,
+    VALUATION_PARAMS,
     type DPELetter,
 } from "./constants";
 
@@ -305,7 +306,7 @@ export function calculateValuation(
 
     // 2. Prix de base au m2 (Angers/Nantes - Moyenne conservatrice)
     // Idéalement, ce prix devrait venir d'une API externe ou d'une base de données par ville
-    const BASE_PRICE_PER_SQM = 3500;
+    const BASE_PRICE_PER_SQM = VALUATION_PARAMS.BASE_PRICE_PER_SQM;
 
     // 3. Impact DPE sur la valeur (Décote/Surcote par rapport à D)
     // G: -15%, F: -10%, E: -5%, D: 0%, C: +5%, B: +10%, A: +15%
@@ -459,37 +460,4 @@ export interface BuildingAuditResult {
     coordinates: [number, number]; // [lat, lng]
 }
 
-/**
- * Traitement par lot de plusieurs bâtiments pour le "God View"
- */
-export function batchProcessBuildings(buildings: Array<{
-    adresse: string;
-    lots: number;
-    annee: number;
-}>): BuildingAuditResult[] {
-    // Coordonnées de base pour Angers (pour la simulation)
-    const ANGERS_CENTER = { lat: 47.47, lng: -0.55 };
 
-    return buildings.map((b, index) => {
-        const dpe = estimateDPEByYear(b.annee);
-        const compliance = calculateComplianceStatus(dpe);
-
-        // Simulation de géocodage : on disperse autour du centre d'Angers
-        const lat = ANGERS_CENTER.lat + (Math.random() - 0.5) * 0.05;
-        const lng = ANGERS_CENTER.lng + (Math.random() - 0.5) * 0.05;
-
-        return {
-            id: `build-${index}`,
-            address: b.adresse,
-            numberOfUnits: b.lots,
-            constructionYear: b.annee,
-            currentDPE: dpe,
-            compliance: {
-                status: compliance.statusColor as "danger" | "warning" | "success",
-                label: compliance.statusLabel,
-                ...(compliance.prohibitionDate ? { deadline: formatDate(compliance.prohibitionDate) } : {})
-            },
-            coordinates: [lat, lng]
-        };
-    });
-}

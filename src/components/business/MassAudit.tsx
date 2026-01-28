@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import Papa from "papaparse";
 import { AngersMap } from "./AngersMap";
-import { batchProcessBuildings, type BuildingAuditResult } from "@/lib/calculator";
+import { type BuildingAuditResult } from "@/lib/calculator";
+import { batchProcessBuildings } from "@/lib/mocks";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function MassAudit() {

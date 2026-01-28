@@ -17,9 +17,9 @@ import { Footer } from "@/components/layout/Footer";
 // Feature Components
 import { DiagnosticForm } from "@/components/business/form/DiagnosticForm";
 import { ComplianceTimeline } from "@/components/ComplianceTimeline";
-import { FinancingCard } from "@/components/FinancingCard";
-import { InactionCostCard } from "@/components/InactionCostCard";
-import { LegalWarning } from "@/components/LegalWarning";
+import { FinancingCard } from "@/components/business/FinancingCard";
+import { InactionCostCard } from "@/components/business/InactionCostCard";
+import { LegalWarning } from "@/components/business/LegalWarning";
 import { EnergyInflationChart } from "@/components/EnergyInflationChart";
 import { DPEGauge } from "@/components/DPEGauge";
 import { FinancingBreakdownChart } from "@/components/business/charts/FinancingBreakdownChart";

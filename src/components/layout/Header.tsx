@@ -1,4 +1,4 @@
-import { useBrand } from "@/context/BrandContext";
+import { useBrandStore } from "@/stores/useBrandStore";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
 
@@ -11,7 +11,7 @@ interface HeaderProps {
 }
 
 export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef }: HeaderProps) {
-    const { brand } = useBrand();
+    const brand = useBrandStore((state) => state.brand);
 
     return (
         <header className="glass sticky top-0 z-50 print:hidden">

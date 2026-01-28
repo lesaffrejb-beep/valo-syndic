@@ -7,6 +7,7 @@ import { persist } from "zustand/middleware";
 interface WindowWithWebkit {
     AudioContext?: typeof AudioContext;
     webkitAudioContext?: typeof AudioContext;
+    _valoAudioCtx?: AudioContext;
 }
 
 interface SoundState {
@@ -30,7 +31,17 @@ export const useSoundEffects = create<SoundState>()(
                 const AudioContextClass = win.AudioContext || win.webkitAudioContext;
                 if (!AudioContextClass) return;
 
-                const ctx = new AudioContextClass();
+                // Singleton Pattern to prevent memory leaks
+                if (!win._valoAudioCtx) {
+                    win._valoAudioCtx = new AudioContextClass();
+                }
+                const ctx = win._valoAudioCtx;
+
+                // Resume if suspended (browser policy)
+                if (ctx.state === "suspended") {
+                    ctx.resume();
+                }
+
                 const oscillator = ctx.createOscillator();
                 const gainNode = ctx.createGain();
 

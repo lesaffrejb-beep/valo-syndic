@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useBrand } from "@/context/BrandContext";
+import { useBrandStore } from "@/stores/useBrandStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface BrandingModalProps {
@@ -10,7 +10,9 @@ interface BrandingModalProps {
 }
 
 export function BrandingModal({ isOpen, onClose }: BrandingModalProps) {
-    const { brand, updateBrand, resetBrand } = useBrand();
+    const brand = useBrandStore((state) => state.brand);
+    const updateBrand = useBrandStore((state) => state.updateBrand);
+    const resetBrand = useBrandStore((state) => state.resetBrand);
     const [tempBrand, setTempBrand] = useState(brand);
     const fileInputRef = useRef<HTMLInputElement>(null);
 

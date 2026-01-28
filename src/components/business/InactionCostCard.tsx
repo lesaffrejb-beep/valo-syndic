@@ -15,6 +15,8 @@ interface InactionCostCardProps {
     inactionCost: InactionCost;
 }
 
+import { DEFAULT_TRANSITION } from "@/lib/animations";
+
 export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
     const inflationPercent = TECHNICAL_PARAMS.constructionInflationRate * 100;
 
@@ -23,7 +25,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
             className="group card-bento overflow-hidden relative"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={DEFAULT_TRANSITION}
         >
             <h3 className="text-xl font-semibold text-main mb-6 flex items-center gap-3 relative z-10">
                 <span className="text-2xl">💸</span> Coût de l&apos;inaction

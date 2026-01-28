@@ -152,3 +152,12 @@ export const DPE_NUMERIC_VALUE: Record<DPELetter, number> = {
     B: 6,
     A: 7,
 };
+
+// =============================================================================
+// 9. VALORISATION IMMOBILIÈRE
+// =============================================================================
+
+export const VALUATION_PARAMS = {
+    /** Prix de base au m² (Angers/Nantes - Moyenne conservatrice) */
+    BASE_PRICE_PER_SQM: 3500,
+} as const;

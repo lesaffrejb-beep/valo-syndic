@@ -3,14 +3,14 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { PDFDocument } from './PDFDocument';
 import { type DiagnosticResult } from '@/lib/schemas';
-import { useBrand } from '@/context/BrandContext';
+import { useBrandStore } from "@/stores/useBrandStore";
 
 interface PdfButtonContentProps {
     result: DiagnosticResult;
 }
 
 export function PdfButtonContent({ result }: PdfButtonContentProps) {
-    const { brand } = useBrand();
+    const brand = useBrandStore((state) => state.brand);
 
     return (
         <PDFDownloadLink

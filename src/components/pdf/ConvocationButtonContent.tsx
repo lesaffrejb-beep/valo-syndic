@@ -3,14 +3,14 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { ConvocationDocument } from './ConvocationDocument';
 import { type DiagnosticResult } from '@/lib/schemas';
-import { useBrand } from '@/context/BrandContext';
+import { useBrandStore } from "@/stores/useBrandStore";
 
 interface ConvocationButtonContentProps {
     result: DiagnosticResult;
 }
 
 export function ConvocationButtonContent({ result }: ConvocationButtonContentProps) {
-    const { brand } = useBrand();
+    const brand = useBrandStore((state) => state.brand);
 
     return (
         <PDFDownloadLink

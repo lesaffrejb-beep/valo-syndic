@@ -4,7 +4,7 @@
  */
 
 import { LEGAL } from "@/lib/constants";
-import { LegalWarning } from "@/components/LegalWarning";
+import { LegalWarning } from "@/components/business/LegalWarning";
 import Link from "next/link";
 
 export default function LegalPage() {
