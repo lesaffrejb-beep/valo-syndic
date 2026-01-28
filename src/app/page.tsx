@@ -260,34 +260,25 @@ export default function HomePage() {
                                     </div>
                                 </div>
 
-                                {/* Score & Gauge Row - Fixed: Removed Duplicate DPEGauge */}
+                                {/* Score & Urgency Row */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                     <UrgencyScore
                                         compliance={result.compliance}
                                         currentDPE={result.input.currentDPE}
                                     />
-                                    {/* Placeholder mainly to keep grid balance if needed, or we can make Urgency full width. 
-                                        User asked to remove the duplicate. Leaving just UrgencyScore or adding Valuation here?
-                                        ValuationCard is below. Let's make UrgencyScore full width or keep grid and put something impactful?
-                                        User didn't ask to reorganize everything, just "Supprimer le bloc". 
-                                        So I'll just leave UrgencyScore. If it looks wide, I'll fix it later. 
-                                        Actually, let's put ValuationCard here? No, stick to the plan. 
-                                        I will remove the grid col for DPEGauge. 
-                                        Wait, replacing with just UrgencyScore.
-                                     */}
-                                    <div className="hidden lg:block relative">
-                                        {/* Empty space or maybe move ValuationCard here? 
-                                            Let's just leave UrgencyScore but maybe wrap it in a centered div or leave it. 
-                                            Actually, I'll remove the grid container in the next iteration if it looks bad.
-                                            For now, I'll just render UrgencyScore and remove DPEGauge.
-                                        */}
-                                        <div className="h-full flex items-center justify-center p-8 border border-dashed border-boundary rounded-2xl opacity-50">
-                                            <p className="text-sm text-muted text-center">Espace réservé pour futur module (ex: Audit Détaillé)</p>
-                                        </div>
-                                    </div>
+                                    {/* Legal Calendar - Moved here to fill space */}
+                                    <ComplianceTimeline currentDPE={result.input.currentDPE} />
                                 </div>
 
-                                {/* 🆕 Calculateur Tantièmes + Benchmark */}
+                                {/* Financing Plan - Full Width */}
+                                <div className="w-full">
+                                    <FinancingCard
+                                        financing={result.financing}
+                                        numberOfUnits={result.input.numberOfUnits}
+                                    />
+                                </div>
+
+                                {/* Tools Row: Tantièmes + Benchmark */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                     <TantiemeCalculator financing={result.financing} />
                                     <BenchmarkChart currentDPE={result.input.currentDPE} city={result.input.city} />
@@ -297,15 +288,6 @@ export default function HomePage() {
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
                                     <EnergyInflationChart currentCost={result.input.estimatedCostHT} />
                                     <FinancingBreakdownChart financing={result.financing} />
-                                </div>
-
-                                {/* Financing & Timeline Row */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-                                    <ComplianceTimeline currentDPE={result.input.currentDPE} />
-                                    <FinancingCard
-                                        financing={result.financing}
-                                        numberOfUnits={result.input.numberOfUnits}
-                                    />
                                 </div>
 
                                 {/* Inaction Cost - Full Width */}
