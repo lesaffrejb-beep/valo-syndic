@@ -13,8 +13,8 @@ export function ProjectionModeToggle() {
                 relative flex items-center gap-2 px-3 py-2 rounded-lg
                 transition-all duration-300 text-sm font-medium
                 ${isProjectionMode
-                    ? "bg-primary text-primary-foreground shadow-glow"
-                    : "bg-surface border border-boundary text-muted hover:text-main hover:border-boundary-active"
+                    ? "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(212,182,121,0.3)] border border-primary/50"
+                    : "bg-white/[0.02] border border-white/[0.06] text-muted hover:text-main hover:bg-white/[0.04] hover:border-white/[0.12]"
                 }
             `}
             whileHover={{ scale: 1.02 }}
