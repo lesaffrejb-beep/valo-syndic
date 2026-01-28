@@ -1,61 +1,31 @@
 /**
  * FinancingBreakdownChart — Répartition du financement
  * =====================================================
- * Visualisation en donut chart du plan de financement.
- * Design néo-banque avec animations.
+ * Visualisation en barres horizontales du plan de financement.
+ * Remplace le donut chart qui pouvait suggérer une répartition à 100%.
+ * 
+ * Design: Barres horizontales avec labels clairs
+ * Note: La somme peut dépasser 100% car MPR (subvention) + Éco-PTZ (prêt)
  */
 
 "use client";
 
-import {
-    PieChart,
-    Pie,
-    Cell,
-    ResponsiveContainer,
-    Tooltip,
-} from "recharts";
+import { motion } from "framer-motion";
 import { type FinancingPlan } from "@/lib/schemas";
 
 interface FinancingBreakdownChartProps {
     financing: FinancingPlan;
 }
 
-// Design System Colors (from tailwind.config.ts tokens)
+// Design System Colors
 const COLORS = {
     mpr: "#22c55e",      // success-500
-    ptz: "#3b82f6",      // blue-500
+    ptz: "#D4B679",      // gold (primary)
     local: "#10b981",    // emerald-500
     reste: "#6b7280",    // gray-500
 };
 
 export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartProps) {
-    const data = [
-        {
-            name: "MaPrimeRénov'",
-            value: financing.mprAmount,
-            color: COLORS.mpr,
-            description: "Subvention de l'État",
-        },
-        {
-            name: "Aides Locales",
-            value: financing.localAidAmount,
-            color: COLORS.local,
-            description: "Subventions 49/44",
-        },
-        {
-            name: "Éco-PTZ",
-            value: financing.ecoPtzAmount,
-            color: COLORS.ptz,
-            description: "Prêt à taux zéro",
-        },
-        {
-            name: "Reste à charge",
-            value: financing.remainingCost,
-            color: COLORS.reste,
-            description: "À financer par la copro",
-        },
-    ].filter((item) => item.value > 0);
-
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat("fr-FR", {
             style: "currency",
@@ -63,94 +33,153 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
             maximumFractionDigits: 0,
         }).format(value);
 
-    const formatPercent = (value: number) =>
-        ((value / financing.totalCostHT) * 100).toFixed(0) + "%";
+    // Calculate percentages based on total cost
+    const totalCost = financing.totalCostHT;
+    const mprPercent = Math.round((financing.mprAmount / totalCost) * 100);
+    const ptzPercent = Math.round((financing.ecoPtzAmount / totalCost) * 100);
+    const localPercent = financing.localAidAmount > 0 
+        ? Math.round((financing.localAidAmount / totalCost) * 100) 
+        : 0;
+    const remainingPercent = Math.round((financing.remainingCost / totalCost) * 100);
 
-    // Calcul du taux de couverture par les aides
-    const aidesCoverage = ((financing.mprAmount + financing.localAidAmount + financing.ecoPtzAmount) / financing.totalCostHT) * 100;
+    // Data for bars
+    const bars = [
+        {
+            id: "mpr",
+            label: "MaPrimeRénov'",
+            sublabel: "Subvention",
+            value: financing.mprAmount,
+            percent: mprPercent,
+            color: COLORS.mpr,
+        },
+        ...(financing.localAidAmount > 0 ? [{
+            id: "local",
+            label: "Aides locales",
+            sublabel: "Subvention",
+            value: financing.localAidAmount,
+            percent: localPercent,
+            color: COLORS.local,
+        }] : []),
+        {
+            id: "ptz",
+            label: "Éco-PTZ",
+            sublabel: "Prêt 0% sur 20 ans",
+            value: financing.ecoPtzAmount,
+            percent: ptzPercent,
+            color: COLORS.ptz,
+        },
+        ...(financing.remainingCost > 0 ? [{
+            id: "reste",
+            label: "Reste à charge",
+            sublabel: "Apport copropriété",
+            value: financing.remainingCost,
+            percent: remainingPercent,
+            color: COLORS.reste,
+        }] : []),
+    ];
+
+    // Calculate total coverage (MPR + local + PTZ)
+    const totalCoverage = financing.mprAmount + financing.localAidAmount + financing.ecoPtzAmount;
+    const coveragePercent = Math.round((totalCoverage / totalCost) * 100);
 
     return (
         <div className="card-bento p-6">
-            <div className="flex items-center justify-between mb-4">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-main flex items-center gap-2">
                     💰 Répartition du financement
                 </h3>
                 <div className="text-right">
-                    <p className="text-xs text-muted uppercase">Couverture aides</p>
-                    <p className="text-lg font-bold text-success-500">{aidesCoverage.toFixed(0)}%</p>
+                    <p className="text-xs text-muted uppercase">Couverture totale</p>
+                    <p className={`text-lg font-bold ${coveragePercent >= 100 ? 'text-success-500' : 'text-warning-500'}`}>
+                        {coveragePercent}%
+                    </p>
                 </div>
             </div>
 
-            {/* Donut Chart - No Legend (custom legend below) */}
-            <div className="h-56 relative">
-                <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                        <Pie
-                            data={data}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={85}
-                            paddingAngle={3}
-                            dataKey="value"
-                            animationDuration={1200}
-                            animationEasing="ease-out"
-                            stroke="none"
-                        >
-                            {data.map((entry, index) => (
-                                <Cell
-                                    key={`cell-${index}`}
-                                    fill={entry.color}
-                                    strokeWidth={0}
+            {/* Explanation */}
+            <div className="mb-6 p-3 bg-primary-900/10 border border-primary-500/20 rounded-lg">
+                <p className="text-xs text-primary-300">
+                    💡 <strong>Comment lire :</strong> Chaque barre représente le % du coût total couvert par 
+                    cette source. La somme peut dépasser 100% car l&apos;Éco-PTZ est un prêt à rembourser.
+                </p>
+            </div>
+
+            {/* Horizontal Bars */}
+            <div className="space-y-5">
+                {bars.map((bar, index) => (
+                    <motion.div
+                        key={bar.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                    >
+                        {/* Label row */}
+                        <div className="flex items-center justify-between mb-1.5">
+                            <div className="flex items-center gap-2">
+                                <div 
+                                    className="w-3 h-3 rounded-full"
+                                    style={{ backgroundColor: bar.color }}
                                 />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            formatter={(value: number | undefined) => formatCurrency(value ?? 0)}
-                            contentStyle={{
-                                backgroundColor: "#161719",
-                                border: "1px solid rgba(255, 255, 255, 0.08)",
-                                borderRadius: "8px",
-                                color: "#fff",
-                                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.3)",
-                            }}
-                            itemStyle={{ color: "#e5e5e5" }}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
+                                <span className="text-sm font-medium text-main">{bar.label}</span>
+                                <span className="text-xs text-muted">({bar.sublabel})</span>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-sm font-bold text-main">
+                                    {formatCurrency(bar.value)}
+                                </span>
+                                <span className="text-xs text-muted ml-2">({bar.percent}%)</span>
+                            </div>
+                        </div>
 
-                {/* Center label - Coût Total */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="text-center">
-                        <p className="text-xs text-muted uppercase">Coût Total</p>
-                        <p className="text-xl font-bold text-main">{formatCurrency(financing.totalCostHT)}</p>
-                    </div>
-                </div>
+                        {/* Bar track */}
+                        <div className="h-3 bg-surface rounded-full overflow-hidden border border-boundary">
+                            <motion.div
+                                className="h-full rounded-full"
+                                style={{ backgroundColor: bar.color }}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(bar.percent, 100)}%` }}
+                                transition={{ duration: 0.8, delay: index * 0.1 + 0.2, ease: "easeOut" }}
+                            />
+                        </div>
+                    </motion.div>
+                ))}
             </div>
 
-            {/* Custom Legend - Vertical layout with proper spacing */}
-            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-boundary">
-                {data.map((item) => (
-                    <div key={item.name} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div
-                                className="w-3 h-3 rounded-full flex-shrink-0"
-                                style={{ backgroundColor: item.color }}
-                            />
-                            <span className="text-sm text-muted">{item.name}</span>
-                        </div>
-                        <div className="text-right">
-                            <span className="font-semibold text-main">
-                                {formatCurrency(item.value)}
-                            </span>
-                            <span className="text-xs text-muted ml-2">
-                                ({formatPercent(item.value)})
-                            </span>
-                        </div>
+            {/* Summary box */}
+            <div className="mt-6 pt-4 border-t border-boundary">
+                <div className="flex items-center justify-between p-4 bg-surface rounded-xl border border-boundary">
+                    <div>
+                        <p className="text-sm font-medium text-main">Coût total du projet</p>
+                        <p className="text-xs text-muted">Travaux + frais (HT)</p>
                     </div>
-                ))}
+                    <p className="text-xl font-bold text-main">{formatCurrency(totalCost)}</p>
+                </div>
+
+                {/* Coverage indicator */}
+                <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-muted">Taux de couverture (aides + prêt)</span>
+                        <span className={`text-sm font-bold ${coveragePercent >= 100 ? 'text-success-500' : 'text-warning-500'}`}>
+                            {coveragePercent}%
+                        </span>
+                    </div>
+                    <div className="h-2 bg-boundary rounded-full overflow-hidden">
+                        <motion.div
+                            className={`h-full rounded-full ${coveragePercent >= 100 ? 'bg-success-500' : 'bg-warning-500'}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(coveragePercent, 100)}%` }}
+                            transition={{ duration: 1, delay: 0.5 }}
+                        />
+                    </div>
+                    <p className="text-xs text-muted mt-2">
+                        {coveragePercent >= 100 
+                            ? "✅ Surcouverture : Les aides + prêt couvrent 100% du projet"
+                            : `⚠️ Reste à charge : ${formatCurrency(financing.remainingCost)}`
+                        }
+                    </p>
+                </div>
             </div>
         </div>
     );
 }
-
