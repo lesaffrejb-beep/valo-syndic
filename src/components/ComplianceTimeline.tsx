@@ -169,6 +169,10 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                     </p>
                 </motion.div>
             )}
+            {/* Source Juridique */}
+            <div className="mt-4 pt-3 border-t border-boundary flex justify-between items-center text-xs text-muted/60">
+                <span>⚖️ Loi n° 2021-1104 Climat et Résilience</span>
+            </div>
         </motion.div>
     );
 }

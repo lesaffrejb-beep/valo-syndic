@@ -16,7 +16,7 @@ export function ConvocationButtonContent({ result }: ConvocationButtonContentPro
         <PDFDownloadLink
             document={<ConvocationDocument result={result} brand={brand} />}
             fileName={`convocation-ag-${new Date().toISOString().split('T')[0]}.pdf`}
-            className="btn-secondary flex items-center justify-center gap-2 group cursor-pointer"
+            className="btn-secondary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-sm hover:shadow-md"
         >
             {/* @ts-ignore */}
             {({ blob, url, loading, error }: any) => {
