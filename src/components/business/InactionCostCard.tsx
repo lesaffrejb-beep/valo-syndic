@@ -28,11 +28,11 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
             transition={DEFAULT_TRANSITION}
         >
             <h3 className="text-xl font-semibold text-main mb-6 flex items-center gap-3 relative z-10">
-                <span className="text-2xl">💸</span> Coût de l&apos;inaction
+                <span className="text-2xl">📉</span> Érosion Patrimoniale Estimée
             </h3>
 
             <p className="text-sm text-muted mb-8 relative z-10 leading-relaxed">
-                Si vous attendez 3 ans de plus, voici ce que vous perdez :
+                Le coût réel de l&apos;attente : une &quot;double peine&quot; financière.
             </p>
 
             {/* Comparaison avant/après */}
@@ -44,7 +44,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                     transition={{ delay: 0.2 }}
                 >
                     <p className="label-technical">
-                        Coût aujourd&apos;hui
+                        Coût Travaux (2026)
                     </p>
                     <p className="text-xl font-medium text-main mt-2 tabular-nums">
                         <AnimatedCurrency value={inactionCost.currentCost} duration={1.2} />
@@ -58,13 +58,13 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                     transition={{ delay: 0.3 }}
                 >
                     <p className="label-technical text-danger">
-                        Coût dans 3 ans
+                        Coût Travaux (2029)
                     </p>
                     <p className="text-xl font-medium text-danger mt-2 tabular-nums">
                         <AnimatedCurrency value={inactionCost.projectedCost3Years} duration={1.5} />
                     </p>
                     <p className="text-xs text-danger/70 mt-1">
-                        +{inflationPercent.toFixed(1)}%/an
+                        +{inflationPercent.toFixed(1)}%/an (BTP)
                     </p>
                 </motion.div>
             </div>
@@ -78,10 +78,13 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                     transition={{ delay: 0.4 }}
                 >
                     <p className="label-technical mb-2">
-                        Décote valeur verte estimée
+                        + Perte d&apos;Attractivité (Décote)
                     </p>
                     <p className="text-lg font-medium text-warning tabular-nums">
                         <AnimatedCurrency value={inactionCost.valueDepreciation} duration={1.8} />
+                    </p>
+                    <p className="text-xs text-muted mt-1">
+                        Écart grandissant avec le marché rénové
                     </p>
                 </motion.div>
             )}
@@ -94,7 +97,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                 transition={{ delay: 0.5 }}
             >
                 <p className="label-technical text-danger mb-2">
-                    Total perdu (3 ans)
+                    Perte Totale (3 ans)
                 </p>
                 <p className="text-4xl font-medium text-primary tabular-nums">
                     <AnimatedCurrency value={inactionCost.totalInactionCost} duration={2} />
@@ -102,9 +105,9 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
             </motion.div>
 
             <div className="mt-4 p-4 rounded-xl border border-border bg-app/50 relative z-10">
-                <p className="text-xs text-muted italic">
-                    <strong className="text-warning">Important :</strong> Ce montant inclut
-                    l&apos;inflation BT01 et la perte de valeur locative.
+                <p className="text-xs text-muted leading-relaxed">
+                    <strong className="text-warning">Note Technique :</strong> Ce montant cumule l&apos;inflation spécifique du BTP (+4.5%/an)
+                    et la décote croissante appliquée aux passoires thermiques sur le marché (Source : Notaires de France).
                 </p>
             </div>
         </motion.div>

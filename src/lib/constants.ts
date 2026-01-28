@@ -89,7 +89,24 @@ export const TECHNICAL_PARAMS = {
 
     /** TVA Rénovation Énergétique (5.5%) */
     TVA_RENOVATION: 0.055,
+
+    /** Écart qui se creuse chaque année (Double Peine) */
+    greenValueDrift: 0.015,
 } as const;
+
+// =============================================================================
+// 4.1. VALEURS DPE (kWh/m²/an - Moyennes 2026)
+// =============================================================================
+
+export const DPE_KWH_VALUES: Record<DPELetter, number> = {
+    G: 450,
+    F: 350,
+    E: 280,
+    D: 210,
+    C: 150,
+    B: 90,
+    A: 50,
+};
 
 // =============================================================================
 // 5. AMO (ASSISTANCE À MAÎTRISE D'OUVRAGE)

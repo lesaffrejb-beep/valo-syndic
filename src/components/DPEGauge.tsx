@@ -9,7 +9,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { type DPELetter } from "@/lib/constants";
+import { type DPELetter, DPE_KWH_VALUES } from "@/lib/constants";
 
 interface DPEGaugeProps {
     currentDPE: DPELetter;
@@ -78,6 +78,8 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                         )}
                     </div>
 
+                    <p className="text-sm font-medium text-muted-foreground">{DPE_KWH_VALUES[currentDPE]} kWh/m²/an</p>
+
                     {/* Jauge Mini */}
                     <div className="relative h-2 w-full bg-app rounded-full overflow-hidden border border-boundary mt-1">
                         <div
@@ -124,6 +126,8 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                     >
                         {targetDPE}
                     </motion.div>
+
+                    <p className="text-sm font-medium text-muted-foreground">{DPE_KWH_VALUES[targetDPE]} kWh/m²/an</p>
 
                     {/* Jauge Mini */}
                     <div className="relative h-2 w-full bg-app rounded-full overflow-hidden border border-boundary mt-1">

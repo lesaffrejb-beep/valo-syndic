@@ -262,28 +262,44 @@ export function calculateInactionCost(
     averageUnitSurface?: number
 ): InactionCost {
     const inflationRate = TECHNICAL_PARAMS.constructionInflationRate;
+    const greenValueDrift = TECHNICAL_PARAMS.greenValueDrift;
 
-    // Coût projeté à +3 ans avec inflation composée
+    // 1. Surcoût Travaux (Inflation BTP composée sur 3 ans)
     const projectedCost3Years = currentCost * Math.pow(1 + inflationRate, 3);
     const inflationCost = projectedCost3Years - currentCost;
 
-    // Perte de valeur vénale (si données disponibles)
+    // 2. Érosion Vénale (L'écart de valeur se creuse)
     let valueDepreciation = 0;
 
     if (averagePricePerSqm && averageUnitSurface) {
-        // Seuls les DPE F et G subissent une décote significative
+        // Seuls les DPE F et G subissent une décote significative qui s'aggrave
         if (currentDPE === "F" || currentDPE === "G") {
             const totalSurface = averageUnitSurface * nbLots;
             const currentValue = averagePricePerSqm * totalSurface;
-            // Décote estimée : inverse de la valeur verte (−12%)
-            valueDepreciation = currentValue * TECHNICAL_PARAMS.greenValueAppreciation;
+
+            // On estime que la "décote" (le malus) s'aggrave de 1.5% par an
+            // C'est la "double peine" : non seulement on paie plus cher après, 
+            // mais le bien perd du terrain par rapport au marché rénové.
+            const driftFactor = Math.pow(1 + greenValueDrift, 3) - 1;
+
+            // Base de calcul de la décote : on prend une fraction de la valeur totale (ex: 10% de décote de base)
+            // et on applique le drift sur cette décote ou sur la valeur ?
+            // Le prompt dit : "La 'Valeur Verte' (écart de prix) augmente de 1.5% par an."
+            // Donc si l'écart est de 10%, il passe à 10% * 1.015^3 ? Ou 10% + 3*1.5% ? 
+            // Interprétons : L'écart se creuse. Si je ne fais rien, je rate ce train.
+            // Simplification : On applique le drift sur la valeur totale considérée comme "à risque".
+            // Mais restons conservateurs comme demandé : "Hypothèse conservatrice : La Valeur Verte augmente de 1.5%/an".
+            // Donc on calcule la Valeur Verte Potentielle (Ex: 10% du prix), et on dit qu'on perd le drift dessus.
+
+            const potentialGreenValue = currentValue * TECHNICAL_PARAMS.greenValueAppreciation; // ~12%
+            valueDepreciation = potentialGreenValue * driftFactor;
         }
     }
 
     return {
         currentCost,
         projectedCost3Years,
-        valueDepreciation,
+        valueDepreciation, // C'est ici le coût de "l'érosion supplémentaire"
         totalInactionCost: inflationCost + valueDepreciation,
     };
 }
