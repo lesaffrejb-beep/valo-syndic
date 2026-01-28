@@ -13,6 +13,7 @@ import {
     ECO_PTZ_COPRO,
     TECHNICAL_PARAMS,
     PROJECT_FEES,
+    AMO_PARAMS,
     type DPELetter,
 } from "./constants";
 
@@ -100,10 +101,6 @@ export function calculateComplianceStatus(
 // 2. SIMULATION DE FINANCEMENT
 // =============================================================================
 
-// =============================================================================
-// 2. SIMULATION DE FINANCEMENT
-// =============================================================================
-
 /**
  * Calcule le plan de financement complet pour des travaux de rénovation.
  *
@@ -133,35 +130,46 @@ export function simulateFinancing(
         throw new Error("Le coût HT doit être supérieur à 0");
     }
 
-    // 1. Calcul des Frais Annexes (Coûts Invisibles)
+    // 1. Calcul des Coûts (HT et TTC)
 
+    // a. Coûts Travaux + Frais proportionnels
     const syndicFees = costHT * PROJECT_FEES.syndicRate;
     const doFees = costHT * PROJECT_FEES.doRate;
     const contingencyFees = costHT * PROJECT_FEES.contingencyRate;
 
-    // Coût Total Projet = Travaux + Frais
-    const totalCostHT = costHT + syndicFees + doFees + contingencyFees;
+    // Sous-total Travaux + Frais (Assiette MPR)
+    const subtotalWorksFeesHT = costHT + syndicFees + doFees + contingencyFees;
 
-    // Coût par lot (sur base du total projet)
-    const costPerUnit = totalCostHT / nbLots;
+    // b. Coût AMO (Assistance à Maîtrise d'Ouvrage) - Forfaitaire par lot
+    const amoCostHT = AMO_PARAMS.costPerLot * nbLots;
+
+    // c. Coût Total Projet HT
+    const totalCostHT = subtotalWorksFeesHT + amoCostHT;
+
+    // d. Coût Total Projet TTC (TVA 5.5% Rénovation)
+    // C'est ce montant que la copropriété doit réellement financer
+    const totalCostTTC = totalCostHT * (1 + TECHNICAL_PARAMS.TVA_RENOVATION);
+
+    // Coût par lot (TTC)
+    const costPerUnit = totalCostTTC / nbLots;
 
     // Gain énergétique estimé
     const energyGainPercent = estimateEnergyGain(currentDPE, targetDPE);
 
-    // --- MaPrimeRénov' Copropriété ---
+    // 2. Calcul des Aides (MPR + AMO)
 
-    // Vérification éligibilité (gain ≥ 35%)
+    // --- MaPrimeRénov' Copropriété (Aide Travaux) ---
+
     let mprRate = 0;
     let exitPassoireBonus = 0;
 
+    // Vérification éligibilité (gain ≥ 35%)
     if (energyGainPercent >= MPR_COPRO.minEnergyGain) {
-        // Taux selon le niveau de gain
         mprRate =
             energyGainPercent >= MPR_COPRO.performanceThreshold
                 ? MPR_COPRO.rates.performance
                 : MPR_COPRO.rates.standard;
 
-        // Bonus sortie passoire (F/G → D ou mieux)
         const isExitPassoire =
             (currentDPE === "F" || currentDPE === "G") &&
             DPE_NUMERIC_VALUE[targetDPE] >= DPE_NUMERIC_VALUE["D"];
@@ -171,50 +179,63 @@ export function simulateFinancing(
         }
     }
 
-    // Assiette éligible (plafonnée)
-    // Seuls les lots d'habitation sont éligibles au plafond MPR
     const residentialLots = Math.max(0, nbLots - commercialLots);
-    const eligibleCeiling = residentialLots * MPR_COPRO.ceilingPerUnit;
+    const mprCeilingGlobal = residentialLots * MPR_COPRO.ceilingPerUnit;
 
-    // L'assiette MPR comprend le montant des travaux HT + MOE (frais syndic approx)
-    // Pour simplifier, on prend le Total Cost HT comme base de dépense éligible, plafonnée.
-    const eligibleBase = Math.min(totalCostHT, eligibleCeiling);
+    // Assiette éligible MPR = Travaux + Frais (hors AMO qui a son aide propre)
+    const eligibleBaseMPR = Math.min(subtotalWorksFeesHT, mprCeilingGlobal);
+    const mprAmount = eligibleBaseMPR * (mprRate + exitPassoireBonus);
 
-    // Montant MPR
-    const mprAmount = eligibleBase * (mprRate + exitPassoireBonus);
+    // --- Aide AMO (Aide Ingénierie) ---
+
+    // Plafond d'assiette AMO
+    const amoCeilingGlobal = nbLots * AMO_PARAMS.ceilingPerLot;
+    // Assiette éligible AMO
+    const eligibleBaseAMO = Math.min(amoCostHT, amoCeilingGlobal);
+    // Montant Aide AMO
+    const amoAmount = eligibleBaseAMO * AMO_PARAMS.aidRate;
+
+    // --- Total des Aides ---
+    const totalAids = mprAmount + amoAmount + localAidAmount + ceeBonus;
+
+    // 3. Calcul du Reste à Charge & Éco-PTZ
+
+    // Montant à financer par les copropriétaires (Reste à Charge TTC avant financement)
+    // On déduit déjà le Fonds ALUR car c'est de l'apport, pas du crédit
+    const remainingToFinance = totalCostTTC - totalAids - alurFund;
 
     // --- Éco-PTZ Copropriété ---
 
-    // Plafond Éco-PTZ (sur lots totaux ou résidentiels ? En pratique souvent résidentiels, mais simplifions sur nbLots pour l'instant)
     const ecoPtzCeiling = nbLots * ECO_PTZ_COPRO.ceilingPerUnit;
 
-    // Montant empruntable (reste après TOUTES les déductions: MPR + Aides Locales + Fonds ALUR + CEE)
-    const remainingAfterAids = totalCostHT - mprAmount - localAidAmount - alurFund - ceeBonus;
-    const ecoPtzAmount = Math.min(Math.max(0, remainingAfterAids), ecoPtzCeiling);
+    // On peut financer le reste en Éco-PTZ (dans la limite du plafond)
+    const ecoPtzAmount = Math.min(Math.max(0, remainingToFinance), ecoPtzCeiling);
 
-    // Reste à charge final (ce qui reste après TOUT)
-    const remainingCost = totalCostHT - mprAmount - localAidAmount - alurFund - ceeBonus - ecoPtzAmount;
+    // Reste à charge FINAL (après Apport ALUR + Crédit Éco-PTZ)
+    // C'est ce qu'il faut payer "cash" ou via un autre prêt
+    const remainingCostFinal = remainingToFinance - ecoPtzAmount;
 
-    // Mensualité Éco-PTZ (taux 0%, donc simple division)
+    // Mensualité Éco-PTZ
     const monthlyPayments = ECO_PTZ_COPRO.maxDurationYears * 12;
     const monthlyPayment = ecoPtzAmount > 0 ? ecoPtzAmount / monthlyPayments : 0;
 
     return {
         worksCostHT: Math.round(costHT),
-        totalCostHT: Math.round(totalCostHT),
+        totalCostHT: Math.round(totalCostHT), // On garde le HT pour info
         syndicFees: Math.round(syndicFees),
         doFees: Math.round(doFees),
         contingencyFees: Math.round(contingencyFees),
-        costPerUnit: Math.round(costPerUnit),
+        costPerUnit: Math.round(costPerUnit), // TTC !
         energyGainPercent,
         mprAmount: Math.round(mprAmount),
+        amoAmount: Math.round(amoAmount),
         localAidAmount: Math.round(localAidAmount),
         mprRate: mprRate + exitPassoireBonus,
         exitPassoireBonus,
         ecoPtzAmount: Math.round(ecoPtzAmount),
-        remainingCost: Math.round(Math.max(0, remainingCost)),
+        remainingCost: Math.round(Math.max(0, remainingCostFinal)), // TTC
         monthlyPayment: Math.round(monthlyPayment),
-        remainingCostPerUnit: Math.round(Math.max(0, remainingCost) / nbLots),
+        remainingCostPerUnit: Math.round(Math.max(0, remainingCostFinal) / nbLots), // TTC
     };
 }
 
@@ -349,7 +370,7 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
         input.ceeBonus || 0
     );
 
-    // 3. Coût de l'inaction (Inflation énergie)
+    // 3. Coût de l'inaction
     const inactionCost = calculateInactionCost(
         input.estimatedCostHT,
         input.numberOfUnits,
@@ -358,7 +379,7 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
         input.averageUnitSurface
     );
 
-    // 4. Valorisation (NEW)
+    // 4. Valorisation
     const valuation = calculateValuation(input, financing);
 
     return {

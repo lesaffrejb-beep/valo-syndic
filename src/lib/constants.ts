@@ -71,7 +71,7 @@ export const ECO_PTZ_COPRO = {
 } as const;
 
 // =============================================================================
-// 4. PARAMÈTRES TECHNIQUES
+// 4. PARAMÈTRES TECHNIQUES (TVA, AMO, Inflation)
 // =============================================================================
 
 export const TECHNICAL_PARAMS = {
@@ -86,10 +86,28 @@ export const TECHNICAL_PARAMS = {
 
     /** Date de référence pour les calculs */
     referenceDate: new Date("2026-01-27"),
+
+    /** TVA Rénovation Énergétique (5.5%) */
+    TVA_RENOVATION: 0.055,
 } as const;
 
 // =============================================================================
-// 5. FRAIS ANNEXES & HONORAIRES (Coûts Invisibles)
+// 5. AMO (ASSISTANCE À MAÎTRISE D'OUVRAGE)
+// =============================================================================
+
+export const AMO_PARAMS = {
+    /** Coût forfaitaire moyen AMO par lot (€ HT) */
+    costPerLot: 600,
+
+    /** Plafond d'assiette subventionnable par lot (€ HT) */
+    ceilingPerLot: 600,
+
+    /** Taux de prise en charge (50%) */
+    aidRate: 0.50,
+} as const;
+
+// =============================================================================
+// 6. FRAIS ANNEXES & HONORAIRES (Coûts Invisibles)
 // =============================================================================
 
 export const PROJECT_FEES = {
@@ -99,12 +117,12 @@ export const PROJECT_FEES = {
     /** Assurance Dommage Ouvrage (DO) */
     doRate: 0.02, // 2%
 
-    /** Aléas & Imprévus de chantier */
-    contingencyRate: 0.03, // 3%
+    /** Aléas & Imprévus de chantier (augmenté à 5% pour sécurité) */
+    contingencyRate: 0.05, // 5% (anciennement 3%)
 } as const;
 
 // =============================================================================
-// 6. CONSTANTES LÉGALES & COMPLIANCE
+// 7. CONSTANTES LÉGALES & COMPLIANCE
 // =============================================================================
 
 export const LEGAL = {
@@ -120,7 +138,7 @@ export const LEGAL = {
 } as const;
 
 // =============================================================================
-// 6. ORDRES DES DPE (pour calculs de progression)
+// 8. ORDRES DES DPE (pour calculs de progression)
 // =============================================================================
 
 export const DPE_ORDER: DPELetter[] = ["G", "F", "E", "D", "C", "B", "A"];

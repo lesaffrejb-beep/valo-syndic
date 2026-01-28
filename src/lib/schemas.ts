@@ -118,6 +118,9 @@ export const FinancingPlanSchema = z.object({
     /** Montant MaPrimeRénov' */
     mprAmount: z.number(),
 
+    /** Montant Aide AMO */
+    amoAmount: z.number(),
+
     /** Montant Aides Locales */
     localAidAmount: z.number(),
 
