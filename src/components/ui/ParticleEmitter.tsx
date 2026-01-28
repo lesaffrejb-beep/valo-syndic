@@ -80,7 +80,7 @@ export function ParticleEmitter({
 
     return (
         <div
-            className="absolute inset-0 overflow-hidden pointer-events-none z-0"
+            className="absolute inset-0 overflow-visible pointer-events-none z-0"
             aria-hidden="true"
         >
             {particles.map((particle) => (

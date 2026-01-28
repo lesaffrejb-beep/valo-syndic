@@ -43,7 +43,8 @@ export function ShareButton() {
             className={`
                 relative flex items-center justify-center w-9 h-9 rounded-lg
                 transition-all duration-300
-                bg-surface text-muted border border-boundary hover:text-main hover:border-boundary-active
+                bg-white/[0.02] text-muted border border-white/[0.06] 
+                hover:text-main hover:bg-white/[0.04] hover:border-white/[0.12]
             `}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

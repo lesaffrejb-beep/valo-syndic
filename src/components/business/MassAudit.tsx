@@ -1,46 +1,164 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Papa from "papaparse";
 import { AngersMap } from "./AngersMap";
 import { type BuildingAuditResult } from "@/lib/calculator";
 import { batchProcessBuildings } from "@/lib/mocks";
 import { motion, AnimatePresence } from "framer-motion";
 
+/**
+ * Interface pour les lignes CSV importées
+ * Supporte différentes conventions de nommage (français/anglais)
+ */
+interface CSVRow {
+    adresse?: string;
+    Address?: string;
+    lots?: string;
+    Units?: string;
+    annee?: string;
+    Year?: string;
+    [key: string]: string | undefined;
+}
+
+/**
+ * Données traitées et validées
+ */
+interface ProcessedBuilding {
+    adresse: string;
+    lots: number;
+    annee: number;
+    isValid: boolean;
+    error?: string;
+}
+
 export function MassAudit() {
     const [results, setResults] = useState<BuildingAuditResult[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
+    const [validationErrors, setValidationErrors] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Cleanup interval on unmount
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) handleProcess(file);
     };
 
+    /**
+     * Valide et transforme une ligne CSV en données traitées
+     */
+    const validateAndTransformRow = (row: CSVRow, index: number): ProcessedBuilding => {
+        const adresse = (row.adresse || row.Address || "").trim();
+        const lotsRaw = row.lots || row.Units || "0";
+        const anneeRaw = row.annee || row.Year || "0";
+
+        // Validation adresse
+        if (!adresse || adresse.length < 3) {
+            return {
+                adresse: "Adresse inconnue",
+                lots: 0,
+                annee: 0,
+                isValid: false,
+                error: `Ligne ${index + 1}: Adresse invalide ou manquante`
+            };
+        }
+
+        // Validation lots (doit être un nombre positif)
+        const lots = parseInt(lotsRaw, 10);
+        if (isNaN(lots) || lots <= 0 || lots > 1000) {
+            return {
+                adresse,
+                lots: 0,
+                annee: 0,
+                isValid: false,
+                error: `Ligne ${index + 1}: Nombre de lots invalide "${lotsRaw}"`
+            };
+        }
+
+        // Validation année (doit être raisonnable)
+        const annee = parseInt(anneeRaw, 10);
+        const currentYear = new Date().getFullYear();
+        if (isNaN(annee) || annee < 1800 || annee > currentYear) {
+            return {
+                adresse,
+                lots,
+                annee: 1970, // Valeur par défaut raisonnable
+                isValid: true, // On accepte avec valeur par défaut
+                error: `Ligne ${index + 1}: Année invalide "${anneeRaw}", valeur par défaut 1970 utilisée`
+            };
+        }
+
+        return {
+            adresse,
+            lots,
+            annee,
+            isValid: true
+        };
+    };
+
     const handleProcess = (file: File) => {
         setIsProcessing(true);
         setError(null);
+        setValidationErrors([]);
         setProgress(0);
 
-        Papa.parse(file, {
+        Papa.parse<CSVRow>(file, {
             header: true,
             skipEmptyLines: true,
-            complete: (results) => {
-                const rawData = results.data as any[];
+            transformHeader: (header: string) => header.trim().toLowerCase(),
+            complete: (parseResults) => {
+                const rawData = parseResults.data;
 
-                // Simulation d'attente "WOW EFFECT" (10 secondes demandées)
-                let interval = setInterval(() => {
+                // Validation des données
+                const processed: ProcessedBuilding[] = rawData.map((row, index) => 
+                    validateAndTransformRow(row, index)
+                );
+
+                const validBuildings = processed.filter(p => p.isValid);
+                const errors = processed
+                    .filter(p => p.error)
+                    .map(p => p.error!);
+
+                if (errors.length > 0) {
+                    setValidationErrors(errors.slice(0, 5)); // Limite à 5 erreurs affichées
+                }
+
+                if (validBuildings.length === 0) {
+                    setError("Aucune donnée valide trouvée dans le fichier CSV. Vérifiez le format.");
+                    setIsProcessing(false);
+                    return;
+                }
+
+                // Cleanup précédent si existe
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                }
+
+                // Simulation d'attente "WOW EFFECT" avec cleanup proper
+                intervalRef.current = setInterval(() => {
                     setProgress((prev) => {
                         if (prev >= 100) {
-                            clearInterval(interval);
-                            const processed = batchProcessBuildings(rawData.map(row => ({
-                                adresse: row.adresse || row.Address || "Adresse inconnue",
-                                lots: parseInt(row.lots || row.Units) || 10,
-                                annee: parseInt(row.annee || row.Year) || 1970
+                            if (intervalRef.current) {
+                                clearInterval(intervalRef.current);
+                                intervalRef.current = null;
+                            }
+                            const auditResults = batchProcessBuildings(validBuildings.map(b => ({
+                                adresse: b.adresse,
+                                lots: b.lots,
+                                annee: b.annee
                             })));
-                            setResults(processed);
+                            setResults(auditResults);
                             setIsProcessing(false);
                             return 100;
                         }
@@ -48,8 +166,8 @@ export function MassAudit() {
                     });
                 }, 100);
             },
-            error: (err) => {
-                setError("Erreur lors de la lecture du fichier CSV.");
+            error: (err: Error) => {
+                setError(`Erreur lors de la lecture du fichier CSV: ${err.message}`);
                 setIsProcessing(false);
             }
         });
@@ -57,12 +175,15 @@ export function MassAudit() {
 
     const downloadTemplate = () => {
         const csvContent = "adresse,lots,annee\n12 Rue de la Paix,24,1968\n45 Boulevard Foch,12,1982\n8 Avenue de Messine,40,2010";
-        const blob = new Blob([csvContent], { type: "text/csv" });
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
         a.download = "modele_audit_parc.csv";
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     };
 
     return (
@@ -79,23 +200,47 @@ export function MassAudit() {
                     <button
                         onClick={downloadTemplate}
                         className="btn-secondary text-sm"
+                        type="button"
                     >
                         📥 Télécharger le modèle CSV
                     </button>
                 </div>
+
+                {/* Affichage des erreurs de validation */}
+                {validationErrors.length > 0 && (
+                    <div className="mt-6 p-4 bg-warning/10 border border-warning/30 rounded-xl">
+                        <h4 className="text-sm font-semibold text-warning-500 mb-2">⚠️ Avertissements de validation</h4>
+                        <ul className="text-xs text-muted space-y-1">
+                            {validationErrors.map((err, i) => (
+                                <li key={i}>{err}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {/* Erreur fatale */}
+                {error && (
+                    <div className="mt-6 p-4 bg-danger/10 border border-danger/30 rounded-xl">
+                        <p className="text-sm text-danger-500 font-medium">{error}</p>
+                    </div>
+                )}
 
                 <div className="mt-8">
                     {!isProcessing && results.length === 0 && (
                         <div
                             onClick={() => fileInputRef.current?.click()}
                             className="border-2 border-dashed border-boundary rounded-2xl p-12 text-center cursor-pointer hover:border-primary-500/50 hover:bg-primary-500/5 transition-all group"
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
                         >
                             <input
                                 type="file"
                                 ref={fileInputRef}
                                 onChange={handleFileChange}
-                                accept=".csv"
+                                accept=".csv,text/csv"
                                 className="hidden"
+                                aria-label="Importer un fichier CSV"
                             />
                             <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mx-auto mb-4 border border-boundary group-hover:scale-110 transition-transform">
                                 <span className="text-4xl">📊</span>
@@ -140,19 +285,19 @@ export function MassAudit() {
                             <div className="card-bento p-6">
                                 <h3 className="text-lg font-bold text-main mb-4">Synthèse du Parc</h3>
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                                    <div className="flex items-center justify-between p-3 bg-red-500/10 rounded-xl border border-red-500/20">
                                         <span className="text-sm font-medium text-red-400">🚨 Risque Immédiat (G)</span>
                                         <span className="text-xl font-bold text-red-500">
                                             {results.filter(r => r.currentDPE === 'G').length}
                                         </span>
                                     </div>
-                                    <div className="flex items-center justify-between p-3 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                                    <div className="flex items-center justify-between p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
                                         <span className="text-sm font-medium text-amber-400">⚠️ Attention (F/E)</span>
                                         <span className="text-xl font-bold text-amber-500">
                                             {results.filter(r => r.currentDPE === 'F' || r.currentDPE === 'E').length}
                                         </span>
                                     </div>
-                                    <div className="flex items-center justify-between p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                                    <div className="flex items-center justify-between p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                                         <span className="text-sm font-medium text-emerald-400">✅ Conforme (A-D)</span>
                                         <span className="text-xl font-bold text-emerald-500">
                                             {results.filter(r => ['A', 'B', 'C', 'D'].includes(r.currentDPE)).length}
@@ -162,6 +307,7 @@ export function MassAudit() {
                                 <button
                                     onClick={() => setResults([])}
                                     className="w-full mt-6 btn-ghost text-xs py-2"
+                                    type="button"
                                 >
                                     🔄 Réinitialiser l&apos;audit
                                 </button>
@@ -174,7 +320,7 @@ export function MassAudit() {
                                         .filter(r => r.compliance.status === 'danger')
                                         .slice(0, 5)
                                         .map(r => (
-                                            <div key={r.id} className="p-3 bg-surface rounded-lg border border-boundary flex items-center justify-between group hover:border-red-500/30 transition-colors">
+                                            <div key={r.id} className="p-3 bg-surface rounded-xl border border-boundary flex items-center justify-between group hover:border-red-500/30 transition-colors">
                                                 <div>
                                                     <p className="text-xs font-bold text-main truncate max-w-[150px]">{r.address}</p>
                                                     <p className="text-[10px] text-red-500">Gel locatif : {r.compliance.deadline || 'Immédiat'}</p>

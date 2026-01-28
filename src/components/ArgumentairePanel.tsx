@@ -87,7 +87,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
     const isPassoire = currentDPE === "F" || currentDPE === "G";
 
     return (
-        <div className="card overflow-hidden rounded-3xl">
+        <div className="card overflow-hidden rounded-2xl">
             {/* Header */}
             <div className="bg-gradient-to-r from-primary/20 to-primary/5 px-6 py-4 border-b border-boundary">
                 <h3 className="text-lg font-semibold text-main flex items-center gap-2">
@@ -109,7 +109,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                         {legalArgs.map((arg, i) => (
                             <div
                                 key={i}
-                                className="p-3 bg-surface rounded-lg text-sm text-main border-l-4 border-danger-500"
+                                className="p-3 bg-surface rounded-xl text-sm text-main border-l-4 border-danger-500"
                             >
                                 {arg}
                             </div>
@@ -127,7 +127,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                         {commercialArgs.map((arg, i) => (
                             <div
                                 key={i}
-                                className="p-4 bg-warning/10 rounded-lg border border-warning/20 hover:bg-warning/20 transition-colors"
+                                className="p-4 bg-warning/10 rounded-xl border border-warning/20 hover:bg-warning/20 transition-colors"
                             >
                                 <div className="text-2xl mb-2">{arg.icon}</div>
                                 <h5 className="font-semibold text-main text-sm mb-1">{arg.title}</h5>
@@ -147,7 +147,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
                         {actionArgs.map((arg, i) => (
                             <div
                                 key={i}
-                                className="p-4 bg-success/10 rounded-lg border border-success/20 hover:bg-success/20 transition-colors"
+                                className="p-4 bg-success/10 rounded-xl border border-success/20 hover:bg-success/20 transition-colors"
                             >
                                 <div className="text-2xl mb-2">{arg.icon}</div>
                                 <h5 className="font-semibold text-main text-sm mb-1">{arg.title}</h5>
@@ -159,7 +159,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
 
                 {/* Call to Action */}
                 {isPassoire && (
-                    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/20 rounded-lg border border-primary/30">
+                    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/20 rounded-xl border border-primary/30">
                         <p className="text-sm text-primary-200 font-medium">
                             💡 <span className="font-bold text-primary">Phrase clé pour l&apos;AG :</span> &quot;En votant cette
                             résolution aujourd&apos;hui, vous sécurisez la valeur locative de vos biens et
