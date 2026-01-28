@@ -121,7 +121,9 @@ export function simulateFinancing(
     currentDPE: DPELetter,
     targetDPE: DPELetter,
     commercialLots: number = 0,
-    localAidAmount: number = 0
+    localAidAmount: number = 0,
+    alurFund: number = 0,
+    ceeBonus: number = 0
 ): FinancingPlan {
     // Guard: prevent division by zero
     if (!nbLots || nbLots <= 0) {
@@ -186,16 +188,16 @@ export function simulateFinancing(
     // Plafond Éco-PTZ (sur lots totaux ou résidentiels ? En pratique souvent résidentiels, mais simplifions sur nbLots pour l'instant)
     const ecoPtzCeiling = nbLots * ECO_PTZ_COPRO.ceilingPerUnit;
 
-    // Montant empruntable (reste après MPR + Aides Locales, plafonné)
-    const remainingAfterAids = totalCostHT - mprAmount - localAidAmount;
-    const ecoPtzAmount = Math.min(remainingAfterAids, ecoPtzCeiling);
+    // Montant empruntable (reste après TOUTES les déductions: MPR + Aides Locales + Fonds ALUR + CEE)
+    const remainingAfterAids = totalCostHT - mprAmount - localAidAmount - alurFund - ceeBonus;
+    const ecoPtzAmount = Math.min(Math.max(0, remainingAfterAids), ecoPtzCeiling);
 
-    // Reste à charge final
-    const remainingCost = totalCostHT - mprAmount - localAidAmount - ecoPtzAmount;
+    // Reste à charge final (ce qui reste après TOUT)
+    const remainingCost = totalCostHT - mprAmount - localAidAmount - alurFund - ceeBonus - ecoPtzAmount;
 
     // Mensualité Éco-PTZ (taux 0%, donc simple division)
     const monthlyPayments = ECO_PTZ_COPRO.maxDurationYears * 12;
-    const monthlyPayment = ecoPtzAmount / monthlyPayments;
+    const monthlyPayment = ecoPtzAmount > 0 ? ecoPtzAmount / monthlyPayments : 0;
 
     return {
         worksCostHT: Math.round(costHT),
@@ -342,7 +344,9 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
         input.currentDPE,
         input.targetDPE,
         input.commercialLots,
-        input.localAidAmount
+        input.localAidAmount,
+        input.alurFund || 0,
+        input.ceeBonus || 0
     );
 
     // 3. Coût de l'inaction (Inflation énergie)

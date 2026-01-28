@@ -31,6 +31,7 @@ import { TantiemeCalculator } from "@/components/business/TantiemeCalculator";
 import { BenchmarkChart } from "@/components/business/BenchmarkChart";
 import { ObjectionHandler } from "@/components/business/ObjectionHandler";
 import { ValuationCard } from "@/components/business/ValuationCard";
+import { InvestorTaxCard } from "@/components/business/InvestorTaxCard";
 import { VoteQR } from "@/components/pdf/VoteQR";
 import { StaggerContainer } from "@/components/ui/AnimatedCard";
 
@@ -249,23 +250,30 @@ export default function HomePage() {
                                                 <span className="font-medium">{result.input.numberOfUnits} lots</span>
                                             </p>
                                         </div>
-                                        <div className="flex items-center gap-6">
-                                            <div className="text-center">
-                                                <p className="label-technical mb-1">DPE Actuel</p>
-                                                <div className="flex justify-center">
-                                                    <DPEGauge currentDPE={result.input.currentDPE} targetDPE={result.input.targetDPE} />
-                                                </div>
-                                                <p className="text-sm font-medium text-main mt-2 tabular-nums">{result.input.currentDPE} kWh/m²/an</p>
-                                            </div>
+                                        <div className="flex flex-row items-center justify-center gap-6 md:gap-8">
+                                            {/* DPE Actuel */}
                                             <div className="flex flex-col items-center">
-                                                <span className="text-3xl text-muted">→</span>
+                                                <p className="label-technical mb-2">DPE Actuel</p>
+                                                <DPEGauge currentDPE={result.input.currentDPE} targetDPE={result.input.targetDPE} />
+                                                <p className="text-sm font-medium text-main mt-2 tabular-nums">{result.input.currentDPE}</p>
                                             </div>
-                                            <div className="text-center">
-                                                <p className="label-technical mb-1">DPE Cible</p>
-                                                <div className="flex justify-center">
-                                                    <DPEGauge currentDPE={result.input.targetDPE} targetDPE={result.input.targetDPE} />
-                                                </div>
-                                                <p className="text-sm font-medium text-main mt-2 tabular-nums">{result.input.targetDPE} kWh/m²/an</p>
+
+                                            {/* Arrow + Gain */}
+                                            <div className="flex flex-col items-center gap-1">
+                                                <span className="text-3xl text-primary">→</span>
+                                                <span className="text-xs text-success-500 font-medium">
+                                                    +{Math.abs(
+                                                        ['A', 'B', 'C', 'D', 'E', 'F', 'G'].indexOf(result.input.targetDPE) -
+                                                        ['A', 'B', 'C', 'D', 'E', 'F', 'G'].indexOf(result.input.currentDPE)
+                                                    )} classes
+                                                </span>
+                                            </div>
+
+                                            {/* DPE Cible */}
+                                            <div className="flex flex-col items-center">
+                                                <p className="label-technical mb-2">DPE Cible</p>
+                                                <DPEGauge currentDPE={result.input.targetDPE} targetDPE={result.input.targetDPE} />
+                                                <p className="text-sm font-medium text-main mt-2 tabular-nums">{result.input.targetDPE}</p>
                                             </div>
                                         </div>
                                     </div>

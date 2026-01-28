@@ -67,6 +67,15 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             localAidAmount: formData.get("localAidAmount")
                 ? parseFloat(formData.get("localAidAmount") as string)
                 : 0,
+            alurFund: formData.get("alurFund")
+                ? parseFloat(formData.get("alurFund") as string)
+                : 0,
+            ceeBonus: formData.get("ceeBonus")
+                ? parseFloat(formData.get("ceeBonus") as string)
+                : 0,
+            investorRatio: formData.get("investorRatio")
+                ? parseFloat(formData.get("investorRatio") as string)
+                : 0,
             averagePricePerSqm: formData.get("averagePricePerSqm")
                 ? parseFloat(formData.get("averagePricePerSqm") as string)
                 : undefined,
@@ -300,6 +309,62 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                         />
                         <p className="text-[10px] text-muted mt-1">
                             Subventions ville/région (ex: Mieux Chez Moi).
+                        </p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-muted mb-1">
+                            💰 Fonds Travaux ALUR (€)
+                        </label>
+                        <input
+                            type="number"
+                            name="alurFund"
+                            min={0}
+                            step={1000}
+                            placeholder="0"
+                            className="input"
+                        />
+                        <p className="text-[10px] text-muted mt-1">
+                            Trésorerie dormante disponible.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-muted mb-1">
+                            ⚡ Primes CEE (€)
+                        </label>
+                        <input
+                            type="number"
+                            name="ceeBonus"
+                            min={0}
+                            step={500}
+                            placeholder="0"
+                            className="input"
+                        />
+                        <p className="text-[10px] text-muted mt-1">
+                            Certificats d&apos;Économie d&apos;Énergie.
+                        </p>
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-muted mb-2">
+                            👔 Part de Bailleurs Investisseurs: <span className="text-primary font-bold" id="investor-ratio-display">0%</span>
+                        </label>
+                        <input
+                            type="range"
+                            name="investorRatio"
+                            min={0}
+                            max={100}
+                            step={5}
+                            defaultValue={0}
+                            className="w-full h-2 bg-boundary rounded-lg appearance-none cursor-pointer accent-primary"
+                            onChange={(e) => {
+                                const display = document.getElementById("investor-ratio-display");
+                                if (display) display.textContent = `${e.target.value}%`;
+                            }}
+                        />
+                        <p className="text-[10px] text-muted mt-1">
+                            Si &gt; 40%, affiche l&apos;avantage fiscal (déficit foncier).
                         </p>
                     </div>
                 </div>

@@ -63,6 +63,15 @@ export const DiagnosticInputSchema = z.object({
 
     /** Montant des aides locales (Angers/Nantes) */
     localAidAmount: z.number().min(0).optional().default(0),
+
+    /** Fonds Travaux ALUR disponible (€) - Trésorerie Dormante */
+    alurFund: z.number().min(0).optional().default(0),
+
+    /** Primes CEE estimées (€) - Certificats d'Économie d'Énergie */
+    ceeBonus: z.number().min(0).optional().default(0),
+
+    /** Pourcentage de bailleurs investisseurs (0-100%) - Variable Sociologique */
+    investorRatio: z.number().min(0).max(100).optional().default(0),
 });
 
 export type DiagnosticInput = z.infer<typeof DiagnosticInputSchema>;
