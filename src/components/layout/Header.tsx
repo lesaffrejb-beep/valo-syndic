@@ -1,8 +1,6 @@
 import { useBrand } from "@/context/BrandContext";
 import { ShareButton } from "@/components/ui/ShareButton";
-import { SoundToggle } from "@/components/ui/SoundToggle";
 import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
-import { LEGAL } from "@/lib/constants";
 
 interface HeaderProps {
     onOpenBranding: () => void;
@@ -74,12 +72,9 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                             <span className="w-2 h-2 bg-success-500 rounded-full animate-pulse"></span>
                             <span className="text-xs font-medium text-success-500">Calcul 100% local</span>
                         </div>
-                        <div className="text-right">
-                            <p className="text-xs text-muted">v{LEGAL.version}</p>
-                        </div>
+
                         <div className="flex items-center gap-2">
                             <ShareButton />
-                            <SoundToggle />
                             <ProjectionModeToggle />
                         </div>
                     </div>

@@ -12,6 +12,7 @@ import {
     MPR_COPRO,
     ECO_PTZ_COPRO,
     TECHNICAL_PARAMS,
+    PROJECT_FEES,
     type DPELetter,
 } from "./constants";
 
@@ -122,8 +123,15 @@ export function simulateFinancing(
     commercialLots: number = 0,
     localAidAmount: number = 0
 ): FinancingPlan {
+    // Guard: prevent division by zero
+    if (!nbLots || nbLots <= 0) {
+        throw new Error("Le nombre de lots doit être supérieur à 0");
+    }
+    if (!costHT || costHT <= 0) {
+        throw new Error("Le coût HT doit être supérieur à 0");
+    }
+
     // 1. Calcul des Frais Annexes (Coûts Invisibles)
-    const { PROJECT_FEES } = require("./constants"); // Import dynamique pour éviter doublons imports
 
     const syndicFees = costHT * PROJECT_FEES.syndicRate;
     const doFees = costHT * PROJECT_FEES.doRate;
@@ -190,21 +198,21 @@ export function simulateFinancing(
     const monthlyPayment = ecoPtzAmount / monthlyPayments;
 
     return {
-        worksCostHT: costHT,
-        totalCostHT,
-        syndicFees,
-        doFees,
-        contingencyFees,
-        costPerUnit,
+        worksCostHT: Math.round(costHT),
+        totalCostHT: Math.round(totalCostHT),
+        syndicFees: Math.round(syndicFees),
+        doFees: Math.round(doFees),
+        contingencyFees: Math.round(contingencyFees),
+        costPerUnit: Math.round(costPerUnit),
         energyGainPercent,
-        mprAmount,
-        localAidAmount,
+        mprAmount: Math.round(mprAmount),
+        localAidAmount: Math.round(localAidAmount),
         mprRate: mprRate + exitPassoireBonus,
         exitPassoireBonus,
-        ecoPtzAmount,
-        remainingCost: Math.max(0, remainingCost),
-        monthlyPayment,
-        remainingCostPerUnit: Math.max(0, remainingCost) / nbLots,
+        ecoPtzAmount: Math.round(ecoPtzAmount),
+        remainingCost: Math.round(Math.max(0, remainingCost)),
+        monthlyPayment: Math.round(monthlyPayment),
+        remainingCostPerUnit: Math.round(Math.max(0, remainingCost) / nbLots),
     };
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { type DiagnosticResult } from "@/lib/schemas";
-import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { motion } from "framer-motion";
 
 interface DownloadPptxButtonProps {
@@ -9,10 +8,7 @@ interface DownloadPptxButtonProps {
 }
 
 export function DownloadPptxButton({ result }: DownloadPptxButtonProps) {
-    const { playSound } = useSoundEffects();
-
     const generatePptx = async () => {
-        playSound("click");
 
         // Dynamic import to avoid SSR/Build issues with node modules
         const pptxgen = (await import("pptxgenjs")).default;

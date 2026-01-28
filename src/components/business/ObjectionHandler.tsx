@@ -6,6 +6,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ObjectionHandlerProps {
     className?: string;
@@ -167,20 +168,27 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
                                 </span>
                             </button>
 
-                            {/* Contenu */}
-                            <div
-                                className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                                    }`}
-                            >
-                                <div className="px-4 pb-4 space-y-3">
-                                    {objection.arguments.map((arg, idx) => (
-                                        <div key={idx} className="pl-4 border-l-2 border-boundary">
-                                            <p className="font-semibold text-main text-sm">{arg.heading}</p>
-                                            <p className="text-sm text-secondary mt-1">{arg.content}</p>
+                            {/* Contenu animé avec Framer Motion */}
+                            <AnimatePresence initial={false}>
+                                {isOpen && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <div className="px-4 pb-4 space-y-3">
+                                            {objection.arguments.map((arg, idx) => (
+                                                <div key={idx} className="pl-4 border-l-2 border-boundary">
+                                                    <p className="font-semibold text-main text-sm">{arg.heading}</p>
+                                                    <p className="text-sm text-secondary mt-1">{arg.content}</p>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     );
                 })}

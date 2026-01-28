@@ -115,9 +115,6 @@ export const LEGAL = {
     /** Mention source données DVF */
     dvfDisclaimer: "Données millésimées 2024 (Retard publication : 2 ans).",
 
-    /** Version du document */
-    version: "1.0.0",
-
     /** Date de mise à jour des constantes */
     lastUpdate: new Date("2026-01-27"),
 } as const;

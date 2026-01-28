@@ -33,7 +33,6 @@ import { ObjectionHandler } from "@/components/business/ObjectionHandler";
 import { ValuationCard } from "@/components/business/ValuationCard";
 import { VoteQR } from "@/components/pdf/VoteQR";
 import { StaggerContainer } from "@/components/ui/AnimatedCard";
-import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 // God View
 import { MassAudit } from "@/components/business/MassAudit";
@@ -69,7 +68,6 @@ export default function HomePage() {
     const [result, setResult] = useState<DiagnosticResult | null>(null);
     const [currentInput, setCurrentInput] = useState<DiagnosticInput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const { playSound } = useSoundEffects();
     const [activeTab, setActiveTab] = useState<"flash" | "mass">("flash");
     const [showBrandingModal, setShowBrandingModal] = useState(false);
 
@@ -81,7 +79,6 @@ export default function HomePage() {
             // ... (demo logic could be here if needed)
         }
 
-        playSound("click");
         setIsLoading(true);
         setCurrentInput(data);
 
@@ -123,9 +120,8 @@ export default function HomePage() {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        playSound("click");
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = (e: ProgressEvent<FileReader>) => {
             try {
                 const data = JSON.parse(e.target?.result as string);
                 const validatedInput = DiagnosticInputSchema.parse(data.input);
@@ -367,7 +363,6 @@ export default function HomePage() {
 
             <Footer
                 onSave={() => {
-                    playSound("click");
                     handleSave();
                 }}
                 onLoad={() => fileInputRef.current?.click()}
