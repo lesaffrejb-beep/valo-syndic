@@ -3,10 +3,27 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Middleware de sécurité Next.js
- * Ajoute les headers de sécurité recommandés (X-Frame-Options, etc.)
+ * Ajoute les headers de sécurité recommandés
  */
 export function middleware(request: NextRequest) {
     const response = NextResponse.next();
+
+    // Content Security Policy
+    // Permet les scripts/styles inline (nécessaire pour Next.js et certaines libs)
+    response.headers.set(
+        'Content-Security-Policy',
+        [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob:",
+            "font-src 'self'",
+            "connect-src 'self'",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ].join('; ')
+    );
 
     // Empêche l'inclusion dans un iframe (clickjacking protection)
     response.headers.set('X-Frame-Options', 'DENY');
@@ -20,9 +37,15 @@ export function middleware(request: NextRequest) {
     // XSS Protection (legacy browsers)
     response.headers.set('X-XSS-Protection', '1; mode=block');
 
+    // Permissions Policy (limiter les API navigateur)
+    response.headers.set(
+        'Permissions-Policy',
+        'camera=(), microphone=(), geolocation=(), payment=()'
+    );
+
     return response;
 }
 
 export const config = {
-    matcher: '/:path*',
+    matcher: '/((?!api|_next/static|_next/image|favicon.ico).*)',
 };
