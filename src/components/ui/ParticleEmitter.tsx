@@ -107,10 +107,11 @@ export function ParticleEmitter({
                         y: [-20, -40, -60, -80],
                     }}
                     transition={{
-                        duration: particle.duration,
+                        duration: particle.duration + 1, // Slower: 3-5s instead of 2-4s
                         delay: particle.delay,
                         repeat: Infinity,
-                        ease: "easeOut",
+                        repeatType: "mirror", // Smooth fade in/out instead of abrupt reset
+                        ease: "easeInOut",
                     }}
                 />
             ))}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { type BuildingAuditResult } from "@/lib/calculator";
+import type * as LeafletType from "leaflet";
 
 // Chargement dynamique de Leaflet (SSR safe)
 const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
@@ -14,9 +15,16 @@ interface AngersMapProps {
     results: BuildingAuditResult[];
 }
 
+// Design system colors (from tailwind.config.ts tokens)
+const MAP_COLORS = {
+    danger: "#EF4444",   // danger.DEFAULT
+    warning: "#F59E0B",  // warning.DEFAULT  
+    success: "#10B981",  // success.DEFAULT
+};
+
 export function AngersMap({ results }: AngersMapProps) {
     const [isMounted, setIsMounted] = useState(false);
-    const [L, setL] = useState<any>(null);
+    const [L, setL] = useState<typeof LeafletType | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
@@ -38,15 +46,9 @@ export function AngersMap({ results }: AngersMapProps) {
 
     // Custom Icon based on DPE status
     const getIcon = (status: "danger" | "warning" | "success") => {
-        const colors = {
-            danger: "#ef4444",
-            warning: "#f59e0b",
-            success: "#10b981",
-        };
-
         return L.divIcon({
             className: "custom-marker",
-            html: `<div style="background-color: ${colors[status]}; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>`,
+            html: `<div style="background-color: ${MAP_COLORS[status]}; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>`,
             iconSize: [20, 20],
             iconAnchor: [10, 10],
         });
@@ -77,7 +79,7 @@ export function AngersMap({ results }: AngersMapProps) {
                                     <span className={`px-2 py-0.5 rounded text-xs font-bold text-white`} style={{ backgroundColor: building.currentDPE === 'G' ? '#ef4444' : '#f59e0b' }}>
                                         DPE {building.currentDPE}
                                     </span>
-                                    <span className="text-[10px] text-slate-500">{building.numberOfUnits} lots</span>
+                                    <span className="text-xs text-slate-500">{building.numberOfUnits} lots</span>
                                 </div>
                                 <p className="text-xs text-slate-600">
                                     <strong>Statut :</strong> {building.compliance.label}

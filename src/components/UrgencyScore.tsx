@@ -81,8 +81,8 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
         return () => clearInterval(timer);
     }, [score]);
 
-    // Calcul du cercle SVG
-    const radius = 45;
+    // Calcul du cercle SVG (scaled x1.2)
+    const radius = 54;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (animatedScore / 100) * circumference;
 
@@ -95,40 +95,40 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
             <div className={`absolute inset-0 bg-${colors.stroke}/5 rounded-xl`} />
 
             <h3 className="text-lg font-semibold text-main mb-4 flex items-center gap-2 relative z-10">
-                🎯 Score d&apos;Urgence
+                🎯 Score d&apos;urgence
             </h3>
 
-            <div className="flex items-center gap-6 relative z-10">
-                {/* Cercle SVG */}
-                <div className="relative">
-                    <svg width="120" height="120" className="transform -rotate-90">
+            <div className="flex items-center gap-8 relative z-10">
+                {/* Cercle SVG - Scaled up x1.2 */}
+                <div className="relative flex-shrink-0">
+                    <svg width="144" height="144" className="transform -rotate-90">
                         {/* Background circle */}
                         <circle
-                            cx="60"
-                            cy="60"
+                            cx="72"
+                            cy="72"
                             r={radius}
                             fill="none"
                             stroke="#2A2A2A"
-                            strokeWidth="8"
+                            strokeWidth="10"
                         />
                         {/* Progress circle */}
                         <circle
-                            cx="60"
-                            cy="60"
+                            cx="72"
+                            cy="72"
                             r={radius}
                             fill="none"
                             stroke={colors.stroke}
-                            strokeWidth="8"
+                            strokeWidth="10"
                             strokeLinecap="round"
                             strokeDasharray={circumference}
                             strokeDashoffset={offset}
                             className="transition-all duration-1000 ease-out"
-                            style={{ filter: `drop-shadow(0 0 4px ${colors.stroke})` }}
+                            style={{ filter: `drop-shadow(0 0 6px ${colors.stroke})` }}
                         />
                     </svg>
                     {/* Score au centre */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <span className={`text-3xl font-black ${colors.text} tabular-nums`}>
+                        <span className={`text-4xl font-black ${colors.text} tabular-nums`}>
                             {animatedScore}
                         </span>
                     </div>

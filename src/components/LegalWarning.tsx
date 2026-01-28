@@ -18,7 +18,7 @@ export function LegalWarning({
 
     const variantStyles = {
         inline: "border-l-2 border-boundary pl-3 italic py-2",
-        banner: "bg-surface py-3 px-4 rounded-md border border-boundary italic",
+        banner: "py-4 text-center italic",
         footer: "py-4 text-center border-t border-boundary mt-8",
     };
 

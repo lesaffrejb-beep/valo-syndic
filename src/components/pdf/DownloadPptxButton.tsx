@@ -137,10 +137,14 @@ export function DownloadPptxButton({ result }: DownloadPptxButtonProps) {
             onClick={generatePptx}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-4 py-2 bg-[#D04423] text-white rounded-lg hover:bg-[#b03a1e] transition-colors shadow-lg"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-lg relative"
         >
             <span>📊</span>
             <span className="font-medium">PowerPoint</span>
+            <span className="absolute -top-2 -right-2 px-1.5 py-0.5 bg-warning-500 text-white text-[10px] font-bold rounded-full">
+                Bêta
+            </span>
         </motion.button>
     );
 }
+

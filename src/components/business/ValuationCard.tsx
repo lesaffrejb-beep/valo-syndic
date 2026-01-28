@@ -8,9 +8,6 @@ interface ValuationCardProps {
 export function ValuationCard({ valuation }: ValuationCardProps) {
     return (
         <div className="card-bento p-6 md:p-8 flex flex-col justify-between relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-                <span className="text-6xl">📈</span>
-            </div>
 
             <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">

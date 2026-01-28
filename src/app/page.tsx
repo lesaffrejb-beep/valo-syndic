@@ -15,14 +15,14 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 // Feature Components
-import { DiagnosticForm } from "@/components/DiagnosticForm";
+import { DiagnosticForm } from "@/components/business/form/DiagnosticForm";
 import { ComplianceTimeline } from "@/components/ComplianceTimeline";
 import { FinancingCard } from "@/components/FinancingCard";
 import { InactionCostCard } from "@/components/InactionCostCard";
 import { LegalWarning } from "@/components/LegalWarning";
 import { EnergyInflationChart } from "@/components/EnergyInflationChart";
 import { DPEGauge } from "@/components/DPEGauge";
-import { FinancingBreakdownChart } from "@/components/FinancingBreakdownChart";
+import { FinancingBreakdownChart } from "@/components/business/charts/FinancingBreakdownChart";
 import { ArgumentairePanel } from "@/components/ArgumentairePanel";
 import { UrgencyScore } from "@/components/UrgencyScore";
 

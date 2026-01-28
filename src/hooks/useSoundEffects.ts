@@ -3,6 +3,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+// Type-safe window interface for Safari compatibility
+interface WindowWithWebkit {
+    AudioContext?: typeof AudioContext;
+    webkitAudioContext?: typeof AudioContext;
+}
+
 interface SoundState {
     isMuted: boolean;
     toggleMute: () => void;
@@ -20,10 +26,11 @@ export const useSoundEffects = create<SoundState>()(
 
                 if (typeof window === "undefined") return;
 
-                const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-                if (!AudioContext) return;
+                const win = window as WindowWithWebkit;
+                const AudioContextClass = win.AudioContext || win.webkitAudioContext;
+                if (!AudioContextClass) return;
 
-                const ctx = new AudioContext();
+                const ctx = new AudioContextClass();
                 const oscillator = ctx.createOscillator();
                 const gainNode = ctx.createGain();
 
