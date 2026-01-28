@@ -87,7 +87,7 @@ export function ArgumentairePanel({ result }: ArgumentairePanelProps) {
     const isPassoire = currentDPE === "F" || currentDPE === "G";
 
     return (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden rounded-3xl">
             {/* Header */}
             <div className="bg-gradient-to-r from-primary/20 to-primary/5 px-6 py-4 border-b border-boundary">
                 <h3 className="text-lg font-semibold text-main flex items-center gap-2">

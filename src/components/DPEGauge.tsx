@@ -73,9 +73,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                         >
                             {currentDPE}
                         </motion.div>
-                        {isPassoire && (
-                            <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full border-2 border-surface animate-ping" />
-                        )}
+
                     </div>
 
                     <p className="text-sm font-medium text-muted-foreground">{DPE_KWH_VALUES[currentDPE]} kWh/m²/an</p>

@@ -12,9 +12,17 @@ interface PdfButtonContentProps {
 export function PdfButtonContent({ result }: PdfButtonContentProps) {
     const brand = useBrandStore((state) => state.brand);
 
+    // Transform brand for PDF compatibility (null → undefined)
+    const pdfBrand = brand ? {
+        agencyName: brand.agencyName,
+        primaryColor: brand.primaryColor,
+        logoUrl: brand.logoUrl ?? undefined,
+        contactEmail: brand.contactEmail,
+    } : undefined;
+
     return (
         <PDFDownloadLink
-            document={<PDFDocument result={result} brand={brand} />}
+            document={<PDFDocument result={result} brand={pdfBrand as any} />}
             fileName={`audit-valo-syndic-${new Date().toISOString().split('T')[0]}.pdf`}
             className="btn-primary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
         >

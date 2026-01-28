@@ -19,6 +19,7 @@ interface Particle {
     size: number;
     duration: number;
     delay: number;
+    angle: number;
 }
 
 /**
@@ -50,21 +51,27 @@ export function ParticleEmitter({
             return;
         }
 
-        // Generate particles
-        const newParticles: Particle[] = Array.from({ length: count }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100, // % from left
-            y: Math.random() * 100, // % from top
-            size: 4 + Math.random() * 8, // 4-12px
-            duration: 2 + Math.random() * 2, // 2-4s
-            delay: Math.random() * 1, // 0-1s stagger
-        }));
+        // Generate particles radiating from center
+        const newParticles: Particle[] = Array.from({ length: count }, (_, i) => {
+            // Calculate angle for radial distribution
+            const angle = (i / count) * 2 * Math.PI + Math.random() * 0.5;
+            // Starting point near center with slight randomness
+            const startRadius = 5 + Math.random() * 10; // 5-15% from center
+            const startX = 50 + Math.cos(angle) * startRadius;
+            const startY = 50 + Math.sin(angle) * startRadius;
+
+            return {
+                id: i,
+                x: startX,
+                y: startY,
+                size: 3 + Math.random() * 6, // 3-9px (slightly smaller)
+                duration: 3 + Math.random() * 2, // 3-5s
+                delay: (i / count) * 2, // Staggered around the circle
+                angle, // Store angle for radial movement
+            };
+        });
 
         setParticles(newParticles);
-
-
-
-
     }, [active, count, prefersReducedMotion]);
 
     if (!active || prefersReducedMotion || particles.length === 0) {
@@ -91,19 +98,22 @@ export function ParticleEmitter({
                     initial={{
                         opacity: 0,
                         scale: 0,
-                        y: 0
+                        x: 0,
+                        y: 0,
                     }}
                     animate={{
-                        opacity: [0, 1, 1, 0],
-                        scale: [0, 1, 1.2, 0],
-                        y: [-20, -40, -60, -80],
+                        opacity: [0, 0.8, 0.6, 0],
+                        scale: [0, 1, 0.8, 0],
+                        // Radial outward movement based on particle angle
+                        x: [0, Math.cos(particle.angle) * 30, Math.cos(particle.angle) * 50],
+                        y: [0, Math.sin(particle.angle) * 30, Math.sin(particle.angle) * 50],
                     }}
                     transition={{
-                        duration: particle.duration + 1, // Slower: 3-5s instead of 2-4s
+                        duration: particle.duration,
                         delay: particle.delay,
                         repeat: Infinity,
-                        repeatType: "mirror", // Smooth fade in/out instead of abrupt reset
-                        ease: "easeInOut",
+                        repeatType: "loop",
+                        ease: "easeOut",
                     }}
                 />
             ))}

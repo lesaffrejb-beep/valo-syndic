@@ -294,7 +294,7 @@ export default function HomePage() {
                                 <InactionCostCard inactionCost={result.inactionCost} />
 
                                 {/* 🆕 Valuation Card */}
-                                <ValuationCard valuation={result.valuation} />
+                                <ValuationCard valuation={result.valuation} financing={result.financing} />
 
                                 {/* Avantage Fiscal si > 40% bailleurs */}
                                 {((result.input.investorRatio ?? 0) > 40) && (
