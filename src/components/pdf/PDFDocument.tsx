@@ -3,15 +3,15 @@ import { type DiagnosticResult } from '@/lib/schemas';
 import { formatCurrency, formatPercent } from '@/lib/calculator';
 
 // Register fonts
-Font.register({
-    family: 'Playfair Display',
-    src: 'https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtM.ttf'
-});
+// Font.register({
+//     family: 'Playfair Display',
+//     src: 'https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtM.ttf'
+// });
 
-Font.register({
-    family: 'Inter',
-    src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.ttf'
-});
+// Font.register({
+//     family: 'Inter',
+//     src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.ttf'
+// });
 
 // Theme Colors
 const C = {
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: C.bg,
         padding: 40,
-        fontFamily: 'Inter',
+        fontFamily: 'Helvetica',
     },
     header: {
         borderBottomWidth: 2,
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     },
     brandTitle: {
         fontSize: 22,
-        fontFamily: 'Playfair Display',
+        fontFamily: 'Times-Bold',
         color: C.gold,
         fontWeight: 'bold',
     },
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     },
     pageTitle: {
         fontSize: 20,
-        fontFamily: 'Playfair Display',
+        fontFamily: 'Times-Bold',
         color: C.text,
         marginBottom: 20,
         fontWeight: 'bold',
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: 13,
-        fontFamily: 'Playfair Display',
+        fontFamily: 'Times-Bold',
         color: C.text,
         marginBottom: 10,
         fontWeight: 'bold',
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     },
     bigNumber: {
         fontSize: 28,
-        fontFamily: 'Playfair Display',
+        fontFamily: 'Times-Bold',
         marginVertical: 8,
     },
     heroBox: {

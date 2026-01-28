@@ -27,7 +27,11 @@ export function PdfButtonContent({ result }: PdfButtonContentProps) {
             className="btn-primary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
         >
             {/* @ts-ignore */}
+            {/* @ts-ignore */}
             {({ blob, url, loading, error }: any) => {
+                // Debug logs
+                if (error) console.error("PDF Generation Error:", error);
+
                 if (loading) {
                     return (
                         <>
@@ -36,6 +40,16 @@ export function PdfButtonContent({ result }: PdfButtonContentProps) {
                         </>
                     );
                 }
+
+                if (error) {
+                    return (
+                        <>
+                            <span>❌</span>
+                            <span>Erreur création PDF</span>
+                        </>
+                    );
+                }
+
                 return (
                     <>
                         <span>📄</span>
