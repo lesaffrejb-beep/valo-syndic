@@ -98,23 +98,24 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
     };
 
     const getColorClasses = (color: Objection["color"], isOpen: boolean) => {
+        // Linear/Clean style: solid borders, subtle backgrounds, no glassmorphism
         const base = {
             danger: {
-                bg: isOpen ? "bg-danger-900/20" : "bg-card hover:bg-danger-900/10",
-                border: "border-danger-500/30",
-                icon: "bg-danger-900/30 text-danger-400",
+                bg: isOpen ? "bg-danger-500/10" : "bg-white/5 hover:bg-white/10",
+                border: "border border-white/10",
+                icon: "bg-danger-500/20 text-danger-400",
                 title: "text-danger-400",
             },
             warning: {
-                bg: isOpen ? "bg-warning-900/20" : "bg-card hover:bg-warning-900/10",
-                border: "border-warning-500/30",
-                icon: "bg-warning-900/30 text-warning-400",
+                bg: isOpen ? "bg-warning-500/10" : "bg-white/5 hover:bg-white/10",
+                border: "border border-white/10",
+                icon: "bg-warning-500/20 text-warning-400",
                 title: "text-warning-400",
             },
             info: {
-                bg: isOpen ? "bg-primary-900/20" : "bg-card hover:bg-primary-900/10",
-                border: "border-primary-500/30",
-                icon: "bg-primary-900/30 text-primary-400",
+                bg: isOpen ? "bg-primary-500/10" : "bg-white/5 hover:bg-white/10",
+                border: "border border-white/10",
+                icon: "bg-primary-500/20 text-primary-400",
                 title: "text-primary-400",
             },
         };
