@@ -45,24 +45,22 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
     return (
         <motion.div
             ref={ref}
-            className="card-bento group"
+            className="w-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            whileHover={{ scale: 1.005 }}
         >
-            <h3 className="text-lg font-semibold text-main mb-6 flex items-center gap-2">
-                🌡️ Performance Énergétique
-            </h3>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative">
+                {/* Ligne connectrice (Desktop only) */}
+                <div className="hidden md:block absolute top-1/2 left-20 right-20 h-0.5 bg-gradient-to-r from-transparent via-boundary to-transparent -z-10" />
 
-            {/* Double gauge */}
-            <div className="space-y-6">
-                {/* Gauge actuelle */}
-                <div>
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-muted">DPE Actuel</span>
+                {/* 1. DPE ACTUEL (Gauche) */}
+                <div className="flex flex-col items-center gap-3 bg-surface p-4 rounded-2xl border border-boundary shadow-sm w-full md:w-auto min-w-[180px]">
+                    <span className="text-sm font-bold text-muted uppercase tracking-wider">État Actuel</span>
+
+                    <div className="relative">
                         <motion.div
-                            className={`${currentConfig.bgClass} text-black px-3 py-1.5 rounded-lg font-bold text-lg shadow-lg border border-white/20`}
+                            className={`${currentConfig.bgClass} text-white w-16 h-16 rounded-2xl flex items-center justify-center font-black text-4xl shadow-lg border-2 border-white/20`}
                             animate={isPassoire ? {
                                 scale: [1, 1.05, 1],
                                 boxShadow: [
@@ -75,120 +73,73 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                         >
                             {currentDPE}
                         </motion.div>
+                        {isPassoire && (
+                            <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full border-2 border-surface animate-ping" />
+                        )}
                     </div>
-                    <div className="relative h-5 bg-app rounded-full overflow-hidden border border-boundary">
-                        {/* Gradient background */}
+
+                    {/* Jauge Mini */}
+                    <div className="relative h-2 w-full bg-app rounded-full overflow-hidden border border-boundary mt-1">
                         <div
                             className="absolute inset-0"
-                            style={{
-                                background:
-                                    "linear-gradient(to right, #FF453A, #FFD60A, #32D74B)", // Neon Gradient
-                            }}
+                            style={{ background: "linear-gradient(to right, #FF453A, #FFD60A, #32D74B)" }}
                         />
-                        {/* Overlay animé */}
                         <motion.div
-                            className="absolute right-0 top-0 bottom-0 bg-app/90 backdrop-blur-sm"
+                            className="absolute right-0 top-0 bottom-0 bg-surface/90"
                             initial={{ width: "100%" }}
                             animate={isInView ? { width: `${100 - currentConfig.position}%` } : {}}
                             transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
                         />
-                        {/* Indicator avec glow */}
-                        <motion.div
-                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-black rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-                            initial={{ left: "-10px", opacity: 0 }}
-                            animate={isInView ? {
-                                left: `calc(${currentConfig.position}% - 12px)`,
-                                opacity: 1,
-                            } : {}}
-                            transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.3 }}
-                        />
                     </div>
                 </div>
 
-                {/* Flèche de progression animée */}
-                <motion.div
-                    className="flex items-center justify-center"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ delay: 1, duration: 0.4, type: "spring" }}
-                >
-                    <div className="flex items-center gap-2 px-4 py-2 bg-success/10 rounded-full border border-success/30">
-                        <motion.span
-                            className="text-success-500 text-xl"
-                            animate={{ y: [0, 3, 0] }}
-                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                        >
+                {/* 2. ACTION (Centre) */}
+                <div className="flex flex-col items-center justify-center z-10">
+                    <motion.div
+                        className="flex flex-col items-center gap-1"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                        transition={{ delay: 0.5 }}
+                    >
+                        <div className="w-10 h-10 bg-success-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg shadow-success-500/30 mb-2">
                             ↓
-                        </motion.span>
-                        <span className="font-semibold text-success-500">
-                            Gain de {classesGained} classe{classesGained > 1 ? "s" : ""}
-                        </span>
-                    </div>
-                </motion.div>
+                        </div>
+                        <div className="px-3 py-1 bg-success-500/10 rounded-full border border-success-500/20 backdrop-blur-sm">
+                            <span className="text-xs font-bold text-success-600 whitespace-nowrap">
+                                +{classesGained} classe{classesGained > 1 ? "s" : ""}
+                            </span>
+                        </div>
+                    </motion.div>
+                </div>
 
-                {/* Gauge cible */}
-                <div>
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-muted">DPE Cible</span>
-                        <motion.div
-                            className={`${targetConfig.bgClass} text-black px-3 py-1.5 rounded-lg font-bold text-lg ring-2 ring-offset-2 ring-offset-surface ring-success-500 shadow-lg border border-white/20`}
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={isInView ? { scale: 1, opacity: 1 } : {}}
-                            transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
-                        >
-                            {targetDPE}
-                        </motion.div>
-                    </div>
-                    <div className="relative h-5 bg-app rounded-full overflow-hidden border border-boundary">
-                        {/* Gradient background */}
+                {/* 3. DPE CIBLE (Droite) */}
+                <div className="flex flex-col items-center gap-3 bg-app p-4 rounded-2xl border border-success-500/30 shadow-[0_0_20px_rgba(34,197,94,0.1)] w-full md:w-auto min-w-[180px]">
+                    <span className="text-sm font-bold text-success-600 uppercase tracking-wider">État Projeté</span>
+
+                    <motion.div
+                        className={`${targetConfig.bgClass} text-white w-16 h-16 rounded-2xl flex items-center justify-center font-black text-4xl shadow-xl border-2 border-white/20`}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                        transition={{ delay: 0.8, type: "spring" }}
+                    >
+                        {targetDPE}
+                    </motion.div>
+
+                    {/* Jauge Mini */}
+                    <div className="relative h-2 w-full bg-app rounded-full overflow-hidden border border-boundary mt-1">
                         <div
                             className="absolute inset-0"
-                            style={{
-                                background:
-                                    "linear-gradient(to right, #FF453A, #FFD60A, #32D74B)",
-                            }}
+                            style={{ background: "linear-gradient(to right, #FF453A, #FFD60A, #32D74B)" }}
                         />
-                        {/* Overlay animé */}
                         <motion.div
-                            className="absolute right-0 top-0 bottom-0 bg-background/90"
+                            className="absolute right-0 top-0 bottom-0 bg-surface/90"
                             initial={{ width: "100%" }}
                             animate={isInView ? { width: `${100 - targetConfig.position}%` } : {}}
-                            transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.6 }}
-                        />
-                        {/* Indicator */}
-                        <motion.div
-                            className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-success-600 rounded-full shadow-[0_0_12px_rgba(50,215,75,0.6)]"
-                            initial={{ left: "-10px", opacity: 0 }}
-                            animate={isInView ? {
-                                left: `calc(${targetConfig.position}% - 12px)`,
-                                opacity: 1,
-                            } : {}}
-                            transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.6 }}
+                            transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1], delay: 0.9 }}
                         />
                     </div>
                 </div>
             </div>
-
-            {/* Légende */}
-            <div className="mt-6 flex justify-between text-xs text-muted">
-                <span>G (Passoire)</span>
-                <span>A (Performant)</span>
-            </div>
-
-            {/* Message commercial avec animation */}
-            {isPassoire && (
-                <motion.div
-                    className="mt-4 p-4 bg-success/10 rounded-xl border border-success/20"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 1.5 }}
-                >
-                    <p className="text-sm text-success-500">
-                        <span className="font-bold">🎯 Bonus Sortie Passoire :</span> +10% de MaPrimeRénov&apos;
-                        pour passer de {currentDPE} à {targetDPE}
-                    </p>
-                </motion.div>
-            )}
         </motion.div>
     );
 }

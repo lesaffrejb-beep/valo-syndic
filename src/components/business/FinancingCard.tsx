@@ -39,7 +39,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
             <div className="mb-6 pb-6 border-b border-border">
                 <div className="flex justify-between items-baseline mb-2">
                     <p className="label-technical">Travaux Seuls (HT)</p>
-                    <p className="text-main font-medium"><AnimatedCurrency value={financing.worksCostHT} /></p>
+                    <p className="text-main font-medium whitespace-nowrap"><AnimatedCurrency value={financing.worksCostHT} /></p>
                 </div>
 
                 {/* Détail frais annexes */}

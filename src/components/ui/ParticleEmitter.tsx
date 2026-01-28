@@ -62,17 +62,9 @@ export function ParticleEmitter({
 
         setParticles(newParticles);
 
-        // Regenerate particles periodically
-        const interval = setInterval(() => {
-            setParticles(prev => prev.map(p => ({
-                ...p,
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                delay: Math.random() * 0.5,
-            })));
-        }, 3000);
 
-        return () => clearInterval(interval);
+
+
     }, [active, count, prefersReducedMotion]);
 
     if (!active || prefersReducedMotion || particles.length === 0) {

@@ -178,7 +178,7 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
                                         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                                         style={{ overflow: "hidden" }}
                                     >
-                                        <div className="px-4 pb-4 space-y-3">
+                                        <div className="px-4 pb-4 pt-4 space-y-3">
                                             {objection.arguments.map((arg, idx) => (
                                                 <div key={idx} className="pl-4 border-l-2 border-boundary">
                                                     <p className="font-semibold text-main text-sm">{arg.heading}</p>
