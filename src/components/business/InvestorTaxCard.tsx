@@ -32,7 +32,7 @@ export function InvestorTaxCard({ investorRatio, remainingCostPerUnit }: Investo
                             {Math.round(remainingCostPerUnit).toLocaleString("fr-FR")} €
                         </p>
                         <p className="text-xs text-muted/70 mt-1">
-                            Réduction d'impôt dépendant de la TMI (30%, 41%, 45%)
+                            Réduction d&apos;impôt dépendant de la TMI (30%, 41%, 45%)
                         </p>
                     </div>
                 </div>

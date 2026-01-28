@@ -318,6 +318,14 @@ export default function HomePage() {
                                 {/* 🆕 Valuation Card */}
                                 <ValuationCard valuation={result.valuation} />
 
+                                {/* Avantage Fiscal si > 40% bailleurs */}
+                                {result.input.investorRatio && result.input.investorRatio > 40 && (
+                                    <InvestorTaxCard
+                                        investorRatio={result.input.investorRatio}
+                                        remainingCostPerUnit={result.financing.remainingCostPerUnit}
+                                    />
+                                )}
+
                                 {/* 🆕 Avocat du Diable */}
                                 <ObjectionHandler />
 
