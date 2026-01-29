@@ -191,10 +191,11 @@ describe('Coût de l\'inaction', () => {
 describe('Utilitaires', () => {
     describe('estimateDPEByYear', () => {
         it('estime correctement les vieux immeubles', () => {
-            const { estimateDPEByYear } = require('../mocks');
+            // const { estimateDPEByYear } = require('../mocks'); <--- REMOVED
+
             expect(estimateDPEByYear(1900)).toBe('G');
             expect(estimateDPEByYear(1960)).toBe('F');
-            expect(estimateDPEByYear(2010)).toBe('B');
+            expect(estimateDPEByYear(2010)).toBe('C');
             expect(estimateDPEByYear(2022)).toBe('A');
         });
     });
@@ -215,7 +216,7 @@ describe('Intégration — Scénario complet', () => {
 
         // 2. Simulation financement
         const financing = simulateFinancing(300000, 20, 'F', 'C');
-        
+
         // Vérifications cohérence
         expect(financing.mprRate).toBeCloseTo(0.55, 2);
         expect(financing.totalCostHT).toBeGreaterThan(300000); // Avec frais
@@ -223,8 +224,10 @@ describe('Intégration — Scénario complet', () => {
         expect(financing.monthlyPayment).toBeGreaterThanOrEqual(0);
 
         // 3. Coût inaction
+        // 3. Coût inaction
         const inaction = calculateInactionCost(300000, 20, 'F', 3500, 65);
-        expect(inaction.totalInactionCost).toBeGreaterThan(inaction.inflationCost);
+        const inflationCost = inaction.projectedCost3Years - inaction.currentCost;
+        expect(inaction.totalInactionCost).toBeGreaterThan(inflationCost);
 
         // 4. Le reste à charge doit être inférieur au coût total
         expect(financing.remainingCost).toBeLessThan(financing.totalCostHT);

@@ -25,8 +25,8 @@ export function PptxButtonContent({ result }: PptxButtonContentProps) {
                 logoUrl: brand.logoUrl || undefined,
             } : undefined;
 
-            const blob = await generateAGPresentation(result, brandSettings);
-            
+            const blob = await generateAGPresentation(result, brandSettings) as Blob;
+
             // Téléchargement
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');

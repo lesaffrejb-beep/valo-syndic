@@ -90,6 +90,20 @@ Ouvrir [http://localhost:3000](http://localhost:3000) dans le navigateur.
 
 ---
 
+## ✅ Tests & Qualité
+
+- **Unit Tests** : `npm test` (Jest)
+- **E2E Tests** : `npx playwright test` (Playwright)
+- **Linting** : `npm run lint`
+- **Type Checking** : `npx tsc --noEmit`
+
+## 🔒 Sécurité
+
+- **CSP** : Configuré dans `middleware.ts`
+- **Sentry** : Intégration prête (configurer `NEXT_PUBLIC_SENTRY_DSN`)
+
+---
+
 ## 📖 Documentation
 
 - **[PROJECT_DNA.md](docs/PROJECT_DNA.md)** — Vision, Genèse, Stratégie d'usage
