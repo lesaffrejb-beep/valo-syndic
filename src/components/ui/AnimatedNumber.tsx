@@ -90,9 +90,13 @@ export function AnimatedCurrency({
     showCents = false,
 }: AnimatedCurrencyProps) {
     const formatCurrency = (val: number) => {
+        const useDecimals = Math.abs(val) < 1000 && val !== 0 || showCents;
+
         return new Intl.NumberFormat("fr-FR", {
-            minimumFractionDigits: showCents ? 2 : 0,
-            maximumFractionDigits: showCents ? 2 : 0,
+            style: "currency",
+            currency: "EUR",
+            minimumFractionDigits: useDecimals ? 2 : 0,
+            maximumFractionDigits: useDecimals ? 2 : 0,
         }).format(val);
     };
 

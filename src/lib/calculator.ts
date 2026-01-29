@@ -417,10 +417,13 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
  * Formate un montant en euros avec séparateur de milliers.
  */
 export function formatCurrency(amount: number): string {
+    const useDecimals = Math.abs(amount) < 1000 && amount !== 0;
+
     return new Intl.NumberFormat("fr-FR", {
         style: "currency",
         currency: "EUR",
-        maximumFractionDigits: 0,
+        maximumFractionDigits: useDecimals ? 2 : 0,
+        minimumFractionDigits: useDecimals ? 2 : 0,
     }).format(amount).replace(/[\u200B\u202F\u00A0]/g, " "); // Replace non-breaking spaces with normal spaces for PDF safety
 }
 

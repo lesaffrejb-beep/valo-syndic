@@ -8,6 +8,7 @@
 import { useState, useMemo } from "react";
 import { type FinancingPlan } from "@/lib/schemas";
 import { ECO_PTZ_COPRO } from "@/lib/constants";
+import { formatCurrency } from "@/lib/calculator";
 import { NumberStepper } from "@/components/ui/NumberStepper";
 
 interface TantiemeCalculatorProps {
@@ -41,14 +42,7 @@ export function TantiemeCalculator({ financing, className = "" }: TantiemeCalcul
         };
     }, [financing.remainingCost, financing.ecoPtzAmount, tantiemes]);
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat("fr-FR", {
-            style: "currency",
-            currency: "EUR",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(amount);
-    };
+
 
     return (
         <div className={`card-bento p-6 ${className}`}>
