@@ -59,6 +59,7 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
     return (
         <div className="relative w-full h-64 lg:h-80 rounded-2xl overflow-hidden group">
             {/* Image Street View */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 src={streetViewUrl}
                 alt={`Façade - ${address}`}

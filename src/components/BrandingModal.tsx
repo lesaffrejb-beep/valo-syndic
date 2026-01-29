@@ -79,6 +79,7 @@ export function BrandingModal({ isOpen, onClose }: BrandingModalProps) {
                                     onClick={() => fileInputRef.current?.click()}
                                 >
                                     {tempBrand.logoUrl ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
                                         <img src={tempBrand.logoUrl} alt="Logo" className="w-full h-full object-contain" />
                                     ) : (
                                         <span className="text-2xl">📷</span>

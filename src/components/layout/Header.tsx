@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useBrandStore } from "@/stores/useBrandStore";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
@@ -17,7 +18,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
     const brand = useBrandStore((state) => state.brand);
 
     return (
-        <motion.header 
+        <motion.header
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -25,21 +26,22 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
         >
             {/* Glassmorphism Layer */}
             <div className="absolute inset-0 bg-app/60 backdrop-blur-xl border-b border-white/[0.06]" />
-            
+
             {/* Subtle Gradient Line */}
             <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-            
+
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
-                    
+
                     {/* Logo Section - Premium Style */}
-                    <a href="/" className="group flex items-center gap-3">
+                    <Link href="/" className="group flex items-center gap-3">
                         {brand.logoUrl ? (
                             <div className="relative">
-                                <img 
-                                    src={brand.logoUrl} 
-                                    alt="Logo Agence" 
-                                    className="h-9 w-auto object-contain rounded-lg ring-1 ring-white/10 group-hover:ring-primary/30 transition-all duration-300" 
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={brand.logoUrl}
+                                    alt="Logo Agence"
+                                    className="h-9 w-auto object-contain rounded-lg ring-1 ring-white/10 group-hover:ring-primary/30 transition-all duration-300"
                                 />
                                 <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-white/5 group-hover:ring-primary/20 transition-all" />
                             </div>
@@ -54,7 +56,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                                 </div>
                             </div>
                         )}
-                        
+
                         <div className="flex flex-col">
                             <span className="text-[15px] font-semibold text-main tracking-tight group-hover:text-primary transition-colors duration-200">
                                 {brand.agencyName}
@@ -63,7 +65,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                                 Diagnostic Patrimonial
                             </span>
                         </div>
-                    </a>
+                    </Link>
 
                     {/* Center - Trust Badge (Hidden on mobile) */}
                     <div className="hidden lg:flex items-center">
@@ -83,7 +85,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
 
                     {/* Right Actions - Premium Buttons */}
                     <div className="flex items-center gap-1 sm:gap-2">
-                        
+
                         {/* Settings - Icon Only */}
                         <button
                             onClick={onOpenBranding}
@@ -111,7 +113,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                                 </svg>
                                 <span className="hidden md:inline">Exporter</span>
                             </button>
-                            
+
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium text-muted hover:text-main hover:bg-white/[0.04] transition-all duration-200 border border-transparent hover:border-white/[0.08]"

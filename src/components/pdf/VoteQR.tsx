@@ -57,6 +57,7 @@ export function VoteQR({ simulationId, size = 120, className = "" }: VoteQRProps
         <div className={`flex flex-col items-center ${className}`}>
             <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-200">
                 {qrDataUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                         src={qrDataUrl}
                         alt="QR Code Vote"

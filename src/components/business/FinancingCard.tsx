@@ -7,7 +7,14 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { BenchmarkBadge } from "@/components/ui/BenchmarkBadge";
+import {
+    loadBenchmarks,
+    evaluateCostPerLotSync,
+    type BenchmarkData,
+    type BenchmarkResult,
+} from "@/lib/services/marketBenchmarkService";
 import { type FinancingPlan } from "@/lib/schemas";
 import { formatPercent, formatCurrency } from "@/lib/calculator";
 import { AnimatedCurrency, AnimatedPercent } from "@/components/ui/AnimatedNumber";
@@ -25,6 +32,29 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
     const isInView = useInView(ref, { once: true, margin: "-50px" });
     const { viewMode, getAdjustedValue } = useViewModeStore();
     const isMaPoche = viewMode === 'maPoche';
+
+    // Market Watchdog — Benchmark Evaluation
+    const [benchmarkData, setBenchmarkData] = useState<BenchmarkData | null>(null);
+    const [benchmarkResult, setBenchmarkResult] = useState<BenchmarkResult | null>(null);
+
+    useEffect(() => {
+        loadBenchmarks().then((data) => {
+            if (data) {
+                setBenchmarkData(data);
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        if (benchmarkData && numberOfUnits > 0 && financing.worksCostHT > 0) {
+            const result = evaluateCostPerLotSync(
+                financing.worksCostHT,
+                numberOfUnits,
+                benchmarkData
+            );
+            setBenchmarkResult(result);
+        }
+    }, [benchmarkData, financing.worksCostHT, numberOfUnits]);
 
     return (
         <motion.div
@@ -79,7 +109,16 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                         <AnimatedCurrency value={financing.totalCostHT} duration={1.2} />
                                     </p>
                                 </div>
-                                <div className="text-right">
+                                {/* Market Watchdog Badge */}
+                                {benchmarkResult && (
+                                    <div className="mt-2">
+                                        <BenchmarkBadge
+                                            status={benchmarkResult.status}
+                                            label={benchmarkResult.label}
+                                        />
+                                    </div>
+                                )}
+                                <div className="text-right mt-2">
                                     <p className="text-xs text-muted">
                                         Soit <span className="text-main font-medium">{formatCurrency(financing.costPerUnit)}</span> / lot
                                     </p>
