@@ -8,6 +8,7 @@
 import { useState, useMemo } from "react";
 import { type FinancingPlan } from "@/lib/schemas";
 import { ECO_PTZ_COPRO } from "@/lib/constants";
+import { NumberStepper } from "@/components/ui/NumberStepper";
 
 interface TantiemeCalculatorProps {
     financing: FinancingPlan;
@@ -68,17 +69,13 @@ export function TantiemeCalculator({ financing, className = "" }: TantiemeCalcul
                     <label htmlFor="tantiemes" className="text-sm font-medium text-secondary">
                         Vos Tantièmes
                     </label>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="number"
-                            value={tantiemes}
-                            onChange={(e) => setTantiemes(Math.max(1, Math.min(1000, Number(e.target.value))))}
-                            className="w-20 px-3 py-1.5 text-center text-sm font-bold text-primary-400 bg-primary-900/20 border border-primary-500/30 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                            min={1}
-                            max={1000}
-                        />
-                        <span className="text-sm text-muted">/ 1000</span>
-                    </div>
+                    <NumberStepper
+                        value={tantiemes}
+                        onChange={setTantiemes}
+                        min={1}
+                        max={1000}
+                        suffix="/ 1000"
+                    />
                 </div>
                 <input
                     type="range"

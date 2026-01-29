@@ -86,8 +86,8 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                         </div>
 
                         {/* Badge */}
-                        <div className="px-2.5 py-1 bg-success-500/10 rounded-full border border-success-500/20 backdrop-blur-sm whitespace-nowrap">
-                            <span className="text-xs font-bold text-success-600">
+                        <div className="px-3 py-1.5 bg-gradient-to-r from-success-900/40 to-success-800/40 rounded-full border border-success-500/30 backdrop-blur-sm shadow-sm whitespace-nowrap group">
+                            <span className="text-xs font-bold text-success-400 group-hover:text-success-300 transition-colors">
                                 +{classesGained} {classesGained > 1 ? "classes" : "classe"}
                             </span>
                         </div>
