@@ -156,7 +156,8 @@ describe('Coût de l\'inaction', () => {
 
             // Inflation 4.5% composée sur 3 ans
             const expectedInflation = cost * (Math.pow(1.045, 3) - 1);
-            expect(result.inflationCost).toBeCloseTo(expectedInflation, 0);
+            const actualInflation = result.projectedCost3Years - result.currentCost;
+            expect(actualInflation).toBeCloseTo(expectedInflation, 0);
             expect(result.projectedCost3Years).toBeGreaterThan(cost);
         });
 
