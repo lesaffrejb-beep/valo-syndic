@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     },
 
     section: {
-        marginBottom: 22,
+        marginBottom: 28,
         padding: 12,
         backgroundColor: C.bgSection,
         borderRadius: 4,
@@ -523,7 +523,7 @@ const Section = ({ title, children, borderColor = C.gold }: {
 const ProfileHook = ({ profile, wording }: { profile: OwnerProfile; wording: OwnerProfile['pdfWording'] }) => (
     <View style={[styles.heroBox, { backgroundColor: C.bgHighlight, borderColor: C.gold }]}>
         <Text style={[styles.heroLabel, { color: C.gold }]}>
-            Argument adapte a votre profil : {profile.name}
+            Argument adapté à votre profil : {profile.name}
         </Text>
         <Text style={{ fontSize: 12, color: C.text, textAlign: 'center', fontFamily: 'Helvetica-Bold' }}>
             {wording.hook}
@@ -532,7 +532,7 @@ const ProfileHook = ({ profile, wording }: { profile: OwnerProfile; wording: Own
 );
 
 const PropertySection = ({ result }: { result: DiagnosticResult }) => (
-    <Section title="[1] COPROPRIETE AUDITEE">
+    <Section title="[1] Copropriété auditée">
         <View style={styles.row}>
             <Text style={styles.label}>Adresse</Text>
             <Text style={styles.value}>{result.input.address || 'Non renseignee'}</Text>
@@ -793,7 +793,7 @@ export const PDFDocumentEnhanced = ({
                 <Header pageNum={1} title="Diagnostic" brand={brand} />
 
                 <View style={styles.content}>
-                    <Text style={styles.pageTitle}>Diagnostic Energetique</Text>
+                    <Text style={styles.pageTitle}>Diagnostic énergétique</Text>
 
                     {profile && wording && (
                         <ProfileHook profile={profile} wording={wording} />
@@ -811,7 +811,7 @@ export const PDFDocumentEnhanced = ({
                 <Header pageNum={2} title="Plan de Financement" brand={brand} />
 
                 <View style={styles.content}>
-                    <Text style={styles.pageTitle}>Solution Financiere</Text>
+                    <Text style={styles.pageTitle}>Solution financière</Text>
 
                     <MonthlyHero result={result} wording={wording} />
                     <FinancingTable result={result} />
@@ -825,7 +825,7 @@ export const PDFDocumentEnhanced = ({
                 <Header pageNum={3} title="Strategie Patrimoniale" brand={brand} />
 
                 <View style={styles.content}>
-                    <Text style={styles.pageTitle}>Argumentaire Decisionnel</Text>
+                    <Text style={styles.pageTitle}>Argumentaire décisionnel</Text>
 
                     <View style={styles.twoColumn}>
                         <View style={styles.column}>
