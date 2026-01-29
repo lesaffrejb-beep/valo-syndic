@@ -1,51 +1,52 @@
 /**
- * VALO-SYNDIC — PDF Document Professionnel
- * ========================================
- * Génération de rapports PDF pour Assemblées Générales.
+ * VALO-SYNDIC — PDF Document Enhanced (Profile-Aware)
+ * ==================================================
  * 
- * DESIGN PHILOSOPHY:
- * - Zero emoji (encoding issues with Helvetica)
- * - ASCII symbols only for icons
- * - Professional financial report aesthetic
- * - Dynamic content based on profiles
+ * Version enrichie du PDF qui adapte le contenu selon:
+ * 1. Le profil du coproprietaire cible
+ * 2. Les caracteristiques de la copropriete
+ * 3. L urgence reglementaire
  * 
- * @version 2.0 - Profile-aware architecture
+ * Features:
+ * - Content sections dynamiques
+ * - Arguments priorises selon le profil
+ * - Wording personnalise
+ * - Multi-profile support (page supplementaire)
  */
 
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { type DiagnosticResult } from '@/lib/schemas';
 import { formatCurrency, formatPercent } from '@/lib/calculator';
+import { 
+    type OwnerProfile, 
+    type OwnerProfileType,
+    OWNER_PROFILES,
+    getRelevantProfiles,
+    getWordingForProfile 
+} from '@/lib/pdf-profiles';
 
 // =============================================================================
 // 1. THEME & DESIGN SYSTEM
 // =============================================================================
 
 const C = {
-    // Primary palette
     primary: '#1E3A5F',
     primaryLight: '#2D4A6F',
     gold: '#B8860B',
     goldLight: '#D4AF37',
-    
-    // Neutrals
     bg: '#FFFFFF',
     bgSection: '#F8F9FA',
     bgHighlight: '#FFF9E6',
-    
-    // Text
+    bgProfile: '#F0F4F8',
     text: '#1A1A2E',
     textSecondary: '#4A5568',
     textMuted: '#718096',
-    
-    // Semantic
     success: '#059669',
     successLight: '#D1FAE5',
     warning: '#D97706',
     warningLight: '#FEF3C7',
     danger: '#DC2626',
     dangerLight: '#FEE2E2',
-    
-    // Borders
     border: '#E2E8F0',
     borderLight: '#EDF2F7',
 };
@@ -387,10 +388,48 @@ const styles = StyleSheet.create({
         marginTop: 8,
         fontStyle: 'italic',
     },
+    
+    // Profile-specific styles
+    profileCard: {
+        backgroundColor: C.bgProfile,
+        padding: 10,
+        borderRadius: 4,
+        marginBottom: 8,
+    },
+    
+    profileName: {
+        fontSize: 10,
+        fontFamily: 'Helvetica-Bold',
+        color: C.primary,
+    },
+    
+    profileDetail: {
+        fontSize: 8,
+        color: C.textSecondary,
+        marginTop: 2,
+    },
+    
+    argumentList: {
+        marginTop: 6,
+    },
+    
+    argumentItem: {
+        fontSize: 8,
+        color: C.text,
+        marginBottom: 3,
+    },
+    
+    priorityTag: {
+        fontSize: 7,
+        color: C.gold,
+        fontFamily: 'Helvetica-Bold',
+        textTransform: 'uppercase',
+        marginTop: 4,
+    },
 });
 
 // =============================================================================
-// 3. TYPES & INTERFACES
+// 3. TYPES
 // =============================================================================
 
 interface PDFBrand {
@@ -401,9 +440,11 @@ interface PDFBrand {
     contactPhone?: string;
 }
 
-interface PDFDocumentProps {
+interface PDFDocumentEnhancedProps {
     result: DiagnosticResult;
     brand?: PDFBrand | undefined;
+    targetProfile?: OwnerProfileType | undefined;
+    showAllProfiles?: boolean;
 }
 
 // =============================================================================
@@ -412,21 +453,13 @@ interface PDFDocumentProps {
 
 const getDPEColor = (dpe: string): string => {
     const colors: Record<string, string> = {
-        G: '#DC2626',
-        F: '#EA580C',
-        E: '#D97706',
-        D: '#EAB308',
-        C: '#84CC16',
-        B: '#22C55E',
-        A: '#059669',
+        G: '#DC2626', F: '#EA580C', E: '#D97706',
+        D: '#EAB308', C: '#84CC16', B: '#22C55E', A: '#059669',
     };
     return colors[dpe] || C.text;
 };
 
-const getUrgencyInfo = (
-    compliance: DiagnosticResult['compliance'],
-    dpe: string
-): { score: number; label: string; color: string } => {
+const getUrgencyInfo = (compliance: DiagnosticResult['compliance']) => {
     if (compliance.isProhibited) {
         return { score: 100, label: 'CRITIQUE', color: C.danger };
     }
@@ -441,10 +474,15 @@ const getUrgencyInfo = (
 };
 
 // =============================================================================
-// 5. SECTION COMPONENTS
+// 5. COMPONENT SECTIONS
 // =============================================================================
 
-const Header = ({ pageNum, title, brand }: { pageNum: number; title: string; brand?: PDFBrand | undefined }) => (
+const Header = ({ pageNum, title, brand, totalPages = 4 }: { 
+    pageNum: number; 
+    title: string; 
+    brand?: PDFBrand | undefined;
+    totalPages?: number;
+}) => (
     <View>
         <View style={[styles.headerBand, { backgroundColor: brand?.primaryColor || C.gold }]} />
         <View style={styles.header}>
@@ -453,7 +491,7 @@ const Header = ({ pageNum, title, brand }: { pageNum: number; title: string; bra
                 <Text style={styles.brandSubtitle}>Audit Patrimonial & Financier</Text>
             </View>
             <View style={styles.headerMeta}>
-                <Text style={styles.pageIndicator}>Page {pageNum}/3 - {title}</Text>
+                <Text style={styles.pageIndicator}>Page {pageNum}/{totalPages} - {title}</Text>
                 <Text style={styles.date}>{new Date().toLocaleDateString('fr-FR')}</Text>
             </View>
         </View>
@@ -466,15 +504,30 @@ const Footer = ({ brand }: { brand?: PDFBrand | undefined }) => (
             Document genere par {brand?.agencyName || 'VALO SYNDIC'} - Simulation indicative basee sur les dispositions reglementaires 2026
         </Text>
         <Text style={styles.disclaimer}>
-            Sous reserve d&apos;eligibilite des travaux et des ressources. Ne remplace pas un audit OPQIBI.
+            Sous reserve d elgibilite des travaux et des ressources. Ne remplace pas un audit OPQIBI.
         </Text>
     </View>
 );
 
-const Section = ({ title, children, borderColor = C.gold }: { title: string; children: React.ReactNode; borderColor?: string }) => (
+const Section = ({ title, children, borderColor = C.gold }: { 
+    title: string; 
+    children: React.ReactNode; 
+    borderColor?: string;
+}) => (
     <View style={[styles.section, { borderLeftColor: borderColor }]}>
         <Text style={styles.sectionTitle}>{title}</Text>
         {children}
+    </View>
+);
+
+const ProfileHook = ({ profile, wording }: { profile: OwnerProfile; wording: OwnerProfile['pdfWording'] }) => (
+    <View style={[styles.heroBox, { backgroundColor: C.bgHighlight, borderColor: C.gold }]}>
+        <Text style={[styles.heroLabel, { color: C.gold }]}>
+            Argument adapte a votre profil : {profile.name}
+        </Text>
+        <Text style={{ fontSize: 12, color: C.text, textAlign: 'center', fontFamily: 'Helvetica-Bold' }}>
+            {wording.hook}
+        </Text>
     </View>
 );
 
@@ -518,64 +571,27 @@ const DPESection = ({ result }: { result: DiagnosticResult }) => (
     </Section>
 );
 
-const UrgencySection = ({ result, urgency }: { result: DiagnosticResult; urgency: ReturnType<typeof getUrgencyInfo> }) => (
-    <Section title="[3] SCORE D'URGENCE" borderColor={urgency.color}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-            <Text style={[styles.bigNumber, { color: urgency.color }]}>
-                {urgency.score}/100
-            </Text>
-            <View>
-                <View style={[styles.badge, { backgroundColor: urgency.color + '20' }]}>
-                    <Text style={[styles.badgeText, { color: urgency.color }]}>{urgency.label}</Text>
-                </View>
-                <Text style={{ fontSize: 8, color: C.textMuted, marginTop: 6 }}>
-                    {result.compliance.statusLabel}
-                </Text>
-            </View>
-        </View>
-    </Section>
-);
-
-const CalendarSection = ({ result }: { result: DiagnosticResult }) => (
-    <Section title="[4] CALENDRIER LOI CLIMAT">
-        {result.compliance.prohibitionDate ? (
-            <View>
-                <Text style={{ fontSize: 11, color: C.danger, fontFamily: 'Helvetica-Bold' }}>
-                    Interdiction de location : {result.compliance.prohibitionDate.toLocaleDateString('fr-FR')}
-                </Text>
-                <Text style={{ fontSize: 8, color: C.textMuted, marginTop: 6 }}>
-                    {result.compliance.daysUntilProhibition && result.compliance.daysUntilProhibition > 0
-                        ? `Temps restant : ${Math.floor(result.compliance.daysUntilProhibition / 30)} mois`
-                        : 'Interdiction deja en vigueur'}
-                </Text>
-            </View>
-        ) : (
-            <Text style={{ fontSize: 10, color: C.success }}>
-                Classe {result.input.currentDPE} : Pas d&apos;interdiction prevue a ce jour
-            </Text>
-        )}
-    </Section>
-);
-
-const MonthlyHero = ({ result }: { result: DiagnosticResult }) => {
+const MonthlyHero = ({ result, wording }: { result: DiagnosticResult; wording?: OwnerProfile['pdfWording'] | undefined }) => {
     const avgTantiemesPerLot = 100;
     const monthlyPaymentFor100Tantiemes = (result.financing.ecoPtzAmount * (avgTantiemesPerLot / 1000)) / (20 * 12);
     
     return (
         <View style={[styles.heroBox, { backgroundColor: C.successLight, borderColor: C.success }]}>
-            <Text style={[styles.heroLabel, { color: C.success }]}>Mensualite Eco-PTZ</Text>
+            <Text style={[styles.heroLabel, { color: C.success }]}>
+                {wording?.monthlyFocus || 'Mensualite Eco-PTZ'}
+            </Text>
             <Text style={[styles.bigNumber, { color: C.success }]}>
                 {Math.round(monthlyPaymentFor100Tantiemes)} EUR
             </Text>
             <Text style={styles.heroValue}>
-                par mois pour 100 tantiemes (10% d&apos;un lot standard)
+                par mois pour 100 tantiemes (10% d un lot standard)
             </Text>
             <Text style={{ fontSize: 8, color: C.textMuted, textAlign: 'center', marginTop: 4 }}>
                 Duree : 20 ans - Taux : 0% - Aucun interet a payer
             </Text>
             {result.financing.remainingCost === 0 && (
                 <Text style={{ fontSize: 10, color: C.success, fontFamily: 'Helvetica-Bold', marginTop: 10 }}>
-                    [OK] 0 EUR d&apos;apport personnel requis
+                    [OK] 0 EUR d apport personnel requis
                 </Text>
             )}
         </View>
@@ -583,7 +599,7 @@ const MonthlyHero = ({ result }: { result: DiagnosticResult }) => {
 };
 
 const FinancingTable = ({ result }: { result: DiagnosticResult }) => (
-    <Section title="[5] DETAIL DU FINANCEMENT">
+    <Section title="[3] DETAIL DU FINANCEMENT">
         <View style={styles.table}>
             <View style={styles.tableHeader}>
                 <Text style={styles.tableHeaderCell}>Poste</Text>
@@ -626,76 +642,41 @@ const FinancingTable = ({ result }: { result: DiagnosticResult }) => (
     </Section>
 );
 
-const FinancingBreakdown = ({ result }: { result: DiagnosticResult }) => {
-    const totalCost = result.financing.totalCostHT;
-    const mprPercent = Math.round((result.financing.mprAmount / totalCost) * 100);
-    const ptzPercent = Math.round((result.financing.ecoPtzAmount / totalCost) * 100);
-    const remainingPercent = Math.round((result.financing.remainingCost / totalCost) * 100);
-    
-    return (
-        <Section title="[6] REPARTITION DES FINANCEMENTS">
-            <View style={{ marginTop: 8 }}>
-                <Text style={{ fontSize: 8, color: C.textSecondary, marginBottom: 4 }}>MaPrimeRenov (subvention)</Text>
-                <View style={styles.progressBar}>
-                    <View style={[styles.progressFill, { width: `${mprPercent}%`, backgroundColor: C.success }]} />
-                </View>
-                <Text style={styles.progressLabel}>{mprPercent}% - {formatCurrency(result.financing.mprAmount)}</Text>
-                
-                <Text style={{ fontSize: 8, color: C.textSecondary, marginBottom: 4, marginTop: 10 }}>Eco-PTZ (pret sans interet)</Text>
-                <View style={styles.progressBar}>
-                    <View style={[styles.progressFill, { width: `${ptzPercent}%`, backgroundColor: C.gold }]} />
-                </View>
-                <Text style={styles.progressLabel}>{ptzPercent}% - {formatCurrency(result.financing.ecoPtzAmount)}</Text>
-                
-                {result.financing.remainingCost > 0 && (
-                    <>
-                        <Text style={{ fontSize: 8, color: C.textSecondary, marginBottom: 4, marginTop: 10 }}>Reste a charge (apport)</Text>
-                        <View style={styles.progressBar}>
-                            <View style={[styles.progressFill, { width: `${remainingPercent}%`, backgroundColor: C.textMuted }]} />
-                        </View>
-                        <Text style={styles.progressLabel}>{remainingPercent}% - {formatCurrency(result.financing.remainingCost)}</Text>
-                    </>
-                )}
+const InactionSection = ({ result, wording }: { result: DiagnosticResult; wording?: OwnerProfile['pdfWording'] | undefined }) => (
+    <Section title="[4] COUT DE L'INACTION" borderColor={C.danger}>
+        {wording?.riskFocus && (
+            <View style={{ backgroundColor: C.warningLight, padding: 8, borderRadius: 4, marginBottom: 10 }}>
+                <Text style={{ fontSize: 9, color: '#92400E', fontStyle: 'italic' }}>
+                    {wording.riskFocus}
+                </Text>
             </View>
-            
-            <Text style={styles.methodology}>
-                Note : L&apos;Eco-PTZ est un pret a rembourser sur 20 ans, tandis que MaPrimeRenov est une subvention. La somme peut depasser 100% du cout (surcouverture).
-            </Text>
-        </Section>
-    );
-};
-
-const InactionCostSection = ({ result }: { result: DiagnosticResult }) => (
-    <Section title="[7] COUT DE L'INACTION (3 ANS)" borderColor={C.danger}>
+        )}
         <View style={{ backgroundColor: C.dangerLight, padding: 10, borderRadius: 4 }}>
             <Text style={[styles.bigNumber, { color: C.danger, fontSize: 24 }]}>
                 {formatCurrency(result.inactionCost.totalInactionCost)}
             </Text>
             <Text style={{ fontSize: 9, color: C.textSecondary, marginBottom: 10 }}>
-                Ce que vous perdez en attendant
+                Perte totale sur 3 ans si vous attendez
             </Text>
-            
             <View style={styles.rowNoBorder}>
                 <Text style={styles.label}>Inflation BTP (+4.5%/an)</Text>
                 <Text style={[styles.value, { color: C.danger }]}>
                     +{formatCurrency(result.inactionCost.projectedCost3Years - result.inactionCost.currentCost)}
                 </Text>
             </View>
-            
-            {result.inactionCost.valueDepreciation > 0 && (
-                <View style={styles.rowNoBorder}>
-                    <Text style={styles.label}>Decote valeur verte</Text>
-                    <Text style={[styles.value, { color: C.danger }]}>
-                        -{formatCurrency(result.inactionCost.valueDepreciation)}
-                    </Text>
-                </View>
-            )}
         </View>
     </Section>
 );
 
-const ValuationSection = ({ result }: { result: DiagnosticResult }) => (
-    <Section title="[8] GAIN DE VALEUR VERTE" borderColor={C.success}>
+const ValuationSection = ({ result, wording }: { result: DiagnosticResult; wording?: OwnerProfile['pdfWording'] | undefined }) => (
+    <Section title="[5] GAIN DE VALEUR VERTE" borderColor={C.success}>
+        {wording?.benefitFocus && (
+            <View style={{ backgroundColor: C.successLight, padding: 8, borderRadius: 4, marginBottom: 10 }}>
+                <Text style={{ fontSize: 9, color: C.success, fontStyle: 'italic' }}>
+                    {wording.benefitFocus}
+                </Text>
+            </View>
+        )}
         <View style={{ backgroundColor: C.successLight, padding: 10, borderRadius: 4 }}>
             <Text style={[styles.bigNumber, { color: C.success, fontSize: 24 }]}>
                 +{formatCurrency(result.valuation.greenValueGain)}
@@ -703,9 +684,8 @@ const ValuationSection = ({ result }: { result: DiagnosticResult }) => (
             <Text style={{ fontSize: 9, color: C.textSecondary, marginBottom: 8 }}>
                 Plus-value estimee ({formatPercent(result.valuation.greenValueGainPercent)})
             </Text>
-            
             <View style={styles.rowNoBorder}>
-                <Text style={styles.label}>Valeur actuelle estimee</Text>
+                <Text style={styles.label}>Valeur actuelle</Text>
                 <Text style={styles.value}>{formatCurrency(result.valuation.currentValue)}</Text>
             </View>
             <View style={styles.rowNoBorder}>
@@ -713,10 +693,6 @@ const ValuationSection = ({ result }: { result: DiagnosticResult }) => (
                 <Text style={[styles.value, { color: C.success }]}>{formatCurrency(result.valuation.projectedValue)}</Text>
             </View>
         </View>
-        
-        <Text style={styles.methodology}>
-            Methode : Ecart de valeur entre passoire thermique (-12%) vs bien renove classe C (donnees Notaires France, zone Angers/Nantes).
-        </Text>
     </Section>
 );
 
@@ -740,13 +716,58 @@ const ROISection = ({ result }: { result: DiagnosticResult }) => {
     );
 };
 
-const AGPhraseSection = () => (
+const ProfileLeversSection = ({ profile }: { profile: OwnerProfile }) => (
+    <Section title={`[6] ARGUMENTS POUR ${profile.name.toUpperCase()}`} borderColor={C.primary}>
+        <View style={styles.twoColumn}>
+            <View style={styles.column}>
+                <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: C.success, marginBottom: 6 }}>
+                    Leviers Financiers
+                </Text>
+                {profile.levers.financial.slice(0, 2).map((lever, i) => (
+                    <Text key={i} style={styles.argumentItem}>- {lever}</Text>
+                ))}
+            </View>
+            <View style={styles.column}>
+                <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: C.primary, marginBottom: 6 }}>
+                    Leviers Pratiques
+                </Text>
+                {profile.levers.practical.slice(0, 2).map((lever, i) => (
+                    <Text key={i} style={styles.argumentItem}>- {lever}</Text>
+                ))}
+            </View>
+        </View>
+    </Section>
+);
+
+const AllProfilesSection = () => {
+    const profiles = Object.values(OWNER_PROFILES).slice(0, 5);
+    
+    return (
+        <Section title="[6] PROFILS DE COPROPRIETAIRES" borderColor={C.primary}>
+            <Text style={{ fontSize: 9, color: C.textSecondary, marginBottom: 10 }}>
+                Ce document s adapte aux principaux profils rencontres en AG :
+            </Text>
+            {profiles.map((profile, i) => (
+                <View key={profile.id} style={styles.profileCard}>
+                    <Text style={styles.profileName}>{i + 1}. {profile.name} ({profile.age} ans)</Text>
+                    <Text style={styles.profileDetail}>{profile.situation}</Text>
+                    <Text style={styles.priorityTag}>Objection principale : {profile.mainFear}</Text>
+                </View>
+            ))}
+            <Text style={{ fontSize: 8, color: C.textMuted, marginTop: 8, fontStyle: 'italic' }}>
+                Et 5 autres profils disponibles sur demande...
+            </Text>
+        </Section>
+    );
+};
+
+const AGPhraseSection = ({ wording }: { wording?: OwnerProfile['pdfWording'] | undefined }) => (
     <View style={styles.quote}>
         <Text style={styles.quoteText}>
-            &quot;En votant cette resolution aujourd&apos;hui, vous securisez la valeur locative de vos biens et beneficiez d&apos;aides qui ne seront plus disponibles demain. C&apos;est un investissement patrimonial, pas une depense.&quot;
+            &quot;{wording?.ctaPhrase || 'En votant cette resolution aujourd hui, vous securisez la valeur locative de vos biens et beneficiez d aides qui ne seront plus disponibles demain. C est un investissement patrimonial, pas une depense.'}&quot;
         </Text>
         <Text style={styles.quoteSource}>
-            -- Phrase cle pour l&apos;Assemblee Generale
+            -- Phrase cle pour l Assemblee Generale
         </Text>
     </View>
 );
@@ -755,22 +776,31 @@ const AGPhraseSection = () => (
 // 6. MAIN DOCUMENT
 // =============================================================================
 
-export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
-    const urgency = getUrgencyInfo(result.compliance, result.input.currentDPE);
+export const PDFDocumentEnhanced = ({ 
+    result, 
+    brand, 
+    targetProfile,
+    showAllProfiles = true 
+}: PDFDocumentEnhancedProps) => {
+    const urgency = getUrgencyInfo(result.compliance);
+    const profile = targetProfile ? OWNER_PROFILES[targetProfile] : undefined;
+    const wording = profile ? getWordingForProfile(profile, result) : undefined;
     
     return (
         <Document>
-            {/* PAGE 1: DIAGNOSTIC */}
+            {/* PAGE 1: DIAGNOSTIC PERSONNALISE */}
             <Page size="A4" style={styles.page}>
                 <Header pageNum={1} title="Diagnostic" brand={brand} />
                 
                 <View style={styles.content}>
                     <Text style={styles.pageTitle}>Diagnostic Energetique</Text>
                     
+                    {profile && wording && (
+                        <ProfileHook profile={profile} wording={wording} />
+                    )}
+                    
                     <PropertySection result={result} />
                     <DPESection result={result} />
-                    <UrgencySection result={result} urgency={urgency} />
-                    <CalendarSection result={result} />
                 </View>
                 
                 <Footer brand={brand} />
@@ -783,22 +813,14 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                 <View style={styles.content}>
                     <Text style={styles.pageTitle}>Solution Financiere</Text>
                     
-                    <MonthlyHero result={result} />
-                    
-                    <View style={styles.callout}>
-                        <Text style={[styles.calloutText, { color: '#92400E' }]}>
-                            Le montant varie selon vos tantiemes. Un lot de 100 tantiemes paiera environ {Math.round((result.financing.ecoPtzAmount * (100 / 1000)) / (20 * 12))}EUR/mois, soit moins qu&apos;un abonnement telecom.
-                        </Text>
-                    </View>
-                    
+                    <MonthlyHero result={result} wording={wording} />
                     <FinancingTable result={result} />
-                    <FinancingBreakdown result={result} />
                 </View>
                 
                 <Footer brand={brand} />
             </Page>
             
-            {/* PAGE 3: ARGUMENTAIRE */}
+            {/* PAGE 3: ARGUMENTAIRE PERSONNALISE */}
             <Page size="A4" style={styles.page}>
                 <Header pageNum={3} title="Strategie Patrimoniale" brand={brand} />
                 
@@ -807,21 +829,38 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                     
                     <View style={styles.twoColumn}>
                         <View style={styles.column}>
-                            <InactionCostSection result={result} />
+                            <InactionSection result={result} wording={wording} />
                         </View>
                         <View style={styles.column}>
-                            <ValuationSection result={result} />
+                            <ValuationSection result={result} wording={wording} />
                         </View>
                     </View>
                     
                     <ROISection result={result} />
-                    <AGPhraseSection />
+                    
+                    {profile && <ProfileLeversSection profile={profile} />}
+                    
+                    <AGPhraseSection wording={wording} />
                 </View>
                 
                 <Footer brand={brand} />
             </Page>
+            
+            {/* PAGE 4: PROFILS (optionnelle) */}
+            {showAllProfiles && (
+                <Page size="A4" style={styles.page}>
+                    <Header pageNum={4} title="Guide des Profils" brand={brand} />
+                    
+                    <View style={styles.content}>
+                        <Text style={styles.pageTitle}>Comprendre les Enjeux par Profil</Text>
+                        <AllProfilesSection />
+                    </View>
+                    
+                    <Footer brand={brand} />
+                </Page>
+            )}
         </Document>
     );
 };
 
-export default PDFDocument;
+export default PDFDocumentEnhanced;
