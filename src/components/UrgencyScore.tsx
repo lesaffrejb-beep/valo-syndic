@@ -112,9 +112,9 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                 */}
 
                 <div className="flex flex-col items-center gap-6">
-                    {/* Cercle SVG - Clean container */}
-                    <div className="relative flex-shrink-0">
-                        <svg width="140" height="140" className="transform -rotate-90 block">
+                    {/* Cercle SVG - Clean transparent container */}
+                    <div className="relative flex-shrink-0 bg-transparent">
+                        <svg width="140" height="140" className="transform -rotate-90 block bg-transparent">
                             {/* Background circle */}
                             <circle
                                 cx="70"

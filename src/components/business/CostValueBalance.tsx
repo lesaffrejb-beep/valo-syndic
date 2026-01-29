@@ -49,14 +49,20 @@ export function CostValueBalance({ cost, valueGain }: CostValueBalanceProps) {
                             {formatCurrency(displayCost)}
                         </span>
                     </div>
-                    <div className="h-4 bg-surface rounded-full overflow-hidden">
-                        <motion.div
-                            className="h-full bg-gradient-to-r from-danger-600 to-danger-400 rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${costPercent}%` }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                        />
-                    </div>
+                    {displayCost > 0 ? (
+                        <div className="h-6 bg-surface rounded-full overflow-hidden">
+                            <motion.div
+                                className="h-full bg-gradient-to-r from-danger-600 to-danger-400 rounded-full"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${costPercent}%` }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="h-6 bg-surface/50 rounded-full border-2 border-dashed border-boundary/60 flex items-center px-3">
+                            <span className="text-xs text-muted font-medium">0€ (Financé à 100%)</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Value Gain Bar */}
@@ -67,7 +73,7 @@ export function CostValueBalance({ cost, valueGain }: CostValueBalanceProps) {
                             +{formatCurrency(displayValueGain)}
                         </span>
                     </div>
-                    <div className="h-4 bg-surface rounded-full overflow-hidden">
+                    <div className="h-6 bg-surface rounded-full overflow-hidden">
                         <motion.div
                             className="h-full bg-gradient-to-r from-success-600 to-success-400 rounded-full"
                             initial={{ width: 0 }}

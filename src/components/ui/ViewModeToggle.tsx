@@ -48,16 +48,16 @@ export function ViewModeToggle() {
                         transition={{ duration: 0.2 }}
                         className="flex items-center gap-2 overflow-hidden"
                     >
-                        <span className="text-xs text-muted whitespace-nowrap">Tantièmes:</span>
+                        <span className="text-sm text-muted whitespace-nowrap font-medium">Tantièmes:</span>
                         <input
                             type="number"
                             value={userTantiemes}
                             onChange={(e) => setUserTantiemes(Number(e.target.value))}
-                            className="w-16 px-2 py-1 text-center text-sm font-bold text-primary-400 bg-primary-900/20 border border-primary-500/30 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            className="w-20 px-3 py-2 text-center text-base font-bold text-primary-400 bg-primary-900/20 border-2 border-primary-500/30 rounded-lg focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-surface focus:border-primary-500 transition-all"
                             min={1}
                             max={1000}
                         />
-                        <span className="text-xs text-muted">/1000</span>
+                        <span className="text-sm text-muted font-medium">/1000</span>
                     </motion.div>
                 )}
             </AnimatePresence>
