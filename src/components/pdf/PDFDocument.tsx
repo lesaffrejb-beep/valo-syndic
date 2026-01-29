@@ -784,7 +784,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                 <Header pageNum={2} title="Plan de Financement" brand={brand} />
 
                 <View style={styles.content}>
-                    <Text style={styles.pageTitle}>Solution Financiere</Text>
+                    <Text style={styles.pageTitle}>Solution financière</Text>
 
                     <MonthlyHero result={result} />
 
@@ -806,7 +806,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                 <Header pageNum={3} title="Strategie Patrimoniale" brand={brand} />
 
                 <View style={styles.content}>
-                    <Text style={styles.pageTitle}>Argumentaire Decisionnel</Text>
+                    <Text style={styles.pageTitle}>Argumentaire décisionnel</Text>
 
                     <View style={styles.twoColumn}>
                         <View style={styles.column}>
