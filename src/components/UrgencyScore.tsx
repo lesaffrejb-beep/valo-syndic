@@ -87,7 +87,7 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
     const offset = circumference - (animatedScore / 100) * circumference;
 
     return (
-        <div className={`card-bento ${colors.bg} rounded-2xl p-6 border border-boundary relative transition-colors duration-300 overflow-hidden h-full flex flex-col`}>
+        <div className={`card-bento ${colors.bg} rounded-2xl p-6 border border-boundary relative transition-colors duration-300 overflow-hidden h-full flex flex-col justify-center`}>
             {/* Particle System for Critical Scores */}
             <div className="absolute inset-0 z-0">
                 <ParticleEmitter active={score >= 80} color={colors.stroke} />
@@ -96,18 +96,18 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
             {/* Glow based on score */}
             <div className={`absolute inset-0 bg-${colors.stroke}/5 rounded-xl`} />
 
-            <h3 className="text-lg font-semibold text-main mb-4 flex items-center gap-2 relative z-10">
+            <h3 className="text-lg font-semibold text-main mb-6 flex items-center gap-2 relative z-10">
                 🎯 Score d&apos;urgence
             </h3>
 
-            <div className="flex flex-col items-center justify-center gap-6 relative z-10 flex-1 w-full">
+            <div className="flex flex-row items-center justify-center gap-6 relative z-10 w-full px-2">
                 {/* Cercle SVG - Scaled up x1.5 */}
                 <div className="relative flex-shrink-0">
-                    <svg width="180" height="180" className="transform -rotate-90">
+                    <svg width="140" height="140" className="transform -rotate-90">
                         {/* Background circle */}
                         <circle
-                            cx="90"
-                            cy="90"
+                            cx="70"
+                            cy="70"
                             r={radius}
                             fill="none"
                             stroke="#2A2A2A"
@@ -115,8 +115,8 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                         />
                         {/* Progress circle */}
                         <circle
-                            cx="90"
-                            cy="90"
+                            cx="70"
+                            cy="70"
                             r={radius}
                             fill="none"
                             stroke={colors.stroke}
@@ -130,21 +130,21 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                     </svg>
                     {/* Score au centre */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <span className={`text-5xl font-black ${colors.text} tabular-nums`}>
+                        <span className={`text-4xl font-black ${colors.text} tabular-nums`}>
                             {animatedScore}
                         </span>
                     </div>
                 </div>
 
                 {/* Message */}
-                <div>
+                <div className="flex-1">
                     <p className={`text-xl font-bold ${colors.text}`}>{message.title}</p>
                     <p className="text-sm text-muted mt-1">{message.subtitle}</p>
 
                     {compliance.daysUntilProhibition && compliance.daysUntilProhibition > 0 && (
                         <div className="mt-3 p-2 bg-surface/50 rounded-lg border border-boundary">
-                            <p className="text-xs text-muted">Temps restant</p>
-                            <p className="font-semibold text-main tabular-nums">
+                            <p className="text-xs text-muted leading-none mb-1">Temps restant</p>
+                            <p className="font-semibold text-main tabular-nums leading-none">
                                 {Math.floor(compliance.daysUntilProhibition / 30)} mois
                             </p>
                         </div>
@@ -152,8 +152,8 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
 
                     {compliance.isProhibited && (
                         <div className="mt-3 p-2 bg-danger/20 rounded-lg border border-danger/30">
-                            <p className="text-xs text-danger-500 font-semibold">
-                                🔴 INTERDICTION EN VIGUEUR
+                            <p className="text-xs text-danger-500 font-semibold leading-tight">
+                                🔴 INTERDICTION
                             </p>
                         </div>
                     )}

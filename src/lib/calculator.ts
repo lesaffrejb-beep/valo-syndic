@@ -421,7 +421,7 @@ export function formatCurrency(amount: number): string {
         style: "currency",
         currency: "EUR",
         maximumFractionDigits: 0,
-    }).format(amount);
+    }).format(amount).replace(/[\u200B\u202F\u00A0]/g, " "); // Replace non-breaking spaces with normal spaces for PDF safety
 }
 
 /**
@@ -443,6 +443,17 @@ export function formatDate(date: Date): string {
         month: "long",
         year: "numeric",
     }).format(date);
+}
+
+/**
+ * Nettoie le texte pour l'affichage PDF (supprime les accents)
+ * Solution de repli pour éviter les problèmes d'encodage avec Helvetica
+ */
+export function sanitizeText(text: string): string {
+    return text
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Enlève les accents
+        .replace(/€/g, "EUR"); // Remplace € par EUR si besoin (optionnel, mais Helvetica gère mal € parfois)
 }
 
 // =============================================================================

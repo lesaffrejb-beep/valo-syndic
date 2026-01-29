@@ -57,72 +57,78 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
     const hasRisks = hasArgile || hasInondation;
 
     return (
-        <div className="card-bento">
-            <div className="flex items-start justify-between mb-4">
+        <div className="card-bento h-full">
+            <div className="flex items-start justify-between mb-6">
                 <div>
-                    <h3 className="text-lg font-semibold text-text mb-1">
-                        Vigilance Risques Naturels
+                    <h3 className="text-lg font-semibold text-text mb-1 flex items-center gap-2">
+                        <span>🛡️</span> Vigilance Risques
                     </h3>
                     <p className="text-sm text-muted">
-                        Source : Géorisques (Open Data)
+                        Analyse Géorisques
                     </p>
                 </div>
-                {urgency === 'high' && (
-                    <span className="text-2xl" title="Risque élevé">⚠️</span>
-                )}
             </div>
 
-            <div className="space-y-3">
-                {/* Risque Argile */}
-                {hasArgile ? (
-                    <div className="flex items-start gap-3 p-3 bg-warning/10 border border-warning/30 rounded-lg">
-                        <span className="text-2xl flex-shrink-0">🧱</span>
-                        <div className="flex-1">
-                            <p className="font-medium text-warning">
-                                Risque Fissures (Argile)
-                            </p>
-                            <p className="text-sm text-muted mt-1">
-                                Zone de retrait-gonflement des argiles : <strong>{risks.argileLabel}</strong>
-                            </p>
-                            <p className="text-xs text-muted mt-2">
-                                💡 Surveiller les fissures structurelles, étude géotechnique recommandée.
-                            </p>
-                        </div>
-                    </div>
-                ) : null}
+            <div className="space-y-4">
+                {/* Inondation */}
+                <RiskItem
+                    icon="💧"
+                    label="Inondation"
+                    status={hasInondation ? 'warning' : 'success'}
+                    value={hasInondation ? 'Zone Inondable' : 'Non concerné'}
+                />
 
-                {/* Risque Inondation */}
-                {hasInondation ? (
-                    <div className="flex items-start gap-3 p-3 bg-info/10 border border-info/30 rounded-lg">
-                        <span className="text-2xl flex-shrink-0">💧</span>
-                        <div className="flex-1">
-                            <p className="font-medium text-info">
-                                Zone Inondable
-                            </p>
-                            <p className="text-sm text-muted mt-1">
-                                Le bâtiment est situé dans une zone à risque d&apos;inondation.
-                            </p>
-                            <p className="text-xs text-muted mt-2">
-                                💡 Vérifier les dispositifs de protection et l&apos;assurance catastrophe naturelle.
-                            </p>
-                        </div>
-                    </div>
-                ) : null}
+                {/* Argiles */}
+                <RiskItem
+                    icon="🧱"
+                    label="Argiles (Fissures)"
+                    status={risks.argile >= 2 ? 'warning' : 'success'}
+                    value={risks.argile >= 2 ? (risks.argileLabel || 'Moyen / Fort') : 'Faible'}
+                />
 
-                {/* Aucun risque */}
-                {!hasRisks && (
-                    <div className="flex items-start gap-3 p-3 bg-success/10 border border-success/30 rounded-lg">
-                        <span className="text-2xl flex-shrink-0">✅</span>
-                        <div className="flex-1">
-                            <p className="font-medium text-success">
-                                Aucun risque majeur identifié
-                            </p>
-                            <p className="text-sm text-muted mt-1">
-                                Aucun risque naturel significatif détecté pour cette adresse.
-                            </p>
-                        </div>
-                    </div>
-                )}
+                {/* Radon */}
+                <RiskItem
+                    icon="☢️"
+                    label="Radon"
+                    status={risks.radon >= 3 ? 'warning' : 'success'}
+                    value={risks.radon >= 3 ? 'Significatif' : 'Faible'}
+                />
+
+                {/* Sismicité */}
+                <RiskItem
+                    icon="📉"
+                    label="Sismicité"
+                    status={risks.sismicite >= 3 ? 'warning' : 'success'}
+                    value={risks.sismicite >= 3 ? 'À surveiller' : 'Faible'}
+                />
+            </div>
+        </div>
+    );
+};
+
+const RiskItem = ({ icon, label, status, value }: { icon: string, label: string, status: 'success' | 'warning', value: string }) => {
+    const isWarning = status === 'warning';
+
+    return (
+        <div className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isWarning
+                ? 'bg-warning/5 border-warning/20'
+                : 'bg-surface-elevated/50 border-boundary'
+            }`}>
+            <div className="flex items-center gap-3">
+                <span className="text-xl">{icon}</span>
+                <span className={`font-medium ${isWarning ? 'text-text' : 'text-muted'}`}>
+                    {label}
+                </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <span className={`text-sm font-semibold ${isWarning ? 'text-warning' : 'text-success'
+                    }`}>
+                    {value}
+                </span>
+                <span className="text-sm">
+                    {isWarning ? '⚠️' : '✅'}
+                </span>
             </div>
         </div>
     );

@@ -14,7 +14,7 @@
 
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { type DiagnosticResult } from '@/lib/schemas';
-import { formatCurrency, formatPercent } from '@/lib/calculator';
+import { formatCurrency, formatPercent, sanitizeText } from '@/lib/calculator';
 
 // =============================================================================
 // 1. THEME & DESIGN SYSTEM
@@ -485,11 +485,13 @@ const PropertySection = ({ result }: { result: DiagnosticResult }) => (
     <Section title="[1] COPROPRIETE AUDITEE">
         <View style={styles.row}>
             <Text style={styles.label}>Adresse</Text>
-            <Text style={styles.value}>{result.input.address || 'Non renseignee'}</Text>
+            <Text style={styles.value}>
+                {sanitizeText(result.input.address || '')} {result.input.postalCode} {sanitizeText(result.input.city || '')}
+            </Text>
         </View>
         <View style={styles.row}>
             <Text style={styles.label}>Localisation</Text>
-            <Text style={styles.value}>{result.input.postalCode} {result.input.city}</Text>
+            <Text style={styles.value}>{sanitizeText(result.input.city || '')} ({result.input.postalCode})</Text>
         </View>
         <View style={styles.rowNoBorder}>
             <Text style={styles.label}>Nombre de lots</Text>
@@ -507,7 +509,7 @@ const DPESection = ({ result }: { result: DiagnosticResult }) => (
                     <Text style={styles.dpeLetter}>{result.input.currentDPE}</Text>
                 </View>
             </View>
-            <Text style={styles.dpeArrow}>--{'>'}</Text>
+            <Text style={styles.dpeArrow}>{'>'}</Text>
             <View style={{ alignItems: 'center' }}>
                 <Text style={styles.dpeLabel}>Objectif</Text>
                 <View style={[styles.dpeBox, { backgroundColor: getDPEColor(result.input.targetDPE) }]}>

@@ -16,7 +16,7 @@
 
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { type DiagnosticResult } from '@/lib/schemas';
-import { formatCurrency, formatPercent } from '@/lib/calculator';
+import { formatCurrency, formatPercent, sanitizeText } from '@/lib/calculator';
 import {
     type OwnerProfile,
     type OwnerProfileType,
@@ -535,11 +535,13 @@ const PropertySection = ({ result }: { result: DiagnosticResult }) => (
     <Section title="[1] Copropriété auditée">
         <View style={styles.row}>
             <Text style={styles.label}>Adresse</Text>
-            <Text style={styles.value}>{result.input.address || 'Non renseignee'}</Text>
+            <Text style={styles.value}>
+                {sanitizeText(result.input.address || '')} {result.input.postalCode} {sanitizeText(result.input.city || '')}
+            </Text>
         </View>
         <View style={styles.row}>
             <Text style={styles.label}>Localisation</Text>
-            <Text style={styles.value}>{result.input.postalCode} {result.input.city}</Text>
+            <Text style={styles.value}>{sanitizeText(result.input.city || '')} ({result.input.postalCode})</Text>
         </View>
         <View style={styles.rowNoBorder}>
             <Text style={styles.label}>Nombre de lots</Text>
