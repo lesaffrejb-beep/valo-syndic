@@ -209,7 +209,7 @@ export function AddressAutocomplete({
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
                     disabled={disabled || isEnriching}
-                    className="input w-full pr-10"
+                    className="input w-full pr-10 h-12"
                     name="address"
                     autoComplete="street-address"
                     aria-autocomplete="list"

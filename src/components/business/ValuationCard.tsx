@@ -50,7 +50,7 @@ export function ValuationCard({ valuation, financing }: ValuationCardProps) {
                                 Valorisation {isMaPoche && '(votre part)'}
                             </span>
                         </div>
-                        <p className="text-3xl lg:text-4xl font-black text-success-500 tracking-tight leading-none mb-1">
+                        <p className="text-3xl lg:text-4xl font-black text-success-500 tracking-tight leading-none mb-1 break-words">
                             +{formatCurrency(displayGreenValueGain)}
                         </p>
                         <p className="text-sm font-medium text-success-400">

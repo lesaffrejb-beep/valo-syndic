@@ -107,7 +107,7 @@ export function TantiemeCalculator({ financing, className = "" }: TantiemeCalcul
             </div>
 
             {/* Comparaison */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-surface rounded-lg p-4 text-center border border-boundary">
                     <p className="text-xs text-muted mb-1">Apport personnel</p>
                     <p className="text-xl font-bold text-success-400">

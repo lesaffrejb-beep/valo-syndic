@@ -137,11 +137,11 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                         {/* Reste à Charge & Mensualité */}
                         <div className="mt-8 pt-6 border-t border-boundary">
                             <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
-                                <div>
+                                <div className="w-full sm:w-auto">
                                     <p className="text-sm text-muted mb-1">
                                         Reste à charge {isMaPoche ? '(votre part)' : 'final'}
                                     </p>
-                                    <p className="text-2xl font-bold text-main tabular-nums">
+                                    <p className="text-3xl font-bold text-main tabular-nums">
                                         <AnimatedCurrency value={getAdjustedValue(financing.remainingCost)} duration={1.5} />
                                     </p>
                                     <p className="text-xs text-subtle mt-1">
@@ -167,7 +167,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
 
                 {/* Footer Gain Énergétique */}
                 <div className="mt-8 pt-4 border-t border-boundary/30 flex justify-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success-900/20 border border-success-500/20">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success-900/20 border border-success-500/20">
                         <span className="text-xs text-success-400">⚡ Gain énergétique projeté :</span>
                         <span className="text-sm font-bold text-success-400">
                             -{Math.round(financing.energyGainPercent * 100)}%

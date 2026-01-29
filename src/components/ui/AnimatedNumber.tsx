@@ -105,7 +105,6 @@ export function AnimatedCurrency({
             value={value}
             duration={duration}
             formatFn={formatCurrency}
-            suffix=" €"
             className={className}
         />
     );

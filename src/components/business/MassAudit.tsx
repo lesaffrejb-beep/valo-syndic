@@ -121,7 +121,7 @@ export function MassAudit() {
                 const rawData = parseResults.data;
 
                 // Validation des données
-                const processed: ProcessedBuilding[] = rawData.map((row, index) => 
+                const processed: ProcessedBuilding[] = rawData.map((row, index) =>
                     validateAndTransformRow(row, index)
                 );
 
