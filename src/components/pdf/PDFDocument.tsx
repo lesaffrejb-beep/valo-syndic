@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+// Note: @react-pdf/renderer Text components handle apostrophes differently from JSX
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 import { type DiagnosticResult } from '@/lib/schemas';
 import { formatCurrency, formatPercent } from '@/lib/calculator';

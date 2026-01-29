@@ -1,12 +1,17 @@
 /**
  * DiagnosticForm — Formulaire de saisie des données
+ * Avec enrichissement automatique via APIs gouvernementales
  */
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { type DPELetter } from "@/lib/constants";
 import { DiagnosticInputSchema, type DiagnosticInput } from "@/lib/schemas";
+import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
+import { DataSourceBadge, EnrichedDataCard } from "@/components/ui/DataSourceBadge";
+import type { EnrichedProperty, EnrichmentSource } from "@/lib/api";
 
 interface DiagnosticFormProps {
     onSubmit: (data: DiagnosticInput) => void;
@@ -35,6 +40,11 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
     // State pour la gestion des zones locales (49/44)
     const [localZone, setLocalZone] = useState<string | null>(null);
 
+    // State pour les données enrichies
+    const [enrichedProperty, setEnrichedProperty] = useState<Partial<EnrichedProperty> | null>(null);
+    const [enrichmentSources, setEnrichmentSources] = useState<EnrichmentSource[]>([]);
+    const [isEnriching, setIsEnriching] = useState(false);
+
     // Détection auto du Code Postal
     const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const cp = e.target.value;
@@ -44,6 +54,56 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             setLocalZone("NANTES");
         } else {
             setLocalZone(null);
+        }
+    };
+
+    // Callback quand une adresse est sélectionnée
+    const handleAddressSelect = (data: {
+        address: string;
+        postalCode: string;
+        city: string;
+        cityCode?: string;
+        coordinates?: { longitude: number; latitude: number };
+    }) => {
+        if (!formRef.current) return;
+        const form = formRef.current;
+
+        // Pré-remplir les champs
+        const postalCodeInput = form.elements.namedItem("postalCode") as HTMLInputElement;
+        const cityInput = form.elements.namedItem("city") as HTMLInputElement;
+
+        if (postalCodeInput) {
+            postalCodeInput.value = data.postalCode;
+            // Déclencher la détection de zone
+            if (data.postalCode.startsWith("49")) {
+                setLocalZone("ANGERS");
+            } else if (data.postalCode.startsWith("44")) {
+                setLocalZone("NANTES");
+            } else {
+                setLocalZone(null);
+            }
+        }
+        if (cityInput) {
+            cityInput.value = data.city;
+        }
+
+        setIsEnriching(true);
+    };
+
+    // Callback quand l'enrichissement est terminé
+    const handleEnriched = (property: Partial<EnrichedProperty> | null) => {
+        setIsEnriching(false);
+        if (!property) return;
+
+        setEnrichedProperty(property);
+        setEnrichmentSources(property.enrichmentSources || []);
+
+        // Pré-remplir le prix au m² si disponible
+        if (property.marketData && formRef.current) {
+            const priceInput = formRef.current.elements.namedItem("averagePricePerSqm") as HTMLInputElement;
+            if (priceInput && !priceInput.value) {
+                priceInput.value = String(property.marketData.averagePricePerSqm);
+            }
         }
     };
 
@@ -104,7 +164,6 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
         if (!formRef.current) return;
 
         const form = formRef.current;
-        (form.elements.namedItem("address") as HTMLInputElement).value = DEMO_DATA.address;
         (form.elements.namedItem("postalCode") as HTMLInputElement).value = DEMO_DATA.postalCode;
         setLocalZone("ANGERS"); // Force update state
         (form.elements.namedItem("city") as HTMLInputElement).value = DEMO_DATA.city;
@@ -116,6 +175,10 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
         (form.elements.namedItem("localAidAmount") as HTMLInputElement).value = "0";
         (form.elements.namedItem("averagePricePerSqm") as HTMLInputElement).value = String(DEMO_DATA.averagePricePerSqm);
         (form.elements.namedItem("averageUnitSurface") as HTMLInputElement).value = String(DEMO_DATA.averageUnitSurface);
+
+        // Reset enrichment for demo
+        setEnrichedProperty(null);
+        setEnrichmentSources([]);
     };
 
     return (
@@ -131,44 +194,127 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                 </button>
             </div>
 
-            {/* Adresse (optionnelle) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-3">
-                    <label className="block text-sm font-medium text-muted mb-1">
-                        Adresse de la copropriété
-                    </label>
-                    <input
-                        type="text"
-                        name="address"
-                        placeholder="12 rue des Lices"
-                        className="input"
-                    />
-                </div>
-
+            {/* Adresse avec auto-complétion */}
+            <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-muted mb-1">
-                        Code postal
+                        Adresse de la copropriété
+                        <span className="ml-2 text-xs text-primary">✨ Auto-complétion</span>
                     </label>
-                    <input
-                        type="text"
-                        name="postalCode"
-                        placeholder="49100"
-                        maxLength={5}
-                        className="input"
-                        onChange={handlePostalCodeChange}
+                    <AddressAutocomplete
+                        placeholder="Commencez à taper une adresse..."
+                        onSelect={handleAddressSelect}
+                        onEnriched={handleEnriched}
+                        className="w-full"
                     />
+                    <input type="hidden" name="address" value={enrichedProperty?.address || ""} />
+                    <p className="text-[10px] text-muted mt-1">
+                        Propulsé par la Base Adresse Nationale (BAN) — Données officielles
+                    </p>
                 </div>
 
-                <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-muted mb-1">
-                        Ville
-                    </label>
-                    <input
-                        type="text"
-                        name="city"
-                        placeholder="Angers"
-                        className="input"
-                    />
+                {/* Affichage de l'enrichissement en cours */}
+                <AnimatePresence>
+                    {isEnriching && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="flex items-center gap-3 px-4 py-3 bg-primary/10 border border-primary/20 rounded-xl"
+                        >
+                            <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                            <div>
+                                <p className="text-sm font-medium text-primary">
+                                    Recherche d&apos;informations...
+                                </p>
+                                <p className="text-xs text-primary/70">
+                                    Cadastre, prix immobiliers, données locales
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Affichage des données enrichies */}
+                <AnimatePresence>
+                    {enrichedProperty && enrichmentSources.length > 0 && !isEnriching && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="space-y-3"
+                        >
+                            {/* Badge sources */}
+                            <div className="flex items-center justify-between">
+                                <DataSourceBadge sources={enrichmentSources} compact />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setEnrichedProperty(null);
+                                        setEnrichmentSources([]);
+                                    }}
+                                    className="text-xs text-muted hover:text-main transition-colors"
+                                >
+                                    Effacer
+                                </button>
+                            </div>
+
+                            {/* Cartes de données enrichies */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {/* Cadastre */}
+                                {enrichedProperty.cadastre && (
+                                    <EnrichedDataCard
+                                        icon="🗺️"
+                                        title="Parcelle"
+                                        value={`${enrichedProperty.cadastre.section} ${enrichedProperty.cadastre.numero}`}
+                                        source={enrichmentSources.find(s => s.name.includes("Cadastre")) || enrichmentSources[0]}
+                                        description={`Surface terrain: ${enrichedProperty.cadastre.surface.toLocaleString("fr-FR")} m²`}
+                                    />
+                                )}
+
+                                {/* Prix DVF */}
+                                {enrichedProperty.marketData && (
+                                    <EnrichedDataCard
+                                        icon="💰"
+                                        title="Prix local"
+                                        value={enrichedProperty.marketData.averagePricePerSqm}
+                                        unit="€/m²"
+                                        source={enrichmentSources.find(s => s.name.includes("DVF")) || enrichmentSources[0]}
+                                        description={`${enrichedProperty.marketData.transactionCount} ventes analysées`}
+                                    />
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Champs code postal et ville */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-muted mb-1">
+                            Code postal
+                        </label>
+                        <input
+                            type="text"
+                            name="postalCode"
+                            placeholder="49100"
+                            maxLength={5}
+                            className="input"
+                            onChange={handlePostalCodeChange}
+                        />
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-muted mb-1">
+                            Ville
+                        </label>
+                        <input
+                            type="text"
+                            name="city"
+                            placeholder="Angers"
+                            className="input"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -380,6 +526,9 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                     <div>
                         <label className="block text-sm font-medium text-muted mb-1">
                             Prix moyen m² quartier (€)
+                            {enrichedProperty?.marketData && (
+                                <span className="ml-2 text-xs text-success">✓ Auto-rempli via DVF</span>
+                            )}
                         </label>
                         <input
                             type="number"
@@ -416,7 +565,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             </button>
 
             <p className="text-xs text-muted text-center">
-                Calcul 100% local — Aucune donnée envoyée à un serveur
+                Calcul local enrichi par des données officielles (BAN, DVF, Cadastre)
             </p>
         </form>
     );
