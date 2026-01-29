@@ -11,7 +11,9 @@ import { usePropertyEnrichment } from "@/hooks/usePropertyEnrichment";
 import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 import { DataSourceBadge, EnrichedDataCard, EnrichmentProgress } from "@/components/ui/DataSourceBadge";
 import { motion, AnimatePresence } from "framer-motion";
-import { type DPEEntry } from "@/services/dpeService";
+import { type DPEEntry, dpeService, type DecennaleStatus, type QuarterlyStats } from "@/services/dpeService";
+import { DecennaleAlert } from "@/components/business/DecennaleAlert";
+import { EnergyBenchmark } from "@/components/business/EnergyBenchmark";
 
 interface DiagnosticFormProps {
     onSubmit: (data: DiagnosticInput) => void;
@@ -43,6 +45,10 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
     // State pour DPE local trouvé
     const [localDpeData, setLocalDpeData] = useState<DPEEntry | null>(null);
 
+    // V2 Quick Wins State
+    const [decennaleStatus, setDecennaleStatus] = useState<DecennaleStatus | null>(null);
+    const [quarterlyStats, setQuarterlyStats] = useState<QuarterlyStats | null>(null);
+
     // V2 Enrichment Hook
     const {
         property: enrichedProperty,
@@ -50,6 +56,26 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
         isEnriching,
         enrichFromAddress
     } = usePropertyEnrichment();
+
+    // V2: Calculate DecennaleAlert and QuarterlyStats when localDpeData changes
+    useEffect(() => {
+        if (localDpeData) {
+            // Decennale Check
+            const status = dpeService.checkDecennale(localDpeData.annee);
+            setDecennaleStatus(status);
+
+            // Get postal code from address and fetch quarterly stats
+            const postalCodeMatch = localDpeData.adresse.match(/(\d{5})/);
+            const postalCode = postalCodeMatch?.[1] || '49000';
+
+            dpeService.getQuarterlyStats(postalCode, localDpeData.conso).then(stats => {
+                setQuarterlyStats(stats);
+            });
+        } else {
+            setDecennaleStatus(null);
+            setQuarterlyStats(null);
+        }
+    }, [localDpeData]);
 
     // Reset local zone when postal code changes via enrichment
     useEffect(() => {
@@ -262,6 +288,19 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
 
                 {enrichmentSources.length > 0 && (
                     <DataSourceBadge sources={enrichmentSources} />
+                )}
+
+                {/* V2 Quick Wins: Decennale Alert */}
+                {decennaleStatus && decennaleStatus.isActive && (
+                    <DecennaleAlert status={decennaleStatus} />
+                )}
+
+                {/* V2 Quick Wins: Energy Benchmark */}
+                {quarterlyStats && localDpeData && (
+                    <EnergyBenchmark
+                        stats={quarterlyStats}
+                        surface={localDpeData.surface || 100}
+                    />
                 )}
             </div>
 

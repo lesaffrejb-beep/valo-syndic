@@ -54,23 +54,24 @@ export const dpeService = {
         }
 
         // increment each column in the first row
-        for (let j = 0; j <= a.length; j++) {
-            matrix[0][j] = j;
+        const firstRow = matrix[0];
+        if (firstRow) {
+            for (let j = 0; j <= a.length; j++) {
+                firstRow[j] = j;
+            }
         }
 
         // Fill in the rest of the matrix
         for (let i = 1; i <= b.length; i++) {
             for (let j = 1; j <= a.length; j++) {
                 const cost = b.charAt(i - 1) === a.charAt(j - 1) ? 0 : 1;
-                // Add checks to ensure rows exist (though they should based on init loop)
-                if (matrix[i] && matrix[i - 1]) {
-                    matrix[i][j] = Math.min(
-                        matrix[i - 1][j - 1] + cost, // substitution
-                        Math.min(
-                            matrix[i][j - 1] + 1, // insertion
-                            matrix[i - 1][j] + 1 // deletion
-                        )
-                    );
+                const currentRow = matrix[i];
+                const prevRow = matrix[i - 1];
+                if (currentRow && prevRow) {
+                    const substitution = (prevRow[j - 1] ?? Infinity) + cost;
+                    const insertion = (currentRow[j - 1] ?? Infinity) + 1;
+                    const deletion = (prevRow[j] ?? Infinity) + 1;
+                    currentRow[j] = Math.min(substitution, insertion, deletion);
                 }
             }
         }
@@ -195,6 +196,76 @@ export const dpeService = {
         const combined = [...localHybrid, ...apiHybrid];
 
         return combined.slice(0, limit);
+    },
+
+    // =========================================================================
+    // V2 QUICK WINS
+    // =========================================================================
+
+    /**
+     * ALERTE DÉCENNALE
+     * Vérifie si l'immeuble est sous garantie décennale (< 10 ans)
+     */
+    checkDecennale(anneeConstruction: number): DecennaleStatus {
+        const currentYear = new Date().getFullYear();
+        const buildingAge = currentYear - anneeConstruction;
+        const isActive = buildingAge <= 10;
+        const expirationYear = anneeConstruction + 10;
+        const yearsRemaining = Math.max(0, expirationYear - currentYear);
+
+        return {
+            isActive,
+            anneeConstruction,
+            expirationYear,
+            yearsRemaining,
+            buildingAge,
+            urgencyLevel: yearsRemaining <= 2 ? 'critical' : yearsRemaining <= 5 ? 'warning' : 'info'
+        };
+    },
+
+    /**
+     * COMPARATEUR ÉNERGÉTIQUE QUARTIER
+     * Calcule la moyenne de consommation pour un code postal donné
+     */
+    async getQuarterlyStats(postalCode: string, targetConso: number): Promise<QuarterlyStats> {
+        const data = await this.fetchData();
+
+        // Filtrer les bâtiments du même code postal
+        const quartierBuildings = data.filter(b =>
+            b.adresse.includes(postalCode) ||
+            b.adresse.toLowerCase().includes(postalCode.toLowerCase())
+        );
+
+        if (quartierBuildings.length === 0) {
+            // Fallback: utiliser toute la base comme référence
+            const allAvg = data.reduce((sum, b) => sum + b.conso, 0) / data.length;
+            return {
+                averageConso: allAvg,
+                targetConso,
+                percentDiff: ((targetConso - allAvg) / allAvg) * 100,
+                sampleSize: data.length,
+                isAboveAverage: targetConso > allAvg,
+                estimatedYearlyCost: targetConso * 100 * 0.25, // 100m² * 0.25€/kWh
+                averageYearlyCost: allAvg * 100 * 0.25,
+                potentialSavings: Math.max(0, (targetConso - allAvg) * 100 * 0.25),
+                source: 'all_database'
+            };
+        }
+
+        const avgConso = quartierBuildings.reduce((sum, b) => sum + b.conso, 0) / quartierBuildings.length;
+        const percentDiff = ((targetConso - avgConso) / avgConso) * 100;
+
+        return {
+            averageConso: avgConso,
+            targetConso,
+            percentDiff,
+            sampleSize: quartierBuildings.length,
+            isAboveAverage: targetConso > avgConso,
+            estimatedYearlyCost: targetConso * 100 * 0.25,
+            averageYearlyCost: avgConso * 100 * 0.25,
+            potentialSavings: Math.max(0, (targetConso - avgConso) * 100 * 0.25),
+            source: 'quartier'
+        };
     }
 };
 
@@ -224,3 +295,24 @@ export interface HybridSearchResult {
     dpeData?: DPEEntry;
 }
 
+// V2 Types
+export interface DecennaleStatus {
+    isActive: boolean;
+    anneeConstruction: number;
+    expirationYear: number;
+    yearsRemaining: number;
+    buildingAge: number;
+    urgencyLevel: 'critical' | 'warning' | 'info';
+}
+
+export interface QuarterlyStats {
+    averageConso: number;
+    targetConso: number;
+    percentDiff: number;
+    sampleSize: number;
+    isAboveAverage: boolean;
+    estimatedYearlyCost: number;
+    averageYearlyCost: number;
+    potentialSavings: number;
+    source: 'quartier' | 'all_database';
+}
