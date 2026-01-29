@@ -210,7 +210,8 @@ export function AddressAutocomplete({
                     placeholder={placeholder}
                     disabled={disabled || isEnriching}
                     className="input w-full pr-10"
-                    autoComplete="off"
+                    name="address"
+                    autoComplete="street-address"
                     aria-autocomplete="list"
                     aria-expanded={showSuggestions}
                     aria-controls="address-suggestions"
@@ -259,7 +260,7 @@ export function AddressAutocomplete({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute z-50 w-full mt-1 bg-surface border border-boundary rounded-xl shadow-xl overflow-hidden max-h-80 overflow-y-auto"
+                        className="absolute z-[100] w-full mt-1 bg-surface border border-boundary rounded-xl shadow-xl overflow-hidden max-h-80 overflow-y-auto"
                         role="listbox"
                     >
                         {hybridResults.map((result, index) => (
