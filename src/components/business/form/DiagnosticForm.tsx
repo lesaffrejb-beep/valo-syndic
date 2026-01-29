@@ -4,9 +4,16 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { type DPELetter } from "@/lib/constants";
 import { DiagnosticInputSchema, type DiagnosticInput } from "@/lib/schemas";
+import { usePropertyEnrichment } from "@/hooks/usePropertyEnrichment";
+import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
+import { DataSourceBadge, EnrichedDataCard, EnrichmentProgress } from "@/components/ui/DataSourceBadge";
+import { motion, AnimatePresence } from "framer-motion";
+import { type DPEEntry, dpeService, type DecennaleStatus, type QuarterlyStats } from "@/services/dpeService";
+import { DecennaleAlert } from "@/components/business/DecennaleAlert";
+import { EnergyBenchmark } from "@/components/business/EnergyBenchmark";
 
 interface DiagnosticFormProps {
     onSubmit: (data: DiagnosticInput) => void;
@@ -35,9 +42,49 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
     // State pour la gestion des zones locales (49/44)
     const [localZone, setLocalZone] = useState<string | null>(null);
 
-    // Détection auto du Code Postal
-    const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const cp = e.target.value;
+    // State pour DPE local trouvé
+    const [localDpeData, setLocalDpeData] = useState<DPEEntry | null>(null);
+
+    // V2 Quick Wins State
+    const [decennaleStatus, setDecennaleStatus] = useState<DecennaleStatus | null>(null);
+    const [quarterlyStats, setQuarterlyStats] = useState<QuarterlyStats | null>(null);
+
+    // V2 Enrichment Hook
+    const {
+        property: enrichedProperty,
+        sources: enrichmentSources,
+        isEnriching,
+        enrichFromAddress
+    } = usePropertyEnrichment();
+
+    // V2: Calculate DecennaleAlert and QuarterlyStats when localDpeData changes
+    useEffect(() => {
+        if (localDpeData) {
+            // Decennale Check
+            const status = dpeService.checkDecennale(localDpeData.annee);
+            setDecennaleStatus(status);
+
+            // Get postal code from address and fetch quarterly stats
+            const postalCodeMatch = localDpeData.adresse.match(/(\d{5})/);
+            const postalCode = postalCodeMatch?.[1] || '49000';
+
+            dpeService.getQuarterlyStats(postalCode, localDpeData.conso).then(stats => {
+                setQuarterlyStats(stats);
+            });
+        } else {
+            setDecennaleStatus(null);
+            setQuarterlyStats(null);
+        }
+    }, [localDpeData]);
+
+    // Reset local zone when postal code changes via enrichment
+    useEffect(() => {
+        if (enrichedProperty?.postalCode) {
+            checkLocalZone(enrichedProperty.postalCode);
+        }
+    }, [enrichedProperty?.postalCode]);
+
+    const checkLocalZone = (cp: string) => {
         if (cp.startsWith("49")) {
             setLocalZone("ANGERS");
         } else if (cp.startsWith("44")) {
@@ -45,6 +92,11 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
         } else {
             setLocalZone(null);
         }
+    };
+
+    // Détection auto du Code Postal (Manuel)
+    const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        checkLocalZone(e.target.value);
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -132,44 +184,124 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             </div>
 
             {/* Adresse (optionnelle) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-3">
-                    <label className="block text-sm font-medium text-muted mb-1">
+            {/* Adresse (Autocomplete & Enrichissement) */}
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-main flex items-center gap-2">
                         Adresse de la copropriété
+                        {enrichmentSources.length > 0 && (
+                            <span className="text-[10px] text-success bg-success/10 px-2 py-0.5 rounded-full border border-success/20">
+                                ✓ Vérifiée
+                            </span>
+                        )}
                     </label>
-                    <input
-                        type="text"
-                        name="address"
-                        placeholder="12 rue des Lices"
-                        className="input"
+                    <AddressAutocomplete
+                        placeholder="Ex: 12 rue de la Paix, Paris"
+                        className="w-full"
+                        onSelect={(data) => {
+                            // Update hidden fields
+                            if (formRef.current) {
+                                const form = formRef.current;
+                                (form.elements.namedItem("address") as HTMLInputElement).value = data.address;
+                                (form.elements.namedItem("postalCode") as HTMLInputElement).value = data.postalCode;
+                                (form.elements.namedItem("city") as HTMLInputElement).value = data.city;
+
+                                // Auto-fill DPE from local data if available
+                                if (data.dpeData && DPE_OPTIONS.includes(data.dpeData.dpe)) {
+                                    (form.elements.namedItem("currentDPE") as HTMLSelectElement).value = data.dpeData.dpe;
+                                    setLocalDpeData(data.dpeData);
+                                } else {
+                                    setLocalDpeData(null);
+                                }
+
+                                checkLocalZone(data.postalCode);
+                            }
+                        }}
+                        onEnriched={(prop) => {
+                            if (!prop) return;
+
+                            // Update form limits/defaults based on enriched data
+                            if (formRef.current && prop.marketData?.averagePricePerSqm) {
+                                (formRef.current.elements.namedItem("averagePricePerSqm") as HTMLInputElement).value =
+                                    String(prop.marketData.averagePricePerSqm);
+                            }
+                        }}
                     />
+
+                    {/* Hidden fields required for native form submission */}
+                    <input type="hidden" name="address" />
+                    <input type="hidden" name="postalCode" />
+                    <input type="hidden" name="city" />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-muted mb-1">
-                        Code postal
-                    </label>
-                    <input
-                        type="text"
-                        name="postalCode"
-                        placeholder="49100"
-                        maxLength={5}
-                        className="input"
-                        onChange={handlePostalCodeChange}
-                    />
-                </div>
+                {/* Enrichment Status & Cards */}
+                <EnrichmentProgress isEnriching={isEnriching} />
 
-                <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-muted mb-1">
-                        Ville
-                    </label>
-                    <input
-                        type="text"
-                        name="city"
-                        placeholder="Angers"
-                        className="input"
+                <AnimatePresence>
+                    {(enrichedProperty || localDpeData) && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-hidden"
+                        >
+                            {/* Local DPE Card */}
+                            {localDpeData && (
+                                <EnrichedDataCard
+                                    icon="⚡"
+                                    title="DPE Local (49)"
+                                    value={`Classe ${localDpeData.dpe}`}
+                                    description={`Construit en ${localDpeData.annee} • ${localDpeData.surface} m²`}
+                                    source={{
+                                        name: "ADEME 49 (Local)",
+                                        url: "/data/dpe-49.json",
+                                        status: "success",
+                                        fetchedAt: new Date(),
+                                        dataPoints: ["DPE", "Année construction"]
+                                    }}
+                                />
+                            )}
+
+                            {enrichedProperty?.cadastre && (
+                                <EnrichedDataCard
+                                    icon="📐"
+                                    title="Cadastre"
+                                    value={`${enrichedProperty.cadastre.section} ${enrichedProperty.cadastre.numero}`}
+                                    description={`Parcelle de ${enrichedProperty.cadastre.surface} m²`}
+                                    source={enrichmentSources.find(s => s.name.includes("Cadastre"))!}
+                                />
+                            )}
+
+                            {enrichedProperty?.marketData && (
+                                <EnrichedDataCard
+                                    icon="📈"
+                                    title="Marché Local"
+                                    value={enrichedProperty.marketData.averagePricePerSqm}
+                                    unit="€/m²"
+                                    description={`${enrichedProperty.marketData.transactionCount} ventes analysées`}
+                                    source={enrichmentSources.find(s => s.name.includes("DVF"))!}
+                                />
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {enrichmentSources.length > 0 && (
+                    <DataSourceBadge sources={enrichmentSources} />
+                )}
+
+                {/* V2 Quick Wins: Decennale Alert */}
+                {decennaleStatus && decennaleStatus.isActive && (
+                    <DecennaleAlert status={decennaleStatus} />
+                )}
+
+                {/* V2 Quick Wins: Energy Benchmark */}
+                {quarterlyStats && localDpeData && (
+                    <EnergyBenchmark
+                        stats={quarterlyStats}
+                        surface={localDpeData.surface || 100}
                     />
-                </div>
+                )}
             </div>
 
             {/* Aides Locales Badge (Conditionnel) */}

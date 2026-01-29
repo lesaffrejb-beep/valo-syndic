@@ -45,7 +45,7 @@ export function Footer({ onSave, onLoad, hasResult }: FooterProps) {
                         </a>
                         <span className="text-subtle">|</span>
                         <span className="text-xs text-muted">
-                            Données réglementaires au {LEGAL.lastUpdate.toLocaleDateString("fr-FR")}
+                            Données réglementaires au 01/01/2026 • Simulateur à visée indicative
                         </span>
                     </div>
                 </div>

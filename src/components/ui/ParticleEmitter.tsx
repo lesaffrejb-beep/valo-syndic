@@ -10,6 +10,10 @@ interface ParticleEmitterProps {
     color?: string;
     /** Number of particles */
     count?: number;
+    /** Duration multiplier */
+    speed?: number;
+    /** Particle size multiplier */
+    size?: number;
 }
 
 interface Particle {
@@ -20,6 +24,7 @@ interface Particle {
     duration: number;
     delay: number;
     angle: number;
+    distance: number;
 }
 
 /**
@@ -29,7 +34,7 @@ interface Particle {
 export function ParticleEmitter({
     active,
     color = "#D4B679",
-    count = 12,
+    count = 20,
 }: ParticleEmitterProps) {
     const [particles, setParticles] = useState<Particle[]>([]);
 
@@ -51,23 +56,25 @@ export function ParticleEmitter({
             return;
         }
 
-        // Generate particles radiating from center
+        // Generate particles distributed across the card
         const newParticles: Particle[] = Array.from({ length: count }, (_, i) => {
-            // Calculate angle for radial distribution
-            const angle = (i / count) * 2 * Math.PI + Math.random() * 0.5;
-            // Starting point near center with slight randomness
-            const startRadius = 5 + Math.random() * 10; // 5-15% from center
-            const startX = 50 + Math.cos(angle) * startRadius;
-            const startY = 50 + Math.sin(angle) * startRadius;
+            // Calculate angle for radial distribution with more randomness
+            const angle = (i / count) * 2 * Math.PI + (Math.random() - 0.5) * 0.8;
+            // Random starting position across the card
+            const startX = 20 + Math.random() * 60; // 20-80% of card width
+            const startY = 20 + Math.random() * 60; // 20-80% of card height
+            // Variable travel distance for organic feel
+            const distance = 60 + Math.random() * 80; // 60-140px travel
 
             return {
                 id: i,
                 x: startX,
                 y: startY,
-                size: 3 + Math.random() * 6, // 3-9px (slightly smaller)
-                duration: 3 + Math.random() * 2, // 3-5s
-                delay: (i / count) * 2, // Staggered around the circle
-                angle, // Store angle for radial movement
+                size: 4 + Math.random() * 8, // 4-12px for visibility
+                duration: 6 + Math.random() * 4, // 6-10s (slower, more elegant)
+                delay: Math.random() * 4, // Random staggered start
+                angle,
+                distance,
             };
         });
 
@@ -93,7 +100,7 @@ export function ParticleEmitter({
                         width: particle.size,
                         height: particle.size,
                         backgroundColor: color,
-                        boxShadow: `0 0 ${particle.size * 2}px ${color}`,
+                        boxShadow: `0 0 ${particle.size * 3}px ${color}, 0 0 ${particle.size * 6}px ${color}40`,
                     }}
                     initial={{
                         opacity: 0,
@@ -102,18 +109,31 @@ export function ParticleEmitter({
                         y: 0,
                     }}
                     animate={{
-                        opacity: [0, 0.8, 0.6, 0],
-                        scale: [0, 1, 0.8, 0],
-                        // Radial outward movement based on particle angle
-                        x: [0, Math.cos(particle.angle) * 30, Math.cos(particle.angle) * 50],
-                        y: [0, Math.sin(particle.angle) * 30, Math.sin(particle.angle) * 50],
+                        opacity: [0, 0.7, 0.5, 0.3, 0],
+                        scale: [0, 1.2, 1, 0.6, 0],
+                        // Smooth radial outward movement covering the card
+                        x: [
+                            0,
+                            Math.cos(particle.angle) * particle.distance * 0.3,
+                            Math.cos(particle.angle) * particle.distance * 0.6,
+                            Math.cos(particle.angle) * particle.distance * 0.9,
+                            Math.cos(particle.angle) * particle.distance,
+                        ],
+                        y: [
+                            0,
+                            Math.sin(particle.angle) * particle.distance * 0.3,
+                            Math.sin(particle.angle) * particle.distance * 0.6,
+                            Math.sin(particle.angle) * particle.distance * 0.9,
+                            Math.sin(particle.angle) * particle.distance,
+                        ],
                     }}
                     transition={{
                         duration: particle.duration,
                         delay: particle.delay,
                         repeat: Infinity,
                         repeatType: "loop",
-                        ease: "easeOut",
+                        ease: [0.25, 0.1, 0.25, 1], // Custom bezier for organic flow
+                        times: [0, 0.2, 0.5, 0.8, 1],
                     }}
                 />
             ))}
