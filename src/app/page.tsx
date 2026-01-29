@@ -35,6 +35,10 @@ import { InvestorTaxCard } from "@/components/business/InvestorTaxCard";
 import { VoteQR } from "@/components/pdf/VoteQR";
 import { StaggerContainer } from "@/components/ui/AnimatedCard";
 
+// V3 Premium Components
+import { StreetViewHeader } from "@/components/business/StreetViewHeader";
+import { RisksCard } from "@/components/business/RisksCard";
+
 // God View
 import { MassAudit } from "@/components/business/MassAudit";
 
@@ -232,6 +236,14 @@ export default function HomePage() {
                             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                         >
                             <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-6 md:gap-8">
+                                {/* V3: Street View Banner */}
+                                {result.input.coordinates && (
+                                    <StreetViewHeader
+                                        address={result.input.address || undefined}
+                                        coordinates={result.input.coordinates}
+                                    />
+                                )}
+
                                 {/* Summary Header */}
                                 <div className="card-bento p-8 md:p-10 gap-8">
                                     <div className="flex flex-col gap-8">
@@ -269,8 +281,12 @@ export default function HomePage() {
                                         compliance={result.compliance}
                                         currentDPE={result.input.currentDPE}
                                     />
-                                    {/* Legal Calendar - Moved here to fill space */}
-                                    <ComplianceTimeline currentDPE={result.input.currentDPE} />
+                                    {/* V3: Risks Card (if coordinates) or Compliance Timeline (fallback) */}
+                                    {result.input.coordinates ? (
+                                        <RisksCard coordinates={result.input.coordinates} />
+                                    ) : (
+                                        <ComplianceTimeline currentDPE={result.input.currentDPE} />
+                                    )}
                                 </div>
 
                                 {/* Financing Plan - Full Width */}

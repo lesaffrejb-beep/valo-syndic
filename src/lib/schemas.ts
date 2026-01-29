@@ -28,6 +28,12 @@ export const DiagnosticInputSchema = z.object({
     /** Ville */
     city: z.string().min(2, "Ville trop courte").optional(),
 
+    /** Coordonnées GPS (optionnel, pour Street View et Géorisques) */
+    coordinates: z.object({
+        latitude: z.number().min(-90).max(90),
+        longitude: z.number().min(-180).max(180),
+    }).optional(),
+
     /** Classe DPE actuelle */
     currentDPE: DPELetterSchema,
 

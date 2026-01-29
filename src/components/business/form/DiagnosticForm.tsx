@@ -45,6 +45,9 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
     // State pour DPE local trouvé
     const [localDpeData, setLocalDpeData] = useState<DPEEntry | null>(null);
 
+    // State pour les coordonnées GPS (V3)
+    const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | undefined>(undefined);
+
     // V2 Quick Wins State
     const [decennaleStatus, setDecennaleStatus] = useState<DecennaleStatus | null>(null);
     const [quarterlyStats, setQuarterlyStats] = useState<QuarterlyStats | null>(null);
@@ -109,6 +112,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
             address: formData.get("address") as string || undefined,
             postalCode: formData.get("postalCode") as string || undefined,
             city: formData.get("city") as string || undefined,
+            coordinates: coordinates, // V3: GPS coordinates from address selection
             currentDPE: formData.get("currentDPE") as DPELetter,
             targetDPE: formData.get("targetDPE") as DPELetter,
             numberOfUnits: parseInt(formData.get("numberOfUnits") as string, 10),
@@ -205,6 +209,11 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                                 (form.elements.namedItem("address") as HTMLInputElement).value = data.address;
                                 (form.elements.namedItem("postalCode") as HTMLInputElement).value = data.postalCode;
                                 (form.elements.namedItem("city") as HTMLInputElement).value = data.city;
+
+                                // V3: Store coordinates from address selection
+                                if (data.coordinates) {
+                                    setCoordinates(data.coordinates);
+                                }
 
                                 // Auto-fill DPE from local data if available
                                 if (data.dpeData && DPE_OPTIONS.includes(data.dpeData.dpe)) {
