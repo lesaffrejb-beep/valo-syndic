@@ -46,8 +46,9 @@ import { MassAudit } from "@/components/business/MassAudit";
 
 // Core Logic
 import { generateDiagnostic } from "@/lib/calculator";
-import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema } from "@/lib/schemas";
+import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema, type GhostExtensionImport } from "@/lib/schemas";
 import { BrandingModal } from "@/components/BrandingModal";
+import { JsonImporter } from "@/components/import/JsonImporter";
 
 // Lazy Loaded Components (Heavy Buttons)
 const DownloadPdfButton = dynamic(
@@ -147,6 +148,21 @@ export default function HomePage() {
         event.target.value = "";
     };
 
+    // === IMPORT JSON DEPUIS EXTENSION ===
+    const handleGhostImport = (data: GhostExtensionImport) => {
+        // Calculate total tantièmes
+        const totalTantiemes = data.lots.reduce((sum, lot) => sum + lot.tantiemes, 0);
+
+        // Show success message with stats
+        const stats = `✅ ${data.lots.length} lots importés !\n\nTotal Tantièmes: ${totalTantiemes}\n\nSource: ${data.url || 'Extension Ghost'}`;
+        alert(stats);
+
+        // Scroll to form if not visible
+        if (!result) {
+            document.getElementById('diagnostic-form')?.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-app">
             <BrandingModal isOpen={showBrandingModal} onClose={() => setShowBrandingModal(false)} />
@@ -210,7 +226,12 @@ export default function HomePage() {
                             </p>
                         </div>
 
-                        <div className="card-bento p-8 md:p-12 mb-12 shadow-none rounded-3xl">
+                        <div id="diagnostic-form" className="card-bento p-8 md:p-12 mb-12 shadow-none rounded-3xl">
+                            {/* Import Button */}
+                            <div className="flex justify-end mb-6">
+                                <JsonImporter onImport={handleGhostImport} />
+                            </div>
+
                             <DiagnosticForm onSubmit={handleSubmit} isLoading={isLoading} />
                         </div>
 

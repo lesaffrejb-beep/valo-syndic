@@ -256,3 +256,27 @@ export const ValoSaveSchema = z.object({
 });
 
 export type ValoSaveData = z.infer<typeof ValoSaveSchema>;
+
+// =============================================================================
+// 5. SCHÉMA D'IMPORT EXTENSION (VALO-SYNDIC GHOST)
+// =============================================================================
+
+/** Schéma pour un lot importé depuis l'extension */
+export const ImportedLotSchema = z.object({
+    id: z.string().min(1, "ID requis"),
+    tantiemes: z.number().int().min(1, "Tantièmes minimum 1"),
+    surface: z.number().positive("Surface doit être positive").optional(),
+    type: z.string().optional(),
+});
+
+/** Schéma pour le JSON complet de l'extension */
+export const GhostExtensionImportSchema = z.object({
+    source: z.literal("valo-syndic-ghost"),
+    version: z.string(),
+    extractedAt: z.string().datetime(),
+    url: z.string().url().optional(),
+    lots: z.array(ImportedLotSchema).min(1, "Au moins 1 lot requis"),
+});
+
+export type ImportedLot = z.infer<typeof ImportedLotSchema>;
+export type GhostExtensionImport = z.infer<typeof GhostExtensionImportSchema>;
