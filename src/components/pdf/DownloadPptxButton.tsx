@@ -363,9 +363,9 @@ export function DownloadPptxButton({ result }: DownloadPptxButtonProps) {
         <div className="relative">
             <button
                 onClick={generatePptx}
-                disabled={isGenerating}
-                className="btn-secondary flex items-center justify-center gap-2 disabled:opacity-50"
-                title="Télécharger en PowerPoint"
+                disabled={true}
+                className="btn-secondary flex items-center justify-center gap-2 opacity-40 grayscale cursor-not-allowed"
+                title="Bientôt disponible"
             >
                 {isGenerating ? (
                     <>

@@ -87,14 +87,14 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
     const offset = circumference - (animatedScore / 100) * circumference;
 
     return (
-        <div className={`card-bento ${colors.bg} rounded-3xl p-6 relative transition-colors duration-300 overflow-hidden h-full flex flex-col`}>
+        <div className={`card-bento ${colors.bg} rounded-3xl p-6 relative transition-colors duration-300 h-full flex flex-col`}>
             {/* Particle System for Critical Scores */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-3xl">
                 <ParticleEmitter active={score >= 80} color={colors.stroke} />
             </div>
 
             {/* Glow based on score */}
-            <div className={`absolute inset-0 bg-${colors.stroke}/5 pointer-events-none`} />
+            <div className={`absolute inset-0 bg-${colors.stroke}/5 pointer-events-none rounded-3xl`} />
 
             {/* HEADER STANDARD */}
             <div className="relative z-10 mb-2">
@@ -106,19 +106,16 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
             {/* BODY CENTERED */}
             <div className="flex-1 flex flex-col items-center justify-center relative z-10 w-full py-2">
 
-                {/* Visual + Message Wrapper - Vertical on Mobile, maybe Row on large if needed but requested flex-col usage implies stack or controlled layout. 
-                    User requested: "Ensure the circular gauge is vertically centered in the remaining space below the header." 
-                    and "Header (fixed height) + Body (flex-1, center content)."
-                */}
+                {/* Visual + Message Wrapper */}
 
                 <div className="flex flex-col items-center gap-6">
                     {/* Cercle SVG - Clean transparent container */}
                     <div className="relative flex-shrink-0 bg-transparent">
-                        <svg width="140" height="140" className="transform -rotate-90 block bg-transparent">
+                        <svg width="180" height="180" className="transform -rotate-90 block bg-transparent" style={{ overflow: 'visible' }}>
                             {/* Background circle */}
                             <circle
-                                cx="70"
-                                cy="70"
+                                cx="90"
+                                cy="90"
                                 r={radius}
                                 fill="none"
                                 stroke="currentColor"
@@ -128,8 +125,8 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                             />
                             {/* Progress circle */}
                             <circle
-                                cx="70"
-                                cy="70"
+                                cx="90"
+                                cy="90"
                                 r={radius}
                                 fill="none"
                                 stroke={colors.stroke}
@@ -138,7 +135,7 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
                                 strokeDasharray={circumference}
                                 strokeDashoffset={offset}
                                 className="transition-all duration-1000 ease-out"
-                                style={{ filter: `drop-shadow(0 0 8px ${colors.stroke})` }}
+                                style={{ filter: `drop-shadow(0 0 12px ${colors.stroke})` }}
                             />
                         </svg>
                         {/* Score au centre */}

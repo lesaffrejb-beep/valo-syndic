@@ -12,42 +12,45 @@
  * @version 2.0 - Profile-aware architecture
  */
 
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 import { type DiagnosticResult } from '@/lib/schemas';
 import { formatCurrency, formatPercent, sanitizeText } from '@/lib/calculator';
 
+// Register specific weights if using custom fonts, otherwise standard fonts:
+// Helvetica (Sans), Times-Roman (Serif)
+
 // =============================================================================
-// 1. THEME & DESIGN SYSTEM
+// 1. THEME & DESIGN SYSTEM (Matte Luxury)
 // =============================================================================
 
 const C = {
     // Primary palette
-    primary: '#1E3A5F',
-    primaryLight: '#2D4A6F',
-    gold: '#B8860B',
-    goldLight: '#D4AF37',
+    primary: '#0F172A', // Slate 900 (Darker)
+    primaryLight: '#334155', // Slate 700
+    gold: '#CA8A04', // Yellow 600 (Dark Gold)
+    goldLight: '#FDE047', // Yellow 300
 
     // Neutrals
     bg: '#FFFFFF',
-    bgSection: '#F8F9FA',
-    bgHighlight: '#FFF9E6',
+    bgSection: '#F8FAFC', // Slate 50
+    bgHighlight: '#FEFCE8', // Yellow 50
 
     // Text
-    text: '#1A1A2E',
-    textSecondary: '#4A5568',
-    textMuted: '#718096',
+    text: '#1E293B', // Slate 800
+    textSecondary: '#475569', // Slate 600
+    textMuted: '#94A3B8', // Slate 400
 
     // Semantic
-    success: '#059669',
-    successLight: '#D1FAE5',
-    warning: '#D97706',
-    warningLight: '#FEF3C7',
-    danger: '#DC2626',
-    dangerLight: '#FEE2E2',
+    success: '#15803D', // Green 700
+    successLight: '#DCFCE7', // Green 100
+    warning: '#B45309', // Amber 700
+    warningLight: '#FEF3C7', // Amber 100
+    danger: '#B91C1C', // Red 700
+    dangerLight: '#FEE2E2', // Red 100
 
     // Borders
-    border: '#E2E8F0',
-    borderLight: '#EDF2F7',
+    border: '#E2E8F0', // Slate 200
+    borderLight: '#F1F5F9', // Slate 100
 };
 
 // =============================================================================
@@ -61,11 +64,14 @@ const styles = StyleSheet.create({
         padding: 0,
         fontFamily: 'Helvetica',
         fontSize: 10,
+        color: C.text,
     },
 
     headerBand: {
         height: 6,
-        backgroundColor: C.gold,
+        backgroundColor: C.primary,
+        borderBottomWidth: 1,
+        borderBottomColor: C.gold,
     },
 
     header: {
@@ -79,18 +85,20 @@ const styles = StyleSheet.create({
     },
 
     brandTitle: {
-        fontSize: 20,
-        fontFamily: 'Helvetica-Bold',
+        fontSize: 22,
+        fontFamily: 'Times-Bold', // Serif for Luxury
         color: C.primary,
         letterSpacing: 0.5,
+        textTransform: 'uppercase',
     },
 
     brandSubtitle: {
         fontSize: 9,
-        color: C.textMuted,
+        color: C.gold,
         marginTop: 3,
         textTransform: 'uppercase',
-        letterSpacing: 1.5,
+        letterSpacing: 2,
+        fontFamily: 'Helvetica-Bold',
     },
 
     headerMeta: {
@@ -117,10 +125,12 @@ const styles = StyleSheet.create({
     },
 
     pageTitle: {
-        fontSize: 18,
-        fontFamily: 'Helvetica-Bold',
-        color: C.text,
-        marginBottom: 16,
+        fontSize: 24, // Larger title
+        fontFamily: 'Times-Bold', // Serif
+        color: C.primary,
+        marginBottom: 20,
+        textTransform: 'uppercase', // Editorial feel
+        letterSpacing: 1,
     },
 
     section: {
@@ -133,12 +143,12 @@ const styles = StyleSheet.create({
     },
 
     sectionTitle: {
-        fontSize: 11,
-        fontFamily: 'Helvetica-Bold',
-        color: C.text,
-        marginBottom: 10,
+        fontSize: 10,
+        fontFamily: 'Times-Bold', // Serif
+        color: C.gold, // Gold headers
+        marginBottom: 12,
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        letterSpacing: 2, // Wide tracking
     },
 
     row: {
@@ -169,8 +179,9 @@ const styles = StyleSheet.create({
     },
 
     bigNumber: {
-        fontSize: 28,
-        fontFamily: 'Helvetica-Bold',
+        fontSize: 32,
+        fontFamily: 'Times-Bold',
+        letterSpacing: -1,
     },
 
     heroBox: {
@@ -324,9 +335,10 @@ const styles = StyleSheet.create({
     },
 
     quoteText: {
-        fontSize: 10,
-        color: C.text,
-        fontStyle: 'italic',
+        fontSize: 11,
+        color: C.primary,
+        fontFamily: 'Times-Italic', // Elegant serif italic
+        lineHeight: 1.5,
     },
 
     quoteSource: {
