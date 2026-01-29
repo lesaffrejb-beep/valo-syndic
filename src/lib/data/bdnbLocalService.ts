@@ -78,7 +78,7 @@ async function loadBDNBData(): Promise<BDNBDataset | null> {
                 return null;
             }
 
-            console.log(`[BDNB Local] ${bdnbCache!.metadata.buildingCount} bâtiments chargés`);
+
             return bdnbCache;
         } catch (error) {
             console.warn("[BDNB Local] Erreur chargement:", error);

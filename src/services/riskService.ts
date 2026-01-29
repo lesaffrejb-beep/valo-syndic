@@ -42,7 +42,7 @@ export const riskService = {
 
             // Helper to find risk by keyword
             const findRisk = (keyword: string) => data.data?.find(
-                (risk: any) => risk.libelle_risque_long?.toLowerCase().includes(keyword)
+                (risk: { libelle_risque_long?: string; num_risque?: number; niveau_exposition?: string; niveau_exposition_label?: string }) => risk.libelle_risque_long?.toLowerCase().includes(keyword)
             );
 
             // Parse argile

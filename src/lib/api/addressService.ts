@@ -21,15 +21,17 @@ const API_BASE = "https://api-adresse.data.gouv.fr";
  * @param query - Texte de recherche (ex: "12 rue de la paix angers")
  * @param options - Options de filtrage
  */
+export interface AddressSearchOptions {
+    limit?: number;           // Nombre de résultats (défaut: 5, max: 100)
+    postcode?: string;        // Filtrer par code postal
+    citycode?: string;        // Filtrer par code INSEE
+    type?: "housenumber" | "street" | "locality" | "municipality";
+    autocomplete?: boolean;   // Mode auto-complétion (défaut: true)
+}
+
 export async function searchAddress(
     query: string,
-    options?: {
-        limit?: number;           // Nombre de résultats (défaut: 5, max: 100)
-        postcode?: string;        // Filtrer par code postal
-        citycode?: string;        // Filtrer par code INSEE
-        type?: "housenumber" | "street" | "locality" | "municipality";
-        autocomplete?: boolean;   // Mode auto-complétion (défaut: true)
-    }
+    options?: AddressSearchOptions
 ): Promise<APIResult<AddressFeature[]>> {
     const startTime = Date.now();
 
@@ -151,7 +153,7 @@ export async function normalizeAddress(
     address: string,
     postalCode?: string
 ): Promise<APIResult<AddressFeature | null>> {
-    const options: any = {
+    const options: AddressSearchOptions = {
         limit: 1,
         type: "housenumber",
         autocomplete: false,

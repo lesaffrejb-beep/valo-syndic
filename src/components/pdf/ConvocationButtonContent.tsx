@@ -18,8 +18,7 @@ export function ConvocationButtonContent({ result }: ConvocationButtonContentPro
             fileName={`convocation-ag-${new Date().toISOString().split('T')[0]}.pdf`}
             className="btn-secondary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-sm hover:shadow-md"
         >
-            {/* @ts-ignore */}
-            {({ blob, url, loading, error }: any) => {
+            {({ blob, url, loading, error }: { blob: Blob | null; url: string | null; loading: boolean; error: Error | null }) => {
                 if (loading) {
                     return (
                         <>

@@ -139,7 +139,7 @@ export const dpeService = {
 
             const data = await response.json();
 
-            return data.features?.map((feature: any) => ({
+            return data.features?.map((feature: { properties: { label: string; postcode: string; city: string; citycode?: string; score?: number; context?: string }; geometry: { coordinates: number[] } }) => ({
                 address: feature.properties.label,
                 postalCode: feature.properties.postcode,
                 city: feature.properties.city,

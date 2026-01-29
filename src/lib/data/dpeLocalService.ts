@@ -71,7 +71,7 @@ async function loadDPEData(): Promise<DPEDataset | null> {
                 return null;
             }
             dpeCache = await response.json();
-            console.log(`[DPE Local] ${dpeCache!.metadata.count} entrées chargées`);
+
             return dpeCache;
         } catch (error) {
             console.warn("[DPE Local] Erreur chargement:", error);

@@ -7,20 +7,31 @@ import { PDFDocumentEnhanced } from '@/components/pdf/PDFDocumentEnhanced';
 import { type DiagnosticResult } from '@/lib/schemas';
 import React from 'react';
 
+import { type BrandSettings } from "@/stores/useBrandStore";
+import { type OwnerProfileType } from "@/lib/pdf-profiles";
+
 /**
  * Server Action to generate PDF
  * Returns a base64 string of the PDF
  */
 export async function generatePdfAction(
     result: DiagnosticResult,
-    brand?: any,
-    targetProfile?: any
+    brand?: BrandSettings,
+    targetProfile?: OwnerProfileType
 ): Promise<{ success: boolean; data?: string; error?: string }> {
     try {
+        const pdfBrand = brand ? {
+            agencyName: brand.agencyName,
+            primaryColor: brand.primaryColor,
+            contactEmail: brand.contactEmail,
+            contactPhone: brand.contactPhone,
+            ...(brand.logoUrl ? { logoUrl: brand.logoUrl } : {})
+        } : undefined;
+
         const stream = await renderToStream(
             React.createElement(PDFDocumentEnhanced, {
                 result,
-                brand,
+                brand: pdfBrand,
                 targetProfile,
                 showAllProfiles: true
             }) as React.ReactElement
@@ -52,11 +63,19 @@ export async function generatePdfAction(
  */
 export async function generatePptxAction(
     result: DiagnosticResult,
-    brand?: any
+    brand?: BrandSettings
 ): Promise<{ success: boolean; data?: string; error?: string }> {
     try {
+        const pptxBrand = brand ? {
+            agencyName: brand.agencyName,
+            primaryColor: brand.primaryColor,
+            contactEmail: brand.contactEmail,
+            contactPhone: brand.contactPhone,
+            ...(brand.logoUrl ? { logoUrl: brand.logoUrl } : {})
+        } : undefined;
+
         // Output as base64 directly
-        const data = await generateAGPresentation(result, brand, undefined, 'base64');
+        const data = await generateAGPresentation(result, pptxBrand, undefined, 'base64');
 
         return {
             success: true,

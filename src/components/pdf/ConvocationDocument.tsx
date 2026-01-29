@@ -103,9 +103,11 @@ const styles = StyleSheet.create({
     },
 });
 
+import { type BrandSettings } from "@/stores/useBrandStore";
+
 interface ConvocationDocumentProps {
     result: DiagnosticResult;
-    brand?: any;
+    brand?: BrandSettings;
 }
 
 export const ConvocationDocument = ({ result, brand }: ConvocationDocumentProps) => {

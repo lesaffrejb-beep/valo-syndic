@@ -20,6 +20,7 @@ import {
     searchAddress,
     normalizeAddress,
     extractAddressData,
+    type AddressSearchOptions,
 } from "./addressService";
 
 import {
@@ -202,7 +203,7 @@ export async function autocompleteAddress(
         return { suggestions: [] };
     }
 
-    const searchOptions: any = {
+    const searchOptions: AddressSearchOptions = {
         limit: options?.limit ?? 5,
         autocomplete: true,
     };

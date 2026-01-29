@@ -31,8 +31,7 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
 
     useEffect(() => {
         // Debug logs requested by user
-        console.log("StreetView Debug - API Key Loaded:", apiKey ? "OUI" : "NON");
-        console.log("StreetView Debug - Generated URL:", streetViewUrl);
+
 
         setImageLoaded(false);
         setImageError(false);
