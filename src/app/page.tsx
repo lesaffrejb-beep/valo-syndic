@@ -23,17 +23,19 @@ import { LegalWarning } from "@/components/business/LegalWarning";
 import { EnergyInflationChart } from "@/components/EnergyInflationChart";
 import { DPEGauge } from "@/components/DPEGauge";
 import { FinancingBreakdownChart } from "@/components/business/charts/FinancingBreakdownChart";
-import { ArgumentairePanel } from "@/components/ArgumentairePanel";
+
 import { UrgencyScore } from "@/components/UrgencyScore";
 
 // Persuasion Components
 import { TantiemeCalculator } from "@/components/business/TantiemeCalculator";
 import { BenchmarkChart } from "@/components/business/BenchmarkChart";
-import { ObjectionHandler } from "@/components/business/ObjectionHandler";
+
 import { ValuationCard } from "@/components/business/ValuationCard";
 import { InvestorTaxCard } from "@/components/business/InvestorTaxCard";
+import { CostValueBalance } from "@/components/business/CostValueBalance";
 
 import { StaggerContainer } from "@/components/ui/AnimatedCard";
+import { ViewModeToggle } from "@/components/ui/ViewModeToggle";
 
 // V3 Premium Components
 import { StreetViewHeader } from "@/components/business/StreetViewHeader";
@@ -266,6 +268,8 @@ export default function HomePage() {
                                                     <span className="font-medium">{result.input.numberOfUnits} lots</span>
                                                 </p>
                                             </div>
+                                            {/* View Mode Toggle */}
+                                            <ViewModeToggle />
                                         </div>
 
                                         {/* New Horizontal Timeline */}
@@ -312,8 +316,14 @@ export default function HomePage() {
                                 {/* Inaction Cost - Full Width */}
                                 <InactionCostCard inactionCost={result.inactionCost} />
 
-                                {/* 🆕 Valuation Card */}
-                                <ValuationCard valuation={result.valuation} financing={result.financing} />
+                                {/* Valuation & Cost vs Value Row */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+                                    <ValuationCard valuation={result.valuation} financing={result.financing} />
+                                    <CostValueBalance
+                                        cost={result.financing.remainingCost}
+                                        valueGain={result.valuation.greenValueGain}
+                                    />
+                                </div>
 
                                 {/* Avantage Fiscal si > 40% bailleurs */}
                                 {((result.input.investorRatio ?? 0) > 40) && (
@@ -323,11 +333,7 @@ export default function HomePage() {
                                     />
                                 )}
 
-                                {/* 🆕 Avocat du Diable */}
-                                <ObjectionHandler />
 
-                                {/* Argumentaire Panel */}
-                                <ArgumentairePanel result={result} />
 
 
 

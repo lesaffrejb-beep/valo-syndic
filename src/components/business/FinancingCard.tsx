@@ -11,6 +11,7 @@ import { useRef } from "react";
 import { type FinancingPlan } from "@/lib/schemas";
 import { formatPercent, formatCurrency } from "@/lib/calculator";
 import { AnimatedCurrency, AnimatedPercent } from "@/components/ui/AnimatedNumber";
+import { useViewModeStore } from "@/stores/useViewModeStore";
 
 interface FinancingCardProps {
     financing: FinancingPlan;
@@ -22,6 +23,8 @@ import { DEFAULT_TRANSITION } from "@/lib/animations";
 export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-50px" });
+    const { viewMode, getAdjustedValue } = useViewModeStore();
+    const isMaPoche = viewMode === 'maPoche';
 
     return (
         <motion.div
@@ -135,9 +138,11 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                         <div className="mt-8 pt-6 border-t border-boundary">
                             <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
                                 <div>
-                                    <p className="text-sm text-muted mb-1">Reste à charge final</p>
+                                    <p className="text-sm text-muted mb-1">
+                                        Reste à charge {isMaPoche ? '(votre part)' : 'final'}
+                                    </p>
                                     <p className="text-2xl font-bold text-main tabular-nums">
-                                        <AnimatedCurrency value={financing.remainingCost} duration={1.5} />
+                                        <AnimatedCurrency value={getAdjustedValue(financing.remainingCost)} duration={1.5} />
                                     </p>
                                     <p className="text-xs text-subtle mt-1">
                                         (Après subventions)
@@ -146,9 +151,11 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
 
                                 <div className="text-right">
                                     <div className="inline-flex flex-col items-end p-3 bg-surface-highlight rounded-lg border border-primary-500/20 shadow-glow-sm">
-                                        <span className="text-xs text-primary-400 font-medium uppercase tracking-wide mb-1">Mensualité Estimée</span>
+                                        <span className="text-xs text-primary-400 font-medium uppercase tracking-wide mb-1">
+                                            Mensualité {isMaPoche ? 'estimée' : 'Copro'}
+                                        </span>
                                         <span className="text-2xl font-bold text-primary-300 tabular-nums">
-                                            <AnimatedCurrency value={financing.monthlyPayment} duration={1.6} />
+                                            <AnimatedCurrency value={getAdjustedValue(financing.monthlyPayment)} duration={1.6} />
                                             <span className="text-sm font-normal text-muted ml-1">/mois</span>
                                         </span>
                                     </div>

@@ -74,15 +74,6 @@ export function EnergyInflationChart({
                 </div>
             </div>
 
-            {/* Message anxiogène (Soft) */}
-            <div className="mb-6 p-4 rounded-xl border border-danger/30 bg-danger/5">
-                <p className="text-sm text-danger/90">
-                    <span className="font-semibold">⚠️ En attendant {yearsToProject} ans,</span> vous perdez{" "}
-                    <span className="font-medium tabular-nums">{formatCurrency(costIncrease)}</span>{" "}
-                    <span className="opacity-80">(+{increasePercent}%)</span>
-                </p>
-            </div>
-
             {/* Chart */}
             <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
