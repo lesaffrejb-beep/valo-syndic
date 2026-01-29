@@ -1,242 +1,205 @@
 /**
- * VALO-SYNDIC Extension — Popup Script
- * =====================================
- * Orchestrates scanning and data extraction from ERP pages.
+ * VALO-SYNDIC Ghost — Popup Logic
+ * ================================
+ * Orchestrates scanning and JSON export.
  */
 
 // DOM Elements
 const scanBtn = document.getElementById('scanBtn');
 const statusEl = document.getElementById('status');
 const resultsEl = document.getElementById('results');
-const lotsPreviewEl = document.getElementById('lotsPreview');
-const exportBtn = document.getElementById('exportBtn');
-const sendBtn = document.getElementById('sendBtn');
+const resultCountEl = document.getElementById('resultCount');
+const copyBtn = document.getElementById('copyBtn');
 
 // State
-let extractedLots = [];
+let extractedData = null;
 
-// Status helpers
-function setStatus(type, text, icon) {
+// Update status message
+function setStatus(message, type = '') {
+    statusEl.textContent = message;
     statusEl.className = `status ${type}`;
-    statusEl.innerHTML = `
-    <span class="status-icon">${icon}</span>
-    <span class="status-text">${text}</span>
-  `;
 }
 
-// Render lots preview
-function renderLots(lots) {
-    if (lots.length === 0) {
-        lotsPreviewEl.innerHTML = '<p style="color: var(--text-muted); font-size: 12px;">Aucun lot détecté</p>';
-        return;
-    }
-
-    lotsPreviewEl.innerHTML = lots.slice(0, 10).map(lot => `
-    <div class="lot-item">
-      <span class="lot-id">Lot ${lot.lotId || lot.id || '?'}</span>
-      <span class="lot-tantiemes">${lot.tantiemes || '?'}/1000</span>
-    </div>
-  `).join('');
-
-    if (lots.length > 10) {
-        lotsPreviewEl.innerHTML += `
-      <div class="lot-item" style="justify-content: center; color: var(--text-muted);">
-        ... et ${lots.length - 10} autres lots
-      </div>
-    `;
-    }
-}
-
-// Scan current tab
+// Main scan function
 async function scanPage() {
-    setStatus('idle', 'Analyse en cours...', '⏳');
-    scanBtn.disabled = true;
-
     try {
-        // Get current tab
+        scanBtn.disabled = true;
+        setStatus('Analyse en cours...', '');
+        resultsEl.classList.remove('visible');
+
+        // Get active tab
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
         if (!tab?.id) {
             throw new Error('Impossible d\'accéder à l\'onglet actif');
         }
 
-        // Execute content script and get results
+        // Execute extraction script
         const results = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            func: extractLotsFromPage,
+            func: extractDataFromPage,
         });
 
-        const lots = results[0]?.result || [];
-        extractedLots = lots;
+        const data = results[0]?.result;
 
-        if (lots.length > 0) {
-            setStatus('success', `${lots.length} lots détectés !`, '✅');
-            resultsEl.classList.remove('hidden');
-            renderLots(lots);
-        } else {
-            setStatus('error', 'Aucun lot trouvé sur cette page', '❌');
-            resultsEl.classList.add('hidden');
+        if (!data || !data.lots || data.lots.length === 0) {
+            setStatus('❌ Aucun lot détecté sur cette page', 'error');
+            extractedData = null;
+            return;
         }
+
+        // Success
+        extractedData = data;
+        resultCountEl.textContent = data.lots.length;
+        resultsEl.classList.add('visible');
+        setStatus(`✅ ${data.lots.length} lots extraits avec succès !`, 'success');
 
     } catch (error) {
         console.error('Scan error:', error);
-        setStatus('error', `Erreur: ${error.message}`, '⚠️');
+        setStatus(`⚠️ Erreur: ${error.message}`, 'error');
+        extractedData = null;
     } finally {
         scanBtn.disabled = false;
     }
 }
 
 // Copy JSON to clipboard
-function exportJSON() {
-    const json = JSON.stringify({
-        source: 'valo-syndic-extension',
-        version: '1.0.0',
-        extractedAt: new Date().toISOString(),
-        lots: extractedLots,
-    }, null, 2);
+async function copyToClipboard() {
+    if (!extractedData) return;
 
-    navigator.clipboard.writeText(json).then(() => {
-        const originalText = exportBtn.innerHTML;
-        exportBtn.innerHTML = '✓ Copié !';
-        setTimeout(() => {
-            exportBtn.innerHTML = originalText;
-        }, 2000);
-    });
-}
-
-// Send to VALO-SYNDIC app
-async function sendToValo() {
     try {
-        // Find VALO-SYNDIC tab
-        const tabs = await chrome.tabs.query({});
-        const valoTab = tabs.find(t =>
-            t.url?.includes('localhost:3000') ||
-            t.url?.includes('valo-syndic') ||
-            t.url?.includes('vercel.app')
-        );
+        const json = JSON.stringify(extractedData, null, 2);
+        await navigator.clipboard.writeText(json);
 
-        if (!valoTab) {
-            // Open VALO-SYNDIC in new tab with data in URL
-            const encodedData = encodeURIComponent(JSON.stringify(extractedLots));
-            chrome.tabs.create({
-                url: `http://localhost:3000?import=${encodedData}`
-            });
-            return;
-        }
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✓ Copié !';
+        copyBtn.classList.add('copied');
 
-        // Send message to existing tab
-        await chrome.tabs.sendMessage(valoTab.id, {
-            type: 'VALO_IMPORT',
-            lots: extractedLots,
-        });
-
-        // Switch to that tab
-        chrome.tabs.update(valoTab.id, { active: true });
-
-        setStatus('success', 'Données envoyées !', '🚀');
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('copied');
+        }, 2000);
 
     } catch (error) {
-        console.error('Send error:', error);
-        // Fallback: copy to clipboard
-        exportJSON();
-        setStatus('error', 'Copié dans le presse-papier (fallback)', '📋');
+        console.error('Copy error:', error);
+        setStatus('Erreur de copie', 'error');
     }
 }
 
-// Content script function (injected into page)
-function extractLotsFromPage() {
+// ============================================================================
+// EXTRACTION FUNCTION (Injected into page)
+// ============================================================================
+
+function extractDataFromPage() {
     const lots = [];
 
-    // Strategy 1: Look for tables with lot data
-    const tables = document.querySelectorAll('table');
-
-    for (const table of tables) {
-        const headers = Array.from(table.querySelectorAll('th, thead td')).map(th =>
-            th.textContent?.toLowerCase().trim() || ''
-        );
-
-        // Check if this looks like a lots table
-        const hasLotColumn = headers.some(h =>
-            h.includes('lot') || h.includes('numéro') || h.includes('n°')
-        );
-        const hasTantiemesColumn = headers.some(h =>
-            h.includes('tantième') || h.includes('quote') || h.includes('millième')
-        );
-
-        if (hasLotColumn || hasTantiemesColumn) {
-            // Find column indices
-            const lotIndex = headers.findIndex(h =>
-                h.includes('lot') || h.includes('numéro') || h.includes('n°')
-            );
-            const tantiemesIndex = headers.findIndex(h =>
-                h.includes('tantième') || h.includes('quote') || h.includes('millième')
-            );
-            const surfaceIndex = headers.findIndex(h =>
-                h.includes('surface') || h.includes('m²') || h.includes('m2')
-            );
-            const typeIndex = headers.findIndex(h =>
-                h.includes('type') || h.includes('nature') || h.includes('désignation')
-            );
-
-            // Extract rows
-            const rows = table.querySelectorAll('tbody tr, tr:not(:first-child)');
-
-            for (const row of rows) {
-                const cells = Array.from(row.querySelectorAll('td'));
-                if (cells.length < 2) continue;
-
-                const lot = {
-                    lotId: lotIndex >= 0 ? cells[lotIndex]?.textContent?.trim() : null,
-                    tantiemes: tantiemesIndex >= 0 ? parseInt(cells[tantiemesIndex]?.textContent?.replace(/\D/g, '') || '0', 10) : null,
-                    surface: surfaceIndex >= 0 ? parseFloat(cells[surfaceIndex]?.textContent?.replace(/[^\d.,]/g, '').replace(',', '.') || '0') : null,
-                    type: typeIndex >= 0 ? cells[typeIndex]?.textContent?.trim() : null,
-                };
-
-                // Only add if we have at least an ID or tantiemes
-                if (lot.lotId || lot.tantiemes) {
-                    lots.push(lot);
-                }
-            }
-        }
-    }
-
-    // Strategy 2: Look for specific ERP patterns (ICS, Thetrawin, Powimo)
-    // This can be expanded based on real ERP DOM structures
-
-    // ICS pattern: div.lot-card or similar
-    const icsLots = document.querySelectorAll('[class*="lot"], [data-lot]');
-    for (const el of icsLots) {
-        const text = el.textContent || '';
-        const lotMatch = text.match(/lot\s*[:\s]*(\d+)/i);
-        const tantiemesMatch = text.match(/(\d+)\s*\/?\s*1000/i);
-
-        if (lotMatch || tantiemesMatch) {
-            lots.push({
-                lotId: lotMatch?.[1] || null,
-                tantiemes: tantiemesMatch ? parseInt(tantiemesMatch[1], 10) : null,
-                source: 'pattern-match',
-            });
-        }
-    }
-
-    // Deduplicate by lotId
-    const seen = new Set();
-    const uniqueLots = lots.filter(lot => {
-        const key = lot.lotId || JSON.stringify(lot);
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
+    // Find all tables on page
+    const tables = Array.from(document.querySelectorAll('table')).filter(table => {
+        // Must be visible
+        const rect = table.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
     });
 
-    return uniqueLots;
+    // Process each table
+    for (const table of tables) {
+        const extracted = extractFromTable(table);
+        lots.push(...extracted);
+    }
+
+    // Deduplicate by ID
+    const uniqueLots = deduplicateLots(lots);
+
+    return {
+        source: 'valo-syndic-ghost',
+        version: '1.0.0',
+        extractedAt: new Date().toISOString(),
+        url: window.location.href,
+        lots: uniqueLots,
+    };
+
+    // ---- Helper Functions ----
+
+    function extractFromTable(table) {
+        const results = [];
+
+        // Find headers
+        const headerRow = table.querySelector('thead tr, tr:first-child');
+        if (!headerRow) return results;
+
+        const headers = Array.from(headerRow.querySelectorAll('th, td')).map(cell =>
+            cell.textContent?.toLowerCase().trim() || ''
+        );
+
+        // Keyword matching (flexible order)
+        const keywords = {
+            lot: ['lot', 'n°', 'id', 'numéro', 'numero', 'no'],
+            tantiemes: ['tantieme', 'tantième', 'qp', '/1000', 'quote', 'millieme', 'millième'],
+            surface: ['m2', 'm²', 'surface', 'sup', 'superficie'],
+            type: ['nature', 'désignation', 'designation', 'type', 'catégorie', 'categorie'],
+        };
+
+        // Find column indices
+        const colMap = {};
+        for (const [key, terms] of Object.entries(keywords)) {
+            colMap[key] = headers.findIndex(h =>
+                terms.some(term => h.includes(term))
+            );
+        }
+
+        // If no lot or tantiemes column found, skip this table
+        if (colMap.lot === -1 && colMap.tantiemes === -1) {
+            return results;
+        }
+
+        // Extract rows
+        const rows = table.querySelectorAll('tbody tr, tr:not(:first-child)');
+
+        for (const row of rows) {
+            const cells = Array.from(row.querySelectorAll('td'));
+            if (cells.length < 2) continue;
+
+            const lot = {
+                id: colMap.lot >= 0 ? cleanText(cells[colMap.lot]) : null,
+                tantiemes: colMap.tantiemes >= 0 ? parseNumber(cells[colMap.tantiemes]?.textContent) : null,
+                surface: colMap.surface >= 0 ? parseFloat(cells[colMap.surface]?.textContent?.replace(',', '.')) : null,
+                type: colMap.type >= 0 ? cleanText(cells[colMap.type]) : null,
+            };
+
+            // Must have at least ID or tantiemes
+            if (lot.id || lot.tantiemes) {
+                results.push(lot);
+            }
+        }
+
+        return results;
+    }
+
+    function cleanText(cell) {
+        if (!cell) return null;
+        const text = cell.textContent?.trim();
+        return text && text.length > 0 ? text : null;
+    }
+
+    function parseNumber(str) {
+        if (!str) return null;
+        const cleaned = str.replace(/[^\d]/g, '');
+        return cleaned ? parseInt(cleaned, 10) : null;
+    }
+
+    function deduplicateLots(lots) {
+        const seen = new Set();
+        return lots.filter(lot => {
+            const key = lot.id || JSON.stringify(lot);
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    }
 }
 
-// Event listeners
-scanBtn.addEventListener('click', scanPage);
-exportBtn.addEventListener('click', exportJSON);
-sendBtn.addEventListener('click', sendToValo);
+// ============================================================================
+// EVENT LISTENERS
+// ============================================================================
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    setStatus('idle', 'Cliquez sur "Scanner" pour analyser la page', '🔍');
-});
+scanBtn.addEventListener('click', scanPage);
+copyBtn.addEventListener('click', copyToClipboard);

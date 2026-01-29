@@ -1,26 +1,20 @@
 /**
- * VALO-SYNDIC Extension — Background Service Worker
- * ===================================================
- * Handles cross-tab communication and persistent logic.
+ * VALO-SYNDIC Ghost — Background Service Worker
+ * ==============================================
+ * Minimal service worker for Manifest V3 compliance.
  */
 
-// Listen for messages from popup or content scripts
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'PING') {
-        sendResponse({ status: 'ok', version: '1.0.0' });
-    }
-    return true;
-});
-
-// Handle extension install/update
+// Extension lifecycle
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
-        console.log('VALO-SYNDIC Extension installed');
+        console.log('✅ VALO-SYNDIC Ghost installé');
     } else if (details.reason === 'update') {
-        console.log('VALO-SYNDIC Extension updated to', chrome.runtime.getManifest().version);
+        console.log('✅ VALO-SYNDIC Ghost mis à jour:', chrome.runtime.getManifest().version);
     }
 });
 
-// Keep service worker alive (optional, for development)
-// chrome.alarms.create('keepAlive', { periodInMinutes: 0.5 });
-// chrome.alarms.onAlarm.addListener(() => {});
+// Keep alive (prevent service worker sleep during development)
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    sendResponse({ status: 'alive' });
+    return true;
+});
