@@ -278,3 +278,243 @@ export function formatDVFStats(stats: DVFStats): string {
 
     return `Prix moyen: ${formatPrice(stats.averagePricePerSqm)} (${stats.transactionCount} ventes analysées, ${stats.periodCovered.from.slice(0, 4)}-${stats.periodCovered.to.slice(0, 4)})`;
 }
+
+// ========================================
+// V2+ : FONCTIONS AVANCÉES
+// ========================================
+
+/**
+ * Recherche DVF avec fallback progressif sur le rayon
+ *
+ * Stratégie :
+ * 1. Cherche à 500m
+ * 2. Si < 5 résultats, élargit à 1km
+ * 3. Si toujours insuffisant, cherche par code commune
+ */
+export async function searchDVFWithFallback(
+    lat: number,
+    lon: number,
+    codeCommune?: string,
+    options?: Partial<DVFSearchOptions>
+): Promise<APIResult<DVFMutation[]> & { searchRadius: number }> {
+    // Essai 1 : 500m
+    let result = await searchDVFByLocation(lat, lon, {
+        ...options,
+        distanceMax: 500,
+    });
+
+    if (result.success && result.data.length >= 5) {
+        return { ...result, searchRadius: 500 };
+    }
+
+    // Essai 2 : 1km
+    result = await searchDVFByLocation(lat, lon, {
+        ...options,
+        distanceMax: 1000,
+    });
+
+    if (result.success && result.data.length >= 5) {
+        return { ...result, searchRadius: 1000 };
+    }
+
+    // Essai 3 : 2km
+    result = await searchDVFByLocation(lat, lon, {
+        ...options,
+        distanceMax: 2000,
+    });
+
+    if (result.success && result.data.length >= 3) {
+        return { ...result, searchRadius: 2000 };
+    }
+
+    // Fallback : recherche par commune
+    if (codeCommune) {
+        const communeResult = await searchDVFByCommune(codeCommune, options);
+        if (communeResult.success) {
+            return {
+                ...communeResult,
+                searchRadius: -1, // Indique une recherche par commune
+                source: {
+                    ...communeResult.source,
+                    dataPoints: [...communeResult.source.dataPoints, "recherche_commune"],
+                },
+            };
+        }
+    }
+
+    return { ...result, searchRadius: 2000 };
+}
+
+/**
+ * Calcule la tendance des prix sur plusieurs années
+ *
+ * Retourne un coefficient de tendance :
+ * - > 1 : prix en hausse
+ * - < 1 : prix en baisse
+ * - = 1 : stable
+ */
+export function calculatePriceTrend(
+    mutations: DVFMutation[],
+    options?: {
+        typeLocal?: "Appartement" | "Maison";
+    }
+): {
+    trend: number;
+    annualChange: number;
+    byYear: Record<number, { avgPrice: number; count: number }>;
+    interpretation: string;
+} | null {
+    // Filtrer les mutations valides
+    const valid = mutations.filter((m) => {
+        if (!m.valeur_fonciere || !m.surface_reelle_bati) return false;
+        if (options?.typeLocal && m.type_local !== options.typeLocal) return false;
+        if (!m.nature_mutation.toLowerCase().includes("vente")) return false;
+        return true;
+    });
+
+    if (valid.length < 5) {
+        return null;
+    }
+
+    // Grouper par année
+    const byYear: Record<number, { prices: number[]; count: number }> = {};
+
+    valid.forEach((m) => {
+        const year = new Date(m.date_mutation).getFullYear();
+        if (!byYear[year]) {
+            byYear[year] = { prices: [], count: 0 };
+        }
+        const pricePerSqm = m.valeur_fonciere / m.surface_reelle_bati!;
+        byYear[year].prices.push(pricePerSqm);
+        byYear[year].count++;
+    });
+
+    // Calculer les moyennes par année
+    const yearlyAvg: Record<number, { avgPrice: number; count: number }> = {};
+    const years = Object.keys(byYear).map(Number).sort();
+
+    years.forEach((year) => {
+        const data = byYear[year];
+        if (data) {
+            yearlyAvg[year] = {
+                avgPrice: Math.round(data.prices.reduce((a, b) => a + b, 0) / data.prices.length),
+                count: data.count,
+            };
+        }
+    });
+
+    if (years.length < 2) {
+        return null;
+    }
+
+    // Calculer la tendance (régression linéaire simple)
+    const firstYear = years[0];
+    const lastYear = years[years.length - 1];
+
+    if (firstYear === undefined || lastYear === undefined) {
+        return null;
+    }
+
+    const firstYearData = yearlyAvg[firstYear];
+    const lastYearData = yearlyAvg[lastYear];
+
+    if (!firstYearData || !lastYearData) {
+        return null;
+    }
+
+    const firstPrice = firstYearData.avgPrice;
+    const lastPrice = lastYearData.avgPrice;
+    const yearsDiff = lastYear - firstYear;
+
+    if (yearsDiff === 0 || firstPrice === 0) {
+        return null;
+    }
+
+    const totalChange = (lastPrice - firstPrice) / firstPrice;
+    const annualChange = totalChange / yearsDiff;
+    const trend = lastPrice / firstPrice;
+
+    // Interprétation
+    let interpretation: string;
+    if (annualChange > 0.05) {
+        interpretation = `Marché en forte hausse (+${(annualChange * 100).toFixed(1)}%/an)`;
+    } else if (annualChange > 0.02) {
+        interpretation = `Marché en hausse modérée (+${(annualChange * 100).toFixed(1)}%/an)`;
+    } else if (annualChange > -0.02) {
+        interpretation = "Marché stable";
+    } else if (annualChange > -0.05) {
+        interpretation = `Marché en légère baisse (${(annualChange * 100).toFixed(1)}%/an)`;
+    } else {
+        interpretation = `Marché en baisse (${(annualChange * 100).toFixed(1)}%/an)`;
+    }
+
+    return {
+        trend,
+        annualChange,
+        byYear: yearlyAvg,
+        interpretation,
+    };
+}
+
+/**
+ * Coefficient de normalisation par DPE
+ *
+ * Les biens avec un mauvais DPE (F, G) se vendent moins cher
+ * Cette fonction retourne un coefficient pour comparer des biens équivalents
+ *
+ * Source: Notaires de France, études "Valeur Verte"
+ */
+export function getDPEPriceCoefficient(dpe: string): {
+    coefficient: number;
+    description: string;
+} {
+    // Coefficients basés sur les études "Valeur Verte" des Notaires
+    // Référence = DPE D (milieu de gamme)
+    const coefficients: Record<string, { coefficient: number; description: string }> = {
+        A: { coefficient: 1.15, description: "+15% vs marché (performance exemplaire)" },
+        B: { coefficient: 1.10, description: "+10% vs marché (très performant)" },
+        C: { coefficient: 1.05, description: "+5% vs marché (performant)" },
+        D: { coefficient: 1.00, description: "Référence marché" },
+        E: { coefficient: 0.95, description: "-5% vs marché (à améliorer)" },
+        F: { coefficient: 0.88, description: "-12% vs marché (passoire thermique)" },
+        G: { coefficient: 0.80, description: "-20% vs marché (passoire thermique sévère)" },
+    };
+
+    const result = coefficients[dpe.toUpperCase()];
+    return result ?? { coefficient: 1.00, description: "Référence marché" };
+}
+
+/**
+ * Calcule le prix estimé après rénovation énergétique
+ *
+ * @param currentPrice - Prix actuel au m²
+ * @param currentDPE - Classe DPE actuelle
+ * @param targetDPE - Classe DPE cible après travaux
+ */
+export function estimatePriceAfterRenovation(
+    currentPrice: number,
+    currentDPE: string,
+    targetDPE: string
+): {
+    estimatedPrice: number;
+    gainPercent: number;
+    gainAbsolute: number;
+} {
+    const currentCoef = getDPEPriceCoefficient(currentDPE).coefficient;
+    const targetCoef = getDPEPriceCoefficient(targetDPE).coefficient;
+
+    // Calculer le prix "théorique" du bien en référence D
+    const referencePrice = currentPrice / currentCoef;
+
+    // Calculer le nouveau prix avec le DPE cible
+    const estimatedPrice = Math.round(referencePrice * targetCoef);
+
+    const gainAbsolute = estimatedPrice - currentPrice;
+    const gainPercent = ((estimatedPrice - currentPrice) / currentPrice) * 100;
+
+    return {
+        estimatedPrice,
+        gainPercent: Math.round(gainPercent * 10) / 10,
+        gainAbsolute,
+    };
+}

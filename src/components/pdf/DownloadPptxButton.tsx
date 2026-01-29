@@ -342,6 +342,12 @@ export function DownloadPptxButton({ result }: DownloadPptxButtonProps) {
                 fontSize: 12, fontFace: "Arial", color: COLORS.gold, align: "center",
             });
 
+            // Data sources attribution
+            slide5.addText("Sources : DVF Etalab (prix) • API Adresse data.gouv.fr • ADEME (DPE) • BDNB CSTB (bâti)", {
+                x: 0.5, y: 5.2, w: 9, h: 0.2,
+                fontSize: 8, fontFace: "Arial", color: COLORS.muted, align: "center",
+            });
+
             // Generate and download
             await pptx.writeFile({ fileName: `diagnostic-${result.input.postalCode}-${Date.now()}.pptx` });
 
