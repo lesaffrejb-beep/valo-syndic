@@ -124,7 +124,7 @@ export const dpeService = {
      * API ADRESSE GOUV SEARCH
      * Fetches addresses from the official French government API
      */
-    async searchAPIGouv(query: string, limit = 5): Promise<APIAddressResult[]> {
+    async searchAPIGouv(query: string, limit = 3): Promise<APIAddressResult[]> {
         if (!query || query.length < 3) return [];
 
         try {
@@ -148,6 +148,7 @@ export const dpeService = {
                     longitude: feature.geometry.coordinates[0],
                     latitude: feature.geometry.coordinates[1]
                 },
+                score: feature.properties.score,
                 sourceType: 'api' as const
             })) || [];
         } catch (error) {
@@ -164,15 +165,15 @@ export const dpeService = {
     async hybridSearch(query: string, limit = 5): Promise<HybridSearchResult[]> {
         if (!query || query.length < 3) return [];
 
-        // Search both sources in parallel
+        // 1. Parallelism Enforced: Always fetch both
+        // User Requirement: 3 Local + 3 API
         const [localResults, apiResults] = await Promise.all([
-            this.search(query, limit),
-            this.searchAPIGouv(query, limit)
+            this.search(query, 3),
+            this.searchAPIGouv(query, 3)
         ]);
 
-        // Convert local DPE results to hybrid format
+        // 2. Transform Local Results
         const localHybrid: HybridSearchResult[] = localResults.map(entry => {
-            // Extract postal code and city from address
             const match = entry.adresse.match(/(\d{5})\s*(.+)$/);
             const postalCode = match?.[1] || '49000';
             const city = match?.[2] || entry.adresse.split(' ').pop() || 'Angers';
@@ -182,20 +183,63 @@ export const dpeService = {
                 postalCode,
                 city,
                 sourceType: 'local' as const,
-                dpeData: entry
+                dpeData: entry,
+                score: 0.8 // Arbitrary high base score for local results
             };
         });
 
-        // Convert API results to hybrid format
+        // 3. Transform API Results
         const apiHybrid: HybridSearchResult[] = apiResults.map(result => ({
             ...result,
             sourceType: 'api' as const
         }));
 
-        // Combine: local first (priority), then API
-        const combined = [...localHybrid, ...apiHybrid];
+        // 4. Merge & Deduplicate
+        // We use a Map keyed by address to remove exact duplicates
+        const resultMap = new Map<string, HybridSearchResult>();
 
-        return combined.slice(0, limit);
+        // Add local first
+        localHybrid.forEach(item => resultMap.set(item.address, item));
+
+        // Add API (if duplicate, decides strategy - keeping local usually better for DPE data availability, 
+        // but user wants API priority if exact match? 
+        // Let's keep both if they differ slightly, or merge if exact string match.
+        // If exact string match, we probably want to keep the "local" one because it has the DPE data attached!
+        // So we only add API if it's NOT in the map yet.
+        apiHybrid.forEach(item => {
+            if (!resultMap.has(item.address)) {
+                resultMap.set(item.address, item);
+            }
+        });
+
+        const combined = Array.from(resultMap.values());
+
+        // 5. Prioritization Logic
+        // "Si l'API renvoie un "score" de pertinence élevé (match exact sur le numéro de rue), remonte ce résultat en premier"
+        combined.sort((a, b) => {
+            const queryNum = query.trim().match(/^(\d+)/)?.[1];
+
+            if (queryNum) {
+                // Check exact number match
+                const aNum = a.address.trim().match(/^(\d+)/)?.[1];
+                const bNum = b.address.trim().match(/^(\d+)/)?.[1];
+
+                const aExact = aNum === queryNum;
+                const bExact = bNum === queryNum;
+
+                if (aExact && !bExact) return -1;
+                if (!aExact && bExact) return 1;
+            }
+
+            // Secondary sort: Score if available
+            // API results have real scores (0-1). Local has 0.8.
+            const scoreA = a.score || 0;
+            const scoreB = b.score || 0;
+
+            return scoreB - scoreA;
+        });
+
+        return combined;
     },
 
     // =========================================================================
@@ -280,6 +324,7 @@ export interface APIAddressResult {
         latitude: number;
     };
     sourceType: 'api';
+    score?: number;
 }
 
 export interface HybridSearchResult {
@@ -293,6 +338,7 @@ export interface HybridSearchResult {
     };
     sourceType: 'local' | 'api';
     dpeData?: DPEEntry;
+    score?: number;
 }
 
 // V2 Types
