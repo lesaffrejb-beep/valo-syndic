@@ -371,7 +371,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                 Document généré par {agencyName} — Simulation indicative basée sur les dispositions réglementaires 2026
             </Text>
             <Text style={styles.disclaimer}>
-                Sous réserve d&apos;éligibilité des travaux et des ressources. Ne remplace pas un audit OPQIBI.
+                Sous réserve d'éligibilité des travaux et des ressources. Ne remplace pas un audit OPQIBI.
             </Text>
         </View>
     );
@@ -432,7 +432,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
 
                     {/* Urgency Score */}
                     <View style={[styles.section, { borderLeftColor: urgency.color }]}>
-                        <Text style={styles.sectionTitle}>🎯 Score d&apos;urgence</Text>
+                        <Text style={styles.sectionTitle}>🎯 Score d'urgence</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
                             <Text style={[styles.bigNumber, { color: urgency.color }]}>
                                 {urgency.score}/100
@@ -464,7 +464,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                             </View>
                         ) : (
                             <Text style={{ fontSize: 10, color: C.success }}>
-                                Classe {result.input.currentDPE} : Pas d&apos;interdiction prévue à ce jour
+                                Classe {result.input.currentDPE} : Pas d'interdiction prévue à ce jour
                             </Text>
                         )}
                     </View>
@@ -482,19 +482,19 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
 
                     {/* Monthly Payment Hero - CORRECTED */}
                     <View style={[styles.heroBox, { backgroundColor: C.successLight, borderColor: C.success }]}>
-                        <Text style={[styles.heroLabel, { color: C.success }]}>L&apos;Argument Clé — Mensualité Éco-PTZ</Text>
+                        <Text style={[styles.heroLabel, { color: C.success }]}>L'Argument Clé — Mensualité Éco-PTZ</Text>
                         <Text style={[styles.bigNumber, { color: C.success }]}>
                             {Math.round(monthlyPaymentFor100Tantiemes)} €
                         </Text>
                         <Text style={styles.heroValue}>
-                            par mois pour 100 tantièmes (10% d&apos;un lot standard)
+                            par mois pour 100 tantièmes (10% d'un lot standard)
                         </Text>
                         <Text style={{ fontSize: 9, color: C.muted, textAlign: 'center', marginTop: 4 }}>
                             Durée : 20 ans — Taux : 0% — Aucun intérêt à payer
                         </Text>
                         {result.financing.remainingCost === 0 && (
                             <Text style={{ fontSize: 11, color: C.success, fontWeight: 'bold', marginTop: 12 }}>
-                                ✅ 0€ d&apos;apport personnel requis
+                                ✅ 0€ d'apport personnel requis
                             </Text>
                         )}
                     </View>
@@ -503,7 +503,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                     <View style={styles.callout}>
                         <Text style={styles.calloutText}>
                             💡 Le montant varie selon vos tantièmes. Un lot de 100 tantièmes paiera environ {Math.round(monthlyPaymentFor100Tantiemes)}€/mois, 
-                            soit moins qu&apos;un abonnement télécom.
+                            soit moins qu'un abonnement télécom.
                         </Text>
                     </View>
 
@@ -525,7 +525,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                             <Text style={styles.tableCellRight}>{formatCurrency(result.financing.costPerUnit)}</Text>
                         </View>
                         <View style={styles.tableRow}>
-                            <Text style={[styles.tableCell, { color: C.success }]}>MaPrimeRénov&apos; (subvention)</Text>
+                            <Text style={[styles.tableCell, { color: C.success }]}>MaPrimeRénov' (subvention)</Text>
                             <Text style={[styles.tableCellRight, { color: C.success }]}>-{formatCurrency(result.financing.mprAmount)}</Text>
                             <Text style={[styles.tableCellRight, { color: C.success }]}>-{formatCurrency(result.financing.mprAmount / result.input.numberOfUnits)}</Text>
                         </View>
@@ -554,7 +554,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                         
                         {/* MPR Bar */}
                         <View style={styles.barContainer}>
-                            <Text style={styles.barLabel}>MaPrimeRénov&apos; (subvention)</Text>
+                            <Text style={styles.barLabel}>MaPrimeRénov' (subvention)</Text>
                             <View style={styles.barTrack}>
                                 <View style={[styles.barFill, { width: `${mprPercent}%`, backgroundColor: C.success }]} />
                             </View>
@@ -582,7 +582,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                         )}
 
                         <Text style={styles.methodology}>
-                            Note : L&apos;Éco-PTZ est un prêt à rembourser sur 20 ans, tandis que MaPrimeRénov&apos; est une subvention.
+                            Note : L'Éco-PTZ est un prêt à rembourser sur 20 ans, tandis que MaPrimeRénov' est une subvention.
                             La somme peut dépasser 100% du coût (surcouverture).
                         </Text>
                     </View>
@@ -600,7 +600,7 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
 
                     {/* Inaction Cost */}
                     <View style={[styles.section, { borderLeftColor: C.danger, backgroundColor: C.dangerLight }]}>
-                        <Text style={[styles.sectionTitle, { color: C.danger }]}>⚠️ Coût de l&apos;inaction (3 ans)</Text>
+                        <Text style={[styles.sectionTitle, { color: C.danger }]}>⚠️ Coût de l'inaction (3 ans)</Text>
                         <Text style={[styles.bigNumber, { color: C.danger }]}>
                             {formatCurrency(result.inactionCost.totalInactionCost)}
                         </Text>
@@ -662,12 +662,12 @@ export const PDFDocument = ({ result, brand }: PDFDocumentProps) => {
                     {/* Key Phrase for AG */}
                     <View style={{ marginTop: 20, padding: 16, backgroundColor: C.goldLight, borderRadius: 8, borderLeftWidth: 4, borderLeftColor: C.gold }}>
                         <Text style={{ fontSize: 11, color: C.slate, fontWeight: 'bold', marginBottom: 6 }}>
-                            💡 Phrase clé pour l&apos;Assemblée Générale :
+                            💡 Phrase clé pour l'Assemblée Générale :
                         </Text>
                         <Text style={{ fontSize: 10, color: C.slate, fontStyle: 'italic' }}>
-                            &quot;En votant cette résolution aujourd&apos;hui, vous sécurisez la valeur locative de vos biens 
-                            et bénéficiez d&apos;aides qui ne seront plus disponibles demain. C&apos;est un investissement 
-                            patrimonial, pas une dépense.&quot;
+                            "En votant cette résolution aujourd'hui, vous sécurisez la valeur locative de vos biens 
+                            et bénéficiez d'aides qui ne seront plus disponibles demain. C'est un investissement 
+                            patrimonial, pas une dépense."
                         </Text>
                     </View>
                 </View>
