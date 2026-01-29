@@ -32,7 +32,7 @@ import { BenchmarkChart } from "@/components/business/BenchmarkChart";
 import { ObjectionHandler } from "@/components/business/ObjectionHandler";
 import { ValuationCard } from "@/components/business/ValuationCard";
 import { InvestorTaxCard } from "@/components/business/InvestorTaxCard";
-import { VoteQR } from "@/components/pdf/VoteQR";
+
 import { StaggerContainer } from "@/components/ui/AnimatedCard";
 
 // V3 Premium Components
@@ -329,23 +329,7 @@ export default function HomePage() {
                                 {/* Argumentaire Panel */}
                                 <ArgumentairePanel result={result} />
 
-                                {/* 🆕 QR Code Vote en séance */}
-                                <div className="card-bento">
-                                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-bold text-main mb-2">📱 Vote en Séance</h3>
-                                            <p className="text-muted text-sm">
-                                                Projetez ce QR Code lors de l&apos;AG pour recueillir l&apos;avis consultatif des copropriétaires en temps réel.
-                                            </p>
-                                            <p className="text-xs text-subtle mt-2">
-                                                💡 Astuce : Ne pas envoyer par mail, projeter en séance pour maximiser l&apos;impact.
-                                            </p>
-                                        </div>
-                                        <div className="scale-75 md:scale-100 origin-center">
-                                            <VoteQR simulationId={`SIM_${Date.now()}`} size={120} />
-                                        </div>
-                                    </div>
-                                </div>
+
 
                                 {/* Actions */}
                                 <div className="flex flex-wrap gap-4 mt-12 justify-center items-center pt-4">

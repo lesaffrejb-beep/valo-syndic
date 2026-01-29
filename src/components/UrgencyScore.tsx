@@ -87,76 +87,100 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
     const offset = circumference - (animatedScore / 100) * circumference;
 
     return (
-        <div className={`card-bento ${colors.bg} rounded-2xl p-6 border border-boundary relative transition-colors duration-300 overflow-hidden h-full flex flex-col justify-center`}>
+        <div className={`card-bento ${colors.bg} rounded-3xl p-6 relative transition-colors duration-300 overflow-hidden h-full flex flex-col`}>
             {/* Particle System for Critical Scores */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 pointer-events-none">
                 <ParticleEmitter active={score >= 80} color={colors.stroke} />
             </div>
 
             {/* Glow based on score */}
-            <div className={`absolute inset-0 bg-${colors.stroke}/5 rounded-xl`} />
+            <div className={`absolute inset-0 bg-${colors.stroke}/5 pointer-events-none`} />
 
-            <h3 className="text-lg font-semibold text-main mb-6 flex items-center gap-2 relative z-10">
-                🎯 Score d&apos;urgence
-            </h3>
+            {/* HEADER STANDARD */}
+            <div className="relative z-10 mb-2">
+                <h3 className="text-lg font-bold text-main flex items-center gap-2">
+                    🎯 Score d&apos;urgence
+                </h3>
+            </div>
 
-            <div className="flex flex-row items-center justify-center gap-6 relative z-10 w-full px-2">
-                {/* Cercle SVG - Scaled up x1.5 */}
-                <div className="relative flex-shrink-0">
-                    <svg width="140" height="140" className="transform -rotate-90">
-                        {/* Background circle */}
-                        <circle
-                            cx="70"
-                            cy="70"
-                            r={radius}
-                            fill="none"
-                            stroke="#2A2A2A"
-                            strokeWidth="12"
-                        />
-                        {/* Progress circle */}
-                        <circle
-                            cx="70"
-                            cy="70"
-                            r={radius}
-                            fill="none"
-                            stroke={colors.stroke}
-                            strokeWidth="12"
-                            strokeLinecap="round"
-                            strokeDasharray={circumference}
-                            strokeDashoffset={offset}
-                            className="transition-all duration-1000 ease-out"
-                            style={{ filter: `drop-shadow(0 0 8px ${colors.stroke})` }}
-                        />
-                    </svg>
-                    {/* Score au centre */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <span className={`text-4xl font-black ${colors.text} tabular-nums`}>
-                            {animatedScore}
-                        </span>
+            {/* BODY CENTERED */}
+            <div className="flex-1 flex flex-col items-center justify-center relative z-10 w-full py-2">
+
+                {/* Visual + Message Wrapper - Vertical on Mobile, maybe Row on large if needed but requested flex-col usage implies stack or controlled layout. 
+                    User requested: "Ensure the circular gauge is vertically centered in the remaining space below the header." 
+                    and "Header (fixed height) + Body (flex-1, center content)."
+                */}
+
+                <div className="flex flex-col items-center gap-6">
+                    {/* Cercle SVG - Clean container */}
+                    <div className="relative flex-shrink-0">
+                        <svg width="140" height="140" className="transform -rotate-90 block">
+                            {/* Background circle */}
+                            <circle
+                                cx="70"
+                                cy="70"
+                                r={radius}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeOpacity="0.1"
+                                strokeWidth="12"
+                                className="text-boundary"
+                            />
+                            {/* Progress circle */}
+                            <circle
+                                cx="70"
+                                cy="70"
+                                r={radius}
+                                fill="none"
+                                stroke={colors.stroke}
+                                strokeWidth="12"
+                                strokeLinecap="round"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={offset}
+                                className="transition-all duration-1000 ease-out"
+                                style={{ filter: `drop-shadow(0 0 8px ${colors.stroke})` }}
+                            />
+                        </svg>
+                        {/* Score au centre */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <span className={`text-4xl font-black ${colors.text} tabular-nums`}>
+                                {animatedScore}
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                {/* Message */}
-                <div className="flex-1">
-                    <p className={`text-xl font-bold ${colors.text}`}>{message.title}</p>
-                    <p className="text-sm text-muted mt-1">{message.subtitle}</p>
+                    {/* Message Below or Aside? User said "Chart container [...] so it blends". 
+                        Let's keep the message below for a clean vertical center look as customary in score cards,
+                        or per request "Body (flex-1, center content)". 
+                        The previous layout was row. Let's check space. 
+                        If we stand in a grid-cols-2 row with RisksCard, we have horizontal space.
+                        Let's try to keep the Row layout inside the Body if space permits, or Stack if better.
+                        The user complaint was "The title ... is floating inside the content area".
+                        Let's stick to a clean centered column layout for the body content to emphasize the Gauge, 
+                        OR a compact row if it fits better.
+                        Given the "Vertical centering" request, a Column stack of (Gauge + Text) is safest for alignment.
+                    */}
+                    <div className="text-center">
+                        <p className={`text-2xl font-bold ${colors.text} mb-1`}>{message.title}</p>
+                        <p className="text-sm text-muted">{message.subtitle}</p>
 
-                    {compliance.daysUntilProhibition && compliance.daysUntilProhibition > 0 && (
-                        <div className="mt-3 p-2 bg-surface/50 rounded-lg border border-boundary">
-                            <p className="text-xs text-muted leading-none mb-1">Temps restant</p>
-                            <p className="font-semibold text-main tabular-nums leading-none">
-                                {Math.floor(compliance.daysUntilProhibition / 30)} mois
-                            </p>
-                        </div>
-                    )}
+                        {compliance.daysUntilProhibition != null && compliance.daysUntilProhibition > 0 && (
+                            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-surface/80 rounded-lg border border-boundary/50 backdrop-blur-sm">
+                                <span className="text-xs text-muted">Temps restant:</span>
+                                <span className="text-sm font-bold text-main tabular-nums">
+                                    {Math.floor(compliance.daysUntilProhibition / 30)} mois
+                                </span>
+                            </div>
+                        )}
 
-                    {compliance.isProhibited && (
-                        <div className="mt-3 p-2 bg-danger/20 rounded-lg border border-danger/30">
-                            <p className="text-xs text-danger-500 font-semibold leading-tight">
-                                🔴 INTERDICTION
-                            </p>
-                        </div>
-                    )}
+                        {compliance.isProhibited && (
+                            <div className="mt-4 px-3 py-1.5 bg-danger/20 rounded-lg border border-danger/30 inline-block">
+                                <span className="text-xs text-danger-500 font-bold uppercase tracking-wide">
+                                    🚫 Interdiction en cours
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
