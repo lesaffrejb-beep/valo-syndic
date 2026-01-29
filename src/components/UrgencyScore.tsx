@@ -87,18 +87,20 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
     const offset = circumference - (animatedScore / 100) * circumference;
 
     return (
-        <div className={`card-bento ${colors.bg} rounded-2xl p-6 border border-boundary relative transition-colors duration-300 overflow-hidden h-full`}>
+        <div className={`card-bento ${colors.bg} rounded-2xl p-6 border border-boundary relative transition-colors duration-300 overflow-hidden h-full flex flex-col`}>
             {/* Particle System for Critical Scores */}
-            <ParticleEmitter active={score >= 80} color={colors.stroke} />
+            <div className="absolute inset-0 z-0">
+                <ParticleEmitter active={score >= 80} color={colors.stroke} />
+            </div>
 
             {/* Glow based on score */}
             <div className={`absolute inset-0 bg-${colors.stroke}/5 rounded-xl`} />
 
-            <h3 className="text-lg font-semibold text-main mb-6 flex items-center gap-2 relative z-10">
+            <h3 className="text-lg font-semibold text-main mb-4 flex items-center gap-2 relative z-10">
                 🎯 Score d&apos;urgence
             </h3>
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8 relative z-10">
+            <div className="flex flex-col items-center justify-center gap-6 relative z-10 flex-1 w-full">
                 {/* Cercle SVG - Scaled up x1.5 */}
                 <div className="relative flex-shrink-0">
                     <svg width="180" height="180" className="transform -rotate-90">

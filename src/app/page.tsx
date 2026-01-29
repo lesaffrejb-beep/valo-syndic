@@ -168,7 +168,10 @@ export default function HomePage() {
                                 ⚡ Diagnostic Flash
                             </button>
                             <button
-                                onClick={() => setActiveTab("mass")}
+                                onClick={() => {
+                                    /* setActiveTab("mass"); */
+                                    window.alert("Fonctionnalité disponible en V3\n\nL'audit de parc sera disponible prochainement.");
+                                }}
                                 className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === "mass"
                                     ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
                                     : "text-muted hover:text-main"

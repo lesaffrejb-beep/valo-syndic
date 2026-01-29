@@ -11,6 +11,7 @@ import { usePropertyEnrichment } from "@/hooks/usePropertyEnrichment";
 import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 import { DataSourceBadge, EnrichedDataCard, EnrichmentProgress } from "@/components/ui/DataSourceBadge";
 import { motion, AnimatePresence } from "framer-motion";
+import { type DPEEntry } from "@/services/dpeService";
 
 interface DiagnosticFormProps {
     onSubmit: (data: DiagnosticInput) => void;
@@ -38,6 +39,9 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
 
     // State pour la gestion des zones locales (49/44)
     const [localZone, setLocalZone] = useState<string | null>(null);
+
+    // State pour DPE local trouvé
+    const [localDpeData, setLocalDpeData] = useState<DPEEntry | null>(null);
 
     // V2 Enrichment Hook
     const {
@@ -175,6 +179,15 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                                 (form.elements.namedItem("address") as HTMLInputElement).value = data.address;
                                 (form.elements.namedItem("postalCode") as HTMLInputElement).value = data.postalCode;
                                 (form.elements.namedItem("city") as HTMLInputElement).value = data.city;
+
+                                // Auto-fill DPE from local data if available
+                                if (data.dpeData && DPE_OPTIONS.includes(data.dpeData.dpe)) {
+                                    (form.elements.namedItem("currentDPE") as HTMLSelectElement).value = data.dpeData.dpe;
+                                    setLocalDpeData(data.dpeData);
+                                } else {
+                                    setLocalDpeData(null);
+                                }
+
                                 checkLocalZone(data.postalCode);
                             }
                         }}
@@ -199,14 +212,31 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                 <EnrichmentProgress isEnriching={isEnriching} />
 
                 <AnimatePresence>
-                    {enrichedProperty && (
+                    {(enrichedProperty || localDpeData) && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             className="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-hidden"
                         >
-                            {enrichedProperty.cadastre && (
+                            {/* Local DPE Card */}
+                            {localDpeData && (
+                                <EnrichedDataCard
+                                    icon="⚡"
+                                    title="DPE Local (49)"
+                                    value={`Classe ${localDpeData.dpe}`}
+                                    description={`Construit en ${localDpeData.annee} • ${localDpeData.surface} m²`}
+                                    source={{
+                                        name: "ADEME 49 (Local)",
+                                        url: "/data/dpe-49.json",
+                                        status: "success",
+                                        fetchedAt: new Date(),
+                                        dataPoints: ["DPE", "Année construction"]
+                                    }}
+                                />
+                            )}
+
+                            {enrichedProperty?.cadastre && (
                                 <EnrichedDataCard
                                     icon="📐"
                                     title="Cadastre"
@@ -216,7 +246,7 @@ export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormPr
                                 />
                             )}
 
-                            {enrichedProperty.marketData && (
+                            {enrichedProperty?.marketData && (
                                 <EnrichedDataCard
                                     icon="📈"
                                     title="Marché Local"
