@@ -47,7 +47,7 @@ import { ClimateRiskCard } from "@/components/business/ClimateRiskCard";
 import { MassAudit } from "@/components/business/MassAudit";
 
 // Core Logic
-import { generateDiagnostic } from "@/lib/calculator";
+import { simulateDiagnostic } from "@/app/actions/simulate";
 import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema, type GhostExtensionImport } from "@/lib/schemas";
 import { BrandingModal } from "@/components/BrandingModal";
 import { JsonImporter } from "@/components/import/JsonImporter";
@@ -66,10 +66,9 @@ const DownloadConvocationButton = dynamic(
     { ssr: false, loading: () => <BtnLoading /> }
 );
 
-const DownloadPptxButton = dynamic(
-    () => import('@/components/pdf/DownloadPptxButton').then(mod => mod.DownloadPptxButton),
-    { ssr: false, loading: () => <BtnLoading /> }
-);
+// Import PPTX via SSR-safe wrapper (fixes SSR issues with pptxgenjs)
+import { PptxButtonWrapper } from '@/components/pdf/PptxButtonWrapper';
+
 
 const BtnLoading = () => (
     <div className="btn-secondary opacity-50 cursor-not-allowed flex items-center gap-2">
@@ -141,11 +140,17 @@ export default function HomePage() {
             }
         }
 
-        // Delay to allow loading animation/suspense if needed, 
-        // though strictly not necessary with async fetch above, but kept for UX feel
-        setTimeout(() => {
-            const diagnostic = generateDiagnostic(enrichedData);
-            setResult(diagnostic);
+        // Server Action call - protects business logic
+        setTimeout(async () => {
+            const response = await simulateDiagnostic(enrichedData);
+
+            if (!response.success) {
+                alert(`Erreur de calcul: ${response.error}`);
+                setIsLoading(false);
+                return;
+            }
+
+            setResult(response.data);
             setIsLoading(false);
             // Wait for render cycle
             setTimeout(() => {
@@ -185,13 +190,19 @@ export default function HomePage() {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (e: ProgressEvent<FileReader>) => {
+        reader.onload = async (e: ProgressEvent<FileReader>) => {
             try {
                 const data = JSON.parse(e.target?.result as string);
                 const validatedInput = DiagnosticInputSchema.parse(data.input);
                 setCurrentInput(validatedInput);
-                const diagnostic = generateDiagnostic(validatedInput);
-                setResult(diagnostic);
+
+                const response = await simulateDiagnostic(validatedInput);
+                if (!response.success) {
+                    alert(`Erreur de calcul: ${response.error}`);
+                    return;
+                }
+
+                setResult(response.data);
                 setTimeout(() => {
                     document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
                 }, 100);
@@ -502,7 +513,7 @@ export default function HomePage() {
                                     </button>
                                     <DownloadPdfButton result={result} />
                                     <DownloadConvocationButton result={result} />
-                                    <DownloadPptxButton result={result} />
+                                    <PptxButtonWrapper result={result} />
                                 </div>
 
                                 {/* Legal Footer */}

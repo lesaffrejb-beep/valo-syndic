@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
-import { generateDiagnostic } from '@/lib/calculator';
+import { simulateDiagnostic } from '@/app/actions/simulate';
 import type { SavedSimulation } from '@/lib/schemas';
 import type { DiagnosticInput } from '@/lib/schemas';
 
@@ -58,16 +58,21 @@ export default function DashboardPage() {
         fetchProjects();
     }, [user]);
 
-    const handleLoadProject = (project: SavedSimulation) => {
+    const handleLoadProject = async (project: SavedSimulation) => {
         try {
             // Navigate to home with state
             const input = project.json_data.input as DiagnosticInput;
-            const result = generateDiagnostic(input);
+            const response = await simulateDiagnostic(input);
+
+            if (!response.success) {
+                alert(`Erreur lors du recalcul: ${response.error}`);
+                return;
+            }
 
             // Store in session storage for pickup by main page
             sessionStorage.setItem('valo_loaded_simulation', JSON.stringify({
                 input,
-                result,
+                result: response.data,
             }));
 
             router.push('/');

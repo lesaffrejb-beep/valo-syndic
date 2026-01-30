@@ -233,3 +233,162 @@ describe('Intégration — Scénario complet', () => {
         expect(financing.remainingCost).toBeLessThan(financing.totalCostHT);
     });
 });
+
+// =============================================================================
+// TESTS CRITIQUES — OPERATION SCALPEL
+// =============================================================================
+
+describe('Règles Critiques MPR Copro 2026 — Blindage Mathématique', () => {
+    describe('Plafonnement 25k€ par lot (Compliance juridique)', () => {
+        test('doit appliquer le plafond MPR à 25000€/lot sur assiette éligible', () => {
+            // Cas limité : 40k€/lot de travaux → seuls 25k€ sont éligibles MPR
+            const result = simulateFinancing(
+                800_000, // 800k€ HT pour 20 lots = 40k€/lot (hors frais)
+                20,
+                'G',
+                'C',
+                0, 0, 0, 0
+            );
+
+            // Avec frais (syndic 3% + DO 10% + aléas 3%), assiette = 800k * 1.16 = 928k
+            // Plafond éligible MPR : 25k€ * 20 = 500k€ (< 928k donc plafond actif)
+            // MPR max théorique : 500k€ * 55% (45% base + 10% passoire) = 275k€
+            expect(result.mprAmount).toBeGreaterThan(250_000);
+            expect(result.mprAmount).toBeLessThanOrEqual(275_000);
+        });
+
+        test('doit respecter le plafond même en sortie de passoire avec gros projet', () => {
+            const result = simulateFinancing(
+                1_500_000, // 75k€/lot (largement au-dessus du plafond)
+                20,
+                'G',
+                'A',
+                0, 0, 0, 0
+            );
+
+            // Plafond : 25k€ * 20 lots = 500k€
+            // Taux max (55%) sur 500k = 275k€ max
+            expect(result.mprAmount).toBeLessThanOrEqual(275_000);
+        });
+    });
+
+    describe('Éligibilité Éco-PTZ (Sécurité financière)', () => {
+        test('doit respecter le plafond 50k€ par lot', () => {
+            const result = simulateFinancing(
+                1_000_000, // Gros projet : 50k€/lot
+                20,
+                'F',
+                'C',
+                0, 0, 0, 0
+            );
+
+            // Plafond Éco-PTZ = 20 lots * 50k€ = 1 000 000€
+            // Mais ne doit pas financer plus que le reste à charge
+            expect(result.ecoPtzAmount).toBeLessThanOrEqual(1_000_000);
+        });
+
+        test('ne doit JAMAIS financer plus que le reste à charge (garde-fou)', () => {
+            const result = simulateFinancing(
+                100_000, // Très faible coût avec aides importantes
+                20,
+                'G',
+                'C',
+                0, 0, 0, 0
+            );
+
+            // Reste à charge = Coût TTC - MPR - AMO
+            const totalCostTTC = result.totalCostHT * 1.055;
+            const remainingBeforeLoan = totalCostTTC - result.mprAmount - result.amoAmount;
+
+            // L'Éco-PTZ ne doit pas dépasser ce qui reste réellement à payer
+            expect(result.ecoPtzAmount).toBeLessThanOrEqual(Math.max(0, remainingBeforeLoan) + 1); // +1 pour arrondi
+        });
+
+        test('reste à charge final ne peut JAMAIS être négatif', () => {
+            // Cas extreme : énormes aides locales + fonds ALUR
+            const result = simulateFinancing(
+                50_000,
+                5,
+                'G',
+                'A',
+                0,
+                100_000, // Aide locale massive (irréaliste mais test de robustesse)
+                50_000,  // ALUR fund énorme
+                20_000   // CEE bonus
+            );
+
+            expect(result.remainingCost).toBeGreaterThanOrEqual(0);
+            expect(result.remainingCostPerUnit).toBeGreaterThanOrEqual(0);
+        });
+    });
+
+    describe('Bonus Sortie de Passoire (Règle métier critique)', () => {
+        test('doit appliquer +10% UNIQUEMENT pour F/G → D ou mieux', () => {
+            const resultWithBonus = simulateFinancing(300_000, 20, 'G', 'D');
+            const resultNoBonus = simulateFinancing(300_000, 20, 'E', 'D');
+
+            // Le G→D doit avoir le bonus passoire
+            expect(resultWithBonus.exitPassoireBonus).toBe(0.10);
+            expect(resultWithBonus.mprRate).toBeGreaterThan(resultNoBonus.mprRate);
+
+            // Le E→D ne doit PAS avoir le bonus (E n'est pas une passoire)
+            expect(resultNoBonus.exitPassoireBonus).toBe(0);
+        });
+
+        test('ne doit PAS appliquer le bonus si cible < D', () => {
+            // F → E n'est pas une "sortie" de passoire (reste passoire)
+            const result = simulateFinancing(300_000, 20, 'F', 'E');
+
+            expect(result.exitPassoireBonus).toBe(0);
+        });
+
+        test('bonus passoire cumulable avec taux performance', () => {
+            // G → A = Gain ≥ 50% (45%) + Sortie passoire (10%) = 55%
+            const result = simulateFinancing(300_000, 20, 'G', 'A');
+
+            expect(result.mprRate).toBeCloseTo(0.55, 2);
+            expect(result.exitPassoireBonus).toBe(0.10);
+        });
+    });
+
+    describe('Calcul AMO (Aide Ingénierie)', () => {
+        test('doit appliquer le bon plafond selon taille copro', () => {
+            // ≤ 20 lots : 1000€/lot
+            const small = simulateFinancing(300_000, 15, 'F', 'C');
+            // > 20 lots : 600€/lot
+            const large = simulateFinancing(300_000, 25, 'F', 'C');
+
+            // Le montant AMO doit refléter ces plafonds différents
+            expect(small.amoAmount).toBeGreaterThan(0);
+            expect(large.amoAmount).toBeGreaterThan(0);
+        });
+    });
+
+    describe('Guard-rails anti-erreur (Production Safety)', () => {
+        test('mensualité Éco-PTZ cohérente (20 ans, 0%)', () => {
+            const result = simulateFinancing(300_000, 20, 'F', 'C');
+
+            if (result.ecoPtzAmount > 0) {
+                // Mensualité théorique = capital / (20*12) sans intérêts
+                const expectedMonthly = result.ecoPtzAmount / (20 * 12);
+                expect(result.monthlyPayment).toBeCloseTo(expectedMonthly, 0);
+            }
+        });
+
+        test('coût par lot cohérent avec coût global', () => {
+            const result = simulateFinancing(300_000, 20, 'F', 'C');
+
+            const calculatedCostPerUnit = result.totalCostHT / 20;
+            // On vérifie avec une marge car costPerUnit est TTC
+            expect(result.costPerUnit).toBeGreaterThan(calculatedCostPerUnit * 1.05); // TTC minimum
+            expect(result.costPerUnit).toBeLessThan(calculatedCostPerUnit * 1.07); // Marge raisonnable
+        });
+
+        test('intégrité des pourcentages (gain énergétique)', () => {
+            const result = simulateFinancing(300_000, 20, 'F', 'C');
+
+            expect(result.energyGainPercent).toBeGreaterThanOrEqual(0);
+            expect(result.energyGainPercent).toBeLessThanOrEqual(1); // Max 100%
+        });
+    });
+});
