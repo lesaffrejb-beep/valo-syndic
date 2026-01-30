@@ -431,7 +431,7 @@ export default function HomePage() {
                                 <div className="space-y-8">
                                     <div className="text-center max-w-2xl mx-auto mb-8">
                                         <span className="text-danger-400 font-bold uppercase tracking-widest text-xs mb-3 block animate-pulse">
-                                            Le Coût de l'Inaction
+                                            Le Coût de l&apos;Inaction
                                         </span>
                                         <h2 className="text-3xl md:text-5xl font-black text-main leading-tight">
                                             L&apos;immobilisme vous coûte <br />
@@ -475,7 +475,7 @@ export default function HomePage() {
                                             Ingénierie Financière
                                         </span>
                                         <h2 className="text-3xl md:text-5xl font-black text-main leading-none mb-6">
-                                            Le Financement "Sniper"
+                                            Le Financement &quot;Sniper&quot;
                                         </h2>
                                         <p className="text-lg text-muted">
                                             Notre algorithme a détecté les aides spécifiques à votre copropriété et
