@@ -51,10 +51,15 @@ function parseRow(row) {
     const parseFloatSafe = (val) => val ? parseFloat(String(val).replace(',', '.')) : null;
     const parseIntSafe = (val) => val ? parseInt(val, 10) : null;
 
+    // AJOUT : Récupération de l'adresse complète
+    // L'API ADEME fournit souvent "Adresse_(BAN)" ou une concaténation
+    const adresseComplete = row['Adresse_(BAN)'] || row['adresse_ban'] || `${row['N°_voie_(BAN)'] || ''} ${row['Nom__rue_(BAN)'] || ''}`.trim();
+
     return {
         numero_dpe: rawDPE,
         code_postal: rawCP,
         ville: row['Commune_(BAN)'] || row['nom_commune_ban'],
+        adresse_ban: adresseComplete,
         annee_construction: parseIntSafe(row['Année_construction'] || row['annee_construction']),
         etiquette_dpe: row['Etiquette_DPE'] || row['etiquette_dpe'],
         etiquette_ges: row['Etiquette_GES'] || row['etiquette_ges'],
