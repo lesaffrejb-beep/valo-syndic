@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from "framer-motion";
 
 // Structural Components
+import { SubsidyTable } from "@/components/business/SubsidyTable";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
@@ -394,74 +395,140 @@ export default function HomePage() {
                                     </div>
                                 </div>
 
-                                {/* Score & Urgency Row */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-                                    <UrgencyScore
-                                        compliance={result.compliance}
-                                        currentDPE={result.input.currentDPE}
-                                    />
-                                    {/* V3: Risks Card (if coordinates) or Compliance Timeline (fallback) */}
-                                    {result.input.coordinates ? (
-                                        <RisksCard coordinates={result.input.coordinates} />
-                                    ) : (
-                                        <ComplianceTimeline currentDPE={result.input.currentDPE} />
-                                    )}
-                                </div>
+                                {/* Score & Urgency Row - REMOVED/INTEGRATED */}
+                                {/* 
+                                     * =================================================================================
+                                     * SECTION 1: LE CONTEXTE (L'URGENCE)
+                                     * "Why act now?" - Climate Risk & Compliance Timeline
+                                     * =================================================================================
+                                     */}
+                                <section className="mb-24">
+                                    <div className="mb-8">
+                                        <span className="text-secondary-400 font-bold uppercase tracking-widest text-xs mb-2 block animate-pulse">
+                                            Urgence & Conformité
+                                        </span>
+                                        <h2 className="text-3xl lg:text-4xl font-black text-main leading-tight">
+                                            Le monde change, <br />
+                                            <span className="text-muted">votre immeuble doit s&apos;adapter.</span>
+                                        </h2>
+                                    </div>
 
-                                {/* Climate Time Bomb - Full Width if coordinates available */}
-                                {result.input.coordinates && (
-                                    <ClimateRiskCard coordinates={result.input.coordinates} />
-                                )}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-auto lg:h-[420px]">
+                                        <div className="h-full">
+                                            {result.input.coordinates && (
+                                                <ClimateRiskCard coordinates={result.input.coordinates} />
+                                            )}
+                                        </div>
+                                        <div className="h-full">
+                                            <InactionCostCard inactionCost={result.inactionCost} />
+                                        </div>
+                                    </div>
+                                </section>
 
-                                {/* Financing Plan - Full Width */}
-                                <div className="w-full">
-                                    <FinancingCard
-                                        financing={result.financing}
-                                        numberOfUnits={result.input.numberOfUnits}
-                                    />
-                                </div>
 
-                                {/* Market Intelligence - Oracle (Hive Mind) */}
-                                {result.input.postalCode && result.input.averageUnitSurface && (
-                                    <MarketBenchmark
-                                        postalCode={result.input.postalCode}
-                                        currentDPE={result.input.currentDPE}
-                                        targetDPE={result.input.targetDPE}
-                                        userPricePerSqm={result.financing.costPerUnit / result.input.averageUnitSurface}
-                                    />
-                                )}
+                                {/* 
+                                     * =================================================================================
+                                     * SECTION 2: LA TRANSFORMATION (LA VALEUR)
+                                     * "Turn a cost into an investment" - Valuation & ROI
+                                     * =================================================================================
+                                     */}
+                                <section className="mb-24">
+                                    <div className="mb-8 max-w-2xl">
+                                        <span className="text-success-400 font-bold uppercase tracking-widest text-xs mb-2 block">
+                                            Opportunité Patrimoniale
+                                        </span>
+                                        <h2 className="text-3xl lg:text-4xl font-black text-main leading-tight">
+                                            Ne dépensez pas, <br />
+                                            <span className="text-gradient-gold">investissez.</span>
+                                        </h2>
+                                        <p className="text-lg text-muted mt-4 leading-relaxed">
+                                            La rénovation n&apos;est pas une charge, c&apos;est le seul levier pour
+                                            protéger la valeur de votre bien face à l&apos;obsolescence énergétique.
+                                        </p>
+                                    </div>
 
-                                {/* Tools Row: Tantièmes + Benchmark */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-                                    <TantiemeCalculator financing={result.financing} />
-                                    <BenchmarkChart currentDPE={result.input.currentDPE} city={result.input.city} />
-                                </div>
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-auto lg:h-[450px]">
+                                        {/* 1. Valuation & ROI */}
+                                        <div className="h-full">
+                                            <ValuationCard
+                                                valuation={result.valuation}
+                                                financing={result.financing}
+                                            />
+                                        </div>
 
-                                {/* Charts Row */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-                                    <EnergyInflationChart currentCost={result.input.estimatedCostHT} />
-                                    <FinancingBreakdownChart financing={result.financing} />
-                                </div>
+                                        {/* 2. Visual Balance (Consolidated CostValue) */}
+                                        <div className="h-full">
+                                            <CostValueBalance
+                                                cost={result.financing.remainingCost}
+                                                valueGain={result.valuation.greenValueGain}
+                                            />
+                                        </div>
+                                    </div>
+                                </section>
 
-                                {/* Inaction Cost - Full Width */}
-                                <InactionCostCard inactionCost={result.inactionCost} />
 
-                                {/* Valuation & Cost vs Value Row */}
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-                                    <ValuationCard valuation={result.valuation} financing={result.financing} />
-                                    <CostValueBalance
-                                        cost={result.financing.remainingCost}
-                                        valueGain={result.valuation.greenValueGain}
-                                    />
-                                </div>
+                                {/* 
+                                     * =================================================================================
+                                     * SECTION 3: LES MOYENS (LE FINANCEMENT)
+                                     * "We have the subsidies" - Global Financing
+                                     * =================================================================================
+                                     */}
+                                <section className="mb-24">
+                                    <div className="mb-8">
+                                        <span className="text-primary-400 font-bold uppercase tracking-widest text-xs mb-2 block">
+                                            Ingénierie Financière
+                                        </span>
+                                        <h2 className="text-3xl lg:text-4xl font-black text-main leading-tight">
+                                            Un financement <br />
+                                            <span className="text-muted">optimisé à l&apos;euro près.</span>
+                                        </h2>
+                                    </div>
 
-                                {/* Avantage Fiscal si > 40% bailleurs */}
-                                {((result.input.investorRatio ?? 0) > 40) && (
-                                    <InvestorTaxCard
-                                        investorRatio={result.input.investorRatio}
-                                        remainingCostPerUnit={result.financing.remainingCostPerUnit}
-                                    />
-                                )}
+                                    <div className="grid grid-cols-1 gap-8 mb-8">
+                                        {/* Main Financing Card (Full Width) */}
+                                        <FinancingCard
+                                            financing={result.financing}
+                                            numberOfUnits={result.input.numberOfUnits}
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                        {/* Breakdown Chart */}
+                                        <FinancingBreakdownChart financing={result.financing} />
+
+                                        {/* Tantieme Calculator (Moved here as "Personal Check") */}
+                                        <TantiemeCalculator financing={result.financing} />
+                                    </div>
+                                </section>
+
+
+                                {/* 
+                                     * =================================================================================
+                                     * SECTION 4: LE COUP DE POUCE CACHÉ (PROFILS & BONUS)
+                                     * "The Hidden Engine" - Detailed Subsidy Table
+                                     * =================================================================================
+                                     */}
+                                <section className="mb-12">
+                                    <div className="mb-8 text-center max-w-3xl mx-auto">
+                                        <div className="inline-block p-1 px-3 rounded-full bg-primary-900/20 border border-primary-500/30 mb-4">
+                                            <span className="text-primary-300 text-xs font-bold tracking-wide">
+                                                ✨ LE SECRET LE MIEUX GARDÉ
+                                            </span>
+                                        </div>
+                                        <h2 className="text-3xl font-black text-main leading-tight mb-4">
+                                            Des aides individuelles <br />
+                                            <span className="text-muted">jusqu&apos;à 90% de prise en charge.</span>
+                                        </h2>
+                                        <p className="text-muted">
+                                            Au-delà des aides collectives, MaPrimeRénov&apos; Parcours Accompagné offre des primes massives
+                                            pour les ménages aux revenus modestes. Vérifiez votre éligibilité.
+                                        </p>
+                                    </div>
+
+                                    {/* The Full Detail Subsidy Table */}
+                                    <SubsidyTable inputs={result.input} />
+                                </section>
+
 
 
 
