@@ -138,16 +138,19 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
                                         </span>
                                     </div>
 
-                                    <p
-                                        className={`mt-2 text-sm ${isPast ? "text-danger font-semibold" : "text-muted"
-                                            }`}
-                                    >
-                                        {isPast
-                                            ? "🔴 INTERDICTION EN VIGUEUR"
-                                            : `Interdiction de louer dans ${Math.ceil(
-                                                (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)
-                                            )} mois`}
-                                    </p>
+                                    <div className="mt-2 text-sm">
+                                        {isPast ? (
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-danger-900/30 text-danger-400 text-xs font-bold uppercase tracking-wide border border-danger-500/20">
+                                                Interdiction en vigueur
+                                            </span>
+                                        ) : (
+                                            <span className="text-muted">
+                                                Interdiction de louer dans <span className="text-main font-bold">{Math.ceil(
+                                                    (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30)
+                                                )} mois</span>
+                                            </span>
+                                        )}
+                                    </div>
                                 </motion.div>
                             </motion.div>
                         );

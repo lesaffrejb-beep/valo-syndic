@@ -35,7 +35,7 @@ import { MarketBenchmark } from "@/components/business/MarketBenchmark";
 
 import { ValuationCard } from "@/components/business/ValuationCard";
 import { InvestorTaxCard } from "@/components/business/InvestorTaxCard";
-import { CostValueBalance } from "@/components/business/CostValueBalance";
+// import { CostValueBalance } from "@/components/business/CostValueBalance"; // REMOVED
 
 import { StaggerContainer } from "@/components/ui/AnimatedCard";
 import { ViewModeToggle } from "@/components/ui/ViewModeToggle";
@@ -360,7 +360,7 @@ export default function HomePage() {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                         >
-                            <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-16 md:gap-24">
+                            <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-24 md:gap-32">
 
                                 {/* 
                                  * =================================================================================
@@ -460,29 +460,7 @@ export default function HomePage() {
                                  * =================================================================================
                                  */}
                                 {/* Act 3 is partially covered by the split screen right side, but let's reinforce it with Value details */}
-                                <div className="space-y-8">
-                                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-boundary/50 pb-6">
-                                        <div>
-                                            <h2 className="text-3xl font-bold text-main">La Valeur Verte</h2>
-                                            <p className="text-muted text-lg">Votre patrimoine revalorisé immédiatement.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-auto lg:h-[400px]">
-                                        <div className="h-full">
-                                            <ValuationCard
-                                                valuation={result.valuation}
-                                                financing={result.financing}
-                                            />
-                                        </div>
-                                        <div className="h-full">
-                                            <CostValueBalance
-                                                cost={result.financing.remainingCost}
-                                                valueGain={result.valuation.greenValueGain}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                {/* SECTION "VALEUR VERTE" REMOVED - MERGED INTO SPLIT SCREEN */}
 
 
                                 {/* 
@@ -505,56 +483,56 @@ export default function HomePage() {
                                         </p>
                                     </div>
 
-                                    {/* BENTO GRID LAYOUT */}
+                                    {/* BENTO GRID LAYOUT - RESTRUCTURED */}
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-min">
 
-                                        {/* Large Block: Global Financing Pie (Left) - Span 8 */}
-                                        <div className="md:col-span-12 lg:col-span-8 card-bento min-h-[400px]">
+                                        {/* 1. HERO CONTENT: SUBSIDY TABLE (Full Width) */}
+                                        <div className="md:col-span-12 order-1">
+                                            <SubsidyTable inputs={simulationInputs} />
+                                        </div>
+
+                                        {/* 2. FINANCING PIE (Left) - Span 8 */}
+                                        <div className="md:col-span-12 lg:col-span-8 card-obsidian min-h-[350px] order-2">
                                             <h3 className="text-xl font-bold text-main mb-6 flex items-center gap-2">
-                                                🌍 Financement Global du Projet
+                                                🌍 Financement Global
                                             </h3>
                                             <FinancingBreakdownChart financing={result.financing} />
                                         </div>
 
-                                        {/* Side Block: Key Metrics (Right) - Span 4 */}
-                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
-                                            <div className="card-bento bg-gradient-to-br from-surface to-surface-highlight flex-1 flex flex-col justify-center items-center text-center p-6">
-                                                <div className="text-5xl mb-4">🛡️</div>
-                                                <p className="text-sm font-medium text-muted uppercase tracking-wider mb-2">Taux couverture Global</p>
-                                                <p className="text-4xl font-black text-main">
+                                        {/* 3. KEY METRICS (Right) - Span 4 - Stacked Squares */}
+                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6 order-3 h-full">
+                                            {/* Taux Courture - Compact Square */}
+                                            <div className="card-obsidian bg-gradient-to-br from-surface to-surface-highlight flex-1 flex flex-col justify-center items-center text-center p-6 border-white/5">
+                                                <div className="text-3xl mb-2">🛡️</div>
+                                                <p className="text-xs font-bold text-muted uppercase tracking-widest mb-1">Taux Couverture</p>
+                                                <p className="text-5xl font-black text-main tracking-tighter">
                                                     {Math.round((1 - (result.financing.remainingCost / result.financing.totalCostHT)) * 100)}%
                                                 </p>
-                                                <p className="text-xs text-subtle mt-2">Prêt 0% inclus</p>
+                                                <p className="text-[10px] text-subtle mt-2 uppercase tracking-wide">Prêt 0% inclus</p>
                                             </div>
 
-                                            {/* Bonus Hunter Card */}
-                                            <div className="card-bento bg-gradient-to-br from-primary-900/10 to-transparent border-primary-500/20 flex-1 p-6 relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 w-20 h-20 bg-primary-500/20 blur-[40px] rounded-full pointer-events-none" />
-                                                <h4 className="text-lg font-bold text-primary-300 mb-2">Bonus Capturés</h4>
-                                                <ul className="space-y-2 text-sm">
+                                            {/* Bonus Hunter - Compact Square */}
+                                            <div className="card-obsidian bg-gradient-to-br from-primary-900/20 to-boundary/50 border-primary-500/10 flex-1 p-6 relative overflow-hidden flex flex-col justify-center">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 blur-[50px] rounded-full pointer-events-none" />
+                                                <h4 className="text-sm font-bold text-primary-300 mb-3 uppercase tracking-wider">Bonus Capturés</h4>
+                                                <ul className="space-y-2 text-xs font-medium">
                                                     {(result.input.currentDPE === 'F' || result.input.currentDPE === 'G') && (
-                                                        <li className="flex items-center gap-2 text-main">
-                                                            ✅ Sortie de Passoire (+10%)
+                                                        <li className="flex items-center gap-2 text-main/90">
+                                                            <span className="text-primary-400">✓</span> Sortie de Passoire
                                                         </li>
                                                     )}
                                                     {result.financing.energyGainPercent >= 50 && (
-                                                        <li className="flex items-center gap-2 text-main">
-                                                            ✅ Rénovation Globale (+45%)
+                                                        <li className="flex items-center gap-2 text-main/90">
+                                                            <span className="text-primary-400">✓</span> Rénovation Globale
                                                         </li>
                                                     )}
                                                     {result.financing.ceeAmount > 0 && (
-                                                        <li className="flex items-center gap-2 text-main">
-                                                            ✅ Primes CEE
+                                                        <li className="flex items-center gap-2 text-main/90">
+                                                            <span className="text-primary-400">✓</span> Primes CEE
                                                         </li>
                                                     )}
                                                 </ul>
                                             </div>
-                                        </div>
-
-                                        {/* THE SUBSIDY MATRI X (Full Width) - Span 12 */}
-                                        <div className="md:col-span-12">
-                                            {/* We use the SubsidyTable component which handles its own internal layout */}
-                                            <SubsidyTable inputs={simulationInputs} />
                                         </div>
                                     </div>
                                 </div>

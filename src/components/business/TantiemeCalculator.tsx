@@ -191,7 +191,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                         </label>
                     </div>
 
-                    <div className="relative h-6 flex items-center mb-4">
+                    <div className="relative h-8 flex items-center mb-4">
                         <input
                             type="range"
                             id="tantiemes"
@@ -199,7 +199,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                             max={400}
                             value={tantiemes}
                             onChange={(e) => setTantiemes(Number(e.target.value))}
-                            className="w-full h-2 bg-surface-hover rounded-lg appearance-none cursor-pointer accent-primary-500 hover:accent-primary-400 transition-all"
+                            className="w-full h-3 bg-surface-hover rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-surface-highlight ring-1 ring-white/10"
                         />
                     </div>
 
