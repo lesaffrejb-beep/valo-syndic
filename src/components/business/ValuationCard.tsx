@@ -70,7 +70,23 @@ export function ValuationCard({ valuation, financing }: ValuationCardProps) {
                     </div>
                 </div>
             )}
+
+            {/* Data Source Footer */}
+            <div className="mt-4 pt-3 border-t border-boundary/40 flex items-center justify-between text-[10px] text-muted">
+                <span className="flex items-center gap-1">
+                    {valuation.salesCount ? (
+                        <>
+                            <span>🏛️</span>
+                            <span>Basé sur {valuation.salesCount} ventes (Source : Etalab DVF)</span>
+                        </>
+                    ) : (
+                        <>
+                            <span>📊</span>
+                            <span>Estimation théorique (Moyenne secteur)</span>
+                        </>
+                    )}
+                </span>
+            </div>
         </div>
     );
 }
-

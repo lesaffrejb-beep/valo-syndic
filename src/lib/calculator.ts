@@ -321,8 +321,8 @@ export function calculateValuation(
     const totalSurface = input.numberOfUnits * averageSurface;
 
     // 2. Prix de base au m2 (Angers/Nantes - Moyenne conservatrice)
-    // Idéalement, ce prix devrait venir d'une API externe ou d'une base de données par ville
-    const BASE_PRICE_PER_SQM = VALUATION_PARAMS.BASE_PRICE_PER_SQM;
+    // Priorité à l'input (API DVF), sinon valeur par défaut
+    const BASE_PRICE_PER_SQM = input.averagePricePerSqm || VALUATION_PARAMS.BASE_PRICE_PER_SQM;
 
     // 3. Impact DPE sur la valeur (Décote/Surcote par rapport à D)
     // G: -15%, F: -10%, E: -5%, D: 0%, C: +5%, B: +10%, A: +15%
@@ -362,6 +362,8 @@ export function calculateValuation(
         greenValueGainPercent,
         netROI,
         pricePerSqm: BASE_PRICE_PER_SQM,
+        priceSource: input.priceSource,
+        salesCount: input.salesCount,
     };
 }
 

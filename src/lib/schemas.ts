@@ -64,6 +64,12 @@ export const DiagnosticInputSchema = z.object({
     /** Prix moyen au m² dans le quartier (optionnel) */
     averagePricePerSqm: z.number().positive().optional(),
 
+    /** Source du prix au m² (ex: "DVF", "Manuel", "Estimé") */
+    priceSource: z.string().optional(),
+
+    /** Nombre de ventes utilisées pour la moyenne (si DVF) */
+    salesCount: z.number().int().optional(),
+
     /** Surface moyenne d'un lot (m²) - optionnel */
     averageUnitSurface: z.number().positive().optional(),
 
@@ -187,6 +193,12 @@ export const ValuationResultSchema = z.object({
 
     /** Prix au m2 utilisé pour l'estimation */
     pricePerSqm: z.number(),
+
+    /** Source du prix (pour affichage UI) */
+    priceSource: z.string().optional(),
+
+    /** Nombre de ventes (pour crédibilité) */
+    salesCount: z.number().optional(),
 });
 
 export type ValuationResult = z.infer<typeof ValuationResultSchema>;

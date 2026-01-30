@@ -49,6 +49,7 @@ import { generateDiagnostic } from "@/lib/calculator";
 import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema, type GhostExtensionImport } from "@/lib/schemas";
 import { BrandingModal } from "@/components/BrandingModal";
 import { JsonImporter } from "@/components/import/JsonImporter";
+import { getLocalRealEstatePrice } from "@/actions/getRealEstateData";
 
 // Lazy Loaded Components (Heavy Buttons)
 const DownloadPdfButton = dynamic(
@@ -81,7 +82,7 @@ export default function HomePage() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleSubmit = (data: DiagnosticInput) => {
+    const handleSubmit = async (data: DiagnosticInput) => {
         // Mode démo caché
         if (data.address?.toLowerCase().includes("demo")) {
             // ... (demo logic could be here if needed)
@@ -90,12 +91,41 @@ export default function HomePage() {
         setIsLoading(true);
         setCurrentInput(data);
 
+        // Fetch Real Estate Data if coordinates are available
+        let enrichedData = { ...data };
+
+        if (data.coordinates) {
+            try {
+                const marketData = await getLocalRealEstatePrice(
+                    data.coordinates.latitude,
+                    data.coordinates.longitude
+                );
+
+                if (marketData) {
+                    enrichedData = {
+                        ...enrichedData,
+                        averagePricePerSqm: marketData.averagePriceSqm,
+                        priceSource: "DVF (Etalab)",
+                        salesCount: marketData.salesCount,
+                    };
+                }
+            } catch (error) {
+                console.error("Failed to fetch market data", error);
+                // Fallback is automatic (handled in calculator)
+            }
+        }
+
+        // Delay to allow loading animation/suspense if needed, 
+        // though strictly not necessary with async fetch above, but kept for UX feel
         setTimeout(() => {
-            const diagnostic = generateDiagnostic(data);
+            const diagnostic = generateDiagnostic(enrichedData);
             setResult(diagnostic);
             setIsLoading(false);
-            document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
-        }, 800);
+            // Wait for render cycle
+            setTimeout(() => {
+                document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+            }, 100);
+        }, 500);
     };
 
     const handleReset = () => {

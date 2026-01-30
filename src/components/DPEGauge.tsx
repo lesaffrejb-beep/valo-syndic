@@ -50,35 +50,37 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
         >
-            {/* Transformation Journey Layout: Linear Horizontal Grid/Flex */}
-            <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center h-full">
+            {/* Transformation Journey Layout: Stacked on mobile, Grid on MD+ */}
+            <div className="flex flex-col md:grid md:grid-cols-[1fr,auto,1fr] gap-4 items-center h-full">
 
                 {/* 1. STATE A: CURRENT */}
-                <div className="flex flex-row items-center gap-4 bg-surface p-4 rounded-2xl border border-dashed border-danger-500/30 h-full relative overflow-hidden group">
+                <div className="w-full h-full flex flex-row items-center gap-3 sm:gap-4 bg-surface p-3 sm:p-4 rounded-2xl border border-dashed border-danger-500/30 relative overflow-hidden group">
                     <div className={`absolute inset-0 ${currentConfig.bgClass} opacity-5 group-hover:opacity-10 transition-opacity`} />
 
-                    <div className="relative z-10">
-                        <div className={`${currentConfig.bgClass} text-white w-14 h-14 rounded-xl flex items-center justify-center font-black text-2xl shadow-lg`}>
+                    <div className="relative z-10 shrink-0">
+                        <div className={`${currentConfig.bgClass} text-white w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center font-black text-xl sm:text-2xl shadow-lg`}>
                             {currentDPE}
                         </div>
                     </div>
 
-                    <div className="flex flex-col relative z-10">
-                        <span className="text-xs font-bold text-danger-500 uppercase tracking-wider mb-0.5">ÉTAT ACTUEL</span>
-                        <span className="text-sm font-medium text-main text-nowrap">{DPE_KWH_VALUES[currentDPE]} kWh/m²</span>
+                    <div className="flex flex-col relative z-10 min-w-0">
+                        <span className="text-[10px] sm:text-xs font-bold text-danger-500 uppercase tracking-wider mb-0.5">ÉTAT ACTUEL</span>
+                        <span className="text-sm font-medium text-main truncate hover:text-clip hover:whitespace-normal transition-all">
+                            {DPE_KWH_VALUES[currentDPE]} kWh/m²
+                        </span>
                     </div>
                 </div>
 
                 {/* 2. TRANSITION: ARROW */}
-                <div className="flex flex-col items-center justify-center z-10 px-2">
+                <div className="flex flex-col items-center justify-center z-10 px-2 py-2 md:py-0">
                     <motion.div
-                        className="flex flex-col items-center gap-1"
+                        className="flex flex-row md:flex-col items-center gap-2 md:gap-1"
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={isInView ? { scale: 1, opacity: 1 } : {}}
                         transition={{ delay: 0.2 }}
                     >
-                        {/* Arrow Icon */}
-                        <div className="text-muted/40 mb-1">
+                        {/* Arrow Icon (Rotated on mobile) */}
+                        <div className="text-muted/40 rotate-90 md:rotate-0">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M5 12h14" />
                                 <path d="M12 5l7 7-7 7" />
@@ -86,7 +88,7 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                         </div>
 
                         {/* Badge */}
-                        <div className="px-3 py-1.5 bg-gradient-to-r from-success-900/40 to-success-800/40 rounded-full border border-success-500/30 backdrop-blur-sm shadow-sm whitespace-nowrap group">
+                        <div className="px-3 py-1 bg-gradient-to-r from-success-900/40 to-success-800/40 rounded-full border border-success-500/30 backdrop-blur-sm shadow-sm whitespace-nowrap group">
                             <span className="text-xs font-bold text-success-400 group-hover:text-success-300 transition-colors">
                                 +{classesGained} {classesGained > 1 ? "classes" : "classe"}
                             </span>
@@ -95,16 +97,18 @@ export function DPEGauge({ currentDPE, targetDPE }: DPEGaugeProps) {
                 </div>
 
                 {/* 3. STATE B: PROJECTED */}
-                <div className="flex flex-row items-center justify-end gap-4 bg-surface p-4 rounded-2xl border border-success-500/30 h-full relative overflow-hidden group text-right">
+                <div className="w-full h-full flex flex-row items-center justify-between md:justify-end gap-3 sm:gap-4 bg-surface p-3 sm:p-4 rounded-2xl border border-success-500/30 relative overflow-hidden group text-right">
                     <div className={`absolute inset-0 ${targetConfig.bgClass} opacity-5 group-hover:opacity-10 transition-opacity`} />
 
-                    <div className="flex flex-col relative z-10 order-1">
-                        <span className="text-xs font-bold text-success-600 uppercase tracking-wider mb-0.5">ÉTAT PROJETÉ</span>
-                        <span className="text-sm font-medium text-main text-nowrap">{DPE_KWH_VALUES[targetDPE]} kWh/m²</span>
+                    <div className="flex flex-col relative z-10 order-2 md:order-1 min-w-0 flex-1 md:flex-none">
+                        <span className="text-[10px] sm:text-xs font-bold text-success-600 uppercase tracking-wider mb-0.5">ÉTAT PROJETÉ</span>
+                        <span className="text-sm font-medium text-main truncate hover:text-clip hover:whitespace-normal transition-all">
+                            {DPE_KWH_VALUES[targetDPE]} kWh/m²
+                        </span>
                     </div>
 
-                    <div className="relative z-10 order-2">
-                        <div className={`${targetConfig.bgClass} text-white w-14 h-14 rounded-xl flex items-center justify-center font-black text-2xl shadow-lg ring-4 ring-white/10`}>
+                    <div className="relative z-10 order-1 md:order-2 shrink-0">
+                        <div className={`${targetConfig.bgClass} text-white w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center font-black text-xl sm:text-2xl shadow-lg ring-4 ring-white/10`}>
                             {targetDPE}
                         </div>
                     </div>

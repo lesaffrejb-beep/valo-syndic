@@ -59,7 +59,7 @@ export function TantiemeCalculator({ financing, className = "" }: TantiemeCalcul
 
             {/* Slider */}
             <div className="mb-8">
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-3">
                     <label htmlFor="tantiemes" className="text-sm font-medium text-secondary">
                         Vos Tantièmes
                     </label>
@@ -69,6 +69,7 @@ export function TantiemeCalculator({ financing, className = "" }: TantiemeCalcul
                         min={1}
                         max={1000}
                         suffix="/ 1000"
+                        className="h-10 border-boundary shadow-sm w-full sm:w-auto justify-center"
                     />
                 </div>
                 <input
