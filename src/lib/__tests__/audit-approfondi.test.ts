@@ -290,11 +290,11 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             const valuation = calculateValuation(input, financing);
 
             // Vérifier que l'impact correspond
-            const expectedPrice = 3000 * (1 + impacts[index]);
+            const expectedPrice = 3000 * (1 + impacts[index]!);
             const totalSurface = 10 * 50; // 500m²
             const expectedValue = totalSurface * expectedPrice;
 
-            console.log(`DPE ${dpe}: impact ${impacts[index] * 100}% → valeur ${valuation.currentValue.toLocaleString()}€`);
+            console.log(`DPE ${dpe}: impact ${impacts[index]! * 100}% → valeur ${valuation.currentValue.toLocaleString()}€`);
 
             // Tolérance de 100€
             expect(valuation.currentValue).toBeCloseTo(expectedValue, -2);
