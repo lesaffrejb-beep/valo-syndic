@@ -145,6 +145,9 @@ export const FinancingPlanSchema = z.object({
     /** Montant Éco-PTZ disponible */
     ecoPtzAmount: z.number(),
 
+    /** Certificats d'Économie d'Énergie (CEE) */
+    ceeAmount: z.number(),
+
     /** Reste à charge après aides */
     remainingCost: z.number(),
 

@@ -1,21 +1,21 @@
-/**
- * TantiemeCalculator — Calculateur d'effort mensuel individualisé
- * L'Argument Ultime : "Je paye 87€/mois, pas 300k€"
- */
-
 "use client";
 
 import { useState, useMemo } from "react";
 import { type FinancingPlan } from "@/lib/schemas";
 import { ECO_PTZ_COPRO } from "@/lib/constants";
 import { formatCurrency } from "@/lib/calculator";
-import { NumberStepper } from "@/components/ui/NumberStepper";
+import { motion } from "framer-motion";
 
 interface TantiemeCalculatorProps {
     financing: FinancingPlan;
     className?: string;
 }
 
+/**
+ * TANTIEME CALCULATOR — "L'Effort Réel"
+ * Design Updated: Obsidian / Premium
+ * Focus: Slider ergonomique + "Hero Metric" Mensuelle
+ */
 export function TantiemeCalculator({ financing, className = "" }: TantiemeCalculatorProps) {
     const [tantiemes, setTantiemes] = useState(100); // Défaut : 100/1000
 
@@ -30,96 +30,114 @@ export function TantiemeCalculator({ financing, className = "" }: TantiemeCalcul
         const durationMonths = ECO_PTZ_COPRO.maxDurationYears * 12;
         const monthlyPayment = partLotLoan / durationMonths;
 
-        // Mensualité sur 15 ans (alternative)
-        const monthlyPayment15 = partLotLoan / (15 * 12);
-
         return {
             partLotCash,
             partLotLoan,
             monthlyPayment,
-            monthlyPayment15,
             durationYears: ECO_PTZ_COPRO.maxDurationYears,
         };
     }, [financing.remainingCost, financing.ecoPtzAmount, tantiemes]);
 
-
+    const presets = [
+        { label: "Studio", val: 30 },
+        { label: "T2", val: 55 },
+        { label: "T3", val: 80 },
+        { label: "T4", val: 110 },
+        { label: "T5+", val: 150 },
+    ];
 
     return (
-        <div className={`card-bento p-6 ${className}`}>
+        <div className={`card-bento p-0 flex flex-col h-full ${className}`}>
             {/* Header */}
-            <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-primary-900/30 rounded-xl flex items-center justify-center border border-primary-500/20">
-                    <span className="text-primary-400 text-lg">🧮</span>
-                </div>
-                <div>
-                    <h3 className="text-lg font-bold text-main">Calculateur de Tantièmes</h3>
-                    <p className="text-sm text-muted">Votre effort réel, personnalisé</p>
-                </div>
-            </div>
-
-            {/* Slider */}
-            <div className="mb-8">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-3">
-                    <label htmlFor="tantiemes" className="text-sm font-medium text-secondary">
-                        Vos Tantièmes
-                    </label>
-                    <NumberStepper
-                        value={tantiemes}
-                        onChange={setTantiemes}
-                        min={1}
-                        max={1000}
-                        suffix="/ 1000"
-                        className="h-10 border-boundary shadow-sm w-full sm:w-auto justify-center"
-                    />
-                </div>
-                <input
-                    type="range"
-                    id="tantiemes"
-                    min={1}
-                    max={500}
-                    value={Math.min(tantiemes, 500)}
-                    onChange={(e) => setTantiemes(Number(e.target.value))}
-                    className="w-full h-2 bg-boundary rounded-lg appearance-none cursor-pointer accent-primary-500"
-                />
-                <div className="flex justify-between text-xs text-muted mt-1">
-                    <span>1</span>
-                    <span>Studio</span>
-                    <span>T3</span>
-                    <span>Duplex</span>
-                    <span>500+</span>
+            <div className="p-6 pb-2">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary-900/50 to-primary-800/20 rounded-xl flex items-center justify-center border border-primary-500/20 shadow-glow-sm">
+                        <span className="text-primary-400 text-lg">🧮</span>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-main">Simulateur Individuel</h3>
+                        <p className="text-xs text-muted">Ajustez selon votre quote-part</p>
+                    </div>
                 </div>
             </div>
 
-            {/* Résultat Principal */}
-            <div className="bg-gradient-to-br from-primary-900/40 to-primary-800/20 rounded-xl p-6 text-center mb-6 border border-primary-500/20">
-                <p className="text-sm text-primary-300 font-medium mb-2">
-                    Votre mensualité Éco-PTZ ({calculation.durationYears} ans)
-                </p>
-                <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-black text-primary-400">
-                        {Math.round(calculation.monthlyPayment)}
-                    </span>
-                    <span className="text-2xl font-bold text-primary-500">€</span>
-                    <span className="text-lg text-primary-600">/mois</span>
-                </div>
-                <p className="text-xs text-primary-400/80 mt-2">
-                    Soit {formatCurrency(calculation.partLotLoan)} financés à 0% par votre lot
-                </p>
-            </div>
+            {/* Main Content */}
+            <div className="flex-1 p-6 pt-4 flex flex-col justify-between">
 
-            {/* Comparaison */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-surface rounded-lg p-4 text-center border border-boundary">
-                    <p className="text-xs text-muted mb-1">Apport personnel</p>
-                    <p className="text-xl font-bold text-success-400">
-                        {formatCurrency(calculation.partLotCash)}
+                {/* Hero Metric: Monthly Payment */}
+                <div className="text-center mb-6">
+                    <p className="text-xs text-primary-300 font-medium uppercase tracking-wide mb-2 opacity-80">
+                        Votre effort d&apos;épargne
                     </p>
+                    <div className="flex items-end justify-center gap-1.5 text-primary-100">
+                        <span className="text-6xl font-black tracking-tighter drop-shadow-xl text-gradient-gold">
+                            {Math.round(calculation.monthlyPayment)}
+                        </span>
+                        <div className="flex flex-col text-left mb-2">
+                            <span className="text-xl font-bold text-primary-400">€</span>
+                            <span className="text-xs font-medium text-muted">/mois</span>
+                        </div>
+                    </div>
+                    <div className="mt-3 inline-flex items-center px-3 py-1 bg-primary-900/10 border border-primary-500/10 rounded-full">
+                        <span className="text-[10px] text-primary-400">
+                            Prêt Taux Zéro sur {calculation.durationYears} ans
+                        </span>
+                    </div>
                 </div>
-                <div className="bg-surface rounded-lg p-4 text-center border border-boundary">
-                    <p className="text-xs text-muted mb-1">Montant financé (PTZ)</p>
-                    <p className="text-xl font-bold text-secondary">
-                        {formatCurrency(financing.ecoPtzAmount)}
-                    </p>
+
+                {/* Slider Control */}
+                <div className="mb-6">
+                    <div className="flex justify-between items-center mb-3">
+                        <label htmlFor="tantiemes" className="text-sm font-medium text-main">
+                            Quote-part : <span className="text-primary-400 font-bold">{tantiemes}</span> <span className="text-muted text-xs">/ 1000èmes</span>
+                        </label>
+                    </div>
+
+                    <div className="relative h-6 flex items-center mb-4">
+                        <input
+                            type="range"
+                            id="tantiemes"
+                            min={1}
+                            max={400}
+                            value={tantiemes}
+                            onChange={(e) => setTantiemes(Number(e.target.value))}
+                            className="w-full h-2 bg-surface-hover rounded-lg appearance-none cursor-pointer accent-primary-500 hover:accent-primary-400 transition-all"
+                        />
+                    </div>
+
+                    {/* Presets */}
+                    <div className="flex justify-between gap-1 overflow-x-auto pb-1 no-scrollbar">
+                        {presets.map((preset) => (
+                            <button
+                                key={preset.label}
+                                onClick={() => setTantiemes(preset.val)}
+                                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-all border ${tantiemes === preset.val
+                                        ? 'bg-primary-900/30 text-primary-300 border-primary-500/30'
+                                        : 'bg-surface-highlight text-muted border-transparent hover:bg-surface-hover hover:text-main'
+                                    }`}
+                            >
+                                {preset.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Detail Breakdown */}
+                <div className="grid grid-cols-2 gap-3 mt-auto">
+                    <div className="bg-surface-highlight/50 rounded-xl p-3 border border-boundary/40 text-center">
+                        <p className="text-[10px] text-muted uppercase tracking-wider mb-1">Reste à Charge</p>
+                        <p className="text-lg font-bold text-main">
+                            {formatCurrency(calculation.partLotCash)}
+                        </p>
+                        <p className="text-[10px] text-subtle">Apport requis</p>
+                    </div>
+                    <div className="bg-surface-highlight/50 rounded-xl p-3 border border-boundary/40 text-center">
+                        <p className="text-[10px] text-muted uppercase tracking-wider mb-1">Financé PTZ</p>
+                        <p className="text-lg font-bold text-primary-400">
+                            {formatCurrency(calculation.partLotLoan)}
+                        </p>
+                        <p className="text-[10px] text-subtle">Emprunté 0%</p>
+                    </div>
                 </div>
             </div>
         </div>

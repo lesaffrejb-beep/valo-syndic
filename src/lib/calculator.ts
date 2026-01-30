@@ -234,6 +234,7 @@ export function simulateFinancing(
         mprRate: mprRate + exitPassoireBonus,
         exitPassoireBonus,
         ecoPtzAmount: Math.round(ecoPtzAmount),
+        ceeAmount: Math.round(ceeBonus),
         remainingCost: Math.round(Math.max(0, remainingCostFinal)), // TTC
         monthlyPayment: Math.round(monthlyPayment),
         remainingCostPerUnit: Math.round(Math.max(0, remainingCostFinal) / nbLots), // TTC

@@ -1,9 +1,3 @@
-/**
- * FinancingCard — Plan de financement détaillé
- * Le "Plan de Bataille" avec aides et mensualités.
- * ✨ Version animée avec Framer Motion
- */
-
 "use client";
 
 import { motion, useInView } from "framer-motion";
@@ -17,7 +11,7 @@ import {
 } from "@/lib/services/marketBenchmarkService";
 import { type FinancingPlan } from "@/lib/schemas";
 import { formatPercent, formatCurrency } from "@/lib/calculator";
-import { AnimatedCurrency, AnimatedPercent } from "@/components/ui/AnimatedNumber";
+import { AnimatedCurrency } from "@/components/ui/AnimatedNumber";
 import { useViewModeStore } from "@/stores/useViewModeStore";
 
 interface FinancingCardProps {
@@ -29,7 +23,6 @@ import { DEFAULT_TRANSITION } from "@/lib/animations";
 
 export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) {
     const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
     const { viewMode, getAdjustedValue } = useViewModeStore();
     const isMaPoche = viewMode === 'maPoche';
 
@@ -131,50 +124,82 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                     <div className="flex flex-col h-full">
                         <h4 className="text-sm font-medium text-muted uppercase tracking-wider mb-6">Solutions de Financement</h4>
 
-                        <div className="space-y-4 flex-1">
+                        <div className="space-y-3 flex-1">
                             {/* MaPrimeRénov' */}
-                            <motion.div
-                                className="flex items-center justify-between p-4 bg-gradient-to-br from-primary-900/40 to-primary-900/10 rounded-xl border border-primary-500/30 shadow-sm hover:border-primary-500/50 transition-colors"
-                                whileHover={{ scale: 1.01 }}
+                            <div
+                                className="flex items-center justify-between p-3 bg-gradient-to-br from-primary-900/40 to-primary-900/10 rounded-xl border border-primary-500/30 shadow-sm"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-primary-900/50 rounded-lg border border-primary-500/20">
-                                        <span className="text-xl">🏛️</span>
+                                    <div className="p-1.5 bg-primary-900/50 rounded-lg border border-primary-500/20">
+                                        <span className="text-lg">🏛️</span>
                                     </div>
                                     <div>
-                                        <p className="font-bold text-primary-300">MaPrimeRénov&apos;</p>
-                                        <p className="text-xs text-primary-400/80">
+                                        <p className="font-bold text-sm text-primary-300">MaPrimeRénov&apos;</p>
+                                        <p className="text-[10px] text-primary-400/80">
                                             {formatPercent(financing.mprRate)} prise en charge
                                         </p>
                                     </div>
                                 </div>
-                                <span className="text-lg font-bold text-primary-300 tabular-nums">
+                                <span className="text-base font-bold text-primary-300 tabular-nums">
                                     -<AnimatedCurrency value={financing.mprAmount} duration={1.3} />
                                 </span>
-                            </motion.div>
+                            </div>
+
+                            {/* CEE (New) */}
+                            {financing.ceeAmount > 0 && (
+                                <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
+                                            <span className="text-lg">⚡</span>
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-sm text-main">Primes CEE</p>
+                                            <p className="text-[10px] text-muted">Certificats Énergie</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-base font-bold text-success-400 tabular-nums">
+                                        -<AnimatedCurrency value={financing.ceeAmount} duration={1.3} />
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Local Aid (New) */}
+                            {financing.localAidAmount > 0 && (
+                                <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
+                                            <span className="text-lg">📍</span>
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-sm text-main">Aides Locales</p>
+                                            <p className="text-[10px] text-muted">Collectivités</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-base font-bold text-success-400 tabular-nums">
+                                        -<AnimatedCurrency value={financing.localAidAmount} duration={1.3} />
+                                    </span>
+                                </div>
+                            )}
 
                             {/* Éco-PTZ */}
-                            <motion.div
-                                className="flex items-center justify-between p-4 bg-surface rounded-xl border border-boundary hover:border-gold-500/30 transition-colors group/ptz"
-                                whileHover={{ scale: 1.01 }}
-                            >
+                            <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary hover:border-gold-500/30 transition-colors">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-surface-highlight rounded-lg border border-boundary group-hover/ptz:border-gold-500/20">
-                                        <span className="text-xl">🏦</span>
+                                    <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
+                                        <span className="text-lg">🏦</span>
                                     </div>
                                     <div>
-                                        <p className="font-bold text-main">Éco-PTZ Copro</p>
-                                        <p className="text-xs text-muted">Taux 0% • Durée 20 ans</p>
+                                        <p className="font-bold text-sm text-main">Éco-PTZ Copro</p>
+                                        <p className="text-[10px] text-muted">Taux 0% • Durée 20 ans</p>
                                     </div>
                                 </div>
-                                <span className="text-lg font-bold text-body tabular-nums">
+                                <span className="text-base font-bold text-body tabular-nums">
                                     <AnimatedCurrency value={financing.ecoPtzAmount} duration={1.4} />
                                 </span>
-                            </motion.div>
+                            </div>
                         </div>
 
                         {/* Reste à Charge & Mensualité */}
-                        <div className="mt-8 pt-6 border-t border-boundary">
+                        <div className="mt-6 pt-4 border-t border-boundary">
                             <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
                                 <div className="w-full sm:w-auto">
                                     <p className="text-sm text-muted mb-1">

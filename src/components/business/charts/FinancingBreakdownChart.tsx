@@ -1,13 +1,3 @@
-/**
- * FinancingBreakdownChart — Répartition du financement
- * =====================================================
- * Visualisation en barres horizontales du plan de financement.
- * Remplace le donut chart qui pouvait suggérer une répartition à 100%.
- * 
- * Design: Barres horizontales avec labels clairs
- * Note: La somme peut dépasser 100% car MPR (subvention) + Éco-PTZ (prêt)
- */
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -20,6 +10,7 @@ interface FinancingBreakdownChartProps {
 // Design System Colors
 const COLORS = {
     mpr: "#22c55e",      // success-500
+    cee: "#8b5cf6",      // violet-500 (NEW)
     ptz: "#D4B679",      // gold (primary)
     local: "#10b981",    // emerald-500
     reste: "#6b7280",    // gray-500
@@ -36,9 +27,12 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
     // Calculate percentages based on total cost
     const totalCost = financing.totalCostHT;
     const mprPercent = Math.round((financing.mprAmount / totalCost) * 100);
+    const ceePercent = financing.ceeAmount > 0
+        ? Math.round((financing.ceeAmount / totalCost) * 100)
+        : 0;
     const ptzPercent = Math.round((financing.ecoPtzAmount / totalCost) * 100);
-    const localPercent = financing.localAidAmount > 0 
-        ? Math.round((financing.localAidAmount / totalCost) * 100) 
+    const localPercent = financing.localAidAmount > 0
+        ? Math.round((financing.localAidAmount / totalCost) * 100)
         : 0;
     const remainingPercent = Math.round((financing.remainingCost / totalCost) * 100);
 
@@ -52,10 +46,18 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
             percent: mprPercent,
             color: COLORS.mpr,
         },
+        ...(financing.ceeAmount > 0 ? [{
+            id: "cee",
+            label: "Primes CEE",
+            sublabel: "Certificats Énergie",
+            value: financing.ceeAmount,
+            percent: ceePercent,
+            color: COLORS.cee,
+        }] : []),
         ...(financing.localAidAmount > 0 ? [{
             id: "local",
             label: "Aides locales",
-            sublabel: "Subvention",
+            sublabel: "Collectivités",
             value: financing.localAidAmount,
             percent: localPercent,
             color: COLORS.local,
@@ -78,8 +80,8 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
         }] : []),
     ];
 
-    // Calculate total coverage (MPR + local + PTZ)
-    const totalCoverage = financing.mprAmount + financing.localAidAmount + financing.ecoPtzAmount;
+    // Calculate total coverage (MPR + CEE + local + PTZ)
+    const totalCoverage = financing.mprAmount + financing.ceeAmount + financing.localAidAmount + financing.ecoPtzAmount;
     const coveragePercent = Math.round((totalCoverage / totalCost) * 100);
 
     return (
@@ -100,7 +102,7 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
             {/* Explanation */}
             <div className="mb-6 p-3 bg-primary-900/10 border border-primary-500/20 rounded-lg">
                 <p className="text-xs text-primary-300">
-                    💡 <strong>Comment lire :</strong> Chaque barre représente le % du coût total couvert par 
+                    💡 <strong>Comment lire :</strong> Chaque barre représente le % du coût total couvert par
                     cette source. La somme peut dépasser 100% car l&apos;Éco-PTZ est un prêt à rembourser.
                 </p>
             </div>
@@ -117,7 +119,7 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
                         {/* Label row */}
                         <div className="flex items-center justify-between mb-1.5">
                             <div className="flex items-center gap-2">
-                                <div 
+                                <div
                                     className="w-3 h-3 rounded-full"
                                     style={{ backgroundColor: bar.color }}
                                 />
@@ -173,7 +175,7 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
                         />
                     </div>
                     <p className="text-xs text-muted mt-2">
-                        {coveragePercent >= 100 
+                        {coveragePercent >= 100
                             ? "✅ Surcouverture : Les aides + prêt couvrent 100% du projet"
                             : `⚠️ Reste à charge : ${formatCurrency(financing.remainingCost)}`
                         }
