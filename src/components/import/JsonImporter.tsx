@@ -128,7 +128,7 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
                                 <div className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.06]">
                                     <p className="text-sm text-muted leading-relaxed">
                                         <span className="text-primary font-medium">📋 Instructions:</span>{" "}
-                                        Collez le JSON généré par l'extension Ghost ci-dessous, puis cliquez sur "Importer".
+                                        Collez le JSON généré par l&apos;extension Ghost ci-dessous, puis cliquez sur &quot;Importer&quot;.
                                     </p>
                                 </div>
 
