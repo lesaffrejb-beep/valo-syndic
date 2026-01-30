@@ -375,7 +375,7 @@ export default function HomePage() {
                                 <span className="text-gradient">Pilotez un investissement.</span>
                             </h2>
                             <p className="text-xl text-muted max-w-2xl mx-auto leading-relaxed mb-10">
-                                Entrez l'adresse de votre copropriété.
+                                Entrez l&apos;adresse de votre copropriété.
                                 <br />
                                 Notre IA détecte instantanément le potentiel financier caché.
                             </p>
