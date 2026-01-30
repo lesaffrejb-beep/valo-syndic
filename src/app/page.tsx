@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -50,6 +50,8 @@ import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema, typ
 import { BrandingModal } from "@/components/BrandingModal";
 import { JsonImporter } from "@/components/import/JsonImporter";
 import { getLocalRealEstatePrice } from "@/actions/getRealEstateData";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { useProjectSave } from "@/hooks/useProjectSave";
 
 // Lazy Loaded Components (Heavy Buttons)
 const DownloadPdfButton = dynamic(
@@ -80,7 +82,29 @@ export default function HomePage() {
     const [activeTab, setActiveTab] = useState<"flash" | "mass">("flash");
     const [showBrandingModal, setShowBrandingModal] = useState(false);
 
+    // Authentication & Save
+    const { saveProject, isLoading: isSaving, showAuthModal, setShowAuthModal } = useProjectSave();
+    const [saveSuccess, setSaveSuccess] = useState(false);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Load simulation from session storage (Dashboard navigation)
+    useEffect(() => {
+        const loadedData = sessionStorage.getItem('valo_loaded_simulation');
+        if (loadedData) {
+            try {
+                const { input, result: loadedResult } = JSON.parse(loadedData);
+                setCurrentInput(input);
+                setResult(loadedResult);
+                sessionStorage.removeItem('valo_loaded_simulation');
+                setTimeout(() => {
+                    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            } catch (err) {
+                console.error('Failed to load simulation from session:', err);
+            }
+        }
+    }, []);
 
     const handleSubmit = async (data: DiagnosticInput) => {
         // Mode démo caché
@@ -193,9 +217,35 @@ export default function HomePage() {
         }
     };
 
+    // Handle save to Supabase
+    const handleSaveToCloud = async () => {
+        if (!result) return;
+
+        const projectName = result.input.city
+            ? `Simulation ${result.input.city}`
+            : 'Nouvelle simulation';
+
+        const savedId = await saveProject(result, projectName);
+
+        if (savedId) {
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-app">
             <BrandingModal isOpen={showBrandingModal} onClose={() => setShowBrandingModal(false)} />
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                onSuccess={() => {
+                    // Retry save after successful auth
+                    if (result) {
+                        handleSaveToCloud();
+                    }
+                }}
+            />
 
             <Header
                 onOpenBranding={() => setShowBrandingModal(true)}
@@ -203,6 +253,7 @@ export default function HomePage() {
                 onLoad={handleLoad}
                 hasResult={!!result}
                 fileInputRef={fileInputRef}
+                onOpenAuth={() => setShowAuthModal(true)}
             />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-24">
@@ -396,11 +447,41 @@ export default function HomePage() {
                                     >
                                         ← Nouvelle simulation
                                     </button>
+
+                                    {/* Cloud Save Button */}
+                                    <button
+                                        onClick={handleSaveToCloud}
+                                        disabled={isSaving}
+                                        className="relative px-6 py-3 rounded-lg text-sm font-semibold
+                                                 bg-primary/10 text-primary hover:bg-primary/20 
+                                                 border border-primary/20 hover:border-primary/30
+                                                 disabled:opacity-50 disabled:cursor-not-allowed
+                                                 transition-all duration-200 shadow-lg shadow-primary/10
+                                                 flex items-center gap-2 hover:scale-105"
+                                    >
+                                        {isSaving ? (
+                                            <>
+                                                <span className="animate-spin">⏳</span>
+                                                <span>Sauvegarde...</span>
+                                            </>
+                                        ) : saveSuccess ? (
+                                            <>
+                                                <span>✅</span>
+                                                <span>Sauvegardé !</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>💾</span>
+                                                <span>Sauvegarder</span>
+                                            </>
+                                        )}
+                                    </button>
+
                                     <button
                                         onClick={handleSave}
                                         className="btn-secondary flex items-center justify-center gap-2 hover:scale-105 transition-transform"
                                     >
-                                        💾 Sauvegarder (.valo)
+                                        💾 Exporter (.valo)
                                     </button>
                                     <DownloadPdfButton result={result} />
                                     <DownloadConvocationButton result={result} />

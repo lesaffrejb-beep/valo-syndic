@@ -292,3 +292,37 @@ export const GhostExtensionImportSchema = z.object({
 
 export type ImportedLot = z.infer<typeof ImportedLotSchema>;
 export type GhostExtensionImport = z.infer<typeof GhostExtensionImportSchema>;
+
+// =============================================================================
+// 6. AUTHENTICATION & PROJECT MANAGEMENT
+// =============================================================================
+
+/** Saved Simulation Schema (from Supabase) */
+export const SavedSimulationSchema = z.object({
+    id: z.string().uuid(),
+    created_at: z.string().datetime(),
+    updated_at: z.string().datetime().optional(),
+    project_name: z.string().nullable(),
+    city: z.string().nullable(),
+    postal_code: z.string().nullable(),
+    json_data: z.any(), // DiagnosticResult as JSONB
+    user_email: z.string().email().nullable(),
+    user_id: z.string().uuid().nullable(),
+    status: z.enum(['draft', 'shared', 'archived']).default('draft'),
+});
+
+export type SavedSimulation = z.infer<typeof SavedSimulationSchema>;
+
+/** Market Stats Schema (Hive Mind - Anonymous) */
+export const MarketStatsSchema = z.object({
+    postal_code: z.string().optional(),
+    city: z.string().optional(),
+    current_dpe: DPELetterSchema,
+    target_dpe: DPELetterSchema,
+    cost_per_sqm: z.number().optional(),
+    number_of_units: z.number().int(),
+    work_cost_ht: z.number().optional(),
+    subsidy_rate: z.number().optional(),
+});
+
+export type MarketStats = z.infer<typeof MarketStatsSchema>;

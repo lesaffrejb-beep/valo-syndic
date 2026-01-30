@@ -1,10 +1,13 @@
 "use client";
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from "framer-motion";
 import { useBrandStore } from "@/stores/useBrandStore";
+import { useAuth } from "@/hooks/useAuth";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
-import { motion } from "framer-motion";
 
 interface HeaderProps {
     onOpenBranding: () => void;
@@ -12,10 +15,24 @@ interface HeaderProps {
     onLoad: (e: React.ChangeEvent<HTMLInputElement>) => void;
     hasResult: boolean;
     fileInputRef: React.RefObject<HTMLInputElement>;
+    onOpenAuth?: () => void;
 }
 
-export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef }: HeaderProps) {
+export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef, onOpenAuth }: HeaderProps) {
     const brand = useBrandStore((state) => state.brand);
+    const { user, signOut } = useAuth();
+    const router = useRouter();
+    const [showUserMenu, setShowUserMenu] = useState(false);
+
+    const handleSignOut = async () => {
+        try {
+            await signOut();
+            setShowUserMenu(false);
+            router.push('/');
+        } catch (error) {
+            console.error('Sign out failed:', error);
+        }
+    };
 
     return (
         <motion.header
@@ -141,6 +158,84 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                             <ShareButton />
                             <ProjectionModeToggle />
                         </div>
+
+                        {/* Divider */}
+                        <div className="w-px h-6 bg-white/[0.08] mx-1" />
+
+                        {/* Authentication */}
+                        {user ? (
+                            /* User Menu */
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowUserMenu(!showUserMenu)}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-main hover:bg-white/[0.04] transition-all duration-200 border border-transparent hover:border-white/[0.08]"
+                                >
+                                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center border border-primary/20">
+                                        <span className="text-xs font-semibold text-primary">
+                                            {user.email?.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <span className="hidden md:inline text-xs max-w-[120px] truncate">
+                                        {user.email}
+                                    </span>
+                                    <svg className="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                <AnimatePresence>
+                                    {showUserMenu && (
+                                        <>
+                                            <div
+                                                className="fixed inset-0 z-40"
+                                                onClick={() => setShowUserMenu(false)}
+                                            />
+                                            <motion.div
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                transition={{ duration: 0.15 }}
+                                                className="absolute right-0 mt-2 w-56 bg-surface border border-boundary rounded-lg shadow-xl overflow-hidden z-50"
+                                            >
+                                                <div className="px-4 py-3 border-b border-boundary">
+                                                    <p className="text-xs text-muted">Connecté en tant que</p>
+                                                    <p className="text-sm text-main font-medium truncate">{user.email}</p>
+                                                </div>
+                                                <div className="py-1">
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowUserMenu(false);
+                                                            router.push('/dashboard');
+                                                        }}
+                                                        className="w-full px-4 py-2.5 text-left text-sm text-main hover:bg-white/[0.04] transition-colors flex items-center gap-3"
+                                                    >
+                                                        <span>💼</span>
+                                                        <span>Mes Projets</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={handleSignOut}
+                                                        className="w-full px-4 py-2.5 text-left text-sm text-muted hover:text-red-400 hover:bg-red-500/5 transition-colors flex items-center gap-3"
+                                                    >
+                                                        <span>🚪</span>
+                                                        <span>Se déconnecter</span>
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        </>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        ) : (
+                            /* Login Button */
+                            <button
+                                onClick={onOpenAuth}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 hover:border-primary/30 transition-all duration-200"
+                            >
+                                <span>🔐</span>
+                                <span className="hidden sm:inline">Se connecter</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
