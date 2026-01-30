@@ -29,6 +29,7 @@ import { UrgencyScore } from "@/components/UrgencyScore";
 // Persuasion Components
 import { TantiemeCalculator } from "@/components/business/TantiemeCalculator";
 import { BenchmarkChart } from "@/components/business/BenchmarkChart";
+import { MarketBenchmark } from "@/components/business/MarketBenchmark";
 
 import { ValuationCard } from "@/components/business/ValuationCard";
 import { InvestorTaxCard } from "@/components/business/InvestorTaxCard";
@@ -408,6 +409,16 @@ export default function HomePage() {
                                         numberOfUnits={result.input.numberOfUnits}
                                     />
                                 </div>
+
+                                {/* Market Intelligence - Oracle (Hive Mind) */}
+                                {result.input.postalCode && result.input.averageUnitSurface && (
+                                    <MarketBenchmark
+                                        postalCode={result.input.postalCode}
+                                        currentDPE={result.input.currentDPE}
+                                        targetDPE={result.input.targetDPE}
+                                        userPricePerSqm={result.financing.costPerUnit / result.input.averageUnitSurface}
+                                    />
+                                )}
 
                                 {/* Tools Row: Tantièmes + Benchmark */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
