@@ -12,6 +12,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Structural Components
 import { SubsidyTable } from "@/components/business/SubsidyTable";
+
+// [NEW] Data Reveal Features
+import { useAddressSearch } from "@/hooks/useAddressSearch";
+import { DPEDistributionChart } from "@/components/dashboard/DPEDistributionChart";
+import { HeatingSystemAlert } from "@/components/dashboard/HeatingSystemAlert";
+
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
@@ -89,6 +95,54 @@ export default function HomePage() {
     // Authentication & Save
     const { saveProject, isLoading: isSaving, showAuthModal, setShowAuthModal } = useProjectSave();
     const [saveSuccess, setSaveSuccess] = useState(false);
+
+    // --- AJOUT : Gestion de l'état de recherche (Data Reveal) ---
+    const { query, setQuery, suggestions: results, isLoading: isSearching, selectAddress: searchAddress } = useAddressSearch();
+    const [selectedProperty, setSelectedProperty] = useState<any>(null);
+    const [showResults, setShowResults] = useState(false);
+
+    // Fonction quand on clique sur une suggestion
+    const handleSelectAddress = async (property: any) => {
+        const dpeData = property.dpeData;
+        setSelectedProperty(property);
+        setQuery(property.label);
+        setShowResults(false);
+
+        // [AUTO-SIMULATION] Pour révéler le dashboard immédiatement
+        setIsLoading(true);
+
+        // Construction d'un objet simulation par défaut basé sur la donnée réelle si dispo
+        const demoInput: DiagnosticInput = {
+            address: property.label,
+            postalCode: property.postcode || "49000",
+            city: property.city || "Angers",
+            currentDPE: (dpeData?.etiquette_dpe as any) || "F",
+            targetDPE: "C",
+            numberOfUnits: 30, // Moyenne
+            estimatedCostHT: 450000, // Moyenne
+            commercialLots: 0,
+            localAidAmount: 0,
+            alurFund: 0,
+            ceeBonus: 0,
+            investorRatio: 0,
+        };
+
+        try {
+            const response = await simulateDiagnostic(demoInput);
+            if (response.success) {
+                setResult(response.data);
+                setCurrentInput(demoInput);
+                setTimeout(() => {
+                    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    // ----------------------------------------------
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -334,7 +388,49 @@ export default function HomePage() {
                                 <JsonImporter onImport={handleGhostImport} />
                             </div>
 
-                            <DiagnosticForm onSubmit={handleSubmit} isLoading={isLoading} />
+                            {/* --- BLOC RECHERCHE INTELLIGENTE (Remplace DiagnosticForm) --- */}
+                            <div className="relative z-50 w-full max-w-2xl mx-auto py-8">
+                                <h3 className="text-center text-main font-semibold mb-4">Recherchez votre copropriété</h3>
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) => {
+                                        setQuery(e.target.value);
+                                        setShowResults(true);
+                                        // searchAddress déclenché par le hook via useEffect sur query, 
+                                        // mais ici on update juste le query. Le hook gère le debounce.
+                                    }}
+                                    placeholder="Tapez l'adresse de l'immeuble..."
+                                    className="w-full p-4 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C6A96C] transition-all"
+                                />
+
+                                {/* Liste des résultats (Suggestions) */}
+                                {showResults && results && results.length > 0 && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1A1A1A] border border-white/10 rounded-xl overflow-hidden shadow-2xl max-h-60 overflow-y-auto z-[100]">
+                                        {results.map((item: any, index: number) => (
+                                            <button
+                                                key={index}
+                                                onClick={() => searchAddress(item).then(() => handleSelectAddress(item))}
+                                                className="w-full text-left p-3 hover:bg-white/5 transition-colors flex items-center gap-3 border-b border-white/5 last:border-0"
+                                            >
+                                                <span className="text-[#C6A96C]">📍</span>
+                                                <div className="flex-1">
+                                                    <div className="text-white text-sm font-medium">{item.label}</div>
+                                                    <div className="text-xs text-gray-500">{item.city}</div>
+                                                </div>
+                                                {/* Note: item.dpeData n'est dispo qu'après sélection normalement,
+                                                    mais ici on utilise les résultats auto-complétion. 
+                                                    Le hook useAddressSearch ne retourne dpeData que sur select.
+                                                    On adapte : le badge DPE s'affichera une fois sélectionné.
+                                                */}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            {/* ----------------------------------- */}
+
+                            {/* <DiagnosticForm onSubmit={handleSubmit} isLoading={isLoading} /> */}
                         </div>
 
                         <LegalWarning variant="footer" className="mt-8" />
@@ -401,6 +497,15 @@ export default function HomePage() {
 
                                         <div className="w-full pt-8 border-t border-boundary/50 mt-8">
                                             <DPEGauge currentDPE={result.input.currentDPE} targetDPE={result.input.targetDPE} />
+                                            {/* --- MODULE EGO (Visible uniquement si une propriété est sélectionnée ou simulated) --- */}
+                                            {selectedProperty && (
+                                                <div className="mt-8">
+                                                    <DPEDistributionChart
+                                                        userDPE={(selectedProperty.dpeData?.etiquette_dpe || result.input.currentDPE)}
+                                                    />
+                                                </div>
+                                            )}
+                                            {/* ------------------------------------------------------------------- */}
                                         </div>
                                     </div>
 
@@ -486,6 +591,15 @@ export default function HomePage() {
 
                                         {/* 1. HERO CONTENT: SUBSIDY TABLE (Full Width) */}
                                         <div className="md:col-span-12 order-1">
+                                            {/* --- MODULE OPPORTUNITÉ (Détecteur de primes) --- */}
+                                            {selectedProperty && (
+                                                <div className="mb-6">
+                                                    <HeatingSystemAlert
+                                                        heatingType={selectedProperty.dpeData?.type_energie || 'gaz'}
+                                                    />
+                                                </div>
+                                            )}
+                                            {/* ----------------------------------------------- */}
                                             <SubsidyTable inputs={simulationInputs} />
                                         </div>
 
