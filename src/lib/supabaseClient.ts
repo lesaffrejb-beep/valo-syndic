@@ -10,4 +10,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Typage minimal (any) comme demandé pour l'instant
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+// Fallback sur des valeurs bidons pour éviter le crash du build si les variables manquent
+// (ex: environnement CI/CD sans secrets, ou build local strict)
+const finalUrl = supabaseUrl || 'https://placeholder.supabase.co';
+const finalKey = supabaseAnonKey || 'placeholder-key';
+
+export const supabase = createClient(finalUrl, finalKey);
