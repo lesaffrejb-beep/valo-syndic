@@ -108,39 +108,27 @@ export default function HomePage() {
         setQuery(property.label);
         setShowResults(false);
 
-        // [AUTO-SIMULATION] Pour révéler le dashboard immédiatement
-        setIsLoading(true);
-
-        // Construction d'un objet simulation par défaut basé sur la donnée réelle si dispo
-        const demoInput: DiagnosticInput = {
+        // [MODIFICATION] Pré-remplissage du formulaire au lieu de simulation auto
+        // On construit l'objet pour initialData
+        const initialFormState: Partial<DiagnosticInput> & { dpeData?: any } = {
             address: property.label,
-            postalCode: property.postcode || "49000",
-            city: property.city || "Angers",
+            postalCode: property.postcode,
+            city: property.city,
             currentDPE: (dpeData?.etiquette_dpe as any) || "F",
-            targetDPE: "C",
-            numberOfUnits: 30, // Moyenne
-            estimatedCostHT: 450000, // Moyenne
-            commercialLots: 0,
-            localAidAmount: 0,
-            alurFund: 0,
-            ceeBonus: 0,
-            investorRatio: 0,
+            dpeData: dpeData
         };
 
-        try {
-            const response = await simulateDiagnostic(demoInput);
-            if (response.success) {
-                setResult(response.data);
-                setCurrentInput(demoInput);
-                setTimeout(() => {
-                    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setIsLoading(false);
-        }
+        // Scroll vers le formulaire pour inviter à compléter
+        setTimeout(() => {
+            document.getElementById('diagnostic-form-container')?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+
+        // On passe les données au formulaire via state dédié ou prop (à ajouter dans render)
+        // Ici on stocke dans selectedProperty qui servira de source
+        setSelectedProperty({
+            ...property,
+            initialFormState
+        });
     };
     // ----------------------------------------------
 
@@ -430,7 +418,20 @@ export default function HomePage() {
                             </div>
                             {/* ----------------------------------- */}
 
-                            {/* <DiagnosticForm onSubmit={handleSubmit} isLoading={isLoading} /> */}
+                            <div id="diagnostic-form-container" className={`transition-all duration-500 ease-in-out ${selectedProperty ? 'opacity-100 max-h-[2000px] mt-8' : 'opacity-50 max-h-0 overflow-hidden'}`}>
+                                {selectedProperty && (
+                                    <div className="border-t border-white/10 pt-8 animate-fade-in-up">
+                                        <h4 className="text-center text-muted mb-6">👇 Vérifiez et Validez les données 👇</h4>
+                                        <DiagnosticForm
+                                            onSubmit={handleSubmit}
+                                            isLoading={isLoading}
+                                            initialData={selectedProperty.initialFormState}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Fallback si on veut montrer le form vide par défaut ? Non on garde le Reveal Address First */}
                         </div>
 
                         <LegalWarning variant="footer" className="mt-8" />

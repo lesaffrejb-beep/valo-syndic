@@ -18,6 +18,9 @@ import { EnergyBenchmark } from "@/components/business/EnergyBenchmark";
 interface DiagnosticFormProps {
     onSubmit: (data: DiagnosticInput) => void;
     isLoading?: boolean;
+    initialData?: Partial<DiagnosticInput> & {
+        dpeData?: DPEEntry;
+    };
 }
 
 // Données démo pour "Copro Type Angers"
@@ -35,9 +38,29 @@ const DEMO_DATA = {
 
 const DPE_OPTIONS: DPELetter[] = ["A", "B", "C", "D", "E", "F", "G"];
 
-export function DiagnosticForm({ onSubmit, isLoading = false }: DiagnosticFormProps) {
+export function DiagnosticForm({ onSubmit, isLoading = false, initialData }: DiagnosticFormProps) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const formRef = useRef<HTMLFormElement>(null);
+
+    // Initialisation avec initialData
+    useEffect(() => {
+        if (initialData && formRef.current) {
+            const form = formRef.current;
+            if (initialData.address) (form.elements.namedItem("address") as HTMLInputElement).value = initialData.address;
+            if (initialData.postalCode) {
+                (form.elements.namedItem("postalCode") as HTMLInputElement).value = initialData.postalCode;
+                checkLocalZone(initialData.postalCode);
+            }
+            if (initialData.city) (form.elements.namedItem("city") as HTMLInputElement).value = initialData.city;
+            if (initialData.currentDPE) (form.elements.namedItem("currentDPE") as HTMLSelectElement).value = initialData.currentDPE;
+            if (initialData.targetDPE) (form.elements.namedItem("targetDPE") as HTMLSelectElement).value = initialData.targetDPE;
+
+            // DPE Data
+            if (initialData.dpeData) {
+                setLocalDpeData(initialData.dpeData);
+            }
+        }
+    }, [initialData]);
 
     // State pour la gestion des zones locales (49/44)
     const [localZone, setLocalZone] = useState<string | null>(null);
