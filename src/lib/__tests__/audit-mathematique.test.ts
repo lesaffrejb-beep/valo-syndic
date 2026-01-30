@@ -49,8 +49,8 @@ interface AuditResult {
     testCase: string;
     test: string;
     passed: boolean;
-    expected: string | number;
-    actual: string | number;
+    expected: string | number | boolean;
+    actual: string | number | boolean;
     severity: "CRITICAL" | "WARNING" | "INFO";
 }
 
@@ -60,8 +60,8 @@ function auditAssert(
     testCase: string,
     test: string,
     condition: boolean,
-    expected: string | number,
-    actual: string | number,
+    expected: string | number | boolean,
+    actual: string | number | boolean,
     severity: "CRITICAL" | "WARNING" | "INFO" = "CRITICAL"
 ): void {
     auditResults.push({
@@ -133,14 +133,14 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         const doFees = input.estimatedCostHT * PROJECT_FEES.doRate; // 3,600€
         const contingencyFees = input.estimatedCostHT * PROJECT_FEES.contingencyRate; // 9,000€
 
-        auditAssert("Cas#1", "Frais syndic (3%)", 
-            result.financing.syndicFees === Math.round(syndicFees), 
+        auditAssert("Cas#1", "Frais syndic (3%)",
+            result.financing.syndicFees === Math.round(syndicFees),
             Math.round(syndicFees), result.financing.syndicFees);
-        auditAssert("Cas#1", "Frais DO (2%)", 
-            result.financing.doFees === Math.round(doFees), 
+        auditAssert("Cas#1", "Frais DO (2%)",
+            result.financing.doFees === Math.round(doFees),
             Math.round(doFees), result.financing.doFees);
-        auditAssert("Cas#1", "Frais aléas (5%)", 
-            result.financing.contingencyFees === Math.round(contingencyFees), 
+        auditAssert("Cas#1", "Frais aléas (5%)",
+            result.financing.contingencyFees === Math.round(contingencyFees),
             Math.round(contingencyFees), result.financing.contingencyFees);
     });
 
@@ -159,8 +159,8 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         const amoAidCalculated = eligibleBaseAMO * AMO_PARAMS.aidRate; // 2,400€
         const amoAid = Math.max(amoAidCalculated, AMO_PARAMS.minTotal); // 3,000€ (plancher!)
 
-        auditAssert("Cas#1", "Aide AMO avec plancher 3000€", 
-            result.financing.amoAmount === Math.round(amoAid), 
+        auditAssert("Cas#1", "Aide AMO avec plancher 3000€",
+            result.financing.amoAmount === Math.round(amoAid),
             Math.round(amoAid), result.financing.amoAmount);
     });
 
@@ -168,8 +168,8 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         // F→C = 3 sauts = 55%
         const expectedGain = estimateEnergyGain("F", "C"); // = 0.55
 
-        auditAssert("Cas#1", "Gain énergétique F→C = 55%", 
-            result.financing.energyGainPercent === expectedGain, 
+        auditAssert("Cas#1", "Gain énergétique F→C = 55%",
+            result.financing.energyGainPercent === expectedGain,
             expectedGain, result.financing.energyGainPercent);
     });
 
@@ -177,10 +177,10 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         // Gain 55% > 50% → taux performance 45% + bonus passoire 10% = 55%
         const expectedMprRate = 0.55;
 
-        auditApprox("Cas#1", "Taux MPR total (45% + 10%)", 
+        auditApprox("Cas#1", "Taux MPR total (45% + 10%)",
             result.financing.mprRate, expectedMprRate, 0.001);
-        auditAssert("Cas#1", "Bonus passoire appliqué (10%)", 
-            result.financing.exitPassoireBonus === 0.10, 
+        auditAssert("Cas#1", "Bonus passoire appliqué (10%)",
+            result.financing.exitPassoireBonus === 0.10,
             0.10, result.financing.exitPassoireBonus);
     });
 
@@ -194,8 +194,8 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         // MPR = 198k × 55% = 108,900€
         const expectedMPR = eligibleBaseMPR * 0.55;
 
-        auditAssert("Cas#1", "Montant MPR calculé", 
-            result.financing.mprAmount === Math.round(expectedMPR), 
+        auditAssert("Cas#1", "Montant MPR calculé",
+            result.financing.mprAmount === Math.round(expectedMPR),
             Math.round(expectedMPR), result.financing.mprAmount);
     });
 
@@ -220,14 +220,14 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         const expectedEcoPTZ = Math.min(remainingBeforePTZ, ecoPtzCeiling);
 
         // Tolérance 5€ pour les arrondis intermédiaires
-        auditApprox("Cas#1", "Montant Éco-PTZ", 
+        auditApprox("Cas#1", "Montant Éco-PTZ",
             result.financing.ecoPtzAmount, expectedEcoPTZ, 5);
     });
 
     it("calcule correctement le reste à charge final", () => {
         // Reste = 97,654 - 97,654 = 0€ (tout couvert!)
-        auditAssert("Cas#1", "Reste à charge final", 
-            result.financing.remainingCost === 0, 
+        auditAssert("Cas#1", "Reste à charge final",
+            result.financing.remainingCost === 0,
             0, result.financing.remainingCost);
     });
 
@@ -236,8 +236,8 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         // Capital = ecoPtzAmount calculé précédemment (~97,054€ avec plancher AMO)
         const durationMonths = ECO_PTZ_COPRO.maxDurationYears * 12;
         const expectedMonthly = result.financing.ecoPtzAmount / durationMonths;
-        
-        auditApprox("Cas#1", "Mensualité Éco-PTZ", 
+
+        auditApprox("Cas#1", "Mensualité Éco-PTZ",
             result.financing.monthlyPayment, expectedMonthly, 1);
     });
 
@@ -252,19 +252,19 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         const projectedValue = totalSurface * targetPricePerSqm;
         const greenValueGain = projectedValue - currentValue;
 
-        auditApprox("Cas#1", "Valeur actuelle", 
+        auditApprox("Cas#1", "Valeur actuelle",
             result.valuation.currentValue, currentValue, 100);
-        auditApprox("Cas#1", "Valeur projetée", 
+        auditApprox("Cas#1", "Valeur projetée",
             result.valuation.projectedValue, projectedValue, 100);
-        auditApprox("Cas#1", "Gain Valeur Verte", 
+        auditApprox("Cas#1", "Gain Valeur Verte",
             result.valuation.greenValueGain, greenValueGain, 100);
     });
 
     it("calcule correctement le ROI net", () => {
         // Gain Valeur Verte ≈ 211,200€ - Reste à charge 0€ = +211,200€
         const isPositiveROI = result.valuation.netROI > 0;
-        auditAssert("Cas#1", "ROI net positif", 
-            isPositiveROI, 
+        auditAssert("Cas#1", "ROI net positif",
+            isPositiveROI,
             "positif", result.valuation.netROI);
     });
 });
@@ -305,7 +305,7 @@ describe("AUDIT MATHEMATIQUE - Cas #2: Grande copropriété G → A", () => {
         const residentialLots = input.numberOfUnits - (input.commercialLots || 0);
         // Plafond MPR = 42 × 25k€ = 1,050,000€
         const mprCeiling = residentialLots * MPR_COPRO.ceilingPerUnit;
-        
+
         // Travaux + frais = 1,200k × 1.10 = 1,320,000€
         const subtotalWorksFeesHT = input.estimatedCostHT * 1.10;
         // Assiette = min(1,320k, 1,050k) = 1,050,000€
@@ -313,33 +313,33 @@ describe("AUDIT MATHEMATIQUE - Cas #2: Grande copropriété G → A", () => {
         // MPR = 1,050k × 55% = 577,500€
         const expectedMPR = eligibleBaseMPR * 0.55;
 
-        auditAssert("Cas#2", "MPR avec exclusion lots commerciaux", 
-            result.financing.mprAmount === Math.round(expectedMPR), 
+        auditAssert("Cas#2", "MPR avec exclusion lots commerciaux",
+            result.financing.mprAmount === Math.round(expectedMPR),
             Math.round(expectedMPR), result.financing.mprAmount, "CRITICAL");
     });
 
     it("calcule correctement le gain énergétique G→A", () => {
         // G→A = 5 sauts = 55% (max)
         const expectedGain = estimateEnergyGain("G", "A");
-        auditAssert("Cas#2", "Gain énergétique G→A = 55%", 
-            result.financing.energyGainPercent === expectedGain, 
+        auditAssert("Cas#2", "Gain énergétique G→A = 55%",
+            result.financing.energyGainPercent === expectedGain,
             expectedGain, result.financing.energyGainPercent);
     });
 
     it("applique le taux MPR maximum (performance + passoire)", () => {
-        auditApprox("Cas#2", "Taux MPR max 55%", 
+        auditApprox("Cas#2", "Taux MPR max 55%",
             result.financing.mprRate, 0.55, 0.001);
     });
 
     it("intègre correctement les aides externes (CEE + locales)", () => {
-        const expectedTotalAids = result.financing.mprAmount + result.financing.amoAmount 
+        const expectedTotalAids = result.financing.mprAmount + result.financing.amoAmount
             + input.localAidAmount + input.ceeBonus;
-        
-        auditAssert("Cas#2", "Aides locales présentes", 
-            result.financing.localAidAmount === input.localAidAmount, 
+
+        auditAssert("Cas#2", "Aides locales présentes",
+            result.financing.localAidAmount === input.localAidAmount,
             input.localAidAmount, result.financing.localAidAmount);
-        auditAssert("Cas#2", "Primes CEE présentes", 
-            result.financing.ceeAmount === input.ceeBonus, 
+        auditAssert("Cas#2", "Primes CEE présentes",
+            result.financing.ceeAmount === input.ceeBonus,
             input.ceeBonus, result.financing.ceeAmount);
     });
 });
@@ -361,6 +361,9 @@ describe("AUDIT MATHEMATIQUE - Cas #3: Projet non éligible MPR", () => {
         averagePricePerSqm: 3400,
         averageUnitSurface: 58,
         localAidAmount: 5000,
+        alurFund: 0,
+        ceeBonus: 0,
+        investorRatio: 0,
     };
 
     const result = generateDiagnostic(input);
@@ -373,27 +376,27 @@ describe("AUDIT MATHEMATIQUE - Cas #3: Projet non éligible MPR", () => {
     it("calcule correctement le faible gain énergétique", () => {
         // C→B = 1 saut = 15%
         const expectedGain = estimateEnergyGain("C", "B"); // = 0.15
-        auditAssert("Cas#3", "Gain C→B = 15%", 
-            result.financing.energyGainPercent === expectedGain, 
+        auditAssert("Cas#3", "Gain C→B = 15%",
+            result.financing.energyGainPercent === expectedGain,
             expectedGain, result.financing.energyGainPercent);
     });
 
     it("déclare le projet non éligible MPR (gain < 35%)", () => {
         // Gain 15% < 35% minimum → MPR = 0
         const isEligible = result.financing.energyGainPercent >= MPR_COPRO.minEnergyGain;
-        auditAssert("Cas#3", "Projet non éligible (15% < 35%)", 
+        auditAssert("Cas#3", "Projet non éligible (15% < 35%)",
             !isEligible, false, isEligible);
     });
 
     it("attribue MPR = 0 pour projet non éligible", () => {
-        auditAssert("Cas#3", "MPR = 0€ si non éligible", 
-            result.financing.mprAmount === 0, 
+        auditAssert("Cas#3", "MPR = 0€ si non éligible",
+            result.financing.mprAmount === 0,
             0, result.financing.mprAmount, "CRITICAL");
     });
 
     it("n'applique pas de bonus passoire (C n'est pas une passoire)", () => {
-        auditAssert("Cas#3", "Pas de bonus passoire pour C", 
-            result.financing.exitPassoireBonus === 0, 
+        auditAssert("Cas#3", "Pas de bonus passoire pour C",
+            result.financing.exitPassoireBonus === 0,
             0, result.financing.exitPassoireBonus);
     });
 });
@@ -417,6 +420,7 @@ describe("AUDIT MATHEMATIQUE - Cas #4: Test de stress plafonnements", () => {
         localAidAmount: 500_000,
         alurFund: 200_000,
         ceeBonus: 100_000,
+        investorRatio: 0,
     };
 
     const result = generateDiagnostic(input);
@@ -429,35 +433,35 @@ describe("AUDIT MATHEMATIQUE - Cas #4: Test de stress plafonnements", () => {
     it("respecte le plafond MPR par lot (25k€)", () => {
         // MPR max = 100 lots × 25k€ × 55% = 1,375,000€
         const maxMPR = input.numberOfUnits * MPR_COPRO.ceilingPerUnit * 0.55;
-        auditAssert("Cas#4", "MPR respecte plafond", 
-            result.financing.mprAmount <= maxMPR + 1, 
+        auditAssert("Cas#4", "MPR respecte plafond",
+            result.financing.mprAmount <= maxMPR + 1,
             `≤ ${maxMPR}`, result.financing.mprAmount, "CRITICAL");
     });
 
     it("respecte le plafond Éco-PTZ par lot (50k€)", () => {
         // Éco-PTZ max = 100 lots × 50k€ = 5,000,000€
         const maxEcoPTZ = input.numberOfUnits * ECO_PTZ_COPRO.ceilingPerUnit;
-        auditAssert("Cas#4", "Éco-PTZ respecte plafond", 
-            result.financing.ecoPtzAmount <= maxEcoPTZ, 
+        auditAssert("Cas#4", "Éco-PTZ respecte plafond",
+            result.financing.ecoPtzAmount <= maxEcoPTZ,
             `≤ ${maxEcoPTZ}`, result.financing.ecoPtzAmount, "CRITICAL");
     });
 
     it("garde le reste à charge toujours positif ou nul", () => {
-        auditAssert("Cas#4", "Reste à charge global ≥ 0", 
-            result.financing.remainingCost >= 0, 
+        auditAssert("Cas#4", "Reste à charge global ≥ 0",
+            result.financing.remainingCost >= 0,
             "≥ 0", result.financing.remainingCost, "CRITICAL");
-        auditAssert("Cas#4", "Reste à charge par lot ≥ 0", 
-            result.financing.remainingCostPerUnit >= 0, 
+        auditAssert("Cas#4", "Reste à charge par lot ≥ 0",
+            result.financing.remainingCostPerUnit >= 0,
             "≥ 0", result.financing.remainingCostPerUnit, "CRITICAL");
     });
 
     it("maintient la cohérence des totaux HT", () => {
         // totalCostHT = worksCostHT + syndicFees + doFees + contingencyFees + AMO
         const amoTotal = input.numberOfUnits * AMO_PARAMS.costPerLot;
-        const expectedTotalHT = result.financing.worksCostHT + result.financing.syndicFees 
+        const expectedTotalHT = result.financing.worksCostHT + result.financing.syndicFees
             + result.financing.doFees + result.financing.contingencyFees + amoTotal;
-        
-        auditApprox("Cas#4", "Cohérence total HT", 
+
+        auditApprox("Cas#4", "Cohérence total HT",
             result.financing.totalCostHT, expectedTotalHT, 10, "CRITICAL");
     });
 
@@ -465,10 +469,10 @@ describe("AUDIT MATHEMATIQUE - Cas #4: Test de stress plafonnements", () => {
         // costPerUnit est TTC donc > totalCostHT / nbLots
         const minCostPerUnit = result.financing.totalCostHT / input.numberOfUnits * 1.05;
         const maxCostPerUnit = result.financing.totalCostHT / input.numberOfUnits * 1.06;
-        
-        auditAssert("Cas#4", "Coût par lot TTC cohérent", 
+
+        auditAssert("Cas#4", "Coût par lot TTC cohérent",
             result.financing.costPerUnit >= minCostPerUnit && result.financing.costPerUnit <= maxCostPerUnit,
-            `${formatCurrency(minCostPerUnit)}-${formatCurrency(maxCostPerUnit)}`, 
+            `${formatCurrency(minCostPerUnit)}-${formatCurrency(maxCostPerUnit)}`,
             formatCurrency(result.financing.costPerUnit), "WARNING");
     });
 });
@@ -482,46 +486,46 @@ describe("AUDIT MATHEMATIQUE - Cas #5: Statut de conformité DPE", () => {
 
     it("vérifie que DPE G est déjà INTERDIT en 2026", () => {
         const compliance = calculateComplianceStatus("G", referenceDate);
-        
-        auditAssert("Cas#5", "DPE G isProhibited = true", 
+
+        auditAssert("Cas#5", "DPE G isProhibited = true",
             compliance.isProhibited === true, true, compliance.isProhibited, "CRITICAL");
-        auditAssert("Cas#5", "DPE G urgencyLevel = critical", 
+        auditAssert("Cas#5", "DPE G urgencyLevel = critical",
             compliance.urgencyLevel === "critical", "critical", compliance.urgencyLevel, "CRITICAL");
-        auditAssert("Cas#5", "DPE G daysUntilProhibition = 0", 
+        auditAssert("Cas#5", "DPE G daysUntilProhibition = 0",
             compliance.daysUntilProhibition === 0, 0, compliance.daysUntilProhibition!, "CRITICAL");
-        auditAssert("Cas#5", "DPE G label = INTERDIT", 
+        auditAssert("Cas#5", "DPE G label = INTERDIT",
             compliance.statusLabel === "INTERDIT", "INTERDIT", compliance.statusLabel, "CRITICAL");
     });
 
     it("vérifie que DPE F est urgent mais pas encore interdit", () => {
         const compliance = calculateComplianceStatus("F", referenceDate);
-        
-        auditAssert("Cas#5", "DPE F isProhibited = false (jan 2026)", 
+
+        auditAssert("Cas#5", "DPE F isProhibited = false (jan 2026)",
             compliance.isProhibited === false, false, compliance.isProhibited, "CRITICAL");
-        auditAssert("Cas#5", "DPE F urgencyLevel = high", 
+        auditAssert("Cas#5", "DPE F urgencyLevel = high",
             compliance.urgencyLevel === "high", "high", compliance.urgencyLevel, "CRITICAL");
         // F interdit en 2028, donc ~2 ans = ~730 jours
-        auditAssert("Cas#5", "DPE F daysUntilProhibition ≈ 730", 
+        auditAssert("Cas#5", "DPE F daysUntilProhibition ≈ 730",
             compliance.daysUntilProhibition! > 700 && compliance.daysUntilProhibition! < 800,
             "700-800", compliance.daysUntilProhibition!, "WARNING");
     });
 
     it("vérifie que DPE E est en alerte moyenne", () => {
         const compliance = calculateComplianceStatus("E", referenceDate);
-        
-        auditAssert("Cas#5", "DPE E isProhibited = false", 
+
+        auditAssert("Cas#5", "DPE E isProhibited = false",
             compliance.isProhibited === false, false, compliance.isProhibited, "CRITICAL");
         // E interdit en 2034, donc > 2 ans → medium
-        auditAssert("Cas#5", "DPE E urgencyLevel = medium", 
+        auditAssert("Cas#5", "DPE E urgencyLevel = medium",
             compliance.urgencyLevel === "medium", "medium", compliance.urgencyLevel, "WARNING");
     });
 
     it("vérifie que DPE D/C/B/A sont conformes", () => {
         ["D", "C", "B", "A"].forEach((dpe) => {
             const compliance = calculateComplianceStatus(dpe as DPELetter, referenceDate);
-            auditAssert(`Cas#5`, `DPE ${dpe} isProhibited = false`, 
+            auditAssert(`Cas#5`, `DPE ${dpe} isProhibited = false`,
                 compliance.isProhibited === false, false, compliance.isProhibited, "CRITICAL");
-            auditAssert(`Cas#5`, `DPE ${dpe} urgencyLevel = low`, 
+            auditAssert(`Cas#5`, `DPE ${dpe} urgencyLevel = low`,
                 compliance.urgencyLevel === "low", "low", compliance.urgencyLevel, "WARNING");
         });
     });
@@ -534,22 +538,22 @@ describe("AUDIT MATHEMATIQUE - Cas #5: Statut de conformité DPE", () => {
 describe("AUDIT MATHEMATIQUE - Cas #6: Détection de bugs potentiels", () => {
     it("vérifie que le calcul MPR n'excède pas 100%", () => {
         const result = simulateFinancing(100_000, 5, "G", "A");
-        auditAssert("Bug#1", "MPR rate ≤ 100%", 
+        auditAssert("Bug#1", "MPR rate ≤ 100%",
             result.mprRate <= 1.0, "≤ 1.0", result.mprRate, "CRITICAL");
     });
 
     it("vérifie que le coût par lot TTC > coût par lot HT", () => {
         const result = simulateFinancing(300_000, 20, "F", "C");
         const costPerUnitHT = result.totalCostHT / 20;
-        auditAssert("Bug#2", "CostPerUnit TTC > CostPerUnit HT", 
-            result.costPerUnit > costPerUnitHT, 
+        auditAssert("Bug#2", "CostPerUnit TTC > CostPerUnit HT",
+            result.costPerUnit > costPerUnitHT,
             `> ${costPerUnitHT}`, result.costPerUnit, "CRITICAL");
     });
 
     it("vérifie que les années de construction correspondent aux DPE", () => {
         // Vérification des estimations DPE par année
         const { estimateDPEByYear } = require("../calculator");
-        
+
         auditAssert("Bug#3a", "Avant 1948 = G", estimateDPEByYear(1900) === "G", "G", estimateDPEByYear(1900));
         auditAssert("Bug#3b", "1960 = F", estimateDPEByYear(1960) === "F", "F", estimateDPEByYear(1960));
         auditAssert("Bug#3c", "1985 = D", estimateDPEByYear(1985) === "D", "D", estimateDPEByYear(1985));
@@ -559,22 +563,22 @@ describe("AUDIT MATHEMATIQUE - Cas #6: Détection de bugs potentiels", () => {
 
     it("vérifie la cohérence du coût de l'inaction", () => {
         const result = calculateInactionCost(300_000, 20, "F", 3500, 65);
-        
+
         // Le coût projeté doit être supérieur au coût actuel (inflation)
-        auditAssert("Bug#4a", "Coût 2029 > Coût 2026", 
-            result.projectedCost3Years > result.currentCost, 
+        auditAssert("Bug#4a", "Coût 2029 > Coût 2026",
+            result.projectedCost3Years > result.currentCost,
             "> current", result.projectedCost3Years, "CRITICAL");
-        
+
         // DPE F doit avoir une décote
-        auditAssert("Bug#4b", "Décote pour DPE F", 
-            result.valueDepreciation > 0, 
+        auditAssert("Bug#4b", "Décote pour DPE F",
+            result.valueDepreciation > 0,
             "> 0", result.valueDepreciation, "WARNING");
     });
 
     it("vérifie que DPE C n'a pas de décote", () => {
         const result = calculateInactionCost(300_000, 20, "C", 3500, 65);
-        auditAssert("Bug#5", "Pas de décote pour DPE C", 
-            result.valueDepreciation === 0, 
+        auditAssert("Bug#5", "Pas de décote pour DPE C",
+            result.valueDepreciation === 0,
             0, result.valueDepreciation, "WARNING");
     });
 });

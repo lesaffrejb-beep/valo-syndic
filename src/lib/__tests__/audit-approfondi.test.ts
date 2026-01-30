@@ -44,7 +44,7 @@ import { calculateSubsidies, type SimulationInputs } from "../subsidy-calculator
 // ============================================================================
 
 describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
-    
+
     it("détecte la divergence des plafonds AMO entre calculator.ts et subsidy-calculator.ts", () => {
         /**
          * 🐛 BUG POTENTIEL DÉTECTÉ:
@@ -53,8 +53,8 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
          *   amoCeilingGlobal = nbLots * AMO_PARAMS.ceilingPerLot (600€)
          * 
          * Dans subsidy-calculator.ts (ligne ~181):
-         *   ceilingSmallCopro: 1_000€ (≤20 lots)
-         *   ceilingLargeCopro: 600€ (>20 lots)
+         *   ceilingPerLotSmall: 1_000€ (≤20 lots)
+         *   ceilingPerLotLarge: 600€ (>20 lots)
          * 
          * Le calculator.ts utilise TOUJOURS 600€/lot sans distinction de taille.
          * Ceci sous-estime l'aide AMO pour les petites copros (≤20 lots).
@@ -62,29 +62,29 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
          * Impact: Pour une copro de 10 lots, l'aide AMO est calculée à 3,000€
          *         au lieu de 5,000€ (perte de 2,000€ d'aide affichée).
          */
-        
+
         const calculator = require("../calculator");
         const subsidy = require("../subsidy-calculator");
-        
+
         // Simuler une petite copro de 10 lots
         const nbLots = 10;
-        
+
         // Calculator.ts utilise ceilingPerLot = 600€
-        const amoCeilingCalculator = nbLots * AMO_PARAMS.ceilingPerLot; // 6,000€
-        
+        const amoCeilingCalculator = nbLots * AMO_PARAMS.ceilingPerLotLarge; // 6,000€
+
         // Subsidy-calculator.ts utiliserait 1,000€/lot pour ≤20 lots
         const AMO_PARAMS_SUBSIDY = {
-            ceilingSmallCopro: 1_000,
-            ceilingLargeCopro: 600,
+            ceilingPerLotSmall: 1_000,
+            ceilingPerLotLarge: 600,
         };
-        const amoCeilingSubsidy = nbLots <= 20 
-            ? nbLots * AMO_PARAMS_SUBSIDY.ceilingSmallCopro  // 10,000€
-            : nbLots * AMO_PARAMS_SUBSIDY.ceilingLargeCopro; // 6,000€
-        
+        const amoCeilingSubsidy = nbLots <= 20
+            ? nbLots * AMO_PARAMS_SUBSIDY.ceilingPerLotSmall  // 10,000€
+            : nbLots * AMO_PARAMS_SUBSIDY.ceilingPerLotLarge; // 6,000€
+
         console.log("\n⚠️  DIVERGENCE AMO DÉTECTÉE:");
         console.log(`   Calculator.ts: ${amoCeilingCalculator.toLocaleString()}€ (600€/lot)`);
         console.log(`   Subsidy.ts: ${amoCeilingSubsidy.toLocaleString()}€ (1000€/lot pour ≤20)`);
-        
+
         // C'est une incohérence mais pas une erreur de calcul en soit
         // Le calculator.ts est plus conservateur (sous-estimation)
         expect(amoCeilingCalculator).not.toEqual(amoCeilingSubsidy);
@@ -93,11 +93,11 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
     it("vérifie que MPR_COPRO.exitPassoireBonus est utilisé correctement", () => {
         // Le bonus devrait être de 10% = 0.10
         expect(MPR_COPRO.exitPassoireBonus).toBe(0.10);
-        
+
         // Test: F→D doit avoir le bonus, F→E ne doit PAS l'avoir
         const resultFD = simulateFinancing(100_000, 10, "F", "D");
         const resultFE = simulateFinancing(100_000, 10, "F", "E");
-        
+
         // F→D: D est ≥ D donc bonus appliqué
         expect(resultFD.exitPassoireBonus).toBe(0.10);
         // F→E: E < D donc pas de bonus (reste une passoire)
@@ -110,15 +110,15 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
          * des incohérences de 1€ entre remainingCost et remainingCostPerUnit × nbLots
          */
         const result = simulateFinancing(333_333, 7, "G", "C");
-        
+
         const reconstructed = result.remainingCostPerUnit * 7;
         const diff = Math.abs(result.remainingCost - reconstructed);
-        
+
         console.log(`\n📊 Vérification arrondis:`);
         console.log(`   remainingCost: ${result.remainingCost}`);
         console.log(`   remainingCostPerUnit × 7: ${reconstructed}`);
         console.log(`   Écart: ${diff}€`);
-        
+
         // L'écart devrait être ≤ 7€ (arrondi par lot)
         expect(diff).toBeLessThanOrEqual(7);
     });
@@ -129,10 +129,10 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
 // ============================================================================
 
 describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
-    
+
     it("gère le cas minimal: 2 lots (limite inférieure)", () => {
         const result = simulateFinancing(10_000, 2, "F", "C");
-        
+
         // Avec seulement 2 lots, le plafond MPR = 50k€
         // Mais le coût est très faible donc MPR devrait être proportionnelle
         expect(result.mprAmount).toBeGreaterThanOrEqual(0);
@@ -141,11 +141,11 @@ describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
 
     it("gère le cas maximal: 500 lots (limite schéma)", () => {
         const result = simulateFinancing(50_000_000, 500, "G", "A");
-        
+
         // MPR max = 500 × 25k€ × 55% = 6,875,000€
         const maxMPR = 500 * 25_000 * 0.55;
         expect(result.mprAmount).toBeLessThanOrEqual(maxMPR);
-        
+
         // Éco-PTZ max = 500 × 50k€ = 25,000,000€
         const maxEcoPTZ = 500 * 50_000;
         expect(result.ecoPtzAmount).toBeLessThanOrEqual(maxEcoPTZ);
@@ -154,7 +154,7 @@ describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
     it("gère les montants très faibles de travaux", () => {
         // 1,000€ HT de travaux (minimum schéma)
         const result = simulateFinancing(1_000, 5, "F", "C");
-        
+
         // Les frais doivent être calculés mais peuvent être ridicules
         expect(result.syndicFees).toBe(30); // 3% de 1000
         expect(result.doFees).toBe(20);     // 2% de 1000
@@ -164,7 +164,7 @@ describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
     it("gère 100% de lots commerciaux (cas extrême)", () => {
         // Si tous les lots sont commerciaux, MPR = 0
         const result = simulateFinancing(300_000, 10, "G", "C", 10); // 10 commerciaux sur 10
-        
+
         // MPR devrait être 0 car aucun lot résidentiel
         expect(result.mprAmount).toBe(0);
     });
@@ -172,10 +172,10 @@ describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
     it("gère le changement de DPE identique (pas d'amélioration)", () => {
         // C→C = 0% gain
         const result = simulateFinancing(100_000, 10, "C", "C");
-        
+
         // Gain = 0
         expect(result.energyGainPercent).toBe(0);
-        
+
         // Non éligible MPR (0% < 35%)
         expect(result.mprAmount).toBe(0);
         expect(result.mprRate).toBe(0);
@@ -193,7 +193,7 @@ describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
             50_000,   // Fonds ALUR énorme
             50_000    // CEE bonus
         );
-        
+
         // Le reste à charge doit être 0 (pas négatif)
         expect(result.remainingCost).toBe(0);
         expect(result.remainingCostPerUnit).toBe(0);
@@ -205,7 +205,7 @@ describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
 // ============================================================================
 
 describe("🔍 AUDIT APPROFONDI - Précision numérique", () => {
-    
+
     it("vérifie que les pourcentages ne dépassent pas les limites", () => {
         const testCases: [DPELetter, DPELetter, number][] = [
             ["G", "A", 0.55], // Max théorique
@@ -213,7 +213,7 @@ describe("🔍 AUDIT APPROFONDI - Précision numérique", () => {
             ["F", "E", 0.15],
             ["E", "D", 0.15],
         ];
-        
+
         testCases.forEach(([current, target, expected]) => {
             const gain = estimateEnergyGain(current, target);
             expect(gain).toBeGreaterThanOrEqual(0);
@@ -223,13 +223,13 @@ describe("🔍 AUDIT APPROFONDI - Précision numérique", () => {
 
     it("vérifie que la TVA est appliquée correctement (5.5%)", () => {
         const result = simulateFinancing(100_000, 10, "F", "C");
-        
+
         // Coût TTC = Coût HT × 1.055
         const expectedTTC = result.totalCostHT * 1.055;
-        
+
         // Le costPerUnit est TTC, donc costPerUnit × 10 = Total TTC
         const reconstructedTTC = result.costPerUnit * 10;
-        
+
         // Vérifier que la différence est uniquement due à l'arrondi
         const diff = Math.abs(expectedTTC - reconstructedTTC);
         expect(diff).toBeLessThanOrEqual(10); // Tolérance 10€
@@ -238,16 +238,16 @@ describe("🔍 AUDIT APPROFONDI - Précision numérique", () => {
     it("vérifie que la mensualité Éco-PTZ respecte la formule 0%", () => {
         // À 0%, la mensualité = Capital / (20 ans × 12 mois)
         const result = simulateFinancing(240_000, 10, "F", "C");
-        
+
         if (result.ecoPtzAmount > 0) {
             const expectedMonthly = result.ecoPtzAmount / (20 * 12);
-            
+
             console.log(`\n📊 Mensualité Éco-PTZ:`);
             console.log(`   Capital: ${result.ecoPtzAmount}€`);
             console.log(`   Durée: 20 ans (240 mois)`);
             console.log(`   Théorique (0%): ${expectedMonthly.toFixed(2)}€/mois`);
             console.log(`   Calculée: ${result.monthlyPayment}€/mois`);
-            
+
             // Les deux doivent être identiques (à l'arrondi près)
             expect(result.monthlyPayment).toBeCloseTo(expectedMonthly, 0);
         }
@@ -259,7 +259,7 @@ describe("🔍 AUDIT APPROFONDI - Précision numérique", () => {
 // ============================================================================
 
 describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
-    
+
     it("vérifie les impacts DPE sur le prix au m²", () => {
         const inputBase: DiagnosticInput = {
             currentDPE: "D",
@@ -268,12 +268,17 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             estimatedCostHT: 200_000,
             averagePricePerSqm: 3000,
             averageUnitSurface: 50,
+            commercialLots: 0,
+            localAidAmount: 0,
+            alurFund: 0,
+            ceeBonus: 0,
+            investorRatio: 0,
         };
-        
+
         // Test chaque classe DPE
         const dpeClasses: DPELetter[] = ["G", "F", "E", "D", "C", "B", "A"];
         const impacts = [-0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15];
-        
+
         dpeClasses.forEach((dpe, index) => {
             const input = { ...inputBase, currentDPE: dpe };
             const financing = simulateFinancing(
@@ -283,14 +288,14 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
                 input.targetDPE
             );
             const valuation = calculateValuation(input, financing);
-            
+
             // Vérifier que l'impact correspond
             const expectedPrice = 3000 * (1 + impacts[index]);
             const totalSurface = 10 * 50; // 500m²
             const expectedValue = totalSurface * expectedPrice;
-            
-            console.log(`DPE ${dpe}: impact ${impacts[index]*100}% → valeur ${valuation.currentValue.toLocaleString()}€`);
-            
+
+            console.log(`DPE ${dpe}: impact ${impacts[index] * 100}% → valeur ${valuation.currentValue.toLocaleString()}€`);
+
             // Tolérance de 100€
             expect(valuation.currentValue).toBeCloseTo(expectedValue, -2);
         });
@@ -304,8 +309,13 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             estimatedCostHT: 400_000,
             averagePricePerSqm: 3500,
             averageUnitSurface: 60, // Surface moyenne
+            commercialLots: 0,
+            localAidAmount: 0,
+            alurFund: 0,
+            ceeBonus: 0,
+            investorRatio: 0,
         };
-        
+
         const financing = simulateFinancing(
             input.estimatedCostHT,
             input.numberOfUnits,
@@ -313,16 +323,16 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             input.targetDPE
         );
         const valuation = calculateValuation(input, financing);
-        
+
         // ROI Net = Gain Valeur Verte - Reste à charge
         const expectedNetROI = valuation.greenValueGain - financing.remainingCost;
-        
+
         console.log(`\n📊 Vérification ROI Net:`);
         console.log(`   Gain Valeur Verte: ${valuation.greenValueGain.toLocaleString()}€`);
         console.log(`   Reste à charge: ${financing.remainingCost.toLocaleString()}€`);
         console.log(`   ROI Net attendu: ${expectedNetROI.toLocaleString()}€`);
         console.log(`   ROI Net calculé: ${valuation.netROI.toLocaleString()}€`);
-        
+
         expect(valuation.netROI).toBeCloseTo(expectedNetROI, 0);
     });
 });
@@ -332,37 +342,37 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
 // ============================================================================
 
 describe("🔍 AUDIT APPROFONDI - Coût de l'inaction", () => {
-    
+
     it("vérifie que l'inflation est composée (pas linéaire)", () => {
         const cost = 300_000;
         const result = calculateInactionCost(cost, 20, "F", 3500, 65);
-        
+
         // Inflation composée: 300k × (1.045)^3
         const inflationRate = TECHNICAL_PARAMS.constructionInflationRate;
         const expectedProjected = cost * Math.pow(1 + inflationRate, 3);
-        
+
         console.log(`\n📊 Inflation BTP sur 3 ans:`);
         console.log(`   Taux annuel: ${(inflationRate * 100).toFixed(1)}%`);
         console.log(`   Coût actuel: ${cost.toLocaleString()}€`);
         console.log(`   Coût 2029 attendu: ${expectedProjected.toLocaleString()}€`);
         console.log(`   Coût 2029 calculé: ${result.projectedCost3Years.toLocaleString()}€`);
-        
+
         expect(result.projectedCost3Years).toBeCloseTo(expectedProjected, 0);
-        
+
         // Vérifier que ce n'est PAS linéaire (3 × 4.5% = 13.5%)
         const linearProjection = cost * (1 + inflationRate * 3);
         console.log(`   Projection linéaire (incorrecte): ${linearProjection.toLocaleString()}€`);
-        
+
         // La projection composée doit être supérieure à la linéaire
         expect(result.projectedCost3Years).toBeGreaterThan(linearProjection);
     });
 
     it("vérifie que seuls DPE F et G ont une décote", () => {
         const dpeClasses: DPELetter[] = ["G", "F", "E", "D", "C", "B", "A"];
-        
+
         dpeClasses.forEach(dpe => {
             const result = calculateInactionCost(300_000, 20, dpe, 3500, 65);
-            
+
             if (dpe === "F" || dpe === "G") {
                 expect(result.valueDepreciation).toBeGreaterThan(0);
             } else {
@@ -377,7 +387,7 @@ describe("🔍 AUDIT APPROFONDI - Coût de l'inaction", () => {
 // ============================================================================
 
 describe("🔍 AUDIT APPROFONDI - Subsidy Calculator (profils de revenus)", () => {
-    
+
     it("vérifie que les profils Blue et Yellow ont les primes individuelles", () => {
         const inputs: SimulationInputs = {
             workAmountHT: 300_000,
@@ -390,9 +400,9 @@ describe("🔍 AUDIT APPROFONDI - Subsidy Calculator (profils de revenus)", () =
             ceePerLot: 0,
             localAidPerLot: 0,
         };
-        
+
         const result = calculateSubsidies(inputs);
-        
+
         // Blue: 3,000€ de prime individuelle
         expect(result.profiles.Blue.individualPremium).toBe(3000);
         // Yellow: 1,500€ de prime individuelle
@@ -412,14 +422,14 @@ describe("🔍 AUDIT APPROFONDI - Subsidy Calculator (profils de revenus)", () =
             initialDPE: "G",
             targetDPE: "A",
         };
-        
+
         const result = calculateSubsidies(inputs);
-        
+
         const blueRemaining = result.profiles.Blue.remainingCost;
         const yellowRemaining = result.profiles.Yellow.remainingCost;
         const purpleRemaining = result.profiles.Purple.remainingCost;
         const pinkRemaining = result.profiles.Pink.remainingCost;
-        
+
         // Blue doit avoir le reste à charge le plus faible
         expect(blueRemaining).toBeLessThanOrEqual(yellowRemaining);
         expect(yellowRemaining).toBeLessThanOrEqual(purpleRemaining);
@@ -436,20 +446,20 @@ describe("🔍 AUDIT APPROFONDI - Subsidy Calculator (profils de revenus)", () =
             targetDPE: "C",
             isFragile: false,
         };
-        
+
         const inputsFragile: SimulationInputs = {
             ...inputsNormal,
             isFragile: true,
         };
-        
+
         const resultNormal = calculateSubsidies(inputsNormal);
         const resultFragile = calculateSubsidies(inputsFragile);
-        
+
         // Le profil fragile doit avoir un taux MPR supérieur (+20%)
         expect(resultFragile.profiles.Blue.mprRate).toBeGreaterThan(
             resultNormal.profiles.Blue.mprRate
         );
-        
+
         // Le bonus fragile devrait être de 20%
         const expectedBonus = 0.20;
         expect(resultFragile.profiles.Blue.fragileBonusAmount).toBeGreaterThan(0);
@@ -461,7 +471,7 @@ describe("🔍 AUDIT APPROFONDI - Subsidy Calculator (profils de revenus)", () =
 // ============================================================================
 
 describe("🔍 AUDIT APPROFONDI - Bugs silencieux", () => {
-    
+
     it("vérifie qu'il n'y a pas de division par zéro cachée", () => {
         // Ces cas pourraient causer des divisions par zéro
         expect(() => simulateFinancing(100_000, 1, "F", "C")).not.toThrow();
@@ -485,7 +495,7 @@ describe("🔍 AUDIT APPROFONDI - Bugs silencieux", () => {
         const veryOld = estimateDPEByYear(1800);
         const veryNew = estimateDPEByYear(2030);
         const future = estimateDPEByYear(2050);
-        
+
         // Toutes doivent être des DPE valides
         expect(["G", "F", "E", "D", "C", "B", "A"]).toContain(veryOld);
         expect(["G", "F", "E", "D", "C", "B", "A"]).toContain(veryNew);
@@ -495,7 +505,7 @@ describe("🔍 AUDIT APPROFONDI - Bugs silencieux", () => {
     it("vérifie que les montants négatifs sont rejetés", () => {
         // Le schéma Zod devrait rejeter les valeurs négatives
         // Mais le calculator.ts a aussi des guards
-        
+
         expect(() => simulateFinancing(-1000, 10, "F", "C")).toThrow();
         expect(() => simulateFinancing(100_000, -5, "F", "C")).toThrow();
     });
@@ -506,19 +516,19 @@ describe("🔍 AUDIT APPROFONDI - Bugs silencieux", () => {
          * ou l'inverse, il y a une incohérence.
          */
         const result = simulateFinancing(300_000, 20, "F", "C");
-        
+
         /**
          * LOGIQUE CORRIGÉE:
          * - remainingCost = reste à charge CASH (après PTZ)
          * - monthlyPayment = mensualité du PTZ
          * Donc si ecoPtzAmount > 0, monthlyPayment > 0 même si remainingCost = 0
          */
-        
+
         // Si ecoPtzAmount = 0, monthlyPayment doit être 0
         if (result.ecoPtzAmount === 0) {
             expect(result.monthlyPayment).toBe(0);
         }
-        
+
         // Vérification cohérence: si ecoPtzAmount > 0, monthlyPayment doit être > 0
         if (result.ecoPtzAmount > 0) {
             expect(result.monthlyPayment).toBeGreaterThan(0);
