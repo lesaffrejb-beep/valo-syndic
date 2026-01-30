@@ -14,10 +14,11 @@ export function middleware(request: NextRequest) {
         'Content-Security-Policy',
         [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+            "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data:",
+            "worker-src 'self' blob: data: 'unsafe-eval' 'unsafe-inline'",
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
-            "font-src 'self'",
+            "font-src 'self' data:",
             "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",
             "frame-ancestors 'none'",
             "base-uri 'self'",
