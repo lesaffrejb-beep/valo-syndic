@@ -15,7 +15,7 @@ interface ComplianceTimelineProps {
     currentDPE: DPELetter;
 }
 
-export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
+export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTimelineProps & { className?: string }) {
     const ref = useRef<HTMLDivElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-50px" });
     const today = new Date();
@@ -43,7 +43,7 @@ export function ComplianceTimeline({ currentDPE }: ComplianceTimelineProps) {
     return (
         <motion.div
             ref={ref}
-            className="card-bento group"
+            className={`card-bento group ${className}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}

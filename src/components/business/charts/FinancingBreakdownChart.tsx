@@ -24,9 +24,13 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
             maximumFractionDigits: 0,
         }).format(value);
 
-    // Calculate percentages based on total cost
-    const totalCost = financing.totalCostHT;
+    // Calculate total actual financing needed (TTC)
+    const totalFinancedAmount = financing.mprAmount + financing.amoAmount + financing.ceeAmount + financing.localAidAmount + financing.ecoPtzAmount + financing.remainingCost;
+
+    // Percentages based on Total TTC (Real Project Cost)
+    const totalCost = totalFinancedAmount;
     const mprPercent = Math.round((financing.mprAmount / totalCost) * 100);
+    const amoPercent = Math.round((financing.amoAmount / totalCost) * 100);
     const ceePercent = financing.ceeAmount > 0
         ? Math.round((financing.ceeAmount / totalCost) * 100)
         : 0;
@@ -41,11 +45,19 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
         {
             id: "mpr",
             label: "MaPrimeRénov'",
-            sublabel: "Subvention",
+            sublabel: "Travaux",
             value: financing.mprAmount,
             percent: mprPercent,
             color: COLORS.mpr,
         },
+        ...(financing.amoAmount > 0 ? [{
+            id: "amo",
+            label: "MaPrimeRénov'",
+            sublabel: "Ingénierie (AMO)",
+            value: financing.amoAmount,
+            percent: amoPercent,
+            color: "#4ade80", // success-400 (lighter green)
+        }] : []),
         ...(financing.ceeAmount > 0 ? [{
             id: "cee",
             label: "Primes CEE",
@@ -72,16 +84,16 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
         },
         ...(financing.remainingCost > 0 ? [{
             id: "reste",
-            label: "Reste à charge",
-            sublabel: "Apport copropriété",
+            label: "Apport Personnel",
+            sublabel: "Reste à charge cash",
             value: financing.remainingCost,
             percent: remainingPercent,
             color: COLORS.reste,
         }] : []),
     ];
 
-    // Calculate total coverage (MPR + CEE + local + PTZ)
-    const totalCoverage = financing.mprAmount + financing.ceeAmount + financing.localAidAmount + financing.ecoPtzAmount;
+    // Calculate total coverage (Subsidies + Loan)
+    const totalCoverage = financing.mprAmount + financing.amoAmount + financing.ceeAmount + financing.localAidAmount + financing.ecoPtzAmount;
     const coveragePercent = Math.round((totalCoverage / totalCost) * 100);
 
     return (
@@ -102,8 +114,8 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
             {/* Explanation */}
             <div className="mb-6 p-3 bg-primary-900/10 border border-primary-500/20 rounded-lg">
                 <p className="text-xs text-primary-300">
-                    💡 <strong>Comment lire :</strong> Chaque barre représente le % du coût total couvert par
-                    cette source. La somme peut dépasser 100% car l&apos;Éco-PTZ est un prêt à rembourser.
+                    💡 <strong>Comment lire :</strong> Chaque barre représente le % du coût total TTC du projet.
+                    L&apos;Éco-PTZ et l&apos;Apport comblent le reste à charge après aides.
                 </p>
             </div>
 

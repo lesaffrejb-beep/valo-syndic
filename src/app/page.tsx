@@ -379,7 +379,7 @@ export default function HomePage() {
 
                                     {/* Header Card DPE */}
                                     <div className="card-bento p-8 md:p-10 gap-8">
-                                        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                                        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 flex-wrap gap-y-4">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-3">
                                                     <span className="px-3 py-1 bg-white/5 border border-white/10 text-xs font-semibold rounded-full uppercase tracking-wider text-muted">
@@ -405,17 +405,15 @@ export default function HomePage() {
                                     </div>
 
                                     {/* Benchmark & Chrono Grid */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                        <div className="h-full">
+                                    <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+                                        <div className="flex-1 h-full">
                                             {/* Benchmark Card */}
-                                            {/* Assuming MarketBenchmark or BenchmarkChart is the "Neighbors are D" component */}
-                                            {/* Actually BenchmarkChart seems more appropriate for "Voisins" */}
-                                            {/* If MarketBenchmark is better, swap here. */}
-                                            <BenchmarkChart currentDPE={result.input.currentDPE} />
+                                            <BenchmarkChart currentDPE={result.input.currentDPE} className="h-full" />
                                         </div>
-                                        <div className="h-full">
+                                        <div className="flex-1 h-full">
                                             <ComplianceTimeline
                                                 currentDPE={result.input.currentDPE}
+                                                className="h-full"
                                             />
                                         </div>
                                     </div>
@@ -447,7 +445,7 @@ export default function HomePage() {
                                     />
 
                                     {/* Inflation Context */}
-                                    <div className="max-w-3xl mx-auto opacity-80 hover:opacity-100 transition-opacity">
+                                    <div className="w-full opacity-80 hover:opacity-100 transition-opacity">
                                         <EnergyInflationChart currentCost={result.inactionCost.currentCost} />
                                     </div>
                                 </div>
@@ -500,35 +498,54 @@ export default function HomePage() {
                                         </div>
 
                                         {/* 3. KEY METRICS (Right) - Span 4 - Stacked Squares */}
-                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6 order-3 h-full">
-                                            {/* Taux Courture - Compact Square */}
-                                            <div className="card-obsidian bg-gradient-to-br from-surface to-surface-highlight flex-1 flex flex-col justify-center items-center text-center p-6 border-white/5">
-                                                <div className="text-3xl mb-2">🛡️</div>
-                                                <p className="text-xs font-bold text-muted uppercase tracking-widest mb-1">Taux Couverture</p>
-                                                <p className="text-5xl font-black text-main tracking-tighter">
-                                                    {Math.round((1 - (result.financing.remainingCost / result.financing.totalCostHT)) * 100)}%
-                                                </p>
-                                                <p className="text-[10px] text-subtle mt-2 uppercase tracking-wide">Prêt 0% inclus</p>
+                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col md:flex-row lg:flex-col gap-6 order-3 h-full">
+                                            {/* Taux Courture - Redesigned */}
+                                            <div className="card-obsidian bg-success-900/10 border-success-500/20 flex-1 flex flex-row items-center p-6 gap-5 relative overflow-hidden group hover:border-success-500/40 transition-all">
+                                                <div className="absolute inset-0 bg-success-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                                <div className="w-14 h-14 rounded-2xl bg-success-500/10 flex items-center justify-center flex-shrink-0 border border-success-500/20 text-3xl shadow-sm">
+                                                    🛡️
+                                                </div>
+
+                                                <div>
+                                                    <p className="text-4xl font-black text-white tracking-tighter leading-none mb-1">
+                                                        {Math.round((1 - (result.financing.remainingCost / result.financing.totalCostHT)) * 100)}%
+                                                    </p>
+                                                    <p className="text-sm font-bold text-success-300 leading-tight">Taux de couverture</p>
+                                                    <p className="text-[10px] text-success-400/60 uppercase tracking-wide mt-1">Prêt 0% inclus</p>
+                                                </div>
                                             </div>
 
-                                            {/* Bonus Hunter - Compact Square */}
-                                            <div className="card-obsidian bg-gradient-to-br from-primary-900/20 to-boundary/50 border-primary-500/10 flex-1 p-6 relative overflow-hidden flex flex-col justify-center">
+                                            {/* Bonus Hunter - Redesigned */}
+                                            <div className="card-obsidian bg-primary-900/10 border-primary-500/20 flex-1 p-6 relative overflow-hidden flex flex-col justify-center hover:border-primary-500/40 transition-all">
                                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 blur-[50px] rounded-full pointer-events-none" />
-                                                <h4 className="text-sm font-bold text-primary-300 mb-3 uppercase tracking-wider">Bonus Capturés</h4>
-                                                <ul className="space-y-2 text-xs font-medium">
+
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-xl border border-primary-500/20">
+                                                        🎁
+                                                    </div>
+                                                    <h4 className="text-sm font-bold text-primary-300 uppercase tracking-wider">
+                                                        Bonus Capturés
+                                                    </h4>
+                                                </div>
+
+                                                <ul className="space-y-3">
                                                     {(result.input.currentDPE === 'F' || result.input.currentDPE === 'G') && (
-                                                        <li className="flex items-center gap-2 text-main/90">
-                                                            <span className="text-primary-400">✓</span> Sortie de Passoire
+                                                        <li className="flex items-center gap-3 text-sm font-medium text-white/90">
+                                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-[10px] font-bold border border-emerald-500/30">✓</div>
+                                                            Sortie de Passoire
                                                         </li>
                                                     )}
                                                     {result.financing.energyGainPercent >= 50 && (
-                                                        <li className="flex items-center gap-2 text-main/90">
-                                                            <span className="text-primary-400">✓</span> Rénovation Globale
+                                                        <li className="flex items-center gap-3 text-sm font-medium text-white/90">
+                                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-[10px] font-bold border border-emerald-500/30">✓</div>
+                                                            Rénovation Globale
                                                         </li>
                                                     )}
                                                     {result.financing.ceeAmount > 0 && (
-                                                        <li className="flex items-center gap-2 text-main/90">
-                                                            <span className="text-primary-400">✓</span> Primes CEE
+                                                        <li className="flex items-center gap-3 text-sm font-medium text-white/90">
+                                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-[10px] font-bold border border-emerald-500/30">✓</div>
+                                                            Primes CEE
                                                         </li>
                                                     )}
                                                 </ul>
