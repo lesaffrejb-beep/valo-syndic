@@ -40,6 +40,7 @@ import { ViewModeToggle } from "@/components/ui/ViewModeToggle";
 // V3 Premium Components
 import { StreetViewHeader } from "@/components/business/StreetViewHeader";
 import { RisksCard } from "@/components/business/RisksCard";
+import { ClimateRiskCard } from "@/components/business/ClimateRiskCard";
 
 // God View
 import { MassAudit } from "@/components/business/MassAudit";
@@ -394,6 +395,11 @@ export default function HomePage() {
                                         <ComplianceTimeline currentDPE={result.input.currentDPE} />
                                     )}
                                 </div>
+
+                                {/* Climate Time Bomb - Full Width if coordinates available */}
+                                {result.input.coordinates && (
+                                    <ClimateRiskCard coordinates={result.input.coordinates} />
+                                )}
 
                                 {/* Financing Plan - Full Width */}
                                 <div className="w-full">

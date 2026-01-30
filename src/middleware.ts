@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
             "font-src 'self'",
-            "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io",
+            "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",
