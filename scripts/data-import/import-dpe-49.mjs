@@ -70,7 +70,7 @@ async function main() {
 
     // On retire les filtres "q_fields" et "select" qui cassaient tout.
     // On demande juste "q=49" pour dégrossir.
-    let nextUrl = `${API_BASE_URL}?q=49&size=1000`;
+    let nextUrl = `${API_BASE_URL}?qs=${encodeURIComponent('code_postal_ban:49*')}&size=1000`;
 
     const progressBar = new cliProgress.SingleBar({
         format: '📦 Import |{bar}| {value} DPE importés',
