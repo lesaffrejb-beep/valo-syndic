@@ -4,26 +4,34 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # ON DÉPLACE LES VARIABLES ICI (Niveau Job)
+    # Comme ça, toutes les étapes (build, start server, test) y ont accès
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_KEY }}
+      CI: true
+
     steps:
     - uses: actions/checkout@v4
+    
+    # On force Node 20 comme demandé par ton Next.js récent
     - uses: actions/setup-node@v4
       with:
         node-version: 20
+
     - name: Install dependencies
-      run: npm install
+      run: npm ci
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
     - name: Run Playwright tests
-      # C'est ici que la magie opère : on injecte les secrets GitHub dans l'env du test
-      env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        NEXT_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_KEY }}
       run: npx playwright test
 
     - uses: actions/upload-artifact@v4
