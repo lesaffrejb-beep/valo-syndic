@@ -43,7 +43,7 @@ export function HeatingSystemAlert({ heatingType }: HeatingSystemAlertProps) {
                                 Cible verrouillée : Chauffage {heatingType.includes('Gaz') || heatingType.includes('gaz') ? 'Gaz' : 'Fioul'} détecté.
                             </span>
                             <p className="text-muted text-sm mt-1">
-                                Vous êtes éligible au programme <span className="text-success font-medium">"Coup de Pouce Chauffage"</span>.
+                                Vous êtes éligible au programme <span className="text-success font-medium">&quot;Coup de Pouce Chauffage&quot;</span>.
                             </p>
                         </div>
                     </div>
