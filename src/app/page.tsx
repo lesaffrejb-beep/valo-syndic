@@ -323,7 +323,7 @@ export default function HomePage() {
                                 <span className="text-gradient">Pilotez un investissement.</span>
                             </h2>
                             <p className="text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-                                Diagnostic de votre copropriété en temps réel.
+                                Votre diagnostic patrimonial de copropriété en temps réel.
                                 Révélez le potentiel financier caché derrière la rénovation énergétique.
                             </p>
                         </div>
