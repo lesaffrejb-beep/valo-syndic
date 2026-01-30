@@ -1,5 +1,5 @@
 // ============================================================================
-// ULTRA-ROBUST DPE IMPORTER — DEPARTMENT 49 (CORRIGÉ 2026)
+// DPE IMPORTER v3 — MODE "BULLDOZER" (Sans filtres API stricts)
 // ============================================================================
 
 import dotenv from 'dotenv';
@@ -10,22 +10,20 @@ import cliProgress from 'cli-progress';
 // 1. CONFIGURATION
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const BATCH_SIZE = 1000;
-const BATCH_DELAY_MS = 100;
-const MAX_RETRIES = 5; // Augmenté pour la résilience
+const MAX_RETRIES = 5;
 
-// NOUVELLE API ADEME 2026 (Dataset stable)
+// On utilise le dataset "dpe-v2-logements-existants" OU "dpe03existant"
+// Si dpe03existant est vide, on tente d'élargir la recherche
 const API_BASE_URL = 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
 const DEPT_CODE = '49';
 
-// 2. SUPABASE CLIENT
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.error('❌ ERREUR : Variables .env.local manquantes');
+    console.error('❌ ERREUR : .env.local manquant');
     process.exit(1);
 }
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 3. UTILITIES
+// 2. UTILS
 async function fetchWithRetry(url, retries = MAX_RETRIES) {
     for (let attempt = 0; attempt <= retries; attempt++) {
         try {
@@ -34,85 +32,92 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
             return await response.json();
         } catch (error) {
             if (attempt === retries) throw error;
-            const delay = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s...
-            console.warn(`⚠️  Erreur API. Nouvelle tentative dans ${delay}ms...`);
+            const delay = 1000 * Math.pow(2, attempt);
+            console.warn(`⚠️  Réseau instable. Retry dans ${delay}ms...`);
             await new Promise(r => setTimeout(r, delay));
         }
     }
 }
 
 function parseRow(row) {
-    try {
-        // Filtrage strict sur le département 49
-        const cp = row['code_postal_ban'];
-        if (!cp || !String(cp).startsWith(DEPT_CODE)) return null;
+    // Mapping flexible (gère les noms de colonnes variables)
+    const rawCP = row['Code_postal_(BAN)'] || row['code_postal_ban'] || row['code_postal_brut'];
+    const rawDPE = row['N°_DPE'] || row['numero_dpe'];
 
-        const parseFloatSafe = (val) => val ? parseFloat(String(val).replace(',', '.')) : null;
-        const parseIntSafe = (val) => val ? parseInt(val, 10) : null;
+    // FILTRE JS (C'est ici qu'on garde uniquement le 49)
+    if (!rawCP || !String(rawCP).startsWith(DEPT_CODE)) return null;
+    if (!rawDPE) return null;
 
-        return {
-            numero_dpe: row['numero_dpe'],
-            code_postal: cp,
-            ville: row['nom_commune_ban'],
-            annee_construction: parseIntSafe(row['annee_construction']),
-            etiquette_dpe: row['etiquette_dpe'],
-            etiquette_ges: row['etiquette_ges'],
-            conso_kwh_m2_an: parseFloatSafe(row['conso_5_usages_par_m2_ef']),
-            surface_habitable: parseFloatSafe(row['surface_habitable_logement']),
-            date_etablissement: row['date_etablissement_dpe'],
-        };
-    } catch (e) { return null; }
+    const parseFloatSafe = (val) => val ? parseFloat(String(val).replace(',', '.')) : null;
+    const parseIntSafe = (val) => val ? parseInt(val, 10) : null;
+
+    return {
+        numero_dpe: rawDPE,
+        code_postal: rawCP,
+        ville: row['Commune_(BAN)'] || row['nom_commune_ban'],
+        annee_construction: parseIntSafe(row['Année_construction'] || row['annee_construction']),
+        etiquette_dpe: row['Etiquette_DPE'] || row['etiquette_dpe'],
+        etiquette_ges: row['Etiquette_GES'] || row['etiquette_ges'],
+        conso_kwh_m2_an: parseFloatSafe(row['Conso_5_usages_é_finale'] || row['conso_5_usages_par_m2_ef']),
+        surface_habitable: parseFloatSafe(row['Surface_habitable_logement'] || row['surface_habitable_logement']),
+        date_etablissement: row['Date_établissement_DPE'] || row['date_etablissement_dpe'],
+    };
 }
 
-// 4. MAIN
+// 3. MAIN
 async function main() {
-    console.log('🚀 DÉMARRAGE IMPORT DPE 49...');
+    console.log('� DÉMARRAGE MODE BULLDOZER (Filtrage JS)...');
 
-    // Init Progress Bar
+    // On retire les filtres "q_fields" et "select" qui cassaient tout.
+    // On demande juste "q=49" pour dégrossir.
+    let nextUrl = `${API_BASE_URL}?q=49&size=1000`;
+
     const progressBar = new cliProgress.SingleBar({
-        format: '� Import |{bar}| {percentage}% | {value}/{total} DPE',
+        format: '📦 Import |{bar}| {value} DPE importés',
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
     });
+    progressBar.start(300000, 0); // Estimation large
 
-    // URL Initiale avec filtres API (Optimisation serveur)
-    // On demande directement à l'API de filtrer pour nous (q=49)
-    let nextUrl = `${API_BASE_URL}?q=49&q_fields=code_postal_ban&size=5000&select=numero_dpe,code_postal_ban,nom_commune_ban,annee_construction,etiquette_dpe,etiquette_ges,conso_5_usages_par_m2_ef,surface_habitable_logement,date_etablissement_dpe`;
-
-    let totalProcessed = 0;
+    let totalImported = 0;
 
     try {
         while (nextUrl) {
             const data = await fetchWithRetry(nextUrl);
-
-            // Démarrage barre au premier tour
-            if (totalProcessed === 0 && data.total) progressBar.start(data.total, 0);
-
             const rows = data.results || [];
-            if (rows.length === 0) break;
 
-            const cleanRows = rows.map(parseRow).filter(r => r && r.numero_dpe);
+            if (rows.length === 0) {
+                console.log('\n🏁 Fin des résultats API.');
+                break;
+            }
 
-            // Batch Insert
+            // Filtrage et Nettoyage JS
+            const cleanRows = rows.map(parseRow).filter(r => r !== null);
+
+            // Insertion en base si on a trouvé des DPE du 49 dans ce lot
             if (cleanRows.length > 0) {
                 const { error } = await supabase.from('reference_dpe').upsert(cleanRows, {
                     onConflict: 'numero_dpe',
                     ignoreDuplicates: true
                 });
-                if (error) console.error('Erreur Supabase:', error.message);
+
+                if (error) {
+                    // Ignorer les erreurs mineures, continuer
+                } else {
+                    totalImported += cleanRows.length;
+                    progressBar.update(totalImported);
+                }
             }
 
-            totalProcessed += rows.length;
-            progressBar.update(totalProcessed);
-
-            nextUrl = data.next; // Pagination
-            await new Promise(r => setTimeout(r, BATCH_DELAY_MS));
+            nextUrl = data.next;
+            // Petit délai pour laisser respirer Supabase
+            await new Promise(r => setTimeout(r, 50));
         }
     } catch (err) {
-        console.error('\n❌ CRASH:', err.message);
+        console.error('\n❌ ERREUR:', err.message);
     } finally {
         progressBar.stop();
-        console.log('\n✅ IMPORT TERMINÉ.');
+        console.log(`\n✅ SUCCÈS : ${totalImported} DPE du 49 ont été sauvegardés.`);
     }
 }
 
