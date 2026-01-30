@@ -100,6 +100,7 @@ export default function HomePage() {
     const { query, setQuery, suggestions: results, isLoading: isSearching, selectAddress: searchAddress } = useAddressSearch();
     const [selectedProperty, setSelectedProperty] = useState<any>(null);
     const [showResults, setShowResults] = useState(false);
+    const [manualMode, setManualMode] = useState(false); // [FIX] Mode manuel pour afficher le formulaire
 
     // Fonction quand on clique sur une suggestion
     const handleSelectAddress = async (property: any) => {
@@ -415,17 +416,36 @@ export default function HomePage() {
                                         ))}
                                     </div>
                                 )}
+
+                                {/* Lien "Saisir manuellement" si pas de sélection */}
+                                {!selectedProperty && !manualMode && (
+                                    <div className="text-center mt-4 animate-fade-in">
+                                        <button
+                                            onClick={() => setManualMode(true)}
+                                            className="text-sm text-gray-500 hover:text-white underline underline-offset-4 transition-colors"
+                                        >
+                                            Je ne trouve pas mon adresse / Saisir manuellement
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                             {/* ----------------------------------- */}
 
-                            <div id="diagnostic-form-container" className={`transition-all duration-500 ease-in-out ${selectedProperty ? 'opacity-100 max-h-[2000px] mt-8' : 'opacity-50 max-h-0 overflow-hidden'}`}>
-                                {selectedProperty && (
+                            <div id="diagnostic-form-container" className={`transition-all duration-500 ease-in-out ${(selectedProperty || manualMode) ? 'opacity-100 max-h-[2000px] mt-8' : 'opacity-50 max-h-0 overflow-hidden'}`}>
+                                {(selectedProperty || manualMode) && (
                                     <div className="border-t border-white/10 pt-8 animate-fade-in-up">
-                                        <h4 className="text-center text-muted mb-6">👇 Vérifiez et Validez les données 👇</h4>
+                                        {selectedProperty ? (
+                                            <h4 className="text-center text-muted mb-6">👇 Vérifiez et Validez les données 👇</h4>
+                                        ) : (
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h4 className="text-muted">Saisie Manuelle</h4>
+                                                <button onClick={() => setManualMode(false)} className="text-xs text-red-400 hover:text-red-300">Fermer</button>
+                                            </div>
+                                        )}
                                         <DiagnosticForm
                                             onSubmit={handleSubmit}
                                             isLoading={isLoading}
-                                            initialData={selectedProperty.initialFormState}
+                                            initialData={selectedProperty?.initialFormState}
                                         />
                                     </div>
                                 )}
