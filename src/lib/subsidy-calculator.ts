@@ -6,6 +6,8 @@
  * @see https://www.service-public.fr/particuliers/vosdroits/F35083
  */
 
+import { AMO_PARAMS, MPR_COPRO } from "./constants";
+
 // =============================================================================
 // 1. TYPES & PROFILS DE REVENUS
 // =============================================================================
@@ -156,33 +158,42 @@ export const INCOME_THRESHOLDS_OUTSIDE_IDF = {
     /** ROSE - Au-dessus des plafonds */
 } as const;
 
-/** Plafond d'assiette MPR par logement (€ HT) */
-const MPR_CEILING_PER_UNIT = 25_000;
+/** 
+ * Constantes MPR importées de constants.ts
+ * Plafond d'assiette MPR par logement (€ HT) = 25_000
+ */
+const MPR_CEILING_PER_UNIT = MPR_COPRO.ceilingPerUnit;
 
-/** Taux de base MPR selon gain énergétique */
-const MPR_BASE_RATES = {
-    /** Gain 35-50% */
-    standard: 0.30,
-    /** Gain ≥ 50% */
-    performance: 0.45,
-} as const;
+/** 
+ * Taux de base MPR selon gain énergétique 
+ * Importés depuis constants.ts
+ */
+const MPR_BASE_RATES = MPR_COPRO.rates;
 
-/** Bonus Sortie de Passoire (F/G → D ou mieux) */
-const PASSOIRE_BONUS_RATE = 0.10;
+/** 
+ * Bonus Sortie de Passoire (F/G → D ou mieux)
+ * Importé depuis constants.ts 
+ */
+const PASSOIRE_BONUS_RATE = MPR_COPRO.exitPassoireBonus;
 
-/** Bonus Fragile (copropriétés en difficulté) */
+/** Bonus Fragile (copropriétés en difficulté) - +20% */
 const FRAGILE_BONUS_RATE = 0.20;
 
-/** AMO - Plafonds et taux */
-const AMO_PARAMS = {
-    /** Taux de prise en charge AMO */
-    rate: 0.50,
-    /** Plafond si copro ≤ 20 lots */
-    ceilingSmallCopro: 1_000,
-    /** Plafond si copro > 20 lots */
-    ceilingLargeCopro: 600,
-    /** Plancher global minimum */
-    minTotal: 3_000,
+/** 
+ * AMO - Plafonds et taux
+ * Importés depuis constants.ts pour garantir la cohérence
+ */
+const AMO_PARAMS_LOCAL = {
+    /** Taux de prise en charge AMO (50%) */
+    rate: AMO_PARAMS.aidRate,
+    /** Plafond si copro ≤ 20 lots (1 000€) */
+    ceilingSmallCopro: AMO_PARAMS.ceilingPerLotSmall,
+    /** Plafond si copro > 20 lots (600€) */
+    ceilingLargeCopro: AMO_PARAMS.ceilingPerLotLarge,
+    /** Seuil de distinction petite/grande copro */
+    smallCoproThreshold: AMO_PARAMS.smallCoproThreshold,
+    /** Plancher global minimum (3 000€) */
+    minTotal: AMO_PARAMS.minTotal,
 } as const;
 
 /** Primes individuelles par profil (€) */
@@ -346,23 +357,24 @@ export function calculateSubsidies(inputs: SimulationInputs): SubsidyResult {
 
     // =========================================================================
     // ÉTAPE 6: Aide AMO (Assistance à Maîtrise d'Ouvrage)
+    // Source: https://www.economie.gouv.fr/particuliers/maprimerenov-copropriete
     // =========================================================================
 
     const amoSharePerUnit = amoAmountHT / nbLots;
 
-    // Plafond AMO selon taille copro
-    const amoCeiling = nbLots <= 20
-        ? AMO_PARAMS.ceilingSmallCopro
-        : AMO_PARAMS.ceilingLargeCopro;
+    // Plafond AMO selon taille copro (≤20 lots: 1000€/lot, >20 lots: 600€/lot)
+    const amoCeiling = nbLots <= AMO_PARAMS_LOCAL.smallCoproThreshold
+        ? AMO_PARAMS_LOCAL.ceilingSmallCopro
+        : AMO_PARAMS_LOCAL.ceilingLargeCopro;
 
     const eligibleAmoPerUnit = Math.min(amoSharePerUnit, amoCeiling);
-    const amoAmountPerUnit = eligibleAmoPerUnit * AMO_PARAMS.rate;
+    const amoAmountPerUnit = eligibleAmoPerUnit * AMO_PARAMS_LOCAL.rate;
 
     // Vérification du plancher global (3000€ minimum)
     const amoTotalGlobal = amoAmountPerUnit * nbLots;
     const amoAmountPerUnitFinal = Math.max(
         amoAmountPerUnit,
-        AMO_PARAMS.minTotal / nbLots
+        AMO_PARAMS_LOCAL.minTotal / nbLots
     );
 
     // =========================================================================

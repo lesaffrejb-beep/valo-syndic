@@ -188,13 +188,22 @@ export function simulateFinancing(
     const mprAmount = eligibleBaseMPR * (mprRate + exitPassoireBonus);
 
     // --- Aide AMO (Aide Ingénierie) ---
+    // Source: https://www.economie.gouv.fr/particuliers/maprimerenov-copropriete
+    // 50% de prise en charge, plafond selon taille de la copro
 
-    // Plafond d'assiette AMO
-    const amoCeilingGlobal = nbLots * AMO_PARAMS.ceilingPerLot;
-    // Assiette éligible AMO
+    // Plafond d'assiette AMO selon taille de la copro
+    const amoCeilingPerLot = nbLots <= AMO_PARAMS.smallCoproThreshold
+        ? AMO_PARAMS.ceilingPerLotSmall  // ≤ 20 lots: 1 000€/lot
+        : AMO_PARAMS.ceilingPerLotLarge; // > 20 lots: 600€/lot
+    
+    const amoCeilingGlobal = nbLots * amoCeilingPerLot;
+    
+    // Assiette éligible AMO (coût réel plafonné)
     const eligibleBaseAMO = Math.min(amoCostHT, amoCeilingGlobal);
-    // Montant Aide AMO
-    const amoAmount = eligibleBaseAMO * AMO_PARAMS.aidRate;
+    
+    // Montant Aide AMO (50% de l'éligible, avec plancher global de 3 000€)
+    const amoAmountRaw = eligibleBaseAMO * AMO_PARAMS.aidRate;
+    const amoAmount = Math.max(amoAmountRaw, AMO_PARAMS.minTotal);
 
     // --- Total des Aides ---
     const totalAids = mprAmount + amoAmount + localAidAmount + ceeBonus;

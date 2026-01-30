@@ -110,17 +110,32 @@ export const DPE_KWH_VALUES: Record<DPELetter, number> = {
 
 // =============================================================================
 // 5. AMO (ASSISTANCE À MAÎTRISE D'OUVRAGE)
+// Source: https://www.economie.gouv.fr/particuliers/maprimerenov-copropriete
 // =============================================================================
 
 export const AMO_PARAMS = {
     /** Coût forfaitaire moyen AMO par lot (€ HT) */
     costPerLot: 600,
 
-    /** Plafond d'assiette subventionnable par lot (€ HT) */
-    ceilingPerLot: 600,
+    /** 
+     * Plafond d'assiette subventionnable par lot (€ HT)
+     * - ≤ 20 lots : 1 000€ HT par logement
+     * - > 20 lots : 600€ HT par logement
+     */
+    ceilingPerLotSmall: 1_000,  // ≤ 20 lots
+    ceilingPerLotLarge: 600,    // > 20 lots
+
+    /** 
+     * Seuil de distinction petite/grande copropriété
+     * Les copros de 20 lots ou moins ont un plafond plus élevé
+     */
+    smallCoproThreshold: 20,
 
     /** Taux de prise en charge (50%) */
     aidRate: 0.50,
+
+    /** Montant plancher global minimum (3 000€) */
+    minTotal: 3_000,
 } as const;
 
 // =============================================================================

@@ -40,26 +40,37 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
 }
 
 function parseRow(row) {
-    // Mapping flexible (gère les noms de colonnes variables)
+    // 1. Mapping flexible des noms de colonnes (L'API est capricieuse)
     const rawCP = row['Code_postal_(BAN)'] || row['code_postal_ban'] || row['code_postal_brut'];
     const rawDPE = row['N°_DPE'] || row['numero_dpe'];
 
-    // FILTRE JS (C'est ici qu'on garde uniquement le 49)
+    // 2. FILTRES DE SÉCURITÉ
+    // On ne garde que le 49
     if (!rawCP || !String(rawCP).startsWith(DEPT_CODE)) return null;
     if (!rawDPE) return null;
 
+    // OPTIONNEL : Si tu veux exclure les maisons individuelles maintenant :
+    // const typeBat = row['Type_bâtiment'] || row['type_batiment'];
+    // if (typeBat && typeBat.toLowerCase().includes('maison')) return null; 
+
+    // 3. Reconstitution de l'adresse (Le fix précédent)
+    const adresseComplete = row['Adresse_(BAN)'] || row['adresse_ban'] || `${row['N°_voie_(BAN)'] || ''} ${row['Nom__rue_(BAN)'] || ''}`.trim();
+
+    // 4. Helpers de conversion
     const parseFloatSafe = (val) => val ? parseFloat(String(val).replace(',', '.')) : null;
     const parseIntSafe = (val) => val ? parseInt(val, 10) : null;
-
-    // AJOUT : Récupération de l'adresse complète
-    // L'API ADEME fournit souvent "Adresse_(BAN)" ou une concaténation
-    const adresseComplete = row['Adresse_(BAN)'] || row['adresse_ban'] || `${row['N°_voie_(BAN)'] || ''} ${row['Nom__rue_(BAN)'] || ''}`.trim();
 
     return {
         numero_dpe: rawDPE,
         code_postal: rawCP,
         ville: row['Commune_(BAN)'] || row['nom_commune_ban'],
-        adresse_ban: adresseComplete,
+        adresse_ban: adresseComplete, // ✅ CORRIGÉ
+
+        // Les nouveaux champs "Sniper"
+        type_batiment: row['Type_bâtiment'] || row['type_batiment'], // ✅ AJOUTÉ
+        type_energie: row['Type_énergie_n°1'] || row['type_energie_n_1'] || row['type_energie_chauffage_principal'], // ✅ AJOUTÉ
+        cout_total_ttc: parseFloatSafe(row['Coût_total_5_usages'] || row['cout_total_5_usages']), // ✅ AJOUTÉ
+
         annee_construction: parseIntSafe(row['Année_construction'] || row['annee_construction']),
         etiquette_dpe: row['Etiquette_DPE'] || row['etiquette_dpe'],
         etiquette_ges: row['Etiquette_GES'] || row['etiquette_ges'],
