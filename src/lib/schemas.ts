@@ -37,6 +37,12 @@ export const DiagnosticInputSchema = z.object({
     /** Classe DPE actuelle */
     currentDPE: DPELetterSchema,
 
+    /** Classe GES actuelle (Optionnel mais recommandé) */
+    currentGES: DPELetterSchema.optional(),
+
+    /** Émissions GES (kgCO2/m²/an) */
+    co2Emissions: z.number().min(0).optional(),
+
     /** Classe DPE cible après travaux */
     targetDPE: DPELetterSchema,
 
