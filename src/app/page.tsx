@@ -33,8 +33,6 @@ import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 import { GESBadge } from "@/components/dashboard/GESBadge";
 import { LegalCountdown } from "@/components/dashboard/LegalCountdown";
 import { FinancialProjection } from "@/components/dashboard/FinancialProjection";
-import { DPEDistributionChart } from "@/components/dashboard/DPEDistributionChart";
-import { HeatingSystemAlert } from "@/components/dashboard/HeatingSystemAlert";
 
 // Persuasion Components
 import { TantiemeCalculator } from "@/components/business/TantiemeCalculator";
@@ -485,26 +483,16 @@ export default function HomePage() {
                                     </div>
 
                                     {/* Benchmark & Chrono Grid */}
-                                    <div className="space-y-6">
-                                        {/* NEW: DPE Distribution Chart — L'EGO */}
-                                        <DPEDistributionChart
-                                            currentDPE={result.input.currentDPE}
-                                            city={result.input.city}
-                                            postalCode={result.input.postalCode}
-                                        />
-
-                                        {/* Original Benchmark & Timeline */}
-                                        <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-                                            <div className="flex-1 h-full">
-                                                {/* Benchmark Card */}
-                                                <BenchmarkChart currentDPE={result.input.currentDPE} className="h-full" />
-                                            </div>
-                                            <div className="flex-1 h-full">
-                                                <ComplianceTimeline
-                                                    currentDPE={result.input.currentDPE}
-                                                    className="h-full"
-                                                />
-                                            </div>
+                                    <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+                                        <div className="flex-1 h-full">
+                                            {/* Benchmark Card */}
+                                            <BenchmarkChart currentDPE={result.input.currentDPE} className="h-full" />
+                                        </div>
+                                        <div className="flex-1 h-full">
+                                            <ComplianceTimeline
+                                                currentDPE={result.input.currentDPE}
+                                                className="h-full"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -585,22 +573,13 @@ export default function HomePage() {
                                     {/* BENTO GRID LAYOUT - RESTRUCTURED */}
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-min">
 
-                                        {/* NEW: Heating System Alert — L'OPPORTUNITÉ */}
-                                        <div className="md:col-span-12 order-1">
-                                            <HeatingSystemAlert
-                                                heatingType="gaz"
-                                                // TODO: Remplacer par la vraie donnée du DPE si disponible
-                                                // heatingType={result.input.heatingType}
-                                            />
-                                        </div>
-
                                         {/* 1. HERO CONTENT: SUBSIDY TABLE (Full Width) */}
-                                        <div className="md:col-span-12 order-2">
+                                        <div className="md:col-span-12 order-1">
                                             <SubsidyTable inputs={simulationInputs} />
                                         </div>
 
                                         {/* 2. FINANCING PIE (Left) - Span 8 */}
-                                        <div className="md:col-span-12 lg:col-span-8 card-obsidian min-h-[350px] order-3">
+                                        <div className="md:col-span-12 lg:col-span-8 card-obsidian min-h-[350px] order-2">
                                             <h3 className="text-xl font-bold text-main mb-6 flex items-center gap-2">
                                                 🌍 Financement Global
                                             </h3>
@@ -608,7 +587,7 @@ export default function HomePage() {
                                         </div>
 
                                         {/* 3. KEY METRICS (Right) - Span 4 - Stacked Squares */}
-                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col md:flex-row lg:flex-col gap-6 order-4 h-full">
+                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col md:flex-row lg:flex-col gap-6 order-3 h-full">
                                             {/* Taux Courture - Redesigned */}
                                             <div className="card-obsidian bg-success-900/10 border-success-500/20 flex-1 flex flex-row items-center p-6 gap-5 relative overflow-hidden group hover:border-success-500/40 transition-all">
                                                 <div className="absolute inset-0 bg-success-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
