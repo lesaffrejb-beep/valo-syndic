@@ -1,102 +1,73 @@
-/**
- * LegalCountdown — Compte à Rebours Légal
- * ========================================
- * Affiche le countdown avant interdiction de louer
- */
-
-"use client";
-
-import { motion } from "framer-motion";
-import { type DPELetter, DPE_PROHIBITION_DATES } from "@/lib/constants";
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
 interface LegalCountdownProps {
-    dpeLetter: DPELetter;
+    dpeLetter: string;
     className?: string;
 }
 
 export function LegalCountdown({ dpeLetter, className = "" }: LegalCountdownProps) {
-    const countdown = useMemo(() => {
-        const prohibitionDate = DPE_PROHIBITION_DATES[dpeLetter];
+    const letter = dpeLetter.toUpperCase();
 
-        if (!prohibitionDate) {
-            return null;
-        }
+    // Réglementation (Loi Climat & Résilience)
+    // G: 2025
+    // F: 2028
+    // E: 2034
 
-        const now = new Date();
-        const daysRemaining = Math.ceil((prohibitionDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        const isPast = daysRemaining < 0;
-
-        return {
-            date: prohibitionDate,
-            daysRemaining: Math.abs(daysRemaining),
-            isPast,
-        };
-    }, [dpeLetter]);
-
-    if (!countdown) {
-        return (
-            <div className={`card-bento p-6 bg-success-900/10 border-success-500/20 ${className}`}>
-                <div className="text-center">
-                    <p className="text-lg font-bold text-success-400">✅ Immeuble Conforme</p>
-                    <p className="text-sm text-muted mt-2">
-                        Aucune interdiction de louer prévue pour le DPE {dpeLetter}
-                    </p>
-                </div>
-            </div>
-        );
+    interface BanConfig {
+        year: number;
+        status: 'banned' | 'warning' | 'safe';
+        label: string;
     }
 
+    const getConfig = (l: string): BanConfig => {
+        const currentYear = new Date().getFullYear();
+        if (l === 'G') return { year: 2025, status: currentYear >= 2025 ? 'banned' : 'warning', label: "Interdiction Location G" };
+        if (l === 'F') return { year: 2028, status: 'warning', label: "Interdiction Location F" };
+        if (l === 'E') return { year: 2034, status: 'safe', label: "Interdiction Location E" };
+        return { year: 0, status: 'safe', label: "Conforme" };
+    };
+
+    const config = getConfig(letter);
+    const yearsRemaining = config.year - new Date().getFullYear();
+
+    if (config.status === 'safe' && config.year === 0) {
+        return null; // Pas d'affichage si A, B, C, D
+    }
+
+    const isCritical = yearsRemaining <= 2;
+
     return (
-        <motion.div
-            className={`card-bento p-6 md:p-8 ${
-                countdown.isPast
-                    ? "bg-danger-900/20 border-danger-500/40"
-                    : "bg-warning-900/10 border-warning-500/30"
-            } ${className}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            <div className="text-center">
-                {countdown.isPast ? (
-                    <>
-                        <div className="text-6xl mb-4">🚫</div>
-                        <h3 className="text-2xl md:text-3xl font-black text-danger-400 mb-3">
-                            Interdiction Active
-                        </h3>
-                        <p className="text-lg text-danger-300 mb-4">
-                            La location est interdite depuis le{" "}
-                            {countdown.date.toLocaleDateString("fr-FR", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                            })}
-                        </p>
-                        <p className="text-sm text-muted">
-                            Déjà {countdown.daysRemaining} jours de retard
-                        </p>
-                    </>
-                ) : (
-                    <>
-                        <div className="text-6xl mb-4 animate-pulse">⏰</div>
-                        <h3 className="text-2xl md:text-3xl font-black text-warning-400 mb-3">
-                            Interdiction dans {countdown.daysRemaining} jours
-                        </h3>
-                        <p className="text-lg text-warning-300 mb-4">
-                            Location interdite à partir du{" "}
-                            {countdown.date.toLocaleDateString("fr-FR", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                            })}
-                        </p>
-                        <p className="text-sm text-muted">
-                            Loi Climat & Résilience — DPE {dpeLetter}
-                        </p>
-                    </>
-                )}
+        <div className={`relative overflow-hidden rounded-xl border p-4 ${className} ${isCritical ? 'bg-red-950/20 border-red-900/50' : 'bg-orange-950/20 border-orange-900/50'}`}>
+            <div className="flex justify-between items-start mb-2">
+                <h3 className={`text-sm font-semibold ${isCritical ? 'text-red-400' : 'text-orange-400'}`}>
+                    📅 Échéance Réglementaire
+                </h3>
+                <span className="text-xs px-2 py-1 rounded bg-black/40 border border-white/10 text-muted">
+                    {config.label}
+                </span>
             </div>
-        </motion.div>
+
+            <div className="flex items-end gap-2">
+                <span className="text-3xl font-bold text-white">
+                    {yearsRemaining > 0 ? yearsRemaining : '0'}
+                </span>
+                <span className="text-sm text-muted mb-1">
+                    {yearsRemaining > 1 ? 'années restantes' : 'année restante'}
+                </span>
+            </div>
+
+            <div className="mt-3 w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                <div
+                    className={`h-full rounded-full ${isCritical ? 'bg-red-500' : 'bg-orange-500'}`}
+                    style={{ width: `${Math.max(5, 100 - (yearsRemaining * 10))}%` }}
+                />
+            </div>
+
+            <p className="text-[10px] text-muted mt-2 italic">
+                {yearsRemaining <= 0
+                    ? "Le logement est théoriquement interdit à la location (sauf exceptions)."
+                    : `Au 1er Janvier ${config.year}, ce logement sera considéré indécent.`}
+            </p>
+        </div>
     );
 }

@@ -15,6 +15,7 @@ export interface AddressFeature {
         coordinates: [number, number]; // [longitude, latitude]
     };
     properties: {
+        id?: string;            // Identifiant unique (pour API ou interne)
         label: string;          // Adresse complète formatée
         score: number;          // Score de confiance (0-1)
         housenumber?: string;   // Numéro de rue

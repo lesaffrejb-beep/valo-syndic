@@ -1,23 +1,5 @@
-/**
- * FinancialProjection — Projection Financière
- * ============================================
- * Affiche les économies et le ROI post-travaux
- */
-
-"use client";
-
-import { motion } from "framer-motion";
-
-interface DPEData {
-    numero_dpe: string;
-    etiquette_dpe: string;
-    etiquette_ges: string;
-    conso_kwh_m2_an: number;
-    annee_construction: number;
-    surface_habitable: number;
-    date_etablissement: string;
-    cout_total_ttc?: number;
-}
+import { useMemo } from 'react';
+import type { DPEData } from '@/hooks/useAddressSearch';
 
 interface FinancialProjectionProps {
     dpeData: DPEData;
@@ -25,68 +7,52 @@ interface FinancialProjectionProps {
 }
 
 export function FinancialProjection({ dpeData, className = "" }: FinancialProjectionProps) {
-    // Calculs simplifiés
-    const annualSavings = Math.round((dpeData.conso_kwh_m2_an * dpeData.surface_habitable * 0.18) * 0.35); // 35% de gain
-    const monthlySavings = Math.round(annualSavings / 12);
-    const paybackYears = dpeData.cout_total_ttc ? Math.round(dpeData.cout_total_ttc / annualSavings) : 15;
+    // Calculs simplifiés pour la projection
+    // Si on a le coût réel du DPE, on l'utilise. Sinon on estime.
+
+    const estimatedCost = dpeData.cout_total_ttc || (dpeData.conso_kwh_m2_an * dpeData.surface_habitable * 0.25); // 0.25€ du kwh moy
+
+    // Projection sur 10 ans avec inflation énergétique (ex: +5% par an)
+    const inflationRate = 0.05;
+    let accumulatedCost = 0;
+    let currentAnnual = estimatedCost;
+
+    for (let i = 0; i < 10; i++) {
+        accumulatedCost += currentAnnual;
+        currentAnnual *= (1 + inflationRate);
+    }
+
+    const formatEuro = (val: number) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(val);
 
     return (
-        <motion.div
-            className={`card-bento p-6 ${className}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            <div className="mb-6">
-                <h3 className="text-xl font-bold text-main mb-2">
-                    💰 Votre Projection Financière
-                </h3>
-                <p className="text-sm text-muted">
-                    Économies estimées après travaux
-                </p>
-            </div>
+        <div className={`p-4 rounded-xl border border-white/10 bg-surface ${className}`}>
+            <h3 className="text-sm font-semibold text-main mb-4">💰 Projection Financière (10 ans)</h3>
 
             <div className="grid grid-cols-2 gap-4">
-                {/* Économies mensuelles */}
-                <div className="p-4 bg-success-900/10 rounded-xl border border-success-500/20">
-                    <p className="text-xs font-semibold text-success-400 uppercase tracking-wider mb-1">
-                        Par mois
-                    </p>
-                    <p className="text-3xl font-black text-success-300">
-                        {monthlySavings} €
-                    </p>
+                <div className="p-3 bg-white/5 rounded-lg border border-white/5">
+                    <p className="text-xs text-muted mb-1">Coût Annuel Actuel</p>
+                    <p className="text-xl font-bold text-white">{formatEuro(estimatedCost)}</p>
+                    <p className="text-[10px] text-subtle">Basé sur DPE & Prix Énergie</p>
                 </div>
 
-                {/* Économies annuelles */}
-                <div className="p-4 bg-primary-900/10 rounded-xl border border-primary-500/20">
-                    <p className="text-xs font-semibold text-primary-400 uppercase tracking-wider mb-1">
-                        Par an
-                    </p>
-                    <p className="text-3xl font-black text-primary-300">
-                        {annualSavings} €
-                    </p>
-                </div>
-
-                {/* ROI */}
-                <div className="col-span-2 p-4 bg-white/5 rounded-xl border border-white/10">
-                    <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-1">
-                        Retour sur investissement
-                    </p>
-                    <p className="text-2xl font-black text-main">
-                        {paybackYears} ans
-                    </p>
-                    <p className="text-xs text-muted mt-1">
-                        Amortissement complet de votre investissement
-                    </p>
+                <div className="p-3 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                    <p className="text-xs text-primary-300 mb-1">Coût Cumulé 10 ans</p>
+                    <p className="text-xl font-bold text-primary-100">{formatEuro(accumulatedCost)}</p>
+                    <p className="text-[10px] text-primary-400/70">Avec inflation 5%/an</p>
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="mt-6 pt-4 border-t border-white/10">
-                <p className="text-xs text-muted text-center">
-                    Calcul basé sur votre consommation actuelle de {dpeData.conso_kwh_m2_an} kWh/m²/an
-                </p>
+            <div className="mt-4 pt-4 border-t border-white/10">
+                <div className="flex items-center gap-2">
+                    <span className="text-xl">📉</span>
+                    <div>
+                        <p className="text-xs font-medium text-white">Potentiel de Valorisation</p>
+                        <p className="text-[10px] text-muted">
+                            Une rénovation globale (B) réduirait la facture par {(dpeData.etiquette_dpe === 'G' || dpeData.etiquette_dpe === 'F') ? '4' : '2'}.
+                        </p>
+                    </div>
+                </div>
             </div>
-        </motion.div>
+        </div>
     );
 }

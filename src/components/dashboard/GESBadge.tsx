@@ -1,58 +1,37 @@
-/**
- * GESBadge — Badge Émissions de Gaz à Effet de Serre
- * ===================================================
- * Affiche la classe GES avec style premium
- */
-
-"use client";
-
-import { motion } from "framer-motion";
-import { type DPELetter } from "@/lib/constants";
+import { useMemo } from 'react';
 
 interface GESBadgeProps {
-    gesLetter: DPELetter;
-    gesValue?: number; // kgCO2/m²/an
+    gesLetter: string;
+    gesValue?: number;
     className?: string;
 }
 
-const GES_COLORS: Record<DPELetter, string> = {
-    A: "#16a34a",
-    B: "#22c55e",
-    C: "#84cc16",
-    D: "#eab308",
-    E: "#f59e0b",
-    F: "#ea580c",
-    G: "#dc2626",
+const gesColors: Record<string, { bg: string; text: string; border: string }> = {
+    A: { bg: "bg-emerald-900/40", text: "text-emerald-400", border: "border-emerald-500/30" },
+    B: { bg: "bg-emerald-900/30", text: "text-emerald-500", border: "border-emerald-500/20" },
+    C: { bg: "bg-lime-900/30", text: "text-lime-400", border: "border-lime-500/30" },
+    D: { bg: "bg-yellow-900/30", text: "text-yellow-400", border: "border-yellow-500/30" },
+    E: { bg: "bg-orange-900/30", text: "text-orange-400", border: "border-orange-500/30" },
+    F: { bg: "bg-red-900/30", text: "text-red-400", border: "border-red-500/30" },
+    G: { bg: "bg-red-950/40", text: "text-red-500", border: "border-red-500/40" },
 };
 
 export function GESBadge({ gesLetter, gesValue, className = "" }: GESBadgeProps) {
+    const letter = gesLetter.toUpperCase();
+    const styles = gesColors[letter] || { bg: "bg-gray-800", text: "text-gray-400", border: "border-gray-700" };
+
     return (
-        <motion.div
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-sm ${className}`}
-            style={{
-                backgroundColor: `${GES_COLORS[gesLetter]}20`,
-                borderColor: `${GES_COLORS[gesLetter]}40`,
-            }}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-        >
-            <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-white text-sm shadow-md"
-                style={{ backgroundColor: GES_COLORS[gesLetter] }}
-            >
-                {gesLetter}
+        <div className={`inline-flex flex-col items-center justify-center p-3 rounded-xl border backdrop-blur-sm ${styles.bg} ${styles.border} ${className}`}>
+            <span className="text-[10px] uppercase tracking-wider text-muted mb-1 opacity-80">Émissions GES</span>
+            <div className="flex items-baseline gap-1">
+                <span className={`text-2xl font-bold ${styles.text}`}>{gesValue ?? letter}</span>
+                {gesValue && <span className="text-xs text-muted">kgCO₂/m²/an</span>}
             </div>
-            <div>
-                <p className="text-xs font-semibold text-muted uppercase tracking-wider">
-                    Émissions GES
-                </p>
-                {gesValue && (
-                    <p className="text-sm font-bold text-main">
-                        {gesValue} kgCO₂/m²/an
-                    </p>
-                )}
-            </div>
-        </motion.div>
+            {gesValue && (
+                <div className={`mt-1 px-2 py-0.5 rounded text-[10px] font-bold border ${styles.border} bg-black/20 ${styles.text}`}>
+                    Classe {letter}
+                </div>
+            )}
+        </div>
     );
 }
