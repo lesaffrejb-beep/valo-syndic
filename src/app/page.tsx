@@ -19,7 +19,8 @@ import { Footer } from "@/components/layout/Footer";
 import { DiagnosticForm } from "@/components/business/form/DiagnosticForm";
 import { ComplianceTimeline } from "@/components/ComplianceTimeline";
 import { FinancingCard } from "@/components/business/FinancingCard";
-import { InactionCostCard } from "@/components/business/InactionCostCard";
+import { InactionCostCard } from "@/components/business/InactionCostCard"; // Keep for fallback or remove if unused?
+import { ComparisonSplitScreen } from "@/components/business/ComparisonSplitScreen"; // [NEW] VS Component
 import { LegalWarning } from "@/components/business/LegalWarning";
 import { EnergyInflationChart } from "@/components/EnergyInflationChart";
 import { DPEGauge } from "@/components/DPEGauge";
@@ -50,6 +51,7 @@ import { MassAudit } from "@/components/business/MassAudit";
 // Core Logic
 import { simulateDiagnostic } from "@/app/actions/simulate";
 import { type DiagnosticInput, type DiagnosticResult, DiagnosticInputSchema, type GhostExtensionImport } from "@/lib/schemas";
+import { type SimulationInputs } from "@/lib/subsidy-calculator";
 import { BrandingModal } from "@/components/BrandingModal";
 import { JsonImporter } from "@/components/import/JsonImporter";
 import { getLocalRealEstatePrice } from "@/actions/getRealEstateData";
@@ -247,6 +249,19 @@ export default function HomePage() {
         }
     };
 
+    // PREPARE INPUTS FOR SUB-COMPONENTS
+    const simulationInputs: SimulationInputs | undefined = result ? {
+        workAmountHT: result.financing.worksCostHT,
+        amoAmountHT: result.financing.amoAmount,
+        nbLots: result.input.numberOfUnits,
+        energyGain: result.financing.energyGainPercent,
+        initialDPE: result.input.currentDPE,
+        targetDPE: result.input.targetDPE,
+        isFragile: false, // Feature not yet in UI input
+        ceePerLot: result.input.ceeBonus,
+        localAidPerLot: result.input.localAidAmount
+    } : undefined;
+
     return (
         <div className="min-h-screen bg-app">
             <BrandingModal isOpen={showBrandingModal} onClose={() => setShowBrandingModal(false)} />
@@ -254,7 +269,6 @@ export default function HomePage() {
                 isOpen={showAuthModal}
                 onClose={() => setShowAuthModal(false)}
                 onSuccess={() => {
-                    // Retry save after successful auth
                     if (result) {
                         handleSaveToCloud();
                     }
@@ -286,7 +300,6 @@ export default function HomePage() {
                             </button>
                             <button
                                 onClick={() => {
-                                    /* setActiveTab("mass"); */
                                     window.alert("Fonctionnalité disponible en V3\n\nL'audit de parc sera disponible prochainement.");
                                 }}
                                 className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === "mass"
@@ -304,20 +317,14 @@ export default function HomePage() {
                 {!result && activeTab === "flash" && (
                     <section className="mb-12">
                         <div className="text-center mb-10">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-surface rounded-lg border border-boundary mb-6">
-                                <span className="text-sm">🏢</span>
-                                <span className="text-sm font-medium text-muted">
-                                    Solution utilisée par +200 cabinets de syndic
-                                </span>
-                            </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-main mb-4 tracking-tight">
-                                Votre diagnostic patrimonial
+                                Ne gérez plus des charges.
                                 <br />
-                                <span className="text-gradient">en 60 secondes</span>
+                                <span className="text-gradient">Pilotez un investissement.</span>
                             </h2>
                             <p className="text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-                                Analysez le potentiel de financement de vos travaux de rénovation
-                                énergétique avec <span className="font-medium text-main">MaPrimeRénov&apos; Copropriété</span> et <span className="font-medium text-main">l&apos;Éco-PTZ</span>.
+                                Diagnostic de votre copropriété en temps réel.
+                                Révélez le potentiel financier caché derrière la rénovation énergétique.
                             </p>
                         </div>
 
@@ -344,119 +351,130 @@ export default function HomePage() {
 
                 {/* Results Section */}
                 <AnimatePresence mode="wait">
-                    {result && (
+                    {result && simulationInputs && (
                         <motion.section
                             id="results"
-                            className="space-y-8"
+                            className="space-y-16"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                         >
-                            <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-6 md:gap-8">
-                                {/* V3: Street View Banner */}
-                                {result.input.coordinates && (
-                                    <StreetViewHeader
-                                        address={result.input.address || undefined}
-                                        coordinates={result.input.coordinates}
-                                    />
-                                )}
+                            <StaggerContainer staggerDelay={0.1} className="flex flex-col gap-16 md:gap-24">
 
-                                {/* Summary Header */}
-                                <div className="card-bento p-8 md:p-10 gap-8">
-                                    <div className="flex flex-col gap-8">
+                                {/* 
+                                 * =================================================================================
+                                 * ACTE 1: LE DIAGNOSTIC (L'URGENCE)
+                                 * "Etat des Lieux" - DPE F vs C, Benchmark, Countdown
+                                 * =================================================================================
+                                 */}
+                                <div className="space-y-8">
+                                    {/* Street View Banner */}
+                                    {result.input.coordinates && (
+                                        <StreetViewHeader
+                                            address={result.input.address || undefined}
+                                            coordinates={result.input.coordinates}
+                                        />
+                                    )}
+
+                                    {/* Header Card DPE */}
+                                    <div className="card-bento p-8 md:p-10 gap-8">
                                         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-3">
-                                                    <span className="px-3 py-1 bg-primary-900/30 text-primary-400 border border-primary-500/20 text-xs font-medium rounded-full">
-                                                        Diagnostic Flash
-                                                    </span>
-                                                    <span className="text-xs text-muted">
-                                                        Généré le {new Date().toLocaleDateString("fr-FR")}
+                                                    <span className="px-3 py-1 bg-white/5 border border-white/10 text-xs font-semibold rounded-full uppercase tracking-wider text-muted">
+                                                        Diagnostic Vital
                                                     </span>
                                                 </div>
-                                                <h2 className="text-3xl md:text-4xl font-bold text-main mb-2 tracking-tight">
-                                                    📊 Évaluation Préliminaire
+                                                <h2 className="text-3xl md:text-4xl font-black text-main mb-2 tracking-tight">
+                                                    État des Lieux
                                                 </h2>
                                                 <p className="text-muted">
                                                     {result.input.address && `${result.input.address}, `}
-                                                    {result.input.city || "Votre copropriété"} •{" "}
-                                                    <span className="font-medium">{result.input.numberOfUnits} lots</span>
+                                                    {result.input.city} • {result.input.numberOfUnits} lots
                                                 </p>
                                             </div>
-                                            {/* View Mode Toggle */}
-                                            <ViewModeToggle />
+                                            <div className="flex items-center gap-4">
+                                                <ViewModeToggle />
+                                            </div>
                                         </div>
 
-                                        {/* New Horizontal Timeline */}
-                                        <div className="w-full pt-4 border-t border-boundary/50">
+                                        <div className="w-full pt-8 border-t border-boundary/50 mt-8">
                                             <DPEGauge currentDPE={result.input.currentDPE} targetDPE={result.input.targetDPE} />
+                                        </div>
+                                    </div>
+
+                                    {/* Benchmark & Chrono Grid */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <div className="h-full">
+                                            {/* Benchmark Card */}
+                                            {/* Assuming MarketBenchmark or BenchmarkChart is the "Neighbors are D" component */}
+                                            {/* Actually BenchmarkChart seems more appropriate for "Voisins" */}
+                                            {/* If MarketBenchmark is better, swap here. */}
+                                            <BenchmarkChart currentDPE={result.input.currentDPE} />
+                                        </div>
+                                        <div className="h-full">
+                                            <ComplianceTimeline
+                                                currentDPE={result.input.currentDPE}
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Score & Urgency Row - REMOVED/INTEGRATED */}
+
                                 {/* 
-                                     * =================================================================================
-                                     * SECTION 1: LE CONTEXTE (L'URGENCE)
-                                     * "Why act now?" - Climate Risk & Compliance Timeline
-                                     * =================================================================================
-                                     */}
-                                <section className="mb-24">
-                                    <div className="mb-8">
-                                        <span className="text-secondary-400 font-bold uppercase tracking-widest text-xs mb-2 block animate-pulse">
-                                            Urgence & Conformité
+                                 * =================================================================================
+                                 * ACTE 2: LE COÛT (LA DOULEUR)
+                                 * "L'Érosion Patrimoniale" - Split Screen VS
+                                 * =================================================================================
+                                 */}
+                                <div className="space-y-8">
+                                    <div className="text-center max-w-2xl mx-auto mb-8">
+                                        <span className="text-danger-400 font-bold uppercase tracking-widest text-xs mb-3 block animate-pulse">
+                                            Le Coût de l'Inaction
                                         </span>
-                                        <h2 className="text-3xl lg:text-4xl font-black text-main leading-tight">
-                                            Le monde change, <br />
-                                            <span className="text-muted">votre immeuble doit s&apos;adapter.</span>
+                                        <h2 className="text-3xl md:text-5xl font-black text-main leading-tight">
+                                            L&apos;immobilisme vous coûte <br />
+                                            <span className="text-danger">de l&apos;argent chaque jour.</span>
                                         </h2>
                                     </div>
 
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-auto lg:h-[420px]">
-                                        <div className="h-full">
-                                            {result.input.coordinates && (
-                                                <ClimateRiskCard coordinates={result.input.coordinates} />
-                                            )}
-                                        </div>
-                                        <div className="h-full">
-                                            <InactionCostCard inactionCost={result.inactionCost} />
-                                        </div>
+                                    {/* THE SPLIT SCREEN COMPARATOR */}
+                                    <ComparisonSplitScreen
+                                        inactionCost={result.inactionCost}
+                                        valuation={result.valuation}
+                                        financing={result.financing}
+                                    />
+
+                                    {/* Inflation Context */}
+                                    <div className="max-w-3xl mx-auto opacity-80 hover:opacity-100 transition-opacity">
+                                        <EnergyInflationChart currentCost={result.inactionCost.currentCost} />
                                     </div>
-                                </section>
+                                </div>
 
 
                                 {/* 
-                                     * =================================================================================
-                                     * SECTION 2: LA TRANSFORMATION (LA VALEUR)
-                                     * "Turn a cost into an investment" - Valuation & ROI
-                                     * =================================================================================
-                                     */}
-                                <section className="mb-24">
-                                    <div className="mb-8 max-w-2xl">
-                                        <span className="text-success-400 font-bold uppercase tracking-widest text-xs mb-2 block">
-                                            Opportunité Patrimoniale
-                                        </span>
-                                        <h2 className="text-3xl lg:text-4xl font-black text-main leading-tight">
-                                            Ne dépensez pas, <br />
-                                            <span className="text-gradient-gold">investissez.</span>
-                                        </h2>
-                                        <p className="text-lg text-muted mt-4 leading-relaxed">
-                                            La rénovation n&apos;est pas une charge, c&apos;est le seul levier pour
-                                            protéger la valeur de votre bien face à l&apos;obsolescence énergétique.
-                                        </p>
+                                 * =================================================================================
+                                 * ACTE 3: LA VALEUR (L'APPÂT)
+                                 * "Transformation en Investissement"
+                                 * =================================================================================
+                                 */}
+                                {/* Act 3 is partially covered by the split screen right side, but let's reinforce it with Value details */}
+                                <div className="space-y-8">
+                                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-boundary/50 pb-6">
+                                        <div>
+                                            <h2 className="text-3xl font-bold text-main">La Valeur Verte</h2>
+                                            <p className="text-muted text-lg">Votre patrimoine revalorisé immédiatement.</p>
+                                        </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-auto lg:h-[450px]">
-                                        {/* 1. Valuation & ROI */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-auto lg:h-[400px]">
                                         <div className="h-full">
                                             <ValuationCard
                                                 valuation={result.valuation}
                                                 financing={result.financing}
                                             />
                                         </div>
-
-                                        {/* 2. Visual Balance (Consolidated CostValue) */}
                                         <div className="h-full">
                                             <CostValueBalance
                                                 cost={result.financing.remainingCost}
@@ -464,126 +482,124 @@ export default function HomePage() {
                                             />
                                         </div>
                                     </div>
-                                </section>
+                                </div>
 
 
                                 {/* 
-                                     * =================================================================================
-                                     * SECTION 3: LES MOYENS (LE FINANCEMENT)
-                                     * "We have the subsidies" - Global Financing
-                                     * =================================================================================
-                                     */}
-                                <section className="mb-24">
-                                    <div className="mb-8">
-                                        <span className="text-primary-400 font-bold uppercase tracking-widest text-xs mb-2 block">
+                                 * =================================================================================
+                                 * ACTE 4: LA RÉVÉLATION (LE MOTEUR CACHÉ)
+                                 * "Financement Global + Subsidy Sniper" - BENTO GRID
+                                 * =================================================================================
+                                 */}
+                                <div className="space-y-8">
+                                    <div className="text-center max-w-3xl mx-auto mb-8">
+                                        <span className="px-3 py-1 bg-gradient-to-r from-primary-900/50 to-primary-800/20 border border-primary-500/30 rounded-full text-xs font-bold text-primary-300 uppercase tracking-wider mb-4 inline-block">
                                             Ingénierie Financière
                                         </span>
-                                        <h2 className="text-3xl lg:text-4xl font-black text-main leading-tight">
-                                            Un financement <br />
-                                            <span className="text-muted">optimisé à l&apos;euro près.</span>
+                                        <h2 className="text-3xl md:text-5xl font-black text-main leading-none mb-6">
+                                            Le Financement "Sniper"
                                         </h2>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 gap-8 mb-8">
-                                        {/* Main Financing Card (Full Width) */}
-                                        <FinancingCard
-                                            financing={result.financing}
-                                            numberOfUnits={result.input.numberOfUnits}
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        {/* Breakdown Chart */}
-                                        <FinancingBreakdownChart financing={result.financing} />
-
-                                        {/* Tantieme Calculator (Moved here as "Personal Check") */}
-                                        <TantiemeCalculator financing={result.financing} />
-                                    </div>
-                                </section>
-
-
-                                {/* 
-                                     * =================================================================================
-                                     * SECTION 4: LE COUP DE POUCE CACHÉ (PROFILS & BONUS)
-                                     * "The Hidden Engine" - Detailed Subsidy Table
-                                     * =================================================================================
-                                     */}
-                                <section className="mb-12">
-                                    <div className="mb-8 text-center max-w-3xl mx-auto">
-                                        <div className="inline-block p-1 px-3 rounded-full bg-primary-900/20 border border-primary-500/30 mb-4">
-                                            <span className="text-primary-300 text-xs font-bold tracking-wide">
-                                                ✨ LE SECRET LE MIEUX GARDÉ
-                                            </span>
-                                        </div>
-                                        <h2 className="text-3xl font-black text-main leading-tight mb-4">
-                                            Des aides individuelles <br />
-                                            <span className="text-muted">jusqu&apos;à 90% de prise en charge.</span>
-                                        </h2>
-                                        <p className="text-muted">
-                                            Au-delà des aides collectives, MaPrimeRénov&apos; Parcours Accompagné offre des primes massives
-                                            pour les ménages aux revenus modestes. Vérifiez votre éligibilité.
+                                        <p className="text-lg text-muted">
+                                            Notre algorithme a détecté les aides spécifiques à votre copropriété et
+                                            à chaque profil individuel.
                                         </p>
                                     </div>
 
-                                    {/* The Full Detail Subsidy Table */}
-                                    <SubsidyTable inputs={result.input} />
-                                </section>
+                                    {/* BENTO GRID LAYOUT */}
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-min">
 
+                                        {/* Large Block: Global Financing Pie (Left) - Span 8 */}
+                                        <div className="md:col-span-12 lg:col-span-8 card-bento min-h-[400px]">
+                                            <h3 className="text-xl font-bold text-main mb-6 flex items-center gap-2">
+                                                🌍 Financement Global du Projet
+                                            </h3>
+                                            <FinancingBreakdownChart financing={result.financing} />
+                                        </div>
 
+                                        {/* Side Block: Key Metrics (Right) - Span 4 */}
+                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6">
+                                            <div className="card-bento bg-gradient-to-br from-surface to-surface-highlight flex-1 flex flex-col justify-center items-center text-center p-6">
+                                                <div className="text-5xl mb-4">🛡️</div>
+                                                <p className="text-sm font-medium text-muted uppercase tracking-wider mb-2">Taux couverture Global</p>
+                                                <p className="text-4xl font-black text-main">
+                                                    {Math.round((1 - (result.financing.remainingCost / result.financing.totalCostHT)) * 100)}%
+                                                </p>
+                                                <p className="text-xs text-subtle mt-2">Prêt 0% inclus</p>
+                                            </div>
 
+                                            {/* Bonus Hunter Card */}
+                                            <div className="card-bento bg-gradient-to-br from-primary-900/10 to-transparent border-primary-500/20 flex-1 p-6 relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-20 h-20 bg-primary-500/20 blur-[40px] rounded-full pointer-events-none" />
+                                                <h4 className="text-lg font-bold text-primary-300 mb-2">Bonus Capturés</h4>
+                                                <ul className="space-y-2 text-sm">
+                                                    {(result.input.currentDPE === 'F' || result.input.currentDPE === 'G') && (
+                                                        <li className="flex items-center gap-2 text-main">
+                                                            ✅ Sortie de Passoire (+10%)
+                                                        </li>
+                                                    )}
+                                                    {result.financing.energyGainPercent >= 50 && (
+                                                        <li className="flex items-center gap-2 text-main">
+                                                            ✅ Rénovation Globale (+45%)
+                                                        </li>
+                                                    )}
+                                                    {result.financing.ceeAmount > 0 && (
+                                                        <li className="flex items-center gap-2 text-main">
+                                                            ✅ Primes CEE
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        </div>
 
-
-
-                                {/* Actions */}
-                                <div className="flex flex-wrap gap-4 mt-12 justify-center items-center pt-4">
-                                    <button
-                                        onClick={handleReset}
-                                        className="btn-secondary flex items-center justify-center gap-2 hover:scale-105 transition-transform"
-                                    >
-                                        ← Nouvelle simulation
-                                    </button>
-
-                                    {/* Cloud Save Button */}
-                                    <button
-                                        onClick={handleSaveToCloud}
-                                        disabled={isSaving}
-                                        className="relative px-6 py-3 rounded-lg text-sm font-semibold
-                                                 bg-primary/10 text-primary hover:bg-primary/20 
-                                                 border border-primary/20 hover:border-primary/30
-                                                 disabled:opacity-50 disabled:cursor-not-allowed
-                                                 transition-all duration-200 shadow-lg shadow-primary/10
-                                                 flex items-center gap-2 hover:scale-105"
-                                    >
-                                        {isSaving ? (
-                                            <>
-                                                <span className="animate-spin">⏳</span>
-                                                <span>Sauvegarde...</span>
-                                            </>
-                                        ) : saveSuccess ? (
-                                            <>
-                                                <span>✅</span>
-                                                <span>Sauvegardé !</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span>💾</span>
-                                                <span>Sauvegarder</span>
-                                            </>
-                                        )}
-                                    </button>
-
-                                    <button
-                                        onClick={handleSave}
-                                        className="btn-secondary flex items-center justify-center gap-2 hover:scale-105 transition-transform"
-                                    >
-                                        💾 Exporter (.valo)
-                                    </button>
-                                    <DownloadPdfButton result={result} />
-                                    <DownloadConvocationButton result={result} />
-                                    <PptxButtonWrapper result={result} />
+                                        {/* THE SUBSIDY MATRI X (Full Width) - Span 12 */}
+                                        <div className="md:col-span-12">
+                                            {/* We use the SubsidyTable component which handles its own internal layout */}
+                                            <SubsidyTable inputs={simulationInputs} />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {/* Legal Footer */}
+
+                                {/* 
+                                 * =================================================================================
+                                 * ACTE 5: L'INDIVIDUALISATION (LE "MOI")
+                                 * "Votre Effort Réel" - Tantieme Calculator with Profile Link
+                                 * =================================================================================
+                                 */}
+                                <div className="space-y-8 pb-12">
+                                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                        <div>
+                                            <h2 className="text-3xl font-black text-main mb-2">Votre Réalité</h2>
+                                            <p className="text-muted text-lg">Simulez votre mensualité précise en fonction de votre situation.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                        <div className="lg:col-span-2">
+                                            <TantiemeCalculator
+                                                financing={result.financing}
+                                                simulationInputs={simulationInputs}
+                                            />
+                                        </div>
+                                        <div className="lg:col-span-1 space-y-4">
+                                            {/* Call to Actions */}
+                                            <div className="card-bento p-6 flex flex-col justify-center items-center text-center h-full gap-4 bg-primary-900/5 hover:bg-primary-900/10 transition-colors border-primary-500/20">
+                                                <h3 className="font-bold text-main">Prêt à voter ?</h3>
+                                                <p className="text-sm text-muted">Téléchargez la synthèse pour votre AG.</p>
+                                                <div className="flex flex-col gap-3 w-full">
+                                                    <DownloadPdfButton result={result} />
+                                                    <button
+                                                        onClick={handleSaveToCloud}
+                                                        className="w-full py-2.5 rounded-lg text-sm font-semibold border border-boundary/50 hover:bg-surface-hover transition-colors"
+                                                    >
+                                                        Sauvegarder le projet
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <LegalWarning variant="banner" className="mt-8" />
                             </StaggerContainer>
                         </motion.section>

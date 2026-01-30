@@ -169,11 +169,11 @@ export const ClimateRiskCard = ({ coordinates }: ClimateRiskCardProps) => {
                             fillOpacity={1}
                             fill="url(#colorTemp)"
                         />
-                        <ReferenceLine y={chartData[0].temp} stroke="#374151" strokeDasharray="3 3" />
+                        <ReferenceLine y={chartData[0]?.temp ?? 0} stroke="#374151" strokeDasharray="3 3" />
                     </AreaChart>
                 </ResponsiveContainer>
                 <div className="absolute top-2 left-4 text-xs text-white/40 font-mono">
-                    +{(chartData[chartData.length - 1].temp - chartData[0].temp).toFixed(1)}°C vs 2020
+                    +{((chartData[chartData.length - 1]?.temp ?? 0) - (chartData[0]?.temp ?? 0)).toFixed(1)}°C vs 2020
                 </div>
             </div>
 
