@@ -463,6 +463,46 @@ Effort Réel = Mensualité Crédit − (Économie Énergie Mensuelle)
 | **Linting** | ESLint | Qualité code |
 | **Type Checking** | TypeScript | `npx tsc --noEmit` |
 
+## 7.4 Déploiement (CI/CD)
+
+| Aspect | Configuration |
+|--------|---------------|
+| **Plateforme** | Vercel |
+| **Trigger** | Push sur la branche `main` |
+| **Pipeline GitHub Actions** | Tests (`npm run test`) + Linter (`npm run lint`) doivent passer avant déploiement |
+| **Preview Deployments** | Créées automatiquement pour chaque Pull Request |
+| **Production** | `main` branch uniquement |
+
+### Workflow de mise en prod
+
+```bash
+# 1. Développement sur branche feature
+git checkout -b feature/ma-nouvelle-fonctionnalite
+
+# 2. Commit & Push
+git add .
+git commit -m "feat: ajout de X"
+git push origin feature/ma-nouvelle-fonctionnalite
+
+# 3. Créer une Pull Request (GitHub)
+# → Vercel déploie une preview automatiquement
+# → GitHub Actions exécute tests + lint
+
+# 4. Merge sur main après review
+# → Vercel déploie en production automatiquement
+```
+
+### Variables d'environnement Vercel
+
+Configurez ces variables dans le dashboard Vercel :
+
+| Variable | Obligatoire | Description |
+|----------|-------------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | ✅ | URL projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Clé anonyme Supabase (lecture) |
+| `SUPABASE_SERVICE_ROLE_KEY` | ⚠️ | Clé service (écriture admin) — ne pas exposer côté client |
+| `NEXT_PUBLIC_SENTRY_DSN` | ❌ | Monitoring d'erreurs (optionnel) |
+
 ---
 
 # 8. SÉCURITÉ, TESTS & GDPR
@@ -674,6 +714,72 @@ flowchart LR
 ---
 
 # 13. ANNEXE — CATALOGUE COMPLÉMENTAIRE
+
+## 13.0 🗺️ CARTOGRAPHIE DU PROJET (FILE TREE)
+
+```
+valo-syndic/
+├── .github/              # Workflows CI/CD
+├── docs/                 # Documentation (ROADMAP, archives)
+│   ├── archive/          # Documents historiques
+│   └── assets/           # Images de référence
+├── extension/            # Extension Chrome/Firefox "Ghost"
+│   ├── icons/            # Icônes extension
+│   ├── manifest.json     # Config extension
+│   ├── popup.html        # Interface popup
+│   └── ...
+├── public/               # Assets statiques (fonts, images)
+│   └── data/             # Données JSON locales (fallbacks)
+├── scripts/              # Scripts Node.js (imports data)
+│   └── data-import/      # Import ADEME, BDNB
+├── src/
+│   ├── actions/          # Next.js Server Actions
+│   ├── app/              # Next.js App Router (pages)
+│   ├── components/
+│   │   ├── auth/         # Authentification
+│   │   ├── business/     # Composants Métier (ValuationCard, FinancingCard...)
+│   │   ├── dashboard/    # Composants Dashboard
+│   │   ├── debug/        # Outils debug
+│   │   ├── import/       # Import données (extension)
+│   │   ├── layout/       # Layouts (Header, Footer)
+│   │   ├── pdf/          # Templates React-PDF
+│   │   └── ui/           # Design System (boutons, badges...)
+│   ├── hooks/            # React hooks personnalisés
+│   ├── lib/
+│   │   ├── ai/           # Intégrations IA
+│   │   ├── api/          # Wrappers API externes
+│   │   ├── data/         # Services données locales
+│   │   ├── pptx/         # Moteur PowerPoint
+│   │   ├── services/     # Services métier
+│   │   ├── __tests__/    # Tests unitaires
+│   │   ├── calculator.ts         # 🧮 MOTEUR DE CALCUL (Core)
+│   │   ├── constants.ts          # 📋 CONSTANTES (Taux, Barèmes)
+│   │   ├── market-data.ts        # Données marché
+│   │   ├── schemas.ts            # Validation Zod
+│   │   ├── subsidy-calculator.ts # Moteur aides
+│   │   └── supabaseClient.ts     # Client Supabase
+│   └── stores/           # Zustand Stores
+├── supabase/             # SQL & Migrations
+│   ├── migrations/
+│   ├── scripts/
+│   └── *.sql             # Schémas tables
+├── tests/                # Tests E2E Playwright
+├── .env.local            # Variables d'environnement (local)
+├── .env.example          # Template variables
+├── LE_CENTRE.md          # 📖 BIBLE DU PROJET (ce document)
+├── README.md             # Point d'entrée GitHub
+└── ...config files       # tailwind, next, tsconfig, etc.
+```
+
+**Fichiers critiques à connaître :**
+| Fichier | Pourquoi ? |
+|---------|------------|
+| `src/lib/calculator.ts` | Moteur de calcul financier — ne pas toucher sans tests |
+| `src/lib/constants.ts` | Toutes les constantes réglementaires — MAJ régulière |
+| `src/lib/schemas.ts` | Types TypeScript + Validation Zod — Single Source of Truth |
+| `.env.local` | Variables sensibles — ne jamais commit |
+
+---
 
 Cette section recense l'ensemble des modules, composants et utilitaires présents dans le repo, **organisés par domaine fonctionnel**. Chaque entrée indique sa criticité et son statut de documentation.
 
@@ -978,12 +1084,50 @@ Système de réponses aux objections classiques en AG.
 | `sentry.server.config.ts` | Config Sentry (server) | Standard |
 | `sentry.edge.config.ts` | Config Sentry (edge) | Standard |
 
-### 13.11.3 Environnement
+### 13.11.3 Environnement — Variables Requises
 
+**Fichiers :**
 | Fichier | Rôle |
 |---------|------|
-| `.env.example` | Template variables d'environnement |
-| `.env.local` | Variables locales (non commit) |
+| `.env.example` | Template variables (sans valeurs secrètes) |
+| `.env.local` | Variables locales (non commit, dans .gitignore) |
+
+**Variables Obligatoires (l'app ne démarre pas sans) :**
+```bash
+# SUPABASE — Base de données
+NEXT_PUBLIC_SUPABASE_URL=https://xyz.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+```
+
+**Variables Optionnelles (fonctionnalités avancées) :**
+```bash
+# AUTHENTIFICATION — Si mode SaaS activé
+SUPABASE_SERVICE_ROLE_KEY=eyJ...  # ⚠️ Server-side uniquement !
+
+# SENTRY — Monitoring d'erreurs (optionnel)
+NEXT_PUBLIC_SENTRY_DSN=https://...@sentry.io/...
+SENTRY_AUTH_TOKEN=...
+
+# API EXTERNES — Si usage server-side spécifique
+# (La plupart des APIs gouv sont ouvertes sans clé)
+```
+
+**⚠️ RÈGLES DE SÉCURITÉ :**
+| Règle | Pourquoi ? |
+|-------|------------|
+| `NEXT_PUBLIC_*` = exposé au client | Utiliser uniquement pour clés publiques (Supabase anon) |
+| Sans préfixe = server-side uniquement | `SUPABASE_SERVICE_ROLE_KEY` ne doit JAMAIS être exposée |
+| `.env.local` dans `.gitignore` | Empêche le commit accidentel de secrets |
+
+**Configuration initiale :**
+```bash
+# 1. Copier le template
+cp .env.example .env.local
+
+# 2. Remplir avec vos valeurs (éditer .env.local)
+# 3. Vérifier que .env.local est bien dans .gitignore
+cat .gitignore | grep env  # Doit afficher .env.local
+```
 
 ---
 
@@ -1135,6 +1279,9 @@ mv docs/VERIFICATION_MATHEMATIQUE_MPR_2026.md docs/archive/
 | 2026-01-31 | JB | Création initiale de LE_CENTRE.md | Tout |
 | 2026-01-31 | JB | Ajout pitch non-dev, sommaire expliqué, message IA | Début du doc |
 | 2026-01-31 | JB | Nettoyage documents obsolètes | §14 |
+| 2026-01-31 | JB | Ajout §13.0 Cartographie projet (file tree) | §13.0 |
+| 2026-01-31 | JB | Ajout §7.4 Déploiement CI/CD (Vercel) | §7.4 |
+| 2026-01-31 | JB | Complétion §13.11.3 Variables d'environnement | §13.11.3 |
 
 **Comment ajouter une entrée :**
 ```
