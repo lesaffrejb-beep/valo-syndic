@@ -48,29 +48,27 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
     return (
         <motion.div
             ref={ref}
-            className={`card-bento p-8 ${className}`}
+            className={`card-bento p-8 md:p-10 ${className}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <h3 className="text-xl font-bold text-main mb-8 flex items-center gap-2">
-                ⏳ Calendrier Loi Climat & Résilience
-            </h3>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
+                <h3 className="text-xl md:text-2xl font-bold text-main flex items-center gap-3">
+                    <span className="text-3xl">⏳</span>
+                    <span>Calendrier Loi Climat</span>
+                </h3>
+            </div>
 
-            <div className="relative">
-                {/* Ligne de temps - Verticale Mobile / Horizontale Desktop */}
-                {/* Mobile Line (Vertical Left) */}
-                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-danger via-warning to-boundary md:hidden" />
+            <div className="relative pt-4 pb-4">
+                {/* Ligne de temps - Connecteur Premium */}
+                {/* Mobile (Vertical) */}
+                <div className="absolute left-6 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-boundary to-transparent md:hidden" />
 
-                {/* Desktop Line (Horizontal Center) */}
-                <motion.div
-                    className="absolute hidden md:block top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-danger via-warning to-boundary transform -translate-y-1/2 z-0"
-                    initial={{ scaleX: 0, originX: 0 }}
-                    animate={isInView ? { scaleX: 1 } : {}}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                />
+                {/* Desktop (Horizontal) */}
+                <div className="absolute hidden md:block top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-boundary to-transparent -translate-y-1/2" />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative z-10">
                     {entries.map(({ dpe, date, isPast, isCurrent }, index) => {
                         const status = DPE_STATUS_LABELS[dpe];
                         const isCurrentDPE = dpe === currentDPE;
@@ -78,99 +76,97 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                         return (
                             <motion.div
                                 key={dpe}
-                                className={`relative pl-12 md:pl-0 md:pt-12 md:text-center group ${isCurrentDPE ? "scale-[1.02]" : ""}`}
+                                className={`relative pl-16 md:pl-0 md:pt-16 group`}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{
                                     duration: 0.5,
-                                    delay: 0.2 + index * 0.15,
-                                    ease: [0.25, 0.46, 0.45, 0.94]
+                                    delay: 0.1 + index * 0.1,
+                                    ease: "easeOut"
                                 }}
                             >
-                                {/* Point sur la timeline */}
-                                <motion.div
-                                    className={`absolute left-2.5 md:left-1/2 md:-translate-x-1/2 md:top-1/2 md:-translate-y-1/2 w-4 h-4 rounded-full border-2 z-20 ${isPast
-                                        ? "bg-danger border-danger"
+                                {/* Point d'ancrage sur la timeline */}
+                                <div className={`absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 md:top-1/2 md:-translate-y-1/2 w-4 h-4 rounded-full border-2 bg-app z-20 transition-all duration-500
+                                    ${isPast
+                                        ? "border-danger shadow-glow-danger"
                                         : isCurrentDPE
-                                            ? "bg-warning border-warning"
-                                            : "bg-surface border-boundary"
-                                        }`}
-                                    initial={{ scale: 0 }}
-                                    animate={isInView ? {
-                                        scale: 1,
-                                        ...(isCurrentDPE ? {
-                                            boxShadow: ["0 0 0 0 rgba(212, 182, 121, 0)", "0 0 0 12px rgba(212, 182, 121, 0.3)", "0 0 0 0 rgba(212, 182, 121, 0)"]
-                                        } : {})
-                                    } : {}}
-                                    transition={isCurrentDPE
-                                        ? { scale: { delay: 0.3 + index * 0.15 }, boxShadow: { repeat: Infinity, duration: 2 } }
-                                        : { delay: 0.3 + index * 0.15 }
-                                    }
+                                            ? "border-warning scale-125 shadow-glow-warning"
+                                            : "border-boundary"
+                                    }`}
                                 />
 
                                 {/* Card Content */}
-                                <motion.div
-                                    className={`p-4 rounded-xl border h-full flex flex-col justify-between ${isCurrentDPE
-                                        ? "bg-warning/10 border-warning/30 shadow-lg shadow-warning/5"
+                                <div className={`relative p-6 rounded-2xl border transition-all duration-300 h-full flex flex-col items-start md:items-center md:text-center
+                                    ${isCurrentDPE
+                                        ? "bg-gradient-to-b from-warning/10 to-warning/5 border-warning/40 shadow-glow-warning ring-1 ring-warning/20 transform md:-translate-y-4"
                                         : isPast
-                                            ? "bg-danger/10 border-danger/30"
-                                            : "bg-surface/50 border-boundary" // More transparent background
-                                        }`}
-                                    whileHover={{ y: -5 }}
+                                            ? "bg-danger/5 border-danger/20 opacity-80 hover:opacity-100"
+                                            : "bg-surface/30 border-white/5 hover:bg-surface/50 hover:border-white/10"
+                                    }`}
                                 >
-                                    <div className="mb-2">
-                                        <div className="flex items-center md:justify-center gap-2 mb-2">
-                                            <span className="text-2xl">{status.emoji}</span>
-                                            <span className="font-bold text-main text-lg">DPE {dpe}</span>
-                                        </div>
-                                        <div className={`text-sm font-bold uppercase tracking-wider ${isPast ? "text-danger" : "text-muted"}`}>
+                                    {/* Date & Badge */}
+                                    <div className="flex flex-col md:items-center gap-1 mb-4 w-full">
+                                        <div className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full w-fit
+                                            ${isPast
+                                                ? "bg-danger/10 text-danger"
+                                                : isCurrentDPE
+                                                    ? "bg-warning/10 text-warning border border-warning/20"
+                                                    : "bg-white/5 text-muted"
+                                            }`}
+                                        >
                                             {formatDate(date)}
                                         </div>
                                     </div>
 
-                                    {isCurrentDPE && (
-                                        <div className="my-2 flex justify-center">
-                                            <span className="text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">
-                                                Votre Bien
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    <div className="mt-2 text-sm leading-snug">
-                                        {isPast ? (
-                                            <span className="text-danger-300 font-medium">
-                                                Location Interdite
-                                            </span>
-                                        ) : (
-                                            <span className="text-muted">
-                                                Interdit dans <br />
-                                                <span className="text-main font-bold text-base">
-                                                    {Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30))} mois
-                                                </span>
+                                    {/* Lettre DPE */}
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className={`text-4xl font-black tracking-tighter ${isCurrentDPE ? 'text-warning' : 'text-main'}`}>
+                                            {dpe}
+                                        </span>
+                                        {isCurrentDPE && (
+                                            <span className="text-[10px] font-bold text-app bg-warning px-2 py-0.5 rounded uppercase tracking-wide">
+                                                Actuel
                                             </span>
                                         )}
                                     </div>
-                                </motion.div>
+
+                                    {/* Description Status */}
+                                    <p className={`text-sm leading-relaxed ${isCurrentDPE ? 'text-white' : 'text-muted'}`}>
+                                        {isPast ? (
+                                            <span className="text-danger-300 font-medium flex items-center gap-2 md:justify-center">
+                                                <span>🚫</span> Interdiction en cours
+                                            </span>
+                                        ) : (
+                                            <>
+                                                Interdit à la location dans <br />
+                                                <span className={`block text-lg font-bold mt-1 ${isCurrentDPE ? 'text-warning' : 'text-main'}`}>
+                                                    {Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30))} mois
+                                                </span>
+                                            </>
+                                        )}
+                                    </p>
+                                </div>
                             </motion.div>
                         );
                     })}
                 </div>
             </div>
 
-            {/* Alerte Contextuelle Footer */}
+            {/* Alert Footer Compact */}
             {(currentDPE === "G" || currentDPE === "F" || currentDPE === "E") && (
-                <motion.div
-                    className="mt-8 p-4 bg-danger-900/20 border border-danger-500/30 rounded-xl flex items-center gap-4 max-w-2xl mx-auto"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 1 }}
-                >
-                    <span className="text-2xl">⚠️</span>
-                    <p className="text-sm text-danger-200">
-                        <span className="font-bold text-danger-400">Attention :</span> Votre copropriété est directement menacée par ce calendrier.
-                        Sans travaux, les logements classés {currentDPE} deviendront progressivement impropres à la location.
-                    </p>
-                </motion.div>
+                <div className="mt-12 pt-8 border-t border-white/5">
+                    <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-danger-900/20 to-transparent border-l-2 border-danger-500">
+                        <span className="text-2xl pt-0.5">⚠️</span>
+                        <div>
+                            <p className="text-sm text-danger-200 leading-relaxed font-medium">
+                                Risque locatif majeur identifié.
+                            </p>
+                            <p className="text-xs text-danger-300/60 mt-1">
+                                Les biens classés {currentDPE} subiront une décote rapide avant la date butoir.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             )}
         </motion.div>
     );

@@ -83,6 +83,9 @@ const config: Config = {
             },
             boxShadow: {
                 'glow': '0 0 20px rgba(212, 182, 121, 0.15)',
+                'glow-active': '0 0 30px rgba(212, 182, 121, 0.3)',
+                'glow-danger': '0 0 25px rgba(239, 68, 68, 0.4)',
+                'glow-warning': '0 0 25px rgba(245, 158, 11, 0.4)',
             },
         },
     },
