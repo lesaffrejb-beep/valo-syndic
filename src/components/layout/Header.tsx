@@ -51,7 +51,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                 <div className="flex items-center justify-between h-16">
 
                     {/* Logo Section - Premium Style */}
-                    <a href="/" className="group flex items-center gap-3">
+                    <Link href="/" className="group flex items-center gap-3">
                         {brand.logoUrl ? (
                             <div className="relative">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -82,7 +82,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                                 Diagnostic Patrimonial
                             </span>
                         </div>
-                    </a>
+                    </Link>
 
 
 
