@@ -449,7 +449,7 @@ export default function HomePage() {
                             {/* Import Button moved to bottom */}
                             <div className="flex justify-center mt-8 pt-8 border-t border-white/5">
                                 <div className="flex flex-col items-center gap-2">
-                                    {/* <span className="text-xs text-muted uppercase tracking-wider font-medium">Déjà client ?</span> */}{/* Removed as per request */}
+
                                     <JsonImporter onImport={handleGhostImport} />
                                 </div>
                             </div>
