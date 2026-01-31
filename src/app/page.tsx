@@ -554,13 +554,11 @@ export default function HomePage() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                        <div className="lg:col-span-2">
-                                            <TantiemeCalculator
-                                                financing={result.financing}
-                                                simulationInputs={simulationInputs}
-                                            />
-                                        </div>
+                                    <div className="w-full">
+                                        <TantiemeCalculator
+                                            financing={result.financing}
+                                            simulationInputs={simulationInputs}
+                                        />
                                     </div>
 
                                     {/* Action Buttons - Centered Below */}

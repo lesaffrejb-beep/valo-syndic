@@ -60,7 +60,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                 </h3>
             </div>
 
-            <div className="relative py-2">
+            <div className="relative py-0">
                 {/* Ligne de temps - Connecteur Premium */}
                 {/* Mobile (Vertical) */}
                 <div className="absolute left-6 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-boundary to-transparent md:hidden" />
@@ -154,15 +154,15 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
 
             {/* Alert Footer Compact */}
             {(currentDPE === "G" || currentDPE === "F" || currentDPE === "E") && (
-                <div className="mt-12 pt-8 border-t border-white/5">
-                    <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-danger-900/20 to-transparent border-l-2 border-danger-500">
-                        <span className="text-2xl pt-0.5">⚠️</span>
+                <div className="mt-8 pt-6 border-t border-white/5">
+                    <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-danger-900/30 to-transparent border-l-4 border-danger-500">
+                        <span className="text-3xl">⚠️</span>
                         <div>
-                            <p className="text-sm text-danger-200 leading-relaxed font-medium">
+                            <p className="text-base text-danger-200 font-bold leading-tight">
                                 Risque locatif majeur identifié.
                             </p>
-                            <p className="text-xs text-danger-300/60 mt-1">
-                                Les biens classés {currentDPE} subiront une décote rapide avant la date butoir.
+                            <p className="text-sm text-danger-300/80 mt-1">
+                                Les biens classés <strong className="text-danger-100">{currentDPE}</strong> subiront une décote rapide avant la date butoir.
                             </p>
                         </div>
                     </div>

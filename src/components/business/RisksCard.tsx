@@ -20,7 +20,8 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
 
     useEffect(() => {
         if (!coordinates) {
-            setRisks(null);
+            // [MOD] If no coordinates, show default safe state instead of nothing
+            setRisks(riskService.getDefaultRisk());
             return;
         }
 
@@ -28,6 +29,10 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
         riskService
             .fetchRisks(coordinates.latitude, coordinates.longitude)
             .then(setRisks)
+            .catch(() => {
+                // [MOD] On error, fallback to safe state
+                setRisks(riskService.getDefaultRisk());
+            })
             .finally(() => setLoading(false));
     }, [coordinates]);
 
@@ -48,10 +53,13 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
         );
     }
 
-    // Pas de données
-    if (!risks) return null;
+    // Pas de données (Fallback sur safe state si jamais)
+    if (!risks && !loading) return null; // Should not happen with new logic, but safe keep.
 
-    const hasInondation = risks.inondation;
+    // Safety check for risks object before destructuring
+    const safeRisks = risks || riskService.getDefaultRisk();
+    const hasInondation = safeRisks.inondation;
+    const currentRisks = safeRisks;
 
     return (
         <div className="card-obsidian h-full min-h-[350px] flex flex-col p-6 relative overflow-hidden group">
@@ -86,56 +94,56 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                 <RiskItem
                     icon="🧱"
                     label="Argiles (Fissures)"
-                    status={risks.argile >= 2 ? 'warning' : 'success'}
-                    value={risks.argile >= 2 ? (risks.argileLabel || 'Moyen / Fort') : 'Faible'}
+                    status={currentRisks.argile >= 2 ? 'warning' : 'success'}
+                    value={currentRisks.argile >= 2 ? (currentRisks.argileLabel || 'Moyen / Fort') : 'Faible'}
                 />
 
                 {/* Mouvements de terrain */}
                 <RiskItem
                     icon="🏔️"
                     label="Mouvements Terrain"
-                    status={risks.mouvementTerrain ? 'warning' : 'success'}
-                    value={risks.mouvementTerrain ? 'Zone Identifiée' : 'Non concerné'}
+                    status={currentRisks.mouvementTerrain ? 'warning' : 'success'}
+                    value={currentRisks.mouvementTerrain ? 'Zone Identifiée' : 'Non concerné'}
                 />
 
                 {/* Radon */}
                 <RiskItem
                     icon="☢️"
                     label="Radon"
-                    status={risks.radon >= 3 ? 'warning' : 'success'}
-                    value={risks.radon >= 3 ? 'Significatif' : 'Faible'}
+                    status={currentRisks.radon >= 3 ? 'warning' : 'success'}
+                    value={currentRisks.radon >= 3 ? 'Significatif' : 'Faible'}
                 />
 
                 {/* Sismicité */}
                 <RiskItem
                     icon="📉"
                     label="Sismicité"
-                    status={risks.sismicite >= 3 ? 'warning' : 'success'}
-                    value={risks.sismicite >= 3 ? 'À surveiller' : 'Faible'}
+                    status={currentRisks.sismicite >= 3 ? 'warning' : 'success'}
+                    value={currentRisks.sismicite >= 3 ? 'À surveiller' : 'Faible'}
                 />
 
                 {/* Technologique */}
                 <RiskItem
                     icon="🏭"
                     label="Risque Industriel"
-                    status={risks.technologique ? 'warning' : 'success'}
-                    value={risks.technologique ? 'Zone Seveso' : 'Non concerné'}
+                    status={currentRisks.technologique ? 'warning' : 'success'}
+                    value={currentRisks.technologique ? 'Zone Seveso' : 'Non concerné'}
                 />
 
                 {/* Minier */}
                 <RiskItem
                     icon="⛏️"
                     label="Risque Minier"
-                    status={risks.minier ? 'warning' : 'success'}
-                    value={risks.minier ? 'Zone Minière' : 'Non concerné'}
+                    status={currentRisks.minier ? 'warning' : 'success'}
+                    value={currentRisks.minier ? 'Zone Minière' : 'Non concerné'}
                 />
 
                 {/* Feux de forêt */}
                 <RiskItem
                     icon="🔥"
                     label="Feux de Forêt"
-                    status={risks.feuxForet ? 'warning' : 'success'}
-                    value={risks.feuxForet ? 'Exposition' : 'Faible'}
+                    status={currentRisks.feuxForet ? 'warning' : 'success'}
+                    value={currentRisks.feuxForet ? 'Exposition' : 'Faible'}
                 />
             </div>
 
