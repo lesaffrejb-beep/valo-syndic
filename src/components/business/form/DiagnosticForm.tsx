@@ -23,18 +23,7 @@ interface DiagnosticFormProps {
     };
 }
 
-// Données démo pour "Copro Type Angers"
-const DEMO_DATA = {
-    address: "15 rue de Rennes",
-    postalCode: "49100",
-    city: "Angers",
-    currentDPE: "G" as DPELetter,
-    targetDPE: "C" as DPELetter,
-    numberOfUnits: 45,
-    estimatedCostHT: 850000,
-    averagePricePerSqm: 3200,
-    averageUnitSurface: 65,
-};
+
 
 const DPE_OPTIONS: DPELetter[] = ["A", "B", "C", "D", "E", "F", "G"];
 
@@ -178,37 +167,11 @@ export function DiagnosticForm({ onSubmit, isLoading = false, initialData }: Dia
         onSubmit(result.data);
     };
 
-    // Démo Flash : pré-remplit le formulaire avec une copro type
-    const loadDemo = () => {
-        if (!formRef.current) return;
 
-        const form = formRef.current;
-        (form.elements.namedItem("address") as HTMLInputElement).value = DEMO_DATA.address;
-        (form.elements.namedItem("postalCode") as HTMLInputElement).value = DEMO_DATA.postalCode;
-        setLocalZone("ANGERS"); // Force update state
-        (form.elements.namedItem("city") as HTMLInputElement).value = DEMO_DATA.city;
-        (form.elements.namedItem("currentDPE") as HTMLSelectElement).value = DEMO_DATA.currentDPE;
-        (form.elements.namedItem("targetDPE") as HTMLSelectElement).value = DEMO_DATA.targetDPE;
-        (form.elements.namedItem("numberOfUnits") as HTMLInputElement).value = String(DEMO_DATA.numberOfUnits);
-        (form.elements.namedItem("commercialLots") as HTMLInputElement).value = "2"; // 2 lots commerciaux
-        (form.elements.namedItem("estimatedCostHT") as HTMLInputElement).value = String(DEMO_DATA.estimatedCostHT);
-        (form.elements.namedItem("localAidAmount") as HTMLInputElement).value = "0";
-        (form.elements.namedItem("averagePricePerSqm") as HTMLInputElement).value = String(DEMO_DATA.averagePricePerSqm);
-        (form.elements.namedItem("averageUnitSurface") as HTMLInputElement).value = String(DEMO_DATA.averageUnitSurface);
-    };
 
     return (
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-            {/* Bouton Démo Flash */}
-            <div className="flex justify-end">
-                <button
-                    type="button"
-                    onClick={loadDemo}
-                    className="text-sm text-primary hover:text-primary-400 hover:underline flex items-center gap-1 transition-colors"
-                >
-                    📋 Charger un exemple
-                </button>
-            </div>
+
 
             {/* Adresse (optionnelle) */}
             {/* Adresse (Autocomplete & Enrichissement) */}
