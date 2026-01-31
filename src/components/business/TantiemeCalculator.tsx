@@ -126,32 +126,32 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
     return (
         <div className={`card-bento p-0 flex flex-col h-full ${className}`}>
             {/* Header */}
-            <div className="p-6 pb-2">
+            <div className="p-8 pb-4">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-900/50 to-primary-800/20 rounded-xl flex items-center justify-center border border-primary-500/20 shadow-glow-sm">
-                            <span className="text-primary-400 text-lg">🧮</span>
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary-900/50 to-primary-800/20 rounded-xl flex items-center justify-center border border-primary-500/20 shadow-glow-sm">
+                            <span className="text-primary-400 text-2xl">🧮</span>
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-main">Simulateur Individuel</h3>
-                            <p className="text-xs text-muted">Ajustez selon votre quote-part</p>
+                            <h3 className="text-2xl font-bold text-main">Simulateur Individuel</h3>
+                            <p className="text-sm text-muted mt-0.5">Ajustez selon votre quote-part</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Profile Selector */}
                 {simulationInputs && (
-                    <div className="flex bg-surface-highlight rounded-lg p-1 mt-4 gap-1">
+                    <div className="flex bg-surface-highlight rounded-xl p-1.5 mt-6 gap-2">
                         {PROFILE_OPTIONS.map((profile) => (
                             <button
                                 key={profile.id}
                                 onClick={() => setSelectedProfile(selectedProfile === profile.id ? null : profile.id)}
-                                className={`flex-1 py-1.5 rounded-md text-[10px] font-medium transition-all ${selectedProfile === profile.id
+                                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${selectedProfile === profile.id
                                     ? 'bg-surface shadow text-main ring-1 ring-primary-500/50'
                                     : 'text-muted hover:text-main'
                                     }`}
                             >
-                                <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${profile.color} opacity-80`} />
+                                <span className={`inline-block w-2.5 h-2.5 rounded-full mr-2 ${profile.color} opacity-80`} />
                                 {profile.label}
                             </button>
                         ))}
@@ -160,38 +160,38 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 p-6 pt-4 flex flex-col justify-between">
+            <div className="flex-1 p-8 pt-4 flex flex-col justify-between gap-6">
 
                 {/* Hero Metric: Monthly Payment */}
-                <div className="text-center mb-6">
-                    <p className="text-xs text-primary-300 font-medium uppercase tracking-wide mb-2 opacity-80">
+                <div className="text-center mb-2">
+                    <p className="text-sm text-primary-300 font-bold uppercase tracking-widest mb-3 opacity-80">
                         Votre effort d&apos;épargne
                     </p>
-                    <div className="flex items-end justify-center gap-1.5 text-primary-100">
-                        <span className="text-6xl font-black tracking-tighter drop-shadow-xl text-gradient-gold">
+                    <div className="flex items-end justify-center gap-2 text-primary-100">
+                        <span className="text-7xl font-black tracking-tighter drop-shadow-2xl text-gradient-gold">
                             {Math.round(calculation.monthlyPayment)}
                         </span>
-                        <div className="flex flex-col text-left mb-2">
-                            <span className="text-xl font-bold text-primary-400">€</span>
-                            <span className="text-xs font-medium text-muted">/mois</span>
+                        <div className="flex flex-col text-left mb-4">
+                            <span className="text-2xl font-bold text-primary-400 leading-none">€</span>
+                            <span className="text-sm font-semibold text-muted leading-none mt-1">/mois</span>
                         </div>
                     </div>
-                    <div className="mt-3 inline-flex items-center px-3 py-1 bg-primary-900/10 border border-primary-500/10 rounded-full">
-                        <span className="text-[10px] text-primary-400">
+                    <div className="mt-4 inline-flex items-center px-4 py-1.5 bg-primary-900/20 border border-primary-500/20 rounded-full">
+                        <span className="text-xs font-medium text-primary-300">
                             Prêt Taux Zéro sur {calculation.durationYears} ans
                         </span>
                     </div>
                 </div>
 
                 {/* Slider Control */}
-                <div className="mb-6">
-                    <div className="flex justify-between items-center mb-3">
-                        <label htmlFor="tantiemes" className="text-sm font-medium text-main">
-                            Quote-part : <span className="text-primary-400 font-bold">{tantiemes}</span> <span className="text-muted text-xs">/ 1000èmes</span>
+                <div className="mb-2">
+                    <div className="flex justify-between items-center mb-4">
+                        <label htmlFor="tantiemes" className="text-base font-semibold text-main">
+                            Quote-part : <span className="text-primary-400 font-bold text-lg">{tantiemes}</span> <span className="text-muted text-sm font-normal">/ 1000èmes</span>
                         </label>
                     </div>
 
-                    <div className="relative h-8 flex items-center mb-4">
+                    <div className="relative h-10 flex items-center mb-6">
                         <input
                             type="range"
                             id="tantiemes"
@@ -199,18 +199,18 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                             max={400}
                             value={tantiemes}
                             onChange={(e) => setTantiemes(Number(e.target.value))}
-                            className="w-full h-3 bg-surface-hover rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-surface-highlight ring-1 ring-white/10"
+                            className="w-full h-4 bg-surface-hover rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-surface-highlight ring-1 ring-white/10"
                         />
                     </div>
 
                     {/* Presets */}
-                    <div className="flex justify-between gap-1 overflow-x-auto pb-1 no-scrollbar">
+                    <div className="flex justify-between gap-2 overflow-x-auto pb-2 no-scrollbar">
                         {presets.map((preset) => (
                             <button
                                 key={preset.label}
                                 onClick={() => setTantiemes(preset.val)}
-                                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-all border ${tantiemes === preset.val
-                                    ? 'bg-primary-900/30 text-primary-300 border-primary-500/30'
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border ${tantiemes === preset.val
+                                    ? 'bg-primary-900/30 text-primary-300 border-primary-500/30 shadow-glow-sm'
                                     : 'bg-surface-highlight text-muted border-transparent hover:bg-surface-hover hover:text-main'
                                     }`}
                             >
@@ -221,37 +221,29 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                 </div>
 
                 {/* Detail Breakdown */}
-                <div className="grid grid-cols-2 gap-3 mt-auto">
-                    <div className="bg-surface-highlight/50 rounded-xl p-3 border border-boundary/40 text-center">
-                        <p className="text-[10px] text-muted uppercase tracking-wider mb-1">Total Projet</p>
-                        <p className="text-lg font-bold text-main">
+                <div className="grid grid-cols-2 gap-4 mt-auto">
+                    <div className="bg-surface-highlight/40 rounded-2xl p-4 border border-boundary/40 text-center hover:bg-surface-highlight/60 transition-colors">
+                        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Total Projet</p>
+                        <p className="text-2xl font-black text-main tracking-tight">
                             {formatCurrency(calculation.partLotTotal)}
                         </p>
                     </div>
-                    {/* Wait, partLotCash layout logic from before was misleading if we switch to profile logic 
-                        which focuses on monthly payment. 
-                        Let's keep it simple: 
-                        If profile active: Show Total Cost (before aid) vs Remainder? 
-                        The UI below shows "Reste à Charge" and "Financé PTZ".
-                        If generic: shows splits.
-                        If profile: partLotTotal is the remaining cost.
-                    */}
                     {!selectedProfile && (
-                        <div className="bg-surface-highlight/50 rounded-xl p-3 border border-boundary/40 text-center">
-                            <p className="text-[10px] text-muted uppercase tracking-wider mb-1">Financé PTZ</p>
-                            <p className="text-lg font-bold text-primary-400">
+                        <div className="bg-surface-highlight/40 rounded-2xl p-4 border border-boundary/40 text-center hover:bg-surface-highlight/60 transition-colors">
+                            <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Financé PTZ</p>
+                            <p className="text-2xl font-black text-primary-400 tracking-tight">
                                 {formatCurrency(calculation.partLotLoan)}
                             </p>
-                            <p className="text-[10px] text-subtle">Emprunté 0%</p>
+                            <p className="text-[10px] font-medium text-subtle mt-1">Emprunté 0%</p>
                         </div>
                     )}
                     {selectedProfile && (
-                        <div className="bg-surface-highlight/50 rounded-xl p-3 border border-boundary/40 text-center">
-                            <p className="text-[10px] text-muted uppercase tracking-wider mb-1">Taux Prise en Charge</p>
-                            <p className="text-lg font-bold text-success">
+                        <div className="bg-surface-highlight/40 rounded-2xl p-4 border border-boundary/40 text-center hover:bg-surface-highlight/60 transition-colors">
+                            <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Prise en Charge</p>
+                            <p className="text-2xl font-black text-success tracking-tight">
                                 {profileData ? Math.round((1 - (profileData[selectedProfile].remainingCost / profileData[selectedProfile].workShareBeforeAid)) * 100) : 0}%
                             </p>
-                            <p className="text-[10px] text-subtle">Aides Publiques</p>
+                            <p className="text-[10px] font-medium text-success-300/70 mt-1">Aides Publiques</p>
                         </div>
                     )}
                 </div>

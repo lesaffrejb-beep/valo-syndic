@@ -152,21 +152,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                 </div>
             </div>
 
-            {/* Alert Footer Compact & Centered */}
-            {(currentDPE === "G" || currentDPE === "F" || currentDPE === "E") && (
-                <div className="mt-6 pt-4 border-t border-white/5">
-                    <div className="w-full text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-danger/10 border border-danger/20 mb-2">
-                            <span className="text-sm font-bold text-danger uppercase tracking-wide">
-                                ⚠️ Risque Locatif Majeur
-                            </span>
-                        </div>
-                        <p className="text-sm text-muted max-w-lg mx-auto leading-relaxed">
-                            Les biens classés <strong className="text-white font-bold">{currentDPE}</strong> subiront une décote rapide avant la date butoir.
-                        </p>
-                    </div>
-                </div>
-            )}
+
         </motion.div>
     );
 }
