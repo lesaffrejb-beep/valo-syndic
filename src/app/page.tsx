@@ -36,7 +36,7 @@ import { UrgencyScore } from "@/components/UrgencyScore";
 
 // Persuasion Components
 import { TantiemeCalculator } from "@/components/business/TantiemeCalculator";
-import { BenchmarkChart } from "@/components/business/BenchmarkChart";
+// import { BenchmarkChart } from "@/components/business/BenchmarkChart"; // REMOVED
 import { MarketBenchmark } from "@/components/business/MarketBenchmark";
 
 import { ValuationCard } from "@/components/business/ValuationCard";
@@ -530,18 +530,12 @@ export default function HomePage() {
                                         </div>
                                     </div>
 
-                                    {/* Benchmark & Chrono Grid */}
-                                    <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-                                        <div className="flex-1 h-full">
-                                            {/* Benchmark Card */}
-                                            <BenchmarkChart currentDPE={result.input.currentDPE} className="h-full" />
-                                        </div>
-                                        <div className="flex-1 h-full">
-                                            <ComplianceTimeline
-                                                currentDPE={result.input.currentDPE}
-                                                className="h-full"
-                                            />
-                                        </div>
+                                    {/* Compliance Timeline - Full Width */}
+                                    <div className="w-full">
+                                        <ComplianceTimeline
+                                            currentDPE={result.input.currentDPE}
+                                            className="w-full"
+                                        />
                                     </div>
                                 </div>
 
