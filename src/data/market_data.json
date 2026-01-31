@@ -20,6 +20,7 @@
         "isLdF2026Voted": false,
         "isMprCoproSuspended": true,
         "suspensionDate": "2026-01-01",
-        "comment": "Loi spéciale 26/12/2025 - Attente LdF"
+        "comment": "Attente LdF 2026",
+        "loiSpeciale": "Loi spéciale du 26/12/2025"
     }
 }

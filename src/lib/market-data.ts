@@ -71,7 +71,7 @@ export async function fetchMarketData(): Promise<MarketData> {
 
 export const getLocalBT01Trend = () => localData.bt01.annualChangePercent;
 export const getLocalPassoiresShare = () => localData.passoires.shareOfSales;
-export const getLocalRegulationStatus = () => localData.regulation;
+export const getLocalRegulationStatus = (): RegulationData => localData.regulation;
 
 // 👇 CORRECTION : Ré-export des fonctions manquantes pour le build
 export const getMarketTrend = () => localData.marketTrend;
@@ -80,4 +80,4 @@ export const getMarketTrend = () => localData.marketTrend;
 export const getGreenValueGain = () => 0.12;
 export const getDataLastUpdate = () => "31/01/2026"; // Date statique pour l'instant
 export const isMprCoproSuspended = () => localData.regulation.isMprCoproSuspended;
-export const getRegulationStatus = () => localData.regulation;
+export const getRegulationStatus = (): RegulationData => localData.regulation;
