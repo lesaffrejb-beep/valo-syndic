@@ -7,7 +7,7 @@ interface RisksCardProps {
     coordinates?: {
         latitude: number;
         longitude: number;
-    };
+    } | undefined;
 }
 
 /**

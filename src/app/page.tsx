@@ -14,7 +14,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SubsidyTable } from "@/components/business/SubsidyTable";
 
 // [NEW] Data Reveal Features
-import { useAddressSearch } from "@/hooks/useAddressSearch";
 import { DPEDistributionChart } from "@/components/dashboard/DPEDistributionChart";
 import { HeatingSystemAlert } from "@/components/dashboard/HeatingSystemAlert";
 
@@ -97,40 +96,17 @@ export default function HomePage() {
     const [saveSuccess, setSaveSuccess] = useState(false);
 
     // --- AJOUT : Gestion de l'état de recherche (Data Reveal) ---
-    const { query, setQuery, suggestions: results, isLoading: isSearching, selectAddress: searchAddress } = useAddressSearch();
-    const [selectedProperty, setSelectedProperty] = useState<any>(null);
-    const [showResults, setShowResults] = useState(false);
-    const [manualMode, setManualMode] = useState(true); // [FIX] Mode manuel activé par défaut
+    // [CLEANUP] External search removed in favor of direct form usage
+    const [selectedProperty, setSelectedProperty] = useState<any>(null); // Kept for future potential usage or if props need it, but generally could be removed if unused in removed block.
+    // Actually handleSelectAddress used it, but I deleted the block calling handleSelectAddress.
+    // The DiagnosticForm uses initialData={selectedProperty?.initialFormState}. 
+    // If we remove the search, selectedProperty will simpler remain null or we can remove it entirely if strictly unused.
+    // For now, I'll keep it null to avoid breaking the prop passed to DiagnosticForm if I didn't verify it fully, 
+    // but better to clean it up if handleSelectAddress is gone.
 
-    // Fonction quand on clique sur une suggestion
-    const handleSelectAddress = async (property: any) => {
-        const dpeData = property.dpeData;
-        setSelectedProperty(property);
-        setQuery(property.label);
-        setShowResults(false);
+    // Let's remove handleSelectAddress as it was for the external search list.
+    // And remove useAddressSearch if not used elsewhere.
 
-        // [MODIFICATION] Pré-remplissage du formulaire au lieu de simulation auto
-        // On construit l'objet pour initialData
-        const initialFormState: Partial<DiagnosticInput> & { dpeData?: any } = {
-            address: property.label,
-            postalCode: property.postcode,
-            city: property.city,
-            currentDPE: (dpeData?.etiquette_dpe as any) || "F",
-            dpeData: dpeData
-        };
-
-        // Scroll vers le formulaire pour inviter à compléter
-        setTimeout(() => {
-            document.getElementById('diagnostic-form-container')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-
-        // On passe les données au formulaire via state dédié ou prop (à ajouter dans render)
-        // Ici on stocke dans selectedProperty qui servira de source
-        setSelectedProperty({
-            ...property,
-            initialFormState
-        });
-    };
     // ----------------------------------------------
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -372,89 +348,26 @@ export default function HomePage() {
                         <div id="diagnostic-form" className="card-bento p-8 md:p-12 mb-12 shadow-none rounded-3xl">
 
 
-                            {/* --- BLOC RECHERCHE INTELLIGENTE (Remplace DiagnosticForm) --- */}
-                            <div className="relative z-50 w-full max-w-2xl mx-auto py-8">
-                                <h3 className="text-center text-main font-semibold mb-4">Recherchez votre copropriété</h3>
-                                <input
-                                    type="text"
-                                    value={query}
-                                    onChange={(e) => {
-                                        setQuery(e.target.value);
-                                        setShowResults(true);
-                                        // searchAddress déclenché par le hook via useEffect sur query, 
-                                        // mais ici on update juste le query. Le hook gère le debounce.
-                                    }}
-                                    placeholder="Tapez l'adresse de l'immeuble..."
-                                    className="w-full p-4 bg-black/50 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C6A96C] transition-all"
-                                />
+                            {/* --- FORMULAIRE PRINCIPAL (Saisie directe) --- */}
+                            <div className="w-full max-w-4xl mx-auto">
+                                <h3 className="text-center text-main font-semibold mb-8">
+                                    Simulateur de Valorisation & Subventions
+                                </h3>
 
-                                {/* Liste des résultats (Suggestions) */}
-                                {showResults && results && results.length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1A1A1A] border border-white/10 rounded-xl overflow-hidden shadow-2xl max-h-60 overflow-y-auto z-[100]">
-                                        {results.map((item: any, index: number) => (
-                                            <button
-                                                key={index}
-                                                onClick={() => searchAddress(item).then(() => handleSelectAddress(item))}
-                                                className="w-full text-left p-3 hover:bg-white/5 transition-colors flex items-center gap-3 border-b border-white/5 last:border-0"
-                                            >
-                                                <span className="text-[#C6A96C]">📍</span>
-                                                <div className="flex-1">
-                                                    <div className="text-white text-sm font-medium">{item.label}</div>
-                                                    <div className="text-xs text-gray-500">{item.city}</div>
-                                                </div>
-                                                {/* Note: item.dpeData n'est dispo qu'après sélection normalement,
-                                                    mais ici on utilise les résultats auto-complétion. 
-                                                    Le hook useAddressSearch ne retourne dpeData que sur select.
-                                                    On adapte : le badge DPE s'affichera une fois sélectionné.
-                                                */}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {/* Lien "Saisir manuellement" si pas de sélection */}
-                                {!selectedProperty && !manualMode && (
-                                    <div className="text-center mt-4 animate-fade-in">
-                                        <button
-                                            onClick={() => setManualMode(true)}
-                                            className="text-sm text-gray-500 hover:text-white underline underline-offset-4 transition-colors"
-                                        >
-                                            Je ne trouve pas mon adresse / Saisir manuellement
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                            {/* ----------------------------------- */}
-
-                            <div id="diagnostic-form-container" className={`transition-all duration-500 ease-in-out ${(selectedProperty || manualMode) ? 'opacity-100 max-h-[2000px] mt-8' : 'opacity-50 max-h-0 overflow-hidden'}`}>
-                                {(selectedProperty || manualMode) && (
-                                    <div className="border-t border-white/10 pt-8 animate-fade-in-up">
-                                        {selectedProperty ? (
-                                            <h4 className="text-center text-muted mb-6">👇 Vérifiez et Validez les données 👇</h4>
-                                        ) : (
-                                            <div className="flex justify-between items-center mb-6">
-                                                <h4 className="text-muted">Saisie Manuelle</h4>
-                                                <button onClick={() => setManualMode(false)} className="text-xs text-red-400 hover:text-red-300">Fermer</button>
-                                            </div>
-                                        )}
-                                        <DiagnosticForm
-                                            onSubmit={handleSubmit}
-                                            isLoading={isLoading}
-                                            initialData={selectedProperty?.initialFormState}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Import Button moved to bottom */}
-                            <div className="flex justify-center mt-8 pt-8 border-t border-white/5">
-                                <div className="flex flex-col items-center gap-2">
-
-                                    <JsonImporter onImport={handleGhostImport} />
+                                <div className="animate-fade-in-up">
+                                    <DiagnosticForm
+                                        onSubmit={handleSubmit}
+                                        isLoading={isLoading}
+                                    />
                                 </div>
                             </div>
 
-                            {/* Fallback si on veut montrer le form vide par défaut ? Non on garde le Reveal Address First */}
+                            {/* Import Button moved to bottom */}
+                            <div className="flex justify-center mt-12 pt-8 border-t border-white/5">
+                                <div className="flex flex-col items-center gap-2">
+                                    <JsonImporter onImport={handleGhostImport} />
+                                </div>
+                            </div>
                         </div>
 
                         <LegalWarning variant="footer" className="mt-8" />
@@ -630,7 +543,7 @@ export default function HomePage() {
                                         {/* 3. GEORISQUES LIST (Right) - Span 6 (Half) - Same Height */}
                                         <div className="md:col-span-6 order-3 h-full min-h-[400px]">
                                             <RisksCard
-                                                coordinates={result.input.coordinates}
+                                                coordinates={result.input.coordinates ?? undefined}
                                             />
                                         </div>
                                     </div>
