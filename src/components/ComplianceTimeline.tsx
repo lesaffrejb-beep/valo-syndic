@@ -66,7 +66,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                 <div className="absolute left-6 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-boundary to-transparent md:hidden" />
 
                 {/* Desktop (Horizontal) */}
-                <div className="absolute hidden md:block top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-boundary to-transparent -translate-y-1/2" />
+                <div className="absolute hidden md:block top-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-boundary to-transparent z-0" />
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative z-10">
                     {entries.map(({ dpe, date, isPast, isCurrent }, index) => {
@@ -76,7 +76,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                         return (
                             <motion.div
                                 key={dpe}
-                                className={`relative pl-16 md:pl-0 md:pt-16 group`}
+                                className="relative pl-16 md:pl-0 md:pt-0 group" // [MOD] Removed md:pt-16, managed internally with Spacer + Layout
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{
@@ -86,7 +86,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                                 }}
                             >
                                 {/* Point d'ancrage sur la timeline */}
-                                <div className={`absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 md:top-1/2 md:-translate-y-1/2 w-4 h-4 rounded-full border-2 bg-app z-20 transition-all duration-500
+                                <div className={`absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 md:top-8 md:-translate-y-1/2 w-4 h-4 rounded-full border-2 bg-app z-20 transition-all duration-500
                                     ${isPast
                                         ? "border-danger shadow-glow-danger"
                                         : isCurrentDPE
@@ -95,10 +95,10 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                                     }`}
                                 />
 
-                                {/* Card Content */}
-                                <div className={`relative p-6 rounded-2xl border transition-all duration-300 h-full flex flex-col items-start md:items-center md:text-center
+                                {/* Card Content - Pushed down on Desktop */}
+                                <div className={`relative p-6 mt-0 md:mt-16 rounded-2xl border transition-all duration-300 h-full flex flex-col items-start md:items-center md:text-center
                                     ${isCurrentDPE
-                                        ? "bg-gradient-to-b from-warning/10 to-warning/5 border-warning/40 shadow-glow-warning ring-1 ring-warning/20 transform md:-translate-y-4"
+                                        ? "bg-gradient-to-b from-warning/10 to-warning/5 border-warning/40 shadow-glow-warning ring-1 ring-warning/20 transform md:-translate-y-2" // Reduced translate
                                         : isPast
                                             ? "bg-danger/5 border-danger/20 opacity-80 hover:opacity-100"
                                             : "bg-surface/30 border-white/5 hover:bg-surface/50 hover:border-white/10"

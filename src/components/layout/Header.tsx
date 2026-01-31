@@ -84,38 +84,12 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                         </div>
                     </Link>
 
-                    {/* Center - Trust Badge (Hidden on mobile) */}
-                    <div className="hidden lg:flex items-center">
-                        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] hover:border-primary/20 transition-colors duration-300">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success/60 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-success-500"></span>
-                            </span>
-                            <span className="text-xs text-muted font-medium tracking-wide">
-                                Calcul sécurisé
-                            </span>
-                            <span className="text-[10px] text-subtle px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">
-                                2026
-                            </span>
-                        </div>
-                    </div>
+
 
                     {/* Right Actions - Premium Buttons */}
                     <div className="flex items-center gap-1 sm:gap-2">
 
-                        {/* Settings - Icon Only */}
-                        <button
-                            onClick={onOpenBranding}
-                            className="p-2.5 rounded-lg text-muted hover:text-main hover:bg-white/[0.04] transition-all duration-200 border border-transparent hover:border-white/[0.08]"
-                            title="Personnalisation"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.077-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.048 4.025a3 3 0 01-4.293 0l3.388-1.62m5.048 4.025a15.998 15.998 0 003.388-1.62m-5.048 4.025a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.077-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62M12 12a3 3 0 11-6 0 3 3 0 016 0zm0 0v.008" />
-                            </svg>
-                        </button>
 
-                        {/* Divider */}
-                        <div className="hidden sm:block w-px h-6 bg-white/[0.08] mx-1" />
 
                         {/* Save/Load - Desktop Only */}
                         <div className="hidden sm:flex items-center gap-1">
