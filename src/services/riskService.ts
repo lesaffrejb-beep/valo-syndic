@@ -31,7 +31,7 @@ export const riskService = {
     async fetchRisks(latitude: number, longitude: number): Promise<GeoRisk> {
         try {
             const response = await fetch(
-                `https://georisques.gouv.fr/api/v1/gaspar/risques?latlon=${latitude},${longitude}`,
+                `https://georisques.gouv.fr/api/v1/gaspar/risques?lat=${latitude}&long=${longitude}`,
                 {
                     headers: {
                         'Accept': 'application/json',

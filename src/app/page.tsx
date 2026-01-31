@@ -504,7 +504,7 @@ export default function HomePage() {
                                             Ingénierie Financière
                                         </span>
                                         <h2 className="text-3xl md:text-5xl font-black text-main leading-none mb-6">
-                                            Le Financement &quot;Sniper&quot;
+                                            Le Financement
                                         </h2>
                                         <p className="text-lg text-muted">
                                             Notre algorithme a détecté les aides spécifiques à votre copropriété et
