@@ -95,18 +95,8 @@ export default function HomePage() {
     const { saveProject, isLoading: isSaving, showAuthModal, setShowAuthModal } = useProjectSave();
     const [saveSuccess, setSaveSuccess] = useState(false);
 
-    // --- AJOUT : Gestion de l'état de recherche (Data Reveal) ---
-    // [CLEANUP] External search removed in favor of direct form usage
-    const [selectedProperty, setSelectedProperty] = useState<any>(null); // Kept for future potential usage or if props need it, but generally could be removed if unused in removed block.
-    // Actually handleSelectAddress used it, but I deleted the block calling handleSelectAddress.
-    // The DiagnosticForm uses initialData={selectedProperty?.initialFormState}. 
-    // If we remove the search, selectedProperty will simpler remain null or we can remove it entirely if strictly unused.
-    // For now, I'll keep it null to avoid breaking the prop passed to DiagnosticForm if I didn't verify it fully, 
-    // but better to clean it up if handleSelectAddress is gone.
-
-    // Let's remove handleSelectAddress as it was for the external search list.
-    // And remove useAddressSearch if not used elsewhere.
-
+    // --- Property Data Management ---
+    const [selectedProperty, setSelectedProperty] = useState<any>(null);
     // ----------------------------------------------
 
     const fileInputRef = useRef<HTMLInputElement>(null);
