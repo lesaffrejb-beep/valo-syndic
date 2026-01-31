@@ -79,30 +79,20 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
             {/* 2. GLASS OVERLAY (Content Wrapper) */}
             <div className="relative z-10 flex flex-col h-full bg-app/40 backdrop-blur-sm p-6 sm:p-8 hover:backdrop-blur-[2px] transition-all duration-500">
 
-                {/* Header */}
-                <div className="flex justify-between items-start mb-8">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="relative flex h-2 w-2">
-                                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${hasInondation ? 'bg-red-500' : 'bg-green-500'}`}></span>
-                                <span className={`relative inline-flex rounded-full h-2 w-2 ${hasInondation ? 'bg-red-500' : 'bg-green-500'}`}></span>
-                            </span>
-                            <h3 className="text-sm font-bold text-muted uppercase tracking-widest font-mono">
-                                Vigilance Georisques
-                            </h3>
-                        </div>
-                        <h2 className="text-2xl font-black text-white glow-text">
-                            Analyse Terrain
-                        </h2>
-                    </div>
+                {/* Header Standardized */}
+                <div className="flex justify-between items-start mb-6">
+                    <h3 className="text-xl font-bold text-main flex items-center gap-2">
+                        <span className="text-2xl">🛡️</span>
+                        <span>Vigilance Aléas</span>
+                    </h3>
 
                     {/* Global Status Badge */}
-                    <div className={`px-4 py-1.5 rounded-full border backdrop-blur-md shadow-lg ${hasInondation
+                    <div className={`px-3 py-1 rounded-full border backdrop-blur-md shadow-lg ${hasInondation
                             ? 'bg-red-500/20 border-red-500/50 text-red-200'
                             : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
                         }`}>
                         <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                            {hasInondation ? '⚠️ Zone à Risque' : '🛡️ Zone Sécurisée'}
+                            {hasInondation ? 'Zone à Risque' : 'Zone Sécurisée'}
                         </span>
                     </div>
                 </div>
@@ -115,25 +105,25 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                         label="Inondation"
                         value={safeRisks.inondation ? 100 : 0}
                         level={safeRisks.inondation ? "High" : "Low"}
-                        icon="💧"
+                        iconPath="M12 22c4.97 0 9-4.03 9-9 0-4.97-9-13-9-13S3 8.03 3 13c0 4.97 4.03 9 9 9z" // Water Drop
                         isDanger={safeRisks.inondation}
                     />
 
                     {/* Argile */}
                     <RiskGauge
-                        label="Argiles (RGA)"
-                        value={safeRisks.argile * 33} // 1=33%, 2=66%, 3=100%
+                        label="Argiles"
+                        value={safeRisks.argile * 33}
                         level={safeRisks.argile === 3 ? "Fort" : safeRisks.argile === 2 ? "Moyen" : "Faible"}
-                        icon="🧱"
+                        iconPath="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 5h14v14H5V5zm2 4h10v2H7V9zm0 4h10v2H7v-2z" // Bricks/Layers (Simplified)
                         isDanger={safeRisks.argile >= 2}
                     />
 
                     {/* Sismicité */}
                     <RiskGauge
                         label="Sismicité"
-                        value={safeRisks.sismicite * 20} // 1 to 5 mapped to 100
+                        value={safeRisks.sismicite * 20}
                         level={`Zone ${safeRisks.sismicite}`}
-                        icon="📉"
+                        iconPath="M2 12h2l2-6 4 12 4-12 2 6h2" // Pulse/Wave
                         isDanger={safeRisks.sismicite >= 3}
                     />
 
@@ -142,7 +132,7 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                         label="Radon"
                         value={safeRisks.radon * 33}
                         level={`Niv. ${safeRisks.radon}`}
-                        icon="☢️"
+                        iconPath="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" // Warning/Hazard (Simplified)
                         isDanger={safeRisks.radon >= 3}
                     />
 
@@ -151,22 +141,14 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                         label="Industriel"
                         value={safeRisks.technologique ? 80 : 0}
                         level={safeRisks.technologique ? "Seveso" : "N/A"}
-                        icon="🏭"
+                        iconPath="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2V9h-2V7h8v12zm-2-4h-2v2h2v-2zm0-4h-2v2h2V9z" // Factory/Building
                         isDanger={safeRisks.technologique}
                     />
 
                 </div>
 
                 {/* 4. FOOTER / META */}
-                <div className="mt-8 pt-4 border-t border-white/10 flex justify-between items-center text-[10px] text-muted font-mono uppercase tracking-wider">
-                    <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                        API Connected
-                    </div>
-                    <div>
-                        Lat: {coordinates?.latitude.toFixed(4)} | Lon: {coordinates?.longitude.toFixed(4)}
-                    </div>
-                </div>
+
             </div>
         </div>
     );
@@ -178,11 +160,11 @@ interface RiskGaugeProps {
     label: string;
     value: number; // 0-100
     level: string;
-    icon: string;
+    iconPath: string; // SVG Path d
     isDanger: boolean;
 }
 
-const RiskGauge = ({ label, value, level, icon, isDanger }: RiskGaugeProps) => {
+const RiskGauge = ({ label, value, level, iconPath, isDanger }: RiskGaugeProps) => {
     // Circle math
     const radius = 26;
     const circumference = 2 * Math.PI * radius;
@@ -195,8 +177,10 @@ const RiskGauge = ({ label, value, level, icon, isDanger }: RiskGaugeProps) => {
     return (
         <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-black/40 border border-white/5 backdrop-blur-md relative overflow-hidden group hover:bg-black/60 transition-colors">
             {/* Icon Background */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] group-hover:opacity-10 transition-opacity text-5xl grayscale">
-                {icon}
+            <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] group-hover:opacity-10 transition-opacity">
+                <svg className="w-16 h-16 fill-current text-white" viewBox="0 0 24 24">
+                    <path d={iconPath} />
+                </svg>
             </div>
 
             <div className="relative mb-2">
@@ -231,8 +215,10 @@ const RiskGauge = ({ label, value, level, icon, isDanger }: RiskGaugeProps) => {
                 </svg>
 
                 {/* Center Icon */}
-                <div className="absolute inset-0 flex items-center justify-center text-lg">
-                    {icon}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <svg className="w-5 h-5 fill-current text-white" viewBox="0 0 24 24">
+                        <path d={iconPath} />
+                    </svg>
                 </div>
             </div>
 
