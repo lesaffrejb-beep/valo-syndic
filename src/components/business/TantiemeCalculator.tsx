@@ -146,7 +146,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                             <button
                                 key={profile.id}
                                 onClick={() => setSelectedProfile(selectedProfile === profile.id ? null : profile.id)}
-                                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${selectedProfile === profile.id
+                                className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${selectedProfile === profile.id
                                     ? 'bg-surface shadow text-main ring-1 ring-primary-500/50'
                                     : 'text-muted hover:text-main'
                                     }`}
