@@ -30,16 +30,46 @@ import { ValuationCard } from '@/components/business/ValuationCard';
 import { InactionCostCard } from '@/components/business/InactionCostCard';
 import { TantiemeCalculator } from '@/components/business/TantiemeCalculator';
 import { RisksCard } from '@/components/business/RisksCard'; // Replacement for RiskRadar
+import { isMprCoproSuspended, getLocalPassoiresShare } from '@/lib/market-data';
+
+
 
 // --- MOCK DATA FOR UI DEVELOPMENT ---
 // In a real scenario, this would come from the loaded simulation
 const MOCK_FINANCING = {
     totalCostHT: 450000,
+    mprAmount: 120000,
+    amoAmount: 3000,
+    ceeAmount: 8000,
+    localAidAmount: 5000,
+    ecoPtzAmount: 180000,
     subsidies: 120000,
     loans: 300000,
     monthlyPayment: 250,
+    remainingCost: 30000,
     netRemaining: 30000
 };
+
+const MOCK_VALUATION = {
+    currentValue: 350000,
+    projectedValue: 410000,
+    greenValueGain: 60000,
+    greenValueGainPercent: 0.15,
+    netROI: 30000,
+    salesCount: 12,
+    priceSource: "Etalab DVF"
+};
+
+const MOCK_INACTION = {
+    currentCost: 30000,
+    projectedCost3Years: 38000,
+    valueDepreciation: 15000,
+    totalInactionCost: 23000,
+    inflationCost: 8000,
+    energyLoss: 4000,
+    depreciationLoss: 15000
+};
+
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -118,10 +148,9 @@ export default function DashboardPage() {
 
             <div className="max-w-[1800px] mx-auto p-4 md:p-6 lg:p-8">
 
-                {/* ZONE A: ALERTES (Top Full Width) */}
                 <div className="mb-6 space-y-4">
-                    <MprSuspensionAlert />
-                    <MarketLiquidityAlert />
+                    <MprSuspensionAlert isSuspended={isMprCoproSuspended()} />
+                    <MarketLiquidityAlert shareOfSales={getLocalPassoiresShare()} />
                 </div>
 
                 {/* THE BENTO GRID (Zones B, C, D) */}
@@ -152,7 +181,7 @@ export default function DashboardPage() {
                             {/* "STAR" treatment for Receipt */}
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
                             <TransparentReceipt
-                                financingPlan={selectedProject?.json_data?.financing || MOCK_FINANCING}
+                                financing={selectedProject?.json_data?.financing || MOCK_FINANCING}
                             />
                         </div>
                     </div>
@@ -161,12 +190,17 @@ export default function DashboardPage() {
                     <div className="hidden lg:flex lg:col-span-3 flex-col gap-6 h-full">
                         {/* Valuation (Gain) */}
                         <div className="h-auto">
-                            <ValuationCard />
+                            <ValuationCard
+                                valuation={selectedProject?.json_data?.result?.valuation || MOCK_VALUATION}
+                                financing={selectedProject?.json_data?.financing || MOCK_FINANCING}
+                            />
                         </div>
 
                         {/* Inaction Cost (Fear) */}
                         <div className="flex-1">
-                            <InactionCostCard />
+                            <InactionCostCard
+                                inactionCost={selectedProject?.json_data?.result?.inaction || MOCK_INACTION}
+                            />
                         </div>
                     </div>
 
@@ -193,7 +227,10 @@ export default function DashboardPage() {
 
                     {/* CENTER: Tantieme Slider (The Money Shot) */}
                     <div className="flex-1 max-w-md">
-                        <TantiemeCalculator />
+                        <TantiemeCalculator
+                            financing={selectedProject?.json_data?.financing || MOCK_FINANCING}
+                            simulationInputs={selectedProject?.json_data?.input}
+                        />
                     </div>
 
                     {/* RIGHT: Actions */}
