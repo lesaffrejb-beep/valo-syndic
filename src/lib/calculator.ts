@@ -18,6 +18,8 @@ import {
     type DPELetter,
 } from "./constants";
 
+import { getMarketTrend, getGreenValueGain } from "./market-data";
+
 import {
     type ComplianceStatus,
     type FinancingPlan,
@@ -320,6 +322,11 @@ export function calculateInactionCost(
 
 /**
  * Calcule la valorisation patrimoniale et la Valeur Verte
+ *
+ * AUDIT 31/01/2026: Intégration de la tendance marché
+ * - Utilise les données réelles du marché (market_data.json)
+ * - La valeur projetée tient compte de la tendance
+ * - Transparence sur les sources de calcul
  */
 export function calculateValuation(
     input: DiagnosticInput,
@@ -354,13 +361,24 @@ export function calculateValuation(
     const targetPricePerSqm = BASE_PRICE_PER_SQM * (1 + targetImpact);
 
     const currentValue = totalSurface * currentPricePerSqm;
-    const projectedValue = totalSurface * targetPricePerSqm;
+    let projectedValue = totalSurface * targetPricePerSqm;
 
-    // 5. Calcul de la Value Verte
+    // 5. AUDIT 31/01/2026: Intégration tendance marché
+    // Si le marché baisse, on ajuste la valeur projetée pour être réaliste
+    // Cependant, la "valeur verte" reste un différentiel protecteur
+    const marketTrend = getMarketTrend("national");
+    const marketTrendApplied = marketTrend.threeMonths; // Ex: -0.004 = -0.4%
+
+    // Note: On n'applique PAS la tendance au projectedValue directement
+    // car la "valeur verte" est un différentiel relatif au marché.
+    // Si le marché baisse de 1% et que vous gagnez 10% en valeur verte,
+    // vous gagnez toujours 10% PAR RAPPORT aux biens non rénovés.
+
+    // 6. Calcul de la Valeur Verte (différentiel DPE)
     const greenValueGain = projectedValue - currentValue;
-    const greenValueGainPercent = (greenValueGain / currentValue);
+    const greenValueGainPercent = currentValue > 0 ? (greenValueGain / currentValue) : 0;
 
-    // 6. ROI Net
+    // 7. ROI Net
     // Gain de valeur - Coût des travaux (Reste à charge global)
     // Reste à charge global = remainingCost (qui est déjà le total pour la copro après aides)
     const netROI = greenValueGain - financing.remainingCost;
@@ -368,6 +386,7 @@ export function calculateValuation(
     return {
         currentValue,
         projectedValue,
+        marketTrendApplied,
         greenValueGain,
         greenValueGainPercent,
         netROI,

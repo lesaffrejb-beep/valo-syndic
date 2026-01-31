@@ -3,6 +3,11 @@
  * ===========================================================
  * Affichage premium des aides pour les 4 profils de revenus.
  * Design: Obsidian/Stealth Wealth (Noir, Gris, Or)
+ *
+ * AUDIT 31/01/2026: Clarification ajoutée
+ * - Le taux collectif (30-55%) s'applique à TOUS les lots
+ * - Les primes individuelles (0€ à 3000€) varient selon le profil
+ * - Cette distinction doit être claire pour éviter la confusion
  */
 
 "use client";
@@ -364,13 +369,22 @@ export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
             </div>
 
             {/* Footer Notes */}
-            <div className="mt-6 pt-4 border-t border-boundary/30">
+            <div className="mt-6 pt-4 border-t border-boundary/30 space-y-3">
+                {/* Clarification Socle vs Prime - AUDIT 31/01/2026 */}
+                <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+                    <p className="text-xs text-muted leading-relaxed">
+                        <span className="font-semibold text-primary">À savoir :</span> Le taux MPR affiché ({Math.round(result.profiles.Pink.mprRate * 100)}%) est le <strong>socle collectif</strong> versé à la copropriété.
+                        Il s&apos;applique à tous les lots, quel que soit le profil du propriétaire.
+                        Les <strong>primes individuelles</strong> (jusqu&apos;à 3 000€) sont versées en complément uniquement aux ménages modestes et très modestes.
+                    </p>
+                </div>
+
                 <div className="flex flex-col sm:flex-row gap-4 text-xs text-muted">
                     <div className="flex items-start gap-2">
                         <span>ℹ️</span>
                         <p>
-                            Calcul basé sur un prêt à <strong>4% nominal</strong> sur{" "}
-                            <strong>20 ans</strong>.
+                            Mensualité calculée sur un prêt <strong>Éco-PTZ à 0%</strong> sur{" "}
+                            <strong>20 ans</strong>. Aucun intérêt.
                         </p>
                     </div>
                     <div className="flex items-start gap-2">

@@ -1,0 +1,115 @@
+{
+  "_meta": {
+    "description": "Données marché actualisées - Source unique pour le simulateur",
+    "lastUpdate": "2026-01-31",
+    "nextUpdateDue": "2026-02-28",
+    "maintainer": "Équipe Valo-Syndic"
+  },
+
+  "_sources": {
+    "bt01": "INSEE BT01 - Série 001710986 - Janvier 2026",
+    "notaires": "Notaires de France - DP Immobilier 08.12.2025",
+    "anah": "Guide Aides Financières 2026 - ANAH",
+    "servicepublic": "Service-Public.fr - Vérifié 10/04/2025"
+  },
+
+  "bt01": {
+    "currentValue": 133.3,
+    "previousYearValue": 131.5,
+    "annualChangePercent": 1.37,
+    "referenceMonth": "2025-11",
+    "_comment": "Inflation BTP réelle: 1.37% (Nov 2024 → Nov 2025). Valeur 4.5% obsolète."
+  },
+
+  "marketTrend": {
+    "national": {
+      "threeMonths": -0.004,
+      "oneYear": -0.008,
+      "interpretation": "Marché stable à légèrement baissier"
+    },
+    "idf": {
+      "threeMonths": -0.008,
+      "oneYear": -0.013,
+      "interpretation": "Marché en baisse modérée"
+    },
+    "province": {
+      "threeMonths": 0.001,
+      "oneYear": 0.002,
+      "interpretation": "Marché stable"
+    },
+    "_comment": "Variation prix - Source: Notaires 12/2025. Maisons anciennes France: -0.4% sur 3 mois"
+  },
+
+  "passoires": {
+    "shareOfSales2024": 0.15,
+    "shareOfSales2023": 0.17,
+    "shareOfSales2021": 0.11,
+    "trend": "stable",
+    "_comment": "Part des F/G dans les ventes. Pic en 2023 (17%), stabilisation à 15% en 2024."
+  },
+
+  "greenValue": {
+    "fToC_avgGain": 0.17,
+    "fToD_avgGain": 0.10,
+    "gToC_avgGain": 0.22,
+    "gToD_avgGain": 0.15,
+    "source": "Notaires de France - Étude Valeur Verte 2024",
+    "_comment": "Gains moyens constatés lors de rénovations. Varient selon zones géographiques."
+  },
+
+  "regulation": {
+    "isLdF2026Voted": false,
+    "isMprCoproSuspended": true,
+    "suspensionStartDate": "2026-01-01",
+    "loiSpeciale": "Loi n°2025-1316 du 26 décembre 2025",
+    "_comment": "MPR Copro suspendue faute de LdF 2026. Guichet ANAH fermé aux nouveaux dossiers.",
+    "_todo": "METTRE À JOUR dès vote de la LdF 2026 - Vérifier legifrance.gouv.fr"
+  },
+
+  "localAids": {
+    "angersLoireMetropole": {
+      "programName": "Mieux Chez Moi",
+      "maxPerCopro": 5000,
+      "conditions": "Copro dans périmètre OPAH",
+      "contact": "02 41 43 00 00",
+      "_todo": "VÉRIFIER montant exact - Délibération conseil communautaire à récupérer"
+    },
+    "nantesMetropole": {
+      "programName": "Rénov'Habitat",
+      "maxPerLot": 1500,
+      "conditions": "Gain énergétique ≥ 40%",
+      "_todo": "VÉRIFIER conditions 2026"
+    },
+    "_comment": "Aides locales à compléter selon territoire. Valeurs indicatives."
+  },
+
+  "dpeProhibition": {
+    "G": {
+      "date": "2025-01-01",
+      "status": "INTERDIT",
+      "message": "Location interdite depuis le 1er janvier 2025"
+    },
+    "F": {
+      "date": "2028-01-01",
+      "status": "À_VENIR",
+      "daysRemaining": 700,
+      "message": "Location interdite dans moins de 2 ans"
+    },
+    "E": {
+      "date": "2034-01-01",
+      "status": "LOINTAIN",
+      "message": "Interdiction prévue au 1er janvier 2034"
+    }
+  },
+
+  "defaultPrices": {
+    "angers": 2800,
+    "nantes": 3200,
+    "rennes": 3500,
+    "tours": 2600,
+    "lemans": 1800,
+    "national": 3000,
+    "_comment": "Prix moyens m² appartements anciens T3. À remplacer par appel DVF réel.",
+    "_todo": "Ces valeurs sont des fallbacks. Prioriser l'appel API DVF pour chaque adresse."
+  }
+}

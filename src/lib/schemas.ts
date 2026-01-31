@@ -185,6 +185,9 @@ export const ValuationResultSchema = z.object({
     /** Valeur estimée après travaux (€) */
     projectedValue: z.number(),
 
+    /** Tendance marché appliquée (optionnel) - AUDIT 31/01/2026 */
+    marketTrendApplied: z.number().optional(),
+
     /** Plus-value "Valeur Verte" (€) */
     greenValueGain: z.number(),
 
