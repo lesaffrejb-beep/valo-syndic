@@ -15,6 +15,12 @@ export interface GeoRisk {
     sismicite: number;
     /** Libellé du risque argile */
     argileLabel?: string;
+
+    /** Nouveaux champs pour affichage "Full Data" */
+    mouvementTerrain: boolean;
+    technologique: boolean;
+    minier: boolean;
+    feuxForet: boolean;
 }
 
 export const riskService = {
@@ -40,34 +46,37 @@ export const riskService = {
 
             const data = await response.json();
 
-            // Helper to find risk by keyword
-            const findRisk = (keyword: string) => data.data?.find(
-                (risk: { libelle_risque_long?: string; num_risque?: number; niveau_exposition?: string; niveau_exposition_label?: string }) => risk.libelle_risque_long?.toLowerCase().includes(keyword)
+            // Helper to find risk by keyword within the raw data
+            const checkRisk = (keyword: string) => data.data?.some(
+                (risk: { libelle_risque_long?: string }) =>
+                    risk.libelle_risque_long?.toLowerCase().includes(keyword)
             );
 
-            // Parse argile
-            const argileRisk = findRisk('argile');
-            // Parse inondation
-            const inondationRisk = findRisk('inondation');
-            // Parse radon
-            const radonRisk = findRisk('radon');
-            // Parse sismicite
-            const sismiciteRisk = findRisk('sismi');
+            // Detailed parsing
+            const argileData = data.data?.find((r: any) => r.libelle_risque_long?.toLowerCase().includes('argile'));
+            const sismiciteData = data.data?.find((r: any) => r.libelle_risque_long?.toLowerCase().includes('sismi'));
+            const radonData = data.data?.find((r: any) => r.libelle_risque_long?.toLowerCase().includes('radon'));
 
             const result: GeoRisk = {
-                argile: argileRisk?.num_risque || 0, // Utiliser num_risque ou mapper niveau_exposition si dispo
-                argileLabel: argileRisk?.niveau_exposition_label || 'Non concerné',
-                inondation: !!inondationRisk, // Présence = risque
-                radon: radonRisk?.num_risque || 1, // Default to 1 (Faible)
-                sismicite: sismiciteRisk?.num_risque || 1, // Default to 1 (Très faible)
-            };
+                // Argiles
+                argile: argileData?.num_risque || (argileData?.niveau_exposition === 'Moyen' ? 2 : argileData?.niveau_exposition === 'Fort' ? 3 : 1),
+                argileLabel: argileData?.niveau_exposition_label || (argileData ? 'Identifié' : 'Non concerné'),
 
-            // Fallback mapping if num_risque is missing but fields exist (API structure varies)
-            if (argileRisk && !result.argile) {
-                // Map text labels if needed, or default logic
-                if (argileRisk.niveau_exposition === 'Moyen') result.argile = 2;
-                if (argileRisk.niveau_exposition === 'Fort') result.argile = 3;
-            }
+                // Inondation (tous types : débordement, submersion, remontée nappe)
+                inondation: checkRisk('inondation') || checkRisk('submersion'),
+
+                // Sismicité
+                sismicite: sismiciteData?.num_risque || 1,
+
+                // Radon
+                radon: radonData?.num_risque || 1,
+
+                // Autres risques pour boucher les trous et faire "Data Dense"
+                mouvementTerrain: checkRisk('mouvement de terrain') || checkRisk('cavité'),
+                technologique: checkRisk('industriel') || checkRisk('technologique') || checkRisk('usine'),
+                minier: checkRisk('minier'),
+                feuxForet: checkRisk('eu de forêt'), // "Feu de forêt"
+            };
 
             return result;
         } catch (error) {
@@ -85,6 +94,10 @@ export const riskService = {
             inondation: false,
             radon: 1,
             sismicite: 1,
+            mouvementTerrain: false,
+            technologique: false,
+            minier: false,
+            feuxForet: false,
             argileLabel: 'Données indisponibles',
         };
     },
@@ -105,6 +118,7 @@ export const riskService = {
         if (risk.argile >= 2) score += 2;
         if (risk.radon >= 3) score += 1;
         if (risk.sismicite >= 3) score += 1;
+        if (risk.technologique) score += 2;
 
         if (score >= 2) return 'high';
         if (score >= 1) return 'medium';

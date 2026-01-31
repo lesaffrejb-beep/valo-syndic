@@ -619,67 +619,19 @@ export default function HomePage() {
                                             <SubsidyTable inputs={simulationInputs} />
                                         </div>
 
-                                        {/* 2. FINANCING PIE (Left) - Span 8 */}
-                                        <div className="md:col-span-12 lg:col-span-8 card-obsidian min-h-[350px] order-2">
+                                        {/* 2. FINANCING PIE (Left) - Span 6 (Half) */}
+                                        <div className="md:col-span-6 card-obsidian min-h-[400px] order-2">
                                             <h3 className="text-xl font-bold text-main mb-6 flex items-center gap-2">
                                                 🌍 Financement Global
                                             </h3>
                                             <FinancingBreakdownChart financing={result.financing} />
                                         </div>
 
-                                        {/* 3. KEY METRICS (Right) - Span 4 - Stacked Squares */}
-                                        <div className="md:col-span-12 lg:col-span-4 flex flex-col md:flex-row lg:flex-col gap-6 order-3 h-full">
-                                            {/* Taux Courture - Redesigned */}
-                                            <div className="card-obsidian bg-success-900/10 border-success-500/20 flex-1 flex flex-row items-center p-6 gap-5 relative overflow-hidden group hover:border-success-500/40 transition-all">
-                                                <div className="absolute inset-0 bg-success-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                                                <div className="w-14 h-14 rounded-2xl bg-success-500/10 flex items-center justify-center flex-shrink-0 border border-success-500/20 text-3xl shadow-sm">
-                                                    🛡️
-                                                </div>
-
-                                                <div>
-                                                    <p className="text-4xl font-black text-white tracking-tighter leading-none mb-1">
-                                                        {Math.round((1 - (result.financing.remainingCost / result.financing.totalCostHT)) * 100)}%
-                                                    </p>
-                                                    <p className="text-sm font-bold text-success-300 leading-tight">Taux de couverture</p>
-                                                    <p className="text-[10px] text-success-400/60 uppercase tracking-wide mt-1">Prêt 0% inclus</p>
-                                                </div>
-                                            </div>
-
-                                            {/* Bonus Hunter - Redesigned */}
-                                            <div className="card-obsidian bg-primary-900/10 border-primary-500/20 flex-1 p-6 relative overflow-hidden flex flex-col justify-center hover:border-primary-500/40 transition-all">
-                                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 blur-[50px] rounded-full pointer-events-none" />
-
-                                                <div className="flex items-center gap-3 mb-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-xl border border-primary-500/20">
-                                                        🎁
-                                                    </div>
-                                                    <h4 className="text-sm font-bold text-primary-300 uppercase tracking-wider">
-                                                        Bonus Capturés
-                                                    </h4>
-                                                </div>
-
-                                                <ul className="space-y-3">
-                                                    {(result.input.currentDPE === 'F' || result.input.currentDPE === 'G') && (
-                                                        <li className="flex items-center gap-3 text-sm font-medium text-white/90">
-                                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-[10px] font-bold border border-emerald-500/30">✓</div>
-                                                            Sortie de Passoire
-                                                        </li>
-                                                    )}
-                                                    {result.financing.energyGainPercent >= 50 && (
-                                                        <li className="flex items-center gap-3 text-sm font-medium text-white/90">
-                                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-[10px] font-bold border border-emerald-500/30">✓</div>
-                                                            Rénovation Globale
-                                                        </li>
-                                                    )}
-                                                    {result.financing.ceeAmount > 0 && (
-                                                        <li className="flex items-center gap-3 text-sm font-medium text-white/90">
-                                                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-[10px] font-bold border border-emerald-500/30">✓</div>
-                                                            Primes CEE
-                                                        </li>
-                                                    )}
-                                                </ul>
-                                            </div>
+                                        {/* 3. GEORISQUES LIST (Right) - Span 6 (Half) - Same Height */}
+                                        <div className="md:col-span-6 order-3 h-full min-h-[400px]">
+                                            <RisksCard
+                                                coordinates={result.input.coordinates}
+                                            />
                                         </div>
                                     </div>
                                 </div>
