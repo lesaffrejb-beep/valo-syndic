@@ -2,6 +2,10 @@
  * CostValueBalance — "Cost vs Value" Balance Chart
  * A simple horizontal bar comparison: Cost (Red) vs Value Gain (Green)
  * The ultimate argument for investors: "You're not spending, you're gaining."
+ *
+ * AUDIT 31/01/2026: Corrigé pour transparence sur Éco-PTZ
+ * - "0€" signifie "0€ d'apport" mais le prêt doit être remboursé
+ * - Affiche toujours la mensualité même si reste à charge = 0
  */
 
 "use client";
@@ -15,14 +19,23 @@ interface CostValueBalanceProps {
     cost: number;
     /** The green value gain (patrimony increase) */
     valueGain: number;
+    /** Éco-PTZ amount if applicable */
+    ecoPtzAmount?: number;
+    /** Monthly payment for Éco-PTZ */
+    monthlyPayment?: number;
 }
 
-export function CostValueBalance({ cost, valueGain }: CostValueBalanceProps) {
+export function CostValueBalance({ cost, valueGain, ecoPtzAmount = 0, monthlyPayment = 0 }: CostValueBalanceProps) {
     const { getAdjustedValue, viewMode } = useViewModeStore();
     const isMaPoche = viewMode === 'maPoche';
 
     const displayCost = getAdjustedValue(cost);
     const displayValueGain = getAdjustedValue(valueGain);
+    const displayEcoPtz = getAdjustedValue(ecoPtzAmount);
+    const displayMonthly = getAdjustedValue(monthlyPayment);
+
+    // Détermine si le financement est via Éco-PTZ (pas de cash mais prêt)
+    const isFinancedByLoan = displayCost === 0 && displayEcoPtz > 0;
 
     // Calculate bar widths relative to the larger value
     const maxValue = Math.max(displayCost, displayValueGain);
@@ -59,8 +72,12 @@ export function CostValueBalance({ cost, valueGain }: CostValueBalanceProps) {
                             />
                         </div>
                     ) : (
-                        <div className="h-6 bg-surface/50 rounded-full border-2 border-dashed border-boundary/60 flex items-center px-3">
-                            <span className="text-xs text-muted font-medium">0€ (Financé à 100%)</span>
+                        <div className="h-6 bg-success-900/30 rounded-full border border-success-500/40 flex items-center px-3">
+                            <span className="text-xs text-success-400 font-medium">
+                                {isFinancedByLoan
+                                    ? `0€ d'apport — Prêt Éco-PTZ ${formatCurrency(displayEcoPtz)}`
+                                    : "0€ (Entièrement subventionné)"}
+                            </span>
                         </div>
                     )}
                 </div>
@@ -94,12 +111,27 @@ export function CostValueBalance({ cost, valueGain }: CostValueBalanceProps) {
                         {isPositive ? '+' : ''}{formatCurrency(netBalance)}
                     </span>
                 </div>
-                {isPositive && displayCost === 0 && (
+                {isPositive && displayCost === 0 && !isFinancedByLoan && (
                     <p className="text-xs text-success-400/80 mt-2">
-                        💡 Investissement immédiat = Plus-value à la signature
+                        Entièrement couvert par les aides publiques
+                    </p>
+                )}
+                {isFinancedByLoan && displayMonthly > 0 && (
+                    <p className="text-xs text-muted mt-2">
+                        Mensualité Éco-PTZ (20 ans, 0%) : <span className="text-main font-medium">{formatCurrency(displayMonthly)}/mois</span>
                     </p>
                 )}
             </div>
+
+            {/* Disclaimer transparence - AUDIT 31/01/2026 */}
+            {isFinancedByLoan && (
+                <div className="mt-4 p-3 bg-surface-highlight/50 rounded-lg border border-boundary/30">
+                    <p className="text-[10px] text-muted leading-relaxed">
+                        <span className="font-semibold text-warning-400">Note :</span> L&apos;Éco-PTZ est un prêt à taux zéro, pas une aide à fonds perdus.
+                        Le capital emprunté doit être remboursé sur 20 ans. Aucun intérêt ne vous sera facturé.
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

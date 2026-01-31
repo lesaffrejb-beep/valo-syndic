@@ -78,14 +78,24 @@ export const TECHNICAL_PARAMS = {
     /** Coefficient de conversion énergie primaire électricité (DPE 2026) */
     electricityConversionCoeff: 1.9,
 
-    /** Inflation annuelle travaux BTP (Indice BT01) */
-    constructionInflationRate: 0.045,
+    /**
+     * Inflation annuelle travaux BTP (Indice BT01)
+     *
+     * AUDIT 31/01/2026 - MISE À JOUR:
+     * - Ancienne valeur: 4.5% (pertinente 2021-2022, post-COVID)
+     * - Nouvelle valeur: 2.0% (BT01 Nov 2025: +1.37% + marge sécurité 0.5%)
+     * - Source: INSEE Série 001710986
+     *
+     * @see /src/data/market_data.json pour données actualisées
+     * @todo Brancher sur API ou Supabase pour mise à jour automatique
+     */
+    constructionInflationRate: 0.02,
 
     /** Valeur Verte : appréciation moyenne passage F → C en zone tendue */
     greenValueAppreciation: 0.12,
 
     /** Date de référence pour les calculs */
-    referenceDate: new Date("2026-01-27"),
+    referenceDate: new Date("2026-01-31"),
 
     /** TVA Rénovation Énergétique (5.5%) */
     TVA_RENOVATION: 0.055,
@@ -163,10 +173,23 @@ export const LEGAL = {
         "Simulation indicative. Ne remplace pas un audit réglementaire OPQIBI 1905.",
 
     /** Mention source données DVF */
-    dvfDisclaimer: "Données millésimées 2024 (Retard publication : 2 ans).",
+    dvfDisclaimer: "Données DVF millésimées 2024 (publication décalée de 2 ans).",
+
+    /** Mention tendance marché */
+    marketDisclaimer: "Tendances marché: Notaires de France, décembre 2025.",
 
     /** Date de mise à jour des constantes */
-    lastUpdate: new Date("2026-01-27"),
+    lastUpdate: new Date("2026-01-31"),
+
+    /**
+     * AUDIT 31/01/2026: Statut réglementaire
+     * MPR Copro suspendue faute de LdF 2026 - À mettre à jour dès vote
+     */
+    regulatoryStatus: {
+        isMprCoproActive: false,
+        statusDate: new Date("2026-01-01"),
+        statusReason: "Attente Loi de Finances 2026",
+    },
 } as const;
 
 // =============================================================================

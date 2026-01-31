@@ -3,18 +3,25 @@
 import { formatCurrency, formatPercent } from "@/lib/calculator";
 import { type ValuationResult, type FinancingPlan } from "@/lib/schemas";
 import { useViewModeStore } from "@/stores/useViewModeStore";
-import { motion, AnimatePresence } from "framer-motion";
+import { getMarketTrend } from "@/lib/market-data";
 
 interface ValuationCardProps {
     valuation: ValuationResult;
     financing?: FinancingPlan;
+    /** DPE actuel pour contextualiser */
+    currentDPE?: string;
 }
 
 /**
  * VALUATION CARD — "Le Verdict Financier"
  * Design Updated: Obsidian / Premium
+ *
+ * AUDIT 31/01/2026: Narratif ajusté
+ * - Terminologie "Protection de valeur" au lieu de "Gain" si marché baissier
+ * - Contexte marché affiché pour transparence
+ * - Mention de la source des données
  */
-export function ValuationCard({ valuation, financing }: ValuationCardProps) {
+export function ValuationCard({ valuation, financing, currentDPE }: ValuationCardProps) {
     const { viewMode, getAdjustedValue } = useViewModeStore();
     const isMaPoche = viewMode === 'maPoche';
 
@@ -25,6 +32,11 @@ export function ValuationCard({ valuation, financing }: ValuationCardProps) {
     const displayGreenValueGain = getAdjustedValue(valuation.greenValueGain);
     const displayNetROI = getAdjustedValue(valuation.netROI);
     const displayRemainingCost = financing ? getAdjustedValue(financing.remainingCost) : 0;
+
+    // Market context
+    const marketTrend = getMarketTrend("national");
+    const isMarketDeclining = marketTrend.threeMonths < 0;
+    const isPassoire = currentDPE === "F" || currentDPE === "G";
 
     return (
         <div className="card-bento h-full relative overflow-hidden group p-0">
@@ -51,11 +63,14 @@ export function ValuationCard({ valuation, financing }: ValuationCardProps) {
             {/* Main Content */}
             <div className="p-6 pt-5 grid grid-cols-1 gap-6">
 
-                {/* 1. La Plus-Value (Valeur Verte) */}
+                {/* 1. La Valeur Verte */}
                 <div className="relative z-10">
                     <div className="flex justify-between items-end mb-2">
                         <span className="text-xs uppercase tracking-wider text-muted font-semibold">
-                            Plus-Value Latente {isMaPoche && '(Ma Part)'}
+                            {isMarketDeclining && isPassoire
+                                ? "Protection de Valeur"
+                                : "Plus-Value Latente"
+                            } {isMaPoche && '(Ma Part)'}
                         </span>
                         <span className="text-xs font-mono text-success-400 bg-success-900/20 px-2 py-0.5 rounded">
                             +{formatPercent(valuation.greenValueGainPercent)}
@@ -67,9 +82,28 @@ export function ValuationCard({ valuation, financing }: ValuationCardProps) {
                         </span>
                     </div>
                     <p className="text-xs text-subtle mt-2">
-                        Gain de &quot;Valeur Verte&quot; immédiat à la fin des travaux
+                        {isMarketDeclining && isPassoire
+                            ? "Écart de valeur protégé grâce à la rénovation"
+                            : "Gain de \"Valeur Verte\" à la fin des travaux"
+                        }
                     </p>
                 </div>
+
+                {/* Market Context - AUDIT 31/01/2026 */}
+                {isMarketDeclining && (
+                    <div className="bg-warning-900/10 border border-warning-500/20 rounded-lg p-3 text-xs">
+                        <div className="flex items-start gap-2">
+                            <span className="text-warning-400">📊</span>
+                            <div>
+                                <p className="text-warning-300 font-medium">Contexte marché</p>
+                                <p className="text-muted mt-1">
+                                    Tendance nationale : <span className="text-warning-400">{(marketTrend.threeMonths * 100).toFixed(1)}%</span> sur 3 mois.
+                                    {isPassoire && " Sans rénovation, votre bien subit cette baisse + la décote passoire."}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Divider with calculation logic */}
                 <div className="relative h-px bg-boundary/50 my-1 flex items-center justify-center">
@@ -106,13 +140,20 @@ export function ValuationCard({ valuation, financing }: ValuationCardProps) {
             </div>
 
             {/* Footer Source */}
-            <div className="px-6 py-3 bg-surface-highlight/30 border-t border-boundary/50 text-[10px] text-muted flex justify-between items-center">
-                <span>
-                    {valuation.salesCount ? `Basé sur ${valuation.salesCount} ventes réelles` : 'Estimation théorique'}
-                </span>
-                <span className="font-medium opacity-50">
-                    Source : {valuation.priceSource || 'Etalab DVF'}
-                </span>
+            <div className="px-6 py-3 bg-surface-highlight/30 border-t border-boundary/50 text-[10px] text-muted">
+                <div className="flex justify-between items-center">
+                    <span>
+                        {valuation.salesCount ? `Basé sur ${valuation.salesCount} ventes réelles` : 'Estimation théorique'}
+                    </span>
+                    <span className="font-medium opacity-50">
+                        Source : {valuation.priceSource || 'Etalab DVF'}
+                    </span>
+                </div>
+                {isMarketDeclining && (
+                    <p className="mt-1 text-warning-400/70">
+                        Tendance marché : Notaires de France (12/2025)
+                    </p>
+                )}
             </div>
         </div>
     );
