@@ -147,7 +147,7 @@ export function useMprStatus() {
     return {
         isSuspended,
         regulation,
-        suspensionDate: regulation.suspensionStartDate,
+        suspensionDate: regulation.suspensionDate,
         canPrepareProject: true, // On peut toujours préparer même si suspendu
     };
 }
