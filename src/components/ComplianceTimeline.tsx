@@ -48,14 +48,14 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
     return (
         <motion.div
             ref={ref}
-            className={`card-bento p-6 md:p-8 ${className}`}
+            className={`card-bento p-5 ${className}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <h3 className="text-xl md:text-2xl font-bold text-main flex items-center gap-3">
-                    <span className="text-3xl">⏳</span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <h3 className="text-xl font-bold text-main flex items-center gap-2">
+                    <span className="text-2xl">⏳</span>
                     <span>Calendrier Loi Climat</span>
                 </h3>
             </div>
@@ -68,7 +68,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                 {/* Desktop (Horizontal) */}
                 <div className="absolute hidden md:block top-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-boundary to-transparent z-0" />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 relative z-10">
                     {entries.map(({ dpe, date, isPast, isCurrent }, index) => {
                         const status = DPE_STATUS_LABELS[dpe];
                         const isCurrentDPE = dpe === currentDPE;
@@ -76,7 +76,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                         return (
                             <motion.div
                                 key={dpe}
-                                className="relative pl-16 md:pl-0 md:pt-0 group" // [MOD] Removed md:pt-16, managed internally with Spacer + Layout
+                                className="relative pl-12 md:pl-0 md:pt-0 group" // [MOD] Reduced padding
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{
@@ -96,7 +96,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                                 />
 
                                 {/* Card Content - Pushed down on Desktop */}
-                                <div className={`relative p-6 mt-0 md:mt-16 rounded-2xl border transition-all duration-300 h-full flex flex-col items-start md:items-center md:text-center
+                                <div className={`relative p-4 mt-0 md:mt-8 rounded-xl border transition-all duration-300 h-full flex flex-col items-start md:items-center md:text-center
                                     ${isCurrentDPE
                                         ? "bg-gradient-to-b from-warning/10 to-warning/5 border-warning/40 shadow-glow-warning ring-1 ring-warning/20 transform md:-translate-y-2" // Reduced translate
                                         : isPast
@@ -152,19 +152,18 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                 </div>
             </div>
 
-            {/* Alert Footer Compact */}
+            {/* Alert Footer Compact & Centered */}
             {(currentDPE === "G" || currentDPE === "F" || currentDPE === "E") && (
-                <div className="mt-8 pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-danger-900/30 to-transparent border-l-4 border-danger-500">
-                        <span className="text-3xl">⚠️</span>
-                        <div>
-                            <p className="text-base text-danger-200 font-bold leading-tight">
-                                Risque locatif majeur identifié.
-                            </p>
-                            <p className="text-sm text-danger-300/80 mt-1">
-                                Les biens classés <strong className="text-danger-100">{currentDPE}</strong> subiront une décote rapide avant la date butoir.
-                            </p>
+                <div className="mt-6 pt-4 border-t border-white/5">
+                    <div className="w-full text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-danger/10 border border-danger/20 mb-2">
+                            <span className="text-sm font-bold text-danger uppercase tracking-wide">
+                                ⚠️ Risque Locatif Majeur
+                            </span>
                         </div>
+                        <p className="text-sm text-muted max-w-lg mx-auto leading-relaxed">
+                            Les biens classés <strong className="text-white font-bold">{currentDPE}</strong> subiront une décote rapide avant la date butoir.
+                        </p>
                     </div>
                 </div>
             )}

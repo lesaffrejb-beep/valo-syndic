@@ -61,7 +61,7 @@ export function EnergyInflationChart({
         }).format(value) + " €";
 
     return (
-        <div className="card-bento">
+        <div className="card-bento h-full flex flex-col">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold text-main flex items-center gap-3">
                     <span className="text-2xl">📈</span> Projection Coûts Travaux
@@ -74,8 +74,8 @@ export function EnergyInflationChart({
                 </div>
             </div>
 
-            {/* Chart */}
-            <div className="h-64 w-full">
+            {/* Chart - Flex Growth */}
+            <div className="flex-1 w-full min-h-[250px]">
                 <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                     <AreaChart
                         data={data}

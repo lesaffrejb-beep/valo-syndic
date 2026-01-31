@@ -470,7 +470,7 @@ export default function HomePage() {
 
                                     {/* Inflation Context & Georisques Side-by-Side */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-                                        <div className="opacity-80 hover:opacity-100 transition-opacity">
+                                        <div className="h-full flex flex-col opacity-80 hover:opacity-100 transition-opacity">
                                             <EnergyInflationChart currentCost={result.inactionCost.currentCost} />
                                         </div>
                                         <div className="h-full">
