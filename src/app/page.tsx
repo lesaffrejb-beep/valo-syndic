@@ -111,7 +111,7 @@ export default function HomePage() {
                 setResult(loadedResult);
                 sessionStorage.removeItem('valo_loaded_simulation');
                 setTimeout(() => {
-                    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                 }, 100);
             } catch (err) {
                 console.error('Failed to load simulation from session:', err);
@@ -166,7 +166,7 @@ export default function HomePage() {
             setIsLoading(false);
             // Wait for render cycle
             setTimeout(() => {
-                document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }, 100);
         }, 500);
     };
@@ -216,7 +216,7 @@ export default function HomePage() {
 
                 setResult(response.data);
                 setTimeout(() => {
-                    document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                 }, 100);
             } catch (err) {
                 console.error("Erreur chargement fichier:", err);
@@ -468,9 +468,16 @@ export default function HomePage() {
                                         financing={result.financing}
                                     />
 
-                                    {/* Inflation Context */}
-                                    <div className="w-full opacity-80 hover:opacity-100 transition-opacity">
-                                        <EnergyInflationChart currentCost={result.inactionCost.currentCost} />
+                                    {/* Inflation Context & Georisques Side-by-Side */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                                        <div className="opacity-80 hover:opacity-100 transition-opacity">
+                                            <EnergyInflationChart currentCost={result.inactionCost.currentCost} />
+                                        </div>
+                                        <div className="h-full">
+                                            <RisksCard
+                                                coordinates={result.input.coordinates ?? undefined}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -522,19 +529,12 @@ export default function HomePage() {
                                             <SubsidyTable inputs={simulationInputs} />
                                         </div>
 
-                                        {/* 2. FINANCING PIE (Left) - Span 6 (Half) */}
-                                        <div className="md:col-span-6 card-obsidian min-h-[400px] order-2">
+                                        {/* 2. FINANCING PIE (Now Full Width) */}
+                                        <div className="md:col-span-12 card-obsidian min-h-[400px] order-2">
                                             <h3 className="text-xl font-bold text-main mb-6 flex items-center gap-2">
                                                 🌍 Financement Global
                                             </h3>
                                             <FinancingBreakdownChart financing={result.financing} />
-                                        </div>
-
-                                        {/* 3. GEORISQUES LIST (Right) - Span 6 (Half) - Same Height */}
-                                        <div className="md:col-span-6 order-3 h-full min-h-[400px]">
-                                            <RisksCard
-                                                coordinates={result.input.coordinates ?? undefined}
-                                            />
                                         </div>
                                     </div>
                                 </div>

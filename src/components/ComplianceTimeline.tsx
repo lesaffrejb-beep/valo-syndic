@@ -48,19 +48,19 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
     return (
         <motion.div
             ref={ref}
-            className={`card-bento p-8 md:p-10 ${className}`}
+            className={`card-bento p-6 md:p-8 ${className}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <h3 className="text-xl md:text-2xl font-bold text-main flex items-center gap-3">
                     <span className="text-3xl">⏳</span>
                     <span>Calendrier Loi Climat</span>
                 </h3>
             </div>
 
-            <div className="relative pt-4 pb-4">
+            <div className="relative py-2">
                 {/* Ligne de temps - Connecteur Premium */}
                 {/* Mobile (Vertical) */}
                 <div className="absolute left-6 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-boundary to-transparent md:hidden" />
