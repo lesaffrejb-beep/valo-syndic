@@ -44,7 +44,7 @@ import { InvestorTaxCard } from "@/components/business/InvestorTaxCard";
 // import { CostValueBalance } from "@/components/business/CostValueBalance"; // REMOVED
 
 import { StaggerContainer } from "@/components/ui/AnimatedCard";
-import { ViewModeToggle } from "@/components/ui/ViewModeToggle";
+
 
 // V3 Premium Components
 import { StreetViewHeader } from "@/components/business/StreetViewHeader";
@@ -100,7 +100,7 @@ export default function HomePage() {
     const { query, setQuery, suggestions: results, isLoading: isSearching, selectAddress: searchAddress } = useAddressSearch();
     const [selectedProperty, setSelectedProperty] = useState<any>(null);
     const [showResults, setShowResults] = useState(false);
-    const [manualMode, setManualMode] = useState(false); // [FIX] Mode manuel pour afficher le formulaire
+    const [manualMode, setManualMode] = useState(true); // [FIX] Mode manuel activé par défaut
 
     // Fonction quand on clique sur une suggestion
     const handleSelectAddress = async (property: any) => {
@@ -342,9 +342,7 @@ export default function HomePage() {
                                 ⚡ Diagnostic Flash
                             </button>
                             <button
-                                onClick={() => {
-                                    window.alert("Fonctionnalité disponible en V3\n\nL'audit de parc sera disponible prochainement.");
-                                }}
+                                onClick={() => setActiveTab("mass")}
                                 className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === "mass"
                                     ? "bg-primary-900 text-primary-400 shadow-glow border border-primary-500/30"
                                     : "text-muted hover:text-main"
@@ -372,10 +370,7 @@ export default function HomePage() {
                         </div>
 
                         <div id="diagnostic-form" className="card-bento p-8 md:p-12 mb-12 shadow-none rounded-3xl">
-                            {/* Import Button */}
-                            <div className="flex justify-end mb-6">
-                                <JsonImporter onImport={handleGhostImport} />
-                            </div>
+
 
                             {/* --- BLOC RECHERCHE INTELLIGENTE (Remplace DiagnosticForm) --- */}
                             <div className="relative z-50 w-full max-w-2xl mx-auto py-8">
@@ -451,6 +446,14 @@ export default function HomePage() {
                                 )}
                             </div>
 
+                            {/* Import Button moved to bottom */}
+                            <div className="flex justify-center mt-8 pt-8 border-t border-white/5">
+                                <div className="flex flex-col items-center gap-2">
+                                    <span className="text-xs text-muted uppercase tracking-wider font-medium">Déjà client ?</span>
+                                    <JsonImporter onImport={handleGhostImport} />
+                                </div>
+                            </div>
+
                             {/* Fallback si on veut montrer le form vide par défaut ? Non on garde le Reveal Address First */}
                         </div>
 
@@ -511,9 +514,7 @@ export default function HomePage() {
                                                     {result.input.city} • {result.input.numberOfUnits} lots
                                                 </p>
                                             </div>
-                                            <div className="flex items-center gap-4">
-                                                <ViewModeToggle />
-                                            </div>
+
                                         </div>
 
                                         <div className="w-full pt-8 border-t border-boundary/50 mt-8">
