@@ -18,7 +18,7 @@ import {
     type DPELetter,
 } from "./constants";
 
-import { getMarketTrend, getGreenValueGain } from "./market-data";
+import { getMarketTrend } from "./market-data";
 
 import {
     type ComplianceStatus,
@@ -197,12 +197,12 @@ export function simulateFinancing(
     const amoCeilingPerLot = nbLots <= AMO_PARAMS.smallCoproThreshold
         ? AMO_PARAMS.ceilingPerLotSmall  // ≤ 20 lots: 1 000€/lot
         : AMO_PARAMS.ceilingPerLotLarge; // > 20 lots: 600€/lot
-    
+
     const amoCeilingGlobal = nbLots * amoCeilingPerLot;
-    
+
     // Assiette éligible AMO (coût réel plafonné)
     const eligibleBaseAMO = Math.min(amoCostHT, amoCeilingGlobal);
-    
+
     // Montant Aide AMO (50% de l'éligible, avec plancher global de 3 000€)
     const amoAmountRaw = eligibleBaseAMO * AMO_PARAMS.aidRate;
     const amoAmount = Math.max(amoAmountRaw, AMO_PARAMS.minTotal);
@@ -366,8 +366,8 @@ export function calculateValuation(
     // 5. AUDIT 31/01/2026: Intégration tendance marché
     // Si le marché baisse, on ajuste la valeur projetée pour être réaliste
     // Cependant, la "valeur verte" reste un différentiel protecteur
-    const marketTrend = getMarketTrend("national");
-    const marketTrendApplied = marketTrend.threeMonths; // Ex: -0.004 = -0.4%
+    const marketTrend = getMarketTrend();
+    const marketTrendApplied = marketTrend.national; // Ex: -0.004 = -0.4%
 
     // Note: On n'applique PAS la tendance au projectedValue directement
     // car la "valeur verte" est un différentiel relatif au marché.

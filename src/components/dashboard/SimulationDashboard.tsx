@@ -432,6 +432,7 @@ export function SimulationDashboard({ marketData }: SimulationDashboardProps) {
                                                 valuation={result.valuation}
                                                 financing={result.financing}
                                                 marketTrend={marketData.marketTrend}
+                                                isPassoire={['F', 'G'].includes(result.input.currentDPE)}
                                             />
                                         </div>
                                         <div className="md:col-span-4 h-full">

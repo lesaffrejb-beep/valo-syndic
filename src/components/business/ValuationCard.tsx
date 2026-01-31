@@ -3,7 +3,7 @@
 import { formatCurrency, formatPercent } from "@/lib/calculator";
 import { type ValuationResult, type FinancingPlan } from "@/lib/schemas";
 import { useViewModeStore } from "@/stores/useViewModeStore";
-import { getMarketTrend } from "@/lib/market-data";
+
 
 interface ValuationCardProps {
     valuation: ValuationResult;
@@ -12,6 +12,7 @@ interface ValuationCardProps {
         national: number;
         comment?: string;
     };
+    isPassoire?: boolean;
 }
 
 /**
@@ -23,7 +24,7 @@ interface ValuationCardProps {
  * - Contexte marché affiché pour transparence
  * - Mention de la source des données
  */
-export function ValuationCard({ valuation, financing, marketTrend }: ValuationCardProps) {
+export function ValuationCard({ valuation, financing, marketTrend, isPassoire = false }: ValuationCardProps) {
     const { viewMode, getAdjustedValue } = useViewModeStore();
     const isMaPoche = viewMode === 'maPoche';
 
@@ -92,14 +93,14 @@ export function ValuationCard({ valuation, financing, marketTrend }: ValuationCa
                 </div>
 
                 {/* Market Context - AUDIT 31/01/2026 */}
-                {isMarketDeclining && (
+                {isMarketDown && marketTrend && (
                     <div className="bg-warning-900/10 border border-warning-500/20 rounded-lg p-3 text-xs">
                         <div className="flex items-start gap-2">
                             <span className="text-warning-400">📊</span>
                             <div>
                                 <p className="text-warning-300 font-medium">Contexte marché</p>
                                 <p className="text-muted mt-1">
-                                    Tendance nationale : <span className="text-warning-400">{(marketTrend.threeMonths * 100).toFixed(1)}%</span> sur 3 mois.
+                                    Tendance nationale : <span className="text-warning-400">{(marketTrend.national * 100).toFixed(1)}%</span> sur 3 mois.
                                     {isPassoire && " Sans rénovation, votre bien subit cette baisse + la décote passoire."}
                                 </p>
                             </div>
@@ -151,7 +152,7 @@ export function ValuationCard({ valuation, financing, marketTrend }: ValuationCa
                         Source : {valuation.priceSource || 'Etalab DVF'}
                     </span>
                 </div>
-                {isMarketDeclining && (
+                {isMarketDown && (
                     <p className="mt-1 text-warning-400/70">
                         Tendance marché : Notaires de France (12/2025)
                     </p>
