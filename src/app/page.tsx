@@ -561,21 +561,19 @@ export default function HomePage() {
                                                 simulationInputs={simulationInputs}
                                             />
                                         </div>
-                                        <div className="lg:col-span-1 space-y-4">
-                                            {/* Call to Actions */}
-                                            <div className="card-bento p-6 flex flex-col justify-center items-center text-center h-full gap-4 bg-primary-900/5 hover:bg-primary-900/10 transition-colors border-primary-500/20">
-                                                <h3 className="font-bold text-main">Prêt à voter ?</h3>
-                                                <p className="text-sm text-muted">Téléchargez la synthèse pour votre AG.</p>
-                                                <div className="flex flex-col gap-3 w-full">
-                                                    <DownloadPdfButton result={result} />
-                                                    <button
-                                                        onClick={handleSaveToCloud}
-                                                        className="w-full py-2.5 rounded-lg text-sm font-semibold border border-boundary/50 hover:bg-surface-hover transition-colors"
-                                                    >
-                                                        Sauvegarder le projet
-                                                    </button>
-                                                </div>
-                                            </div>
+                                    </div>
+
+                                    {/* Action Buttons - Centered Below */}
+                                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 pt-8 border-t border-white/5">
+                                        <div className="w-full max-w-md flex flex-col gap-4">
+                                            <DownloadPdfButton result={result} />
+                                            <button
+                                                onClick={handleSaveToCloud}
+                                                className="w-full py-3 rounded-xl text-sm font-semibold border border-boundary/50 hover:bg-surface-hover transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <span>💾</span>
+                                                Sauvegarder le projet
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
