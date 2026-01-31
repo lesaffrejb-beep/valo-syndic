@@ -1,228 +1,64 @@
-/**
- * MarketLiquidityAlert — Alerte Liquidité Marché
- * ===============================================
- * Affiche une alerte sur la part des passoires thermiques sur le marché.
- * Argument de vente basé sur la concurrence et la liquidité.
- *
- * AUDIT 31/01/2026: Composant créé pour utiliser les données Notaires
- * Source: "15% des ventes sont des F/G" (DP Immobilier 08.12.2025)
- */
-
 "use client";
 
 import { motion } from "framer-motion";
-import { getPassoiresShare, getMarketTrend, getDataLastUpdate } from "@/lib/market-data";
-import type { DPELetter } from "@/lib/constants";
+import { formatPercent } from "@/lib/calculator";
+import { BarChart3, TrendingUp } from "lucide-react";
 
 interface MarketLiquidityAlertProps {
-    /** DPE actuel du bien */
-    currentDPE: DPELetter;
-    /** Variante d'affichage */
-    variant?: "card" | "inline" | "compact";
-    /** Afficher les sources */
-    showSources?: boolean;
+    shareOfSales: number;
 }
 
-export function MarketLiquidityAlert({
-    currentDPE,
-    variant = "card",
-    showSources = true,
-}: MarketLiquidityAlertProps) {
-    const passoiresShare = getPassoiresShare();
-    const marketTrend = getMarketTrend("national");
-    const lastUpdate = getDataLastUpdate();
-
-    // Déterminer si le bien est une passoire
-    const isPassoire = currentDPE === "F" || currentDPE === "G";
-    const isAtRisk = currentDPE === "E";
-
-    // Calculer le pourcentage affiché
-    const passoiresPercent = Math.round(passoiresShare * 100);
-
-    // Message principal selon le DPE
-    const getMessage = () => {
-        if (isPassoire) {
-            return {
-                title: "Votre bien est en concurrence directe",
-                message: `${passoiresPercent}% des biens en vente sont des passoires thermiques (F/G). Sans rénovation, vous êtes en compétition avec ces biens décotés.`,
-                urgency: "high" as const,
-                icon: "⚠️",
-            };
-        }
-        if (isAtRisk) {
-            return {
-                title: "Anticipez l'évolution réglementaire",
-                message: `Les logements E seront interdits à la location en 2034. Rénover maintenant vous donne un avantage concurrentiel.`,
-                urgency: "medium" as const,
-                icon: "📊",
-            };
-        }
-        return {
-            title: "Votre bien est bien positionné",
-            message: `Avec un DPE ${currentDPE}, votre bien se distingue des ${passoiresPercent}% de passoires sur le marché.`,
-            urgency: "low" as const,
-            icon: "✅",
-        };
-    };
-
-    const info = getMessage();
-
-    // Styles selon urgency
-    const urgencyStyles = {
-        high: {
-            bg: "bg-danger-900/20",
-            border: "border-danger-500/40",
-            title: "text-danger-300",
-            icon: "text-danger-400",
-        },
-        medium: {
-            bg: "bg-warning-900/20",
-            border: "border-warning-500/40",
-            title: "text-warning-300",
-            icon: "text-warning-400",
-        },
-        low: {
-            bg: "bg-success-900/20",
-            border: "border-success-500/40",
-            title: "text-success-300",
-            icon: "text-success-400",
-        },
-    };
-
-    const style = urgencyStyles[info.urgency];
-
-    // Variante Card
-    if (variant === "card") {
-        return (
-            <motion.div
-                className={`card-bento ${style.bg} border ${style.border}`}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-            >
-                {/* Header */}
-                <div className="flex items-start gap-3 mb-4">
-                    <span className={`text-2xl ${style.icon}`}>{info.icon}</span>
-                    <div>
-                        <h4 className={`font-semibold ${style.title}`}>
-                            {info.title}
-                        </h4>
-                        <p className="text-sm text-muted mt-1">
-                            {info.message}
-                        </p>
+export function MarketLiquidityAlert({ shareOfSales }: MarketLiquidityAlertProps) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-zinc-950 border border-white/10 rounded-2xl p-6 h-full flex flex-col justify-between"
+        >
+            <div>
+                <div className="flex items-center justify-between mb-6">
+                    <div className="p-2 bg-zinc-900 rounded-lg border border-white/5">
+                        <BarChart3 className="w-5 h-5 text-zinc-400" />
+                    </div>
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-amber-950/30 border border-amber-900/30 rounded-full">
+                        <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
+                        <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">Alerte Liquidité</span>
                     </div>
                 </div>
 
-                {/* Stats */}
-                {isPassoire && (
-                    <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-boundary/30">
-                        <StatBox
-                            label="Passoires sur le marché"
-                            value={`${passoiresPercent}%`}
-                            trend="stable"
-                        />
-                        <StatBox
-                            label="Tendance prix"
-                            value={`${(marketTrend.threeMonths * 100).toFixed(1)}%`}
-                            trend={marketTrend.threeMonths < 0 ? "down" : marketTrend.threeMonths > 0 ? "up" : "stable"}
-                            period="3 mois"
-                        />
-                    </div>
-                )}
+                <h3 className="text-zinc-400 text-xs font-semibold uppercase tracking-[0.1em] mb-4">
+                    Marché des Passoires (E/F/G)
+                </h3>
 
-                {/* Sources */}
-                {showSources && (
-                    <div className="mt-4 pt-3 border-t border-boundary/20">
-                        <p className="text-[10px] text-muted">
-                            Sources: Notaires de France (12/2025) • Données: {lastUpdate}
-                        </p>
-                    </div>
-                )}
-            </motion.div>
-        );
-    }
-
-    // Variante Inline
-    if (variant === "inline") {
-        return (
-            <motion.div
-                className={`flex items-center gap-3 p-3 rounded-lg ${style.bg} border ${style.border}`}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-            >
-                <span className={`text-xl ${style.icon}`}>{info.icon}</span>
-                <div className="flex-1">
-                    <span className={`text-sm font-medium ${style.title}`}>
-                        {info.title}
+                <div className="flex items-baseline gap-2 mb-2">
+                    <span className="text-5xl font-mono font-bold text-amber-500 tabular-nums">
+                        {formatPercent(shareOfSales / 100)}
                     </span>
-                    <span className="text-xs text-muted ml-2">
-                        — {passoiresPercent}% de passoires sur le marché
-                    </span>
+                    <TrendingUp className="w-5 h-5 text-amber-500/50" />
                 </div>
-            </motion.div>
-        );
-    }
 
-    // Variante Compact
-    return (
-        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${style.bg} border ${style.border}`}>
-            <span className="text-sm">{info.icon}</span>
-            <span className={`text-xs font-medium ${style.title}`}>
-                {passoiresPercent}% passoires F/G
-            </span>
-        </div>
-    );
-}
+                <p className="text-sm text-zinc-500 leading-relaxed">
+                    Part des transactions réalisées par des passoires thermiques au cours des 12 derniers mois.
+                </p>
+            </div>
 
-// =============================================================================
-// SUB-COMPONENTS
-// =============================================================================
-
-interface StatBoxProps {
-    label: string;
-    value: string;
-    trend: "up" | "down" | "stable";
-    period?: string;
-}
-
-function StatBox({ label, value, trend, period }: StatBoxProps) {
-    const trendIcon = {
-        up: "↗️",
-        down: "↘️",
-        stable: "→",
-    };
-
-    const trendColor = {
-        up: "text-danger-400", // Prix qui montent = mauvais pour acheteurs
-        down: "text-success-400", // Prix qui baissent = opportunité
-        stable: "text-muted",
-    };
-
-    return (
-        <div className="text-center">
-            <p className="text-xs text-muted uppercase tracking-wider mb-1">{label}</p>
-            <p className={`text-lg font-bold ${trendColor[trend]}`}>
-                {value} {trendIcon[trend]}
-            </p>
-            {period && <p className="text-[10px] text-muted">sur {period}</p>}
-        </div>
-    );
-}
-
-/**
- * Composant simplifié pour afficher juste le pourcentage de passoires
- * Utile dans les headers ou sidebars
- */
-export function PassoiresIndicator() {
-    const passoiresShare = getPassoiresShare();
-    const percent = Math.round(passoiresShare * 100);
-
-    return (
-        <div className="flex items-center gap-2 text-xs">
-            <span className="text-warning-400">📊</span>
-            <span className="text-muted">
-                <span className="font-bold text-main">{percent}%</span> des ventes = passoires F/G
-            </span>
-        </div>
+            <div className="mt-8 pt-6 border-t border-zinc-900/50">
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-1 bg-zinc-700 rounded-full" />
+                    <span className="text-[10px] text-zinc-600 font-medium uppercase tracking-widest">Risque de liquidité</span>
+                </div>
+                <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
+                    <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${shareOfSales}%` }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="bg-amber-500 h-full shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                    />
+                </div>
+                <p className="text-[10px] text-zinc-600 mt-2 font-mono">
+                    ANALYTICS ENGINE V4.2 — VALO-SYNDIC
+                </p>
+            </div>
+        </motion.div>
     );
 }
