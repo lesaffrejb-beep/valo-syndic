@@ -210,35 +210,52 @@ export default function DashboardPage() {
                         </motion.div>
                     </div>
 
-                    {/* ZONE C: PREUVE (Center - 50% - 6 cols) */}
-                    <div className="lg:col-span-6 flex flex-col h-full">
+                    {/* ZONE C: ENGINE (Center - 50% - 6 cols) */}
+                    <div className="lg:col-span-6 flex flex-col gap-6 h-full">
+                        {/* Calculator (The Engine) - Prominent Placement */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className={`${CARD_CLASS} flex-1 flex flex-col`}
+                            className={`${CARD_CLASS} flex-1 min-h-[500px] border-gold/10 hover:border-gold/30 shadow-neon-gold/5`}
                             style={{
                                 boxShadow: "0 20px 50px -20px rgba(0,0,0,0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)"
                             }}
                         >
-                            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+                            <div className="absolute -inset-1 bg-gold/5 blur-3xl opacity-20 pointer-events-none" />
 
+                            <TantiemeCalculator
+                                financing={financingData}
+                                simulationInputs={inputsData}
+                                className="h-full"
+                            />
+                        </motion.div>
+                    </div>
+
+                    {/* ZONE D: PROJECTION (Right - 25% - 3 cols) */}
+                    <div className="lg:col-span-3 flex flex-col gap-6">
+
+                        {/* Receipt / Cost Structure */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className={`${CARD_CLASS} h-auto min-h-[300px] hover:shadow-inner-depth overflow-y-auto`}
+                        >
                             <div className="p-2 h-full">
                                 <TransparentReceipt
                                     financing={financingData}
                                 />
                             </div>
                         </motion.div>
-                    </div>
 
-                    {/* ZONE D: PROJECTION (Right - 25% - 3 cols) */}
-                    <div className="lg:col-span-3 flex flex-col gap-6">
-                        {/* Valuation (Gain - Gold Glow) */}
+                        {/* Valuation (Gain) */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className={`${CARD_CLASS} flex-1 min-h-[400px] hover:shadow-neon-gold border-gold/10 hover:border-gold/30`}
+                            transition={{ delay: 0.4 }}
+                            className={`${CARD_CLASS} flex-1 min-h-[350px] hover:shadow-neon-gold border-gold/10 hover:border-gold/30`}
                         >
                             <div className="absolute -top-24 -right-24 w-48 h-48 bg-gold/10 blur-[100px] group-hover:bg-gold/20 transition-colors duration-700" />
                             <ValuationCard
@@ -247,12 +264,12 @@ export default function DashboardPage() {
                             />
                         </motion.div>
 
-                        {/* Inaction Cost (Fear - Red Subtle Glow) */}
+                        {/* Inaction Cost */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.4 }}
-                            className={`${CARD_CLASS} h-auto min-h-[250px] hover:border-danger/30 hover:shadow-[0_0_30px_-10px_rgba(239,68,68,0.2)]`}
+                            transition={{ delay: 0.5 }}
+                            className={`${CARD_CLASS} h-auto min-h-[200px] hover:border-danger/30 hover:shadow-[0_0_30px_-10px_rgba(239,68,68,0.2)]`}
                         >
                             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-danger/5 blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <InactionCostCard
@@ -307,52 +324,46 @@ export default function DashboardPage() {
                 )}
             </AnimatePresence>
 
-            {/* ZONE E: SPACESHIP CONTROL BAR (Sticky Bottom) */}
-            <div className="fixed bottom-0 left-0 right-0 z-[80] pointer-events-none flex justify-center pb-8 perspective-[1000px]">
+            {/* ZONE E: SPACESHIP CONTROL BAR (Sticky Bottom) - REDUCED & SLEEK */}
+            <div className="fixed bottom-0 left-0 right-0 z-[80] pointer-events-none flex justify-center pb-6 perspective-[1000px]">
                 <motion.div
                     initial={{ y: 100, opacity: 0, rotateX: 20 }}
                     animate={{ y: 0, opacity: 1, rotateX: 0 }}
                     transition={{ delay: 0.5, type: "spring", stiffness: 100, damping: 20 }}
-                    className="pointer-events-auto w-[96%] max-w-[1280px] bg-[#09090B]/90 backdrop-blur-xl border border-white/10 shadow-[0_-10px_40px_-20px_rgba(0,0,0,0.8),inset_0_1px_0_0_rgba(255,255,255,0.1)] rounded-2xl px-8 py-5 flex flex-col md:flex-row items-center gap-8 justify-between group"
+                    className="pointer-events-auto w-auto min-w-[600px] bg-[#09090B]/90 backdrop-blur-xl border border-white/10 shadow-[0_-10px_40px_-20px_rgba(0,0,0,0.8),inset_0_1px_0_0_rgba(255,255,255,0.1)] rounded-full px-8 py-3 flex items-center gap-8 justify-between group"
                 >
                     {/* Glow Line Top */}
                     <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-gold/30 to-transparent opacity-50" />
 
                     {/* LEFT: Branding/Status */}
-                    <div className="hidden md:flex items-center gap-4 min-w-[200px]">
+                    <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-gold animate-pulse shadow-[0_0_8px_rgba(212,175,55,0.8)]" />
                             <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">Cockpit Live</span>
                         </div>
                     </div>
 
-                    {/* CENTER: Calculator (The Engine) */}
-                    <div className="flex-1 w-full max-w-3xl border-x border-white/5 px-8">
-                        <TantiemeCalculator
-                            financing={financingData}
-                            simulationInputs={inputsData}
-                        />
+                    {/* CENTER: SUMMARY METRIC (Ex: Effort Epargne) */}
+                    <div className="flex items-center gap-4 border-x border-white/10 px-8">
+                        <span className="text-white/40 text-xs uppercase tracking-wider">Effort Net</span>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-xl font-bold text-white">83</span>
+                            <span className="text-xs text-gold">€/mois</span>
+                        </div>
                     </div>
 
                     {/* RIGHT: Export Actions */}
-                    <div className="flex items-center gap-3 min-w-[200px] justify-end">
+                    <div className="flex items-center gap-3">
                         <button
                             onClick={() => setShowObjections(!showObjections)}
-                            className={`h-10 px-4 rounded-lg border hover:bg-white/10 text-xs font-mono tracking-wide transition-all active:scale-95 flex items-center gap-2 ${showObjections ? 'bg-gold/10 border-gold/30 text-gold' : 'bg-white/5 border-white/10 text-white/60'}`}
+                            className={`h-9 px-4 rounded-full border hover:bg-white/10 text-xs font-mono tracking-wide transition-all active:scale-95 flex items-center gap-2 ${showObjections ? 'bg-gold/10 border-gold/30 text-gold' : 'bg-white/5 border-white/10 text-white/60'}`}
                         >
-                            <ShieldAlert className="w-4 h-4 text-gold" />
+                            <ShieldAlert className="w-3 h-3" />
                             <span>Objections</span>
                         </button>
 
-                        <div className="h-8 w-[1px] bg-white/10 mx-2" />
-
-                        <button className="h-10 px-5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 shadow-inner-light text-sm font-medium text-white transition-all active:scale-95 flex items-center gap-2">
-                            <FileText className="w-4 h-4" />
-                            PDF
-                        </button>
-
-                        <button className="h-10 px-6 rounded-lg bg-gold text-obsidian border border-gold/50 shadow-[0_0_20px_-5px_rgba(212,175,55,0.4)] hover:shadow-neon-gold hover:brightness-110 text-sm font-bold tracking-wide transition-all active:scale-95 flex items-center gap-2">
-                            <Download className="w-4 h-4" />
+                        <button className="h-9 px-6 rounded-full bg-gold text-obsidian border border-gold/50 shadow-[0_0_20px_-5px_rgba(212,175,55,0.4)] hover:shadow-neon-gold hover:brightness-110 text-xs font-bold tracking-wide transition-all active:scale-95 flex items-center gap-2">
+                            <Download className="w-3 h-3" />
                             EXPORT
                         </button>
                     </div>
