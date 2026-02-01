@@ -88,6 +88,7 @@ export default function DashboardPage() {
     const [projects, setProjects] = useState<SavedSimulation[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
+    const [showObjections, setShowObjections] = useState(false);
 
     // --- LOGIC ---
     useEffect(() => {
@@ -136,9 +137,6 @@ export default function DashboardPage() {
 
     // --- OBSIDIAN CARD CLASS (High-End Tactile) ---
     const CARD_CLASS = "bg-charcoal bg-glass-gradient shadow-glass border border-white/5 rounded-2xl shadow-inner-light backdrop-blur-md relative overflow-hidden group transition-all duration-300 hover:shadow-inner-depth hover:border-white/10";
-
-    // --- STATE FOR OBJECTIONS ---
-    const [showObjections, setShowObjections] = useState(false);
 
     // --- RENDER ---
     return (
