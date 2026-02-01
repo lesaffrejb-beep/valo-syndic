@@ -11,7 +11,7 @@ import { useViewModeStore } from "@/stores/useViewModeStore";
 interface TantiemeCalculatorProps {
     financing: FinancingPlan;
     // We need inputs to recalculate subsidies per profile
-    simulationInputs?: SimulationInputs;
+    simulationInputs?: SimulationInputs | undefined;
     className?: string;
 }
 
