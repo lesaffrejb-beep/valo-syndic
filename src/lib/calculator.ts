@@ -234,6 +234,7 @@ export function simulateFinancing(
     return {
         worksCostHT: Math.round(costHT),
         totalCostHT: Math.round(totalCostHT), // On garde le HT pour info
+        totalCostTTC: Math.round(totalCostTTC), // Ajout pour le Ticket de Caisse TTC
         syndicFees: Math.round(syndicFees),
         doFees: Math.round(doFees),
         contingencyFees: Math.round(contingencyFees),

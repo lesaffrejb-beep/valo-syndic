@@ -112,6 +112,9 @@ export const FinancingPlanSchema = z.object({
     /** Coût total HT (Travaux + Honoraires + Aléas) */
     totalCostHT: z.number(),
 
+    /** Coût total TTC (TVA 5.5%) */
+    totalCostTTC: z.number(),
+
     /** Honoraires Syndic (3%) */
     syndicFees: z.number(),
 
