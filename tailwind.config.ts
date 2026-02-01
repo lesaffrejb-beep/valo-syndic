@@ -7,19 +7,27 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                obsidian: "#050505", // Plus profond que noir
-                charcoal: "#0F1115", // Carte de base
+                obsidian: "#020202", // Obsidian absolute - Stealth Wealth
+                charcoal: "#0A0B0D", // Surface level 1
+                steel: "#12131A", // Surface level 2
                 gold: {
                     DEFAULT: "#D4AF37",
+                    dark: "#B8941F",
                     glow: "rgba(212, 175, 55, 0.5)",
+                },
+                electricBlue: {
+                    DEFAULT: "#3B82F6",
+                    light: "#60A5FA",
                 },
                 // Maintaining existing semantic colors for code compatibility if needed, map to new system where possible
                 primary: {
                     DEFAULT: "#D4AF37", // Mapped to Gold
                     glow: "rgba(212, 175, 55, 0.5)",
                 },
-                app: "#050505",
-                surface: "#0F1115",
+                app: "#020202",
+                surface: "#0A0B0D",
+                'surface-highlight': "#12131A",
+                'surface-hover': "#1A1B22",
                 main: "#FFFFFF",
                 muted: "#A1A1AA",
                 subtle: "#52525B",

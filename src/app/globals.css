@@ -173,6 +173,10 @@
   .text-gold-premium {
     @apply text-primary drop-shadow-[0_0_10px_rgba(212, 182, 121, 0.3)];
   }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-br from-gold via-gold to-gold-dark bg-clip-text text-transparent;
+  }
 }
 
 
