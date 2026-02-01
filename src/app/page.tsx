@@ -63,11 +63,23 @@ const MOCK_VALUATION = {
 };
 
 const MOCK_INACTION = {
-    currentCost: 12000, // Equivalent to costYear1
+    currentCost: 12000,
     projectedCost3Years: 38000,
     valueDepreciation: 15000,
-    totalInactionCost: 38000 + 15000, // Sum for logic
+    totalInactionCost: 38000 + 15000,
 };
+
+const MOCK_INPUTS = {
+    workAmountHT: 400000,
+    amoAmountHT: 12000,
+    nbLots: 10,
+    energyGain: 0.45,
+    initialDPE: 'F',
+    targetDPE: 'C',
+    isFragile: false,
+    ceePerLot: 2000,
+    localAidPerLot: 500,
+} as const;
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -119,7 +131,7 @@ export default function DashboardPage() {
     const financingData = selectedProject?.json_data?.financing || MOCK_FINANCING;
     const valuationData = selectedProject?.json_data?.result?.valuation || MOCK_VALUATION;
     const inactionData = selectedProject?.json_data?.result?.inaction || MOCK_INACTION;
-    const inputsData = selectedProject?.json_data?.input;
+    const inputsData = selectedProject?.json_data?.input || MOCK_INPUTS;
 
     // --- OBSIDIAN CARD CLASS (High-End Tactile) ---
     const CARD_CLASS = "bg-charcoal bg-glass-gradient shadow-glass border border-white/5 rounded-2xl shadow-inner-light backdrop-blur-md relative overflow-hidden group transition-all duration-300 hover:shadow-inner-depth hover:border-white/10";
