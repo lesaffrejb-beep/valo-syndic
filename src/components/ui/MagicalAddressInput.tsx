@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { dpeService, type DPEEntry, type HybridSearchResult } from "@/services/dpeService";
 import { NumberStepper } from "@/components/ui/NumberStepper";
 import { type DPELetter } from "@/lib/constants";
+import { Search, ChevronDown, MapPin, Coins, Droplet, Flame, Zap, ArrowRight, Rocket } from "lucide-react";
 
 interface MagicalAddressInputProps {
     onStartSimulation: (data: {
@@ -83,10 +84,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                 `}>
                     <div className="flex items-center gap-2">
                         <div className="pl-4 text-gold/40">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
+                            <Search className="w-5 h-5" />
                         </div>
                         <input
                             type="text"
@@ -105,9 +103,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                 animate={{ rotate: isUnfolded ? 180 : 0 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M6 9l6 6 6-6" />
-                                </svg>
+                                <ChevronDown className="w-4 h-4 text-black" />
                             </motion.span>
                         </button>
                     </div>
@@ -129,7 +125,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 group-hover/item:border-gold/30 group-hover/item:bg-gold/5 transition-all">
-                                                <span className="text-lg opacity-40 group-hover/item:opacity-100 transition-opacity">📍</span>
+                                                <MapPin className="w-5 h-5 text-white/40 group-hover/item:text-gold transition-colors" />
                                             </div>
                                             <div>
                                                 <p className="text-white font-medium tracking-tight">{result.address}</p>
@@ -183,7 +179,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
                                             <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Volumes & Capacité</label>
-                                            <span className="text-[10px] font-mono text-gold/60 bg-gold/5 px-2 py-0.5 rounded border border-gold/10">Configuration manuelle</span>
+                                            <span className="text--[10px] font-mono text-gold/60 bg-gold/5 px-2 py-0.5 rounded border border-gold/10">Configuration manuelle</span>
                                         </div>
                                         <div className="bg-black/40 rounded-2xl p-4 border border-white/5 shadow-tactile-inner group hover:border-white/10 transition-all">
                                             <div className="flex items-center justify-between mb-4">
@@ -204,7 +200,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                         <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Valorisation locale</label>
                                         <div className="bg-black/40 rounded-2xl p-5 border border-white/5 shadow-tactile-inner focus-within:border-gold/30 transition-all flex items-center gap-4 group">
                                             <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 group-focus-within:border-gold/20 transition-all">
-                                                <span className="text-xl">💰</span>
+                                                <Coins className="w-6 h-6 text-white/60 group-focus-within:text-gold" />
                                             </div>
                                             <div className="flex-1">
                                                 <p className="text-[10px] text-white/20 font-mono uppercase mb-0.5">Prix estimé m²</p>
@@ -252,9 +248,9 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                         <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Energie Primaire</label>
                                         <div className="grid grid-cols-3 gap-3">
                                             {[
-                                                { id: "fioul", label: "Fioul", icon: "🛢️", color: "rgba(239, 68, 68, 0.1)" },
-                                                { id: "gaz", label: "Gaz", icon: "🔥", color: "rgba(245, 158, 11, 0.1)" },
-                                                { id: "elec", label: "Élec", icon: "⚡", color: "rgba(59, 130, 246, 0.1)" }
+                                                { id: "fioul", label: "Fioul", Icon: Droplet, color: "rgba(239, 68, 68, 0.1)" },
+                                                { id: "gaz", label: "Gaz", Icon: Flame, color: "rgba(245, 158, 11, 0.1)" },
+                                                { id: "elec", label: "Élec", Icon: Zap, color: "rgba(59, 130, 246, 0.1)" }
                                             ].map((sys) => (
                                                 <button
                                                     key={sys.id}
@@ -272,7 +268,9 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                                             className="absolute inset-0 z-0 bg-gold/5"
                                                         />
                                                     )}
-                                                    <span className={`text-2xl relative z-10 ${heatingSystem === sys.id ? 'opacity-100' : 'opacity-30'}`}>{sys.icon}</span>
+                                                    <span className={`text-2xl relative z-10 ${heatingSystem === sys.id ? 'opacity-100' : 'opacity-30'}`}>
+                                                        <sys.Icon className="w-6 h-6" />
+                                                    </span>
                                                     <span className={`text-[10px] font-bold uppercase tracking-widest relative z-10 ${heatingSystem === sys.id ? 'text-gold' : ''}`}>{sys.label}</span>
                                                 </button>
                                             ))}
@@ -305,7 +303,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                     `}
                                 >
                                     <span className="relative z-10 flex items-center justify-center gap-3">
-                                        🚀 Lancer la simulation tactique
+                                        <Rocket className="w-5 h-5" /> Lancer la simulation tactique
                                     </span>
                                     {selectedAddress && (
                                         <motion.div

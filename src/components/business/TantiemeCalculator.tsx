@@ -6,6 +6,7 @@ import { ECO_PTZ_COPRO } from "@/lib/constants";
 import { formatCurrency } from "@/lib/calculator";
 import { motion, AnimatePresence } from "framer-motion";
 import { calculateSubsidies, type IncomeProfile, type SimulationInputs } from "@/lib/subsidy-calculator";
+import { Calculator } from "lucide-react";
 
 interface TantiemeCalculatorProps {
     financing: FinancingPlan;
@@ -130,7 +131,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-primary-900/50 to-primary-800/20 rounded-xl flex items-center justify-center border border-primary-500/20 shadow-glow-sm">
-                            <span className="text-primary-400 text-2xl">🧮</span>
+                            <Calculator className="w-6 h-6 text-primary-400" />
                         </div>
                         <div>
                             <h3 className="text-2xl font-bold text-main">Simulateur Individuel</h3>

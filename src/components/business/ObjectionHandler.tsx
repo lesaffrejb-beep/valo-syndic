@@ -1,12 +1,8 @@
-/**
- * ObjectionHandler — Accordéon "Avocat du Diable"
- * Démonte les 3 objections classiques en AG
- */
-
 "use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Banknote, TrendingUp, Clock, ShieldAlert, ChevronDown, BadgeEuro, CalendarClock, AlertTriangle } from "lucide-react";
 
 interface ObjectionHandlerProps {
     className?: string;
@@ -14,7 +10,7 @@ interface ObjectionHandlerProps {
 
 interface Objection {
     id: string;
-    icon: string;
+    Icon: React.ElementType;
     title: string;
     subtitle: string;
     arguments: {
@@ -27,7 +23,7 @@ interface Objection {
 const OBJECTIONS: Objection[] = [
     {
         id: "too-expensive",
-        icon: "💸",
+        Icon: BadgeEuro,
         title: "C'est trop cher !",
         subtitle: "L'objection n°1",
         color: "danger",
@@ -48,7 +44,7 @@ const OBJECTIONS: Objection[] = [
     },
     {
         id: "too-old",
-        icon: "👴",
+        Icon: TrendingUp,
         title: "Je suis trop vieux / ROI trop long",
         subtitle: "L'objection patrimoniale",
         color: "warning",
@@ -69,7 +65,7 @@ const OBJECTIONS: Objection[] = [
     },
     {
         id: "wait-later",
-        icon: "⏳",
+        Icon: CalendarClock,
         title: "On verra plus tard...",
         subtitle: "La procrastination fatale",
         color: "info",
@@ -125,21 +121,14 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
     return (
         <div className={`card-bento p-6 ${className}`}>
             {/* Header */}
-            <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-indigo-600/30 rounded-xl flex items-center justify-center border border-indigo-500/20">
-                    <span className="text-indigo-300 text-lg">⚔️</span>
-                </div>
-                <div>
-                    <h3 className="text-lg font-bold text-main">Avocat du Diable</h3>
-                    <p className="text-sm text-muted">Les réponses aux 3 objections classiques</p>
-                </div>
-            </div>
+            {/* Removed internal header since it's now in a drawer with its own header */}
 
             {/* Accordéon */}
             <div className="space-y-3">
                 {OBJECTIONS.map((objection) => {
                     const isOpen = openId === objection.id;
                     const colors = getColorClasses(objection.color, isOpen);
+                    const Icon = objection.Icon;
 
                     return (
                         <div
@@ -153,33 +142,31 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
                                 aria-expanded={isOpen}
                             >
                                 <div className="flex items-center gap-3">
-                                    <span className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg ${colors.icon}`}>
-                                        {objection.icon}
+                                    <span className={`w-10 h-10 rounded-lg flex items-center justify-center ${colors.icon}`}>
+                                        <Icon className="w-5 h-5" />
                                     </span>
                                     <div>
                                         <p className={`font-bold ${colors.title}`}>{objection.title}</p>
                                         <p className="text-xs text-muted/70">{objection.subtitle}</p>
                                     </div>
                                 </div>
-                                <span
-                                    className={`text-2xl text-muted transition-transform duration-300 ${isOpen ? "rotate-45" : ""
-                                        }`}
-                                >
-                                    +
-                                </span>
+                                <ChevronDown
+                                    className={`w-5 h-5 text-muted transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                                />
                             </button>
 
                             {/* Contenu animé avec Framer Motion */}
                             <AnimatePresence initial={false}>
                                 {isOpen && (
                                     <motion.div
+                                        key={`content-${objection.id}`}
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
                                         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                                         style={{ overflow: "hidden" }}
                                     >
-                                        <div className="px-4 pb-4 pt-4 space-y-3">
+                                        <div className="px-4 pb-4 pt-2 space-y-3">
                                             {objection.arguments.map((arg, idx) => (
                                                 <div key={idx} className="pl-4 border-l-2 border-boundary">
                                                     <p className="font-semibold text-main text-sm">{arg.heading}</p>
@@ -196,8 +183,9 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
             </div>
 
             {/* Footer */}
-            <p className="text-xs text-muted/50 mt-6 text-center">
-                💡 Conseil : Projeter ces réponses en AG, pas les envoyer par mail
+            <p className="text-xs text-muted/50 mt-6 text-center flex items-center justify-center gap-2">
+                <AlertTriangle className="w-3 h-3" />
+                Conseil : Projeter ces réponses en AG, pas les envoyer par mail
             </p>
         </div>
     );

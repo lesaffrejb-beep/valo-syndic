@@ -12,6 +12,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Zap, Activity, ShieldAlert, X, FileText, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import type { SavedSimulation } from '@/lib/schemas';
@@ -149,7 +150,7 @@ export default function DashboardPage() {
                 <header className="flex flex-col items-center gap-8 py-12">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-charcoal to-obsidian border border-white/10 shadow-inner-light flex items-center justify-center">
-                            <span className="text-gold font-bold text-sm">V</span>
+                            <Zap className="w-5 h-5 text-gold" />
                         </div>
                         <h1 className="text-lg font-mono text-white/60 tracking-[0.3em] uppercase">
                             Cockpit <span className="text-white">Valo-Syndic</span>
@@ -184,7 +185,10 @@ export default function DashboardPage() {
 
                             <div className="relative z-10 p-6">
                                 <h3 className="font-mono text-[10px] uppercase tracking-widest text-gold mb-1">Analyse Terrain</h3>
-                                <p className="text-xs text-white/50">Risques Naturels</p>
+                                <div className="flex items-center gap-2">
+                                    <Activity className="w-3 h-3 text-white/50" />
+                                    <p className="text-xs text-white/50">Risques Naturels</p>
+                                </div>
                             </div>
 
                             <div className="flex-1 flex items-center justify-center p-4">
@@ -264,37 +268,49 @@ export default function DashboardPage() {
             </div>
 
             {/* MODAL: OBJECTIONS HANDLER */}
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {showObjections && (
-                    <>
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[90] flex justify-end"
+                        key="modal-container"
+                    >
+                        {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             onClick={() => setShowObjections(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]"
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            key="backdrop"
                         />
+
+                        {/* Drawer */}
                         <motion.div
                             initial={{ x: "100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="fixed top-0 right-0 h-full w-full max-w-md bg-obsidian border-l border-white/10 shadow-2xl z-[100] p-6 overflow-y-auto"
+                            className="relative h-full w-full max-w-md bg-obsidian border-l border-white/10 shadow-2xl overflow-y-auto z-[100]"
+                            key="drawer"
                         >
-                            <div className="flex justify-between items-center mb-8">
-                                <h2 className="text-xl font-bold text-gold">Avocat du Diable</h2>
-                                <button onClick={() => setShowObjections(false)} className="text-white/50 hover:text-white">
-                                    ✕
-                                </button>
+                            <div className="p-6">
+                                <div className="flex justify-between items-center mb-8">
+                                    <div className="flex items-center gap-2">
+                                        <ShieldAlert className="w-5 h-5 text-gold" />
+                                        <h2 className="text-xl font-bold text-gold">Avocat du Diable</h2>
+                                    </div>
+                                    <button onClick={() => setShowObjections(false)} className="p-2 hover:bg-white/5 rounded-lg transition-colors text-white/50 hover:text-white">
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <ObjectionHandler />
                             </div>
-
-                            <ObjectionHandler />
-
                         </motion.div>
-                    </>
+                    </motion.div>
                 )}
             </AnimatePresence>
 
             {/* ZONE E: SPACESHIP CONTROL BAR (Sticky Bottom) */}
-            <div className="fixed bottom-0 left-0 right-0 z-[100] pointer-events-none flex justify-center pb-8 perspective-[1000px]">
+            <div className="fixed bottom-0 left-0 right-0 z-[80] pointer-events-none flex justify-center pb-8 perspective-[1000px]">
                 <motion.div
                     initial={{ y: 100, opacity: 0, rotateX: 20 }}
                     animate={{ y: 0, opacity: 1, rotateX: 0 }}
@@ -326,16 +342,19 @@ export default function DashboardPage() {
                             onClick={() => setShowObjections(!showObjections)}
                             className={`h-10 px-4 rounded-lg border hover:bg-white/10 text-xs font-mono tracking-wide transition-all active:scale-95 flex items-center gap-2 ${showObjections ? 'bg-gold/10 border-gold/30 text-gold' : 'bg-white/5 border-white/10 text-white/60'}`}
                         >
-                            <span className="text-gold">⚡</span> Objections
+                            <ShieldAlert className="w-4 h-4 text-gold" />
+                            <span>Objections</span>
                         </button>
 
                         <div className="h-8 w-[1px] bg-white/10 mx-2" />
 
-                        <button className="h-10 px-5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 shadow-inner-light text-sm font-medium text-white transition-all active:scale-95">
+                        <button className="h-10 px-5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 shadow-inner-light text-sm font-medium text-white transition-all active:scale-95 flex items-center gap-2">
+                            <FileText className="w-4 h-4" />
                             PDF
                         </button>
 
-                        <button className="h-10 px-6 rounded-lg bg-gold text-obsidian border border-gold/50 shadow-[0_0_20px_-5px_rgba(212,175,55,0.4)] hover:shadow-neon-gold hover:brightness-110 text-sm font-bold tracking-wide transition-all active:scale-95">
+                        <button className="h-10 px-6 rounded-lg bg-gold text-obsidian border border-gold/50 shadow-[0_0_20px_-5px_rgba(212,175,55,0.4)] hover:shadow-neon-gold hover:brightness-110 text-sm font-bold tracking-wide transition-all active:scale-95 flex items-center gap-2">
+                            <Download className="w-4 h-4" />
                             EXPORT
                         </button>
                     </div>
