@@ -285,7 +285,7 @@ export default function CockpitPage() {
                             transition={{ delay: 0.4 }}
                             className="h-[280px]"
                         >
-                            <InactionCostCard inaction={inactionCost} />
+                            <InactionCostCard inactionCost={inactionCost} />
                         </motion.div>
                     </div>
 
