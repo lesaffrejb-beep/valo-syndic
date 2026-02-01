@@ -221,32 +221,32 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                     </div>
                 </div>
 
-                {/* Detail Breakdown */}
-                <div className="grid grid-cols-2 gap-4 mt-auto">
-                    <div className="bg-surface-highlight/40 rounded-2xl p-4 border border-boundary/40 text-center hover:bg-surface-highlight/60 transition-colors">
-                        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Total Projet</p>
-                        <p className="text-2xl font-black text-main tracking-tight">
-                            {formatCurrency(calculation.partLotTotal)}
+                {/* Detail Breakdown - More Dense */}
+                <div className="space-y-3 mt-6 pt-6 border-t border-white/5">
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted">Quote-part Travaux</span>
+                        <span className="font-semibold text-white">{formatCurrency(calculation.partLotTotal)}</span>
+                    </div>
+                    {selectedProfile && profileData && (
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-success-300">Aides (MPR + CEE)</span>
+                            <span className="font-semibold text-success">- {formatCurrency(profileData[selectedProfile].workShareBeforeAid - profileData[selectedProfile].remainingCost)}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-primary-300">Reste à financer</span>
+                        <span className="font-bold text-primary-200">{formatCurrency(calculation.partLotLoan)}</span>
+                    </div>
+                </div>
+
+                <div className="mt-4 bg-surface-highlight/30 rounded-lg p-3 border border-white/5 flex items-center gap-3">
+                    <div className="w-1 h-8 bg-gold/50 rounded-full" />
+                    <div>
+                        <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Le Twist Valo-Syndic</p>
+                        <p className="text-xs text-white/80 leading-tight">
+                            Effort d'épargne {Math.round(calculation.monthlyPayment)}€ vs Gain mensuel énergie estimé ~{Math.round(calculation.monthlyPayment * 0.4)}€.
                         </p>
                     </div>
-                    {!selectedProfile && (
-                        <div className="bg-surface-highlight/40 rounded-2xl p-4 border border-boundary/40 text-center hover:bg-surface-highlight/60 transition-colors">
-                            <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Financé PTZ</p>
-                            <p className="text-2xl font-black text-primary-400 tracking-tight">
-                                {formatCurrency(calculation.partLotLoan)}
-                            </p>
-                            <p className="text-[10px] font-medium text-subtle mt-1">Emprunté 0%</p>
-                        </div>
-                    )}
-                    {selectedProfile && (
-                        <div className="bg-surface-highlight/40 rounded-2xl p-4 border border-boundary/40 text-center hover:bg-surface-highlight/60 transition-colors">
-                            <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Prise en Charge</p>
-                            <p className="text-2xl font-black text-success tracking-tight">
-                                {profileData ? Math.round((1 - (profileData[selectedProfile].remainingCost / profileData[selectedProfile].workShareBeforeAid)) * 100) : 0}%
-                            </p>
-                            <p className="text-[10px] font-medium text-success-300/70 mt-1">Aides Publiques</p>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

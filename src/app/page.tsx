@@ -133,7 +133,16 @@ export default function DashboardPage() {
     const financingData = selectedProject?.json_data?.financing || MOCK_FINANCING;
     const valuationData = selectedProject?.json_data?.result?.valuation || MOCK_VALUATION;
     const inactionData = selectedProject?.json_data?.result?.inaction || MOCK_INACTION;
-    const inputsData = selectedProject?.json_data?.input || MOCK_INPUTS;
+
+    // Make inputs interactive
+    const [inputsData, setInputsData] = useState(selectedProject?.json_data?.input || MOCK_INPUTS);
+
+    // Update inputs if project changes
+    useEffect(() => {
+        if (selectedProject?.json_data?.input) {
+            setInputsData(selectedProject.json_data.input);
+        }
+    }, [selectedProject]);
 
     // --- OBSIDIAN CARD CLASS (High-End Tactile) ---
     const CARD_CLASS = "bg-charcoal bg-glass-gradient shadow-glass border border-white/5 rounded-2xl shadow-inner-light backdrop-blur-md relative overflow-hidden group transition-all duration-300 hover:shadow-inner-depth hover:border-white/10";
@@ -158,9 +167,25 @@ export default function DashboardPage() {
                     <MagicalAddressInput
                         onStartSimulation={(data) => {
                             console.log("Starting simulation with:", data);
+                            // 1. Update Inputs State
+                            setInputsData((prev: any) => ({
+                                ...prev,
+                                nbLots: data.numberOfUnits,
+                                initialDPE: data.currentDPE,
+                                // Approximate heating logic or other fields if needed
+                            }));
+
+                            // 2. Scroll to Cockpit
+                            const cockpit = document.getElementById('cockpit-start');
+                            if (cockpit) {
+                                cockpit.scrollIntoView({ behavior: 'smooth' });
+                            }
                         }}
                     />
                 </header>
+
+                {/* ANCHOR FOR SCROLL */}
+                <div id="cockpit-start" className="w-full h-px opacity-0" />
 
                 {/* ZONE A: ALERTES (Contextual) */}
                 <div className="space-y-4">
@@ -217,7 +242,7 @@ export default function DashboardPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className={`${CARD_CLASS} flex-1 min-h-[500px] border-gold/10 hover:border-gold/30 shadow-neon-gold/5`}
+                            className={`${CARD_CLASS} flex-1 border-gold/10 hover:border-gold/30 shadow-neon-gold/5`}
                             style={{
                                 boxShadow: "0 20px 50px -20px rgba(0,0,0,0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)"
                             }}
