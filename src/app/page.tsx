@@ -34,6 +34,7 @@ import { isMprCoproSuspended, getLocalPassoiresShare, getMarketTrend } from '@/l
 import { generateDiagnostic } from '@/lib/calculator';
 import type { SimulationInputs } from '@/lib/subsidy-calculator';
 import type { DPELetter } from '@/lib/constants';
+import { useViewModeStore } from '@/stores/useViewModeStore';
 
 // --- DEFAULT INPUT VALUES (Demo Mode) ---
 const DEFAULT_DIAGNOSTIC_INPUT: DiagnosticInput = {
@@ -60,6 +61,9 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
+
+    // --- VIEW MODE STORE (Individual vs Global values) ---
+    const { viewMode, getAdjustedValue } = useViewModeStore();
 
     // --- DIAGNOSTIC STATE (THE ENGINE) ---
     const [diagnosticInput, setDiagnosticInput] = useState<DiagnosticInput>(DEFAULT_DIAGNOSTIC_INPUT);
@@ -404,9 +408,13 @@ export default function DashboardPage() {
 
                     {/* CENTER: SUMMARY METRIC (Ex: Effort Epargne) */}
                     <div className="flex items-center gap-4 border-x border-white/10 px-8">
-                        <span className="text-white/40 text-xs uppercase tracking-wider">Effort Net</span>
+                        <span className="text-white/40 text-xs uppercase tracking-wider">
+                            {viewMode === 'maPoche' ? 'Mon Effort' : 'Effort Global'}
+                        </span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-xl font-bold text-white">{financing.monthlyPayment}</span>
+                            <span className="text-xl font-bold text-white">
+                                {Math.round(getAdjustedValue(financing.monthlyPayment))}
+                            </span>
                             <span className="text-xs text-gold">€/mois</span>
                         </div>
                     </div>

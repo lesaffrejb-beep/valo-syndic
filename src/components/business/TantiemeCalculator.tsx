@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { type FinancingPlan } from "@/lib/schemas";
 import { ECO_PTZ_COPRO } from "@/lib/constants";
 import { formatCurrency } from "@/lib/calculator";
-import { motion, AnimatePresence } from "framer-motion";
 import { calculateSubsidies, type IncomeProfile, type SimulationInputs } from "@/lib/subsidy-calculator";
 import { Calculator } from "lucide-react";
+import { useViewModeStore } from "@/stores/useViewModeStore";
 
 interface TantiemeCalculatorProps {
     financing: FinancingPlan;
@@ -28,8 +28,25 @@ const PROFILE_OPTIONS: { id: IncomeProfile; label: string; color: string }[] = [
  * Focus: Slider ergonomique + "Hero Metric" Mensuelle
  */
 export function TantiemeCalculator({ financing, simulationInputs, className = "" }: TantiemeCalculatorProps) {
-    const [tantiemes, setTantiemes] = useState(100); // Défaut : 100/1000
+    // Sync with global view mode store for "Ma Poche" mode
+    const { userTantiemes, setUserTantiemes, setViewMode } = useViewModeStore();
+
+    // Use store value as initial state, but allow local changes
+    const [tantiemes, setTantiemesLocal] = useState(userTantiemes);
     const [selectedProfile, setSelectedProfile] = useState<IncomeProfile | null>(null);
+
+    // Sync tantiemes with global store (for other widgets like ValuationCard, InactionCostCard)
+    const setTantiemes = (value: number) => {
+        setTantiemesLocal(value);
+        setUserTantiemes(value);
+        // When user interacts, switch to "Ma Poche" mode for personal view
+        setViewMode('maPoche');
+    };
+
+    // Sync from store if changed externally
+    useEffect(() => {
+        setTantiemesLocal(userTantiemes);
+    }, [userTantiemes]);
 
     // If simulation inputs are provided, we can calculate precise subsidies per profile
     // Otherwise we fallback to the global financing plan (which is likely an average or total)
