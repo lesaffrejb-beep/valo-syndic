@@ -70,38 +70,39 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
             {/* Main Content */}
             <div className="p-6 pt-5 grid grid-cols-1 gap-6">
 
-                {/* 1. La Valeur Verte */}
-                <div className="relative z-10">
-                    <div className="flex justify-between items-end mb-2">
-                        <span className="text-xs uppercase tracking-wider text-muted font-semibold">
-                            {isMarketDown ? "Capital Protégé" : "Plus-Value Latente"} {isMaPoche && '(Ma Part)'}
-                        </span>
-                        <span className={`text-xs font-mono px-2 py-0.5 rounded ${isMarketDown ? 'bg-cyan-900/20 text-cyan-400' : 'bg-success-900/20 text-success-400'}`}>
-                            {isMarketDown ? 'ANTI-DÉCOTE' : `+${formatPercent(valuation.greenValueGainPercent)}`}
-                        </span>
+                {/* 1. La Valeur Verde */}
+                <div className="relative z-10 bg-black/20 p-6 rounded-[24px] border border-white/5 shadow-tactile-inner group-hover:border-white/10 transition-all">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] uppercase tracking-[0.25em] text-white/30 font-bold mb-1">
+                                {isMarketDown ? "Capital Protégé" : "Plus-Value Latente"}
+                            </span>
+                            <span className="text-[9px] font-mono text-white/20">Estimation Etalab 2026</span>
+                        </div>
+                        <div className={`px-3 py-1.5 rounded-xl text-[10px] font-bold border ${isMarketDown ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' : 'bg-success-500/10 border-success-500/20 text-success-400'}`}>
+                            {isMarketDown ? '🛡️ ANTI-DÉCOTE' : `📈 +${formatPercent(valuation.greenValueGainPercent)}`}
+                        </div>
                     </div>
-                    <div className="flex items-baseline gap-2">
-                        <span className={`text-4xl lg:text-5xl font-black tracking-tight leading-none drop-shadow-md ${accentColorClass}`}>
+
+                    <div className="flex items-baseline gap-3">
+                        <span className={`text-5xl lg:text-6xl font-black tracking-tighter leading-none ${accentColorClass} transition-all duration-500`}>
                             +{formatCurrency(displayGreenValueGain)}
                         </span>
                     </div>
-                    <p className="text-xs text-subtle mt-2">
-                        {isMarketDown
-                            ? "Bouclier patrimonial contre la baisse du marché des passoires"
-                            : 'Gain de "Valeur Verte" immédiat à la fin des travaux'}
-                    </p>
                 </div>
 
                 {/* Market Context - AUDIT 31/01/2026 */}
                 {isMarketDown && marketTrend && (
-                    <div className="bg-warning-900/10 border border-warning-500/20 rounded-lg p-3 text-xs">
-                        <div className="flex items-start gap-2">
-                            <span className="text-warning-400">📊</span>
+                    <div className="bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4 text-xs">
+                        <div className="flex items-start gap-4">
+                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 border border-amber-500/10">
+                                <span className="text-amber-400">📊</span>
+                            </div>
                             <div>
-                                <p className="text-warning-300 font-medium">Contexte marché</p>
-                                <p className="text-muted mt-1">
-                                    Tendance nationale : <span className="text-warning-400">{(marketTrend.national * 100).toFixed(1)}%</span> sur 3 mois.
-                                    {isPassoire && " Sans rénovation, votre bien subit cette baisse + la décote passoire."}
+                                <p className="text-amber-200/60 font-medium uppercase tracking-widest text-[9px] mb-1">Contexte marché</p>
+                                <p className="text-white/40 leading-relaxed">
+                                    Tendance : <span className="text-amber-400 font-bold">{(marketTrend.national * 100).toFixed(1)}%</span>.
+                                    {isPassoire && " Sans rénovation, votre bien subit cette baisse + la décote passoire énergétique."}
                                 </p>
                             </div>
                         </div>
@@ -109,25 +110,25 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
                 )}
 
                 {/* Divider with calculation logic */}
-                <div className="relative h-px bg-boundary/50 my-1 flex items-center justify-center">
-                    <span className="bg-surface px-2 text-[10px] text-muted uppercase tracking-widest">
-                        Net de Travaux
-                    </span>
+                <div className="flex items-center gap-4 px-2">
+                    <div className="h-px flex-1 bg-white/5" />
+                    <span className="text-[9px] text-white/20 uppercase tracking-[0.3em] font-mono whitespace-nowrap">Net de Travaux</span>
+                    <div className="h-px flex-1 bg-white/5" />
                 </div>
 
                 {/* 2. Le Net (ROI) */}
-                <div className="relative z-10 flex items-center justify-between">
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-muted font-semibold mb-1">
+                <div className="relative z-10 flex items-center justify-between bg-white/[0.02] p-6 rounded-[24px] border border-white/5">
+                    <div className="flex flex-col gap-1">
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold">
                             Gain Net Réel
                         </p>
-                        <p className="text-xs text-subtle">
+                        <p className="text-[9px] text-white/10 font-mono italic">
                             (Plus-value - Reste à charge)
                         </p>
                     </div>
 
-                    <div className={`text-right ${displayNetROI >= 0 ? 'text-main' : 'text-warning-500'}`}>
-                        <span className="text-3xl font-bold tabular-nums">
+                    <div className={`text-right ${displayNetROI >= 0 ? 'text-white' : 'text-amber-500'}`}>
+                        <span className="text-4xl font-black tracking-tighter tabular-nums">
                             {displayNetROI >= 0 ? '+' : ''}{formatCurrency(displayNetROI)}
                         </span>
                     </div>
@@ -135,9 +136,9 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
 
                 {/* Context Hint */}
                 {financing && !isFullyFunded && (
-                    <div className="bg-surface-highlight rounded-lg p-3 border border-boundary/40 flex justify-between items-center text-xs">
-                        <span className="text-muted">Coût travaux déduit :</span>
-                        <span className="text-main font-medium">-{formatCurrency(displayRemainingCost)}</span>
+                    <div className="px-6 py-2 flex justify-between items-center text-[10px] font-mono">
+                        <span className="text-white/10">Coût travaux déduit :</span>
+                        <span className="text-white/40 font-bold">-{formatCurrency(displayRemainingCost)}</span>
                     </div>
                 )}
             </div>

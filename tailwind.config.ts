@@ -41,6 +41,9 @@ const config: Config = {
                 'inner-depth': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)', // Profondeur intérieure
                 'glass': '0 4px 30px rgba(0, 0, 0, 0.5)', // Ombre portée douce
                 'neon-gold': '0 0 20px -5px rgba(212, 175, 55, 0.3)', // Glow actif
+                'tactile-inner': 'inset 0 2px 10px 0 rgba(0,0,0,0.4), inset 0 1px 1px 0 rgba(255,255,255,0.05)',
+                'glow-soft': '0 0 30px -10px rgba(212, 175, 55, 0.2)',
+                'glow-vibrant': '0 0 50px -10px rgba(212, 175, 55, 0.4)',
             },
             backdropBlur: {
                 'xs': '2px',

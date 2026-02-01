@@ -98,7 +98,7 @@ export function TransparentReceipt({ financing }: TransparentReceiptProps) {
             <div className="mt-6 pt-6 border-t border-dashed border-white/20">
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex justify-between items-center group hover:bg-white/10 transition-colors cursor-pointer">
                     <div className="flex flex-col">
-                        <span className="label-technical text-primary mb-1">Effort d'épargne</span>
+                        <span className="label-technical text-primary mb-1">Effort d&apos;épargne</span>
                         <span className="text-xs text-muted">Mensualité réelle après aides</span>
                     </div>
 
@@ -113,7 +113,7 @@ export function TransparentReceipt({ financing }: TransparentReceiptProps) {
                 {financing.monthlyPayment < 50 && (
                     <div className="text-center mt-3">
                         <span className="text-[10px] text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 uppercase tracking-widest">
-                            Moins cher qu'un abonnement internet
+                            Moins cher qu&apos;un abonnement internet
                         </span>
                     </div>
                 )}

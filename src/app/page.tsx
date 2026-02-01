@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
 import type { SavedSimulation } from '@/lib/schemas';
@@ -23,47 +23,50 @@ import { ValuationCard } from '@/components/business/ValuationCard';
 import { InactionCostCard } from '@/components/business/InactionCostCard';
 import { TantiemeCalculator } from '@/components/business/TantiemeCalculator';
 import { RisksCard } from '@/components/business/RisksCard';
+import { ObjectionHandler } from '@/components/business/ObjectionHandler';
+import { MagicalAddressInput } from '@/components/ui/MagicalAddressInput';
 import { isMprCoproSuspended, getLocalPassoiresShare } from '@/lib/market-data';
 
-// --- MOCK DATA FOR UI DEVELOPMENT & DEMO ---
+// --- MOCK DATA CONSTANTS ---
 const MOCK_FINANCING = {
-    totalCostHT: 450000,
-    totalCostTTC: 420000,
     worksCostHT: 400000,
+    totalCostHT: 420000,
+    totalCostTTC: 450000,
     syndicFees: 12000,
     doFees: 8000,
     contingencyFees: 12000,
     costPerUnit: 22000,
     energyGainPercent: 0.45,
-    mprAmount: 120000,
+    mprAmount: 135000,
     amoAmount: 3000,
-    ceeAmount: 8000,
     localAidAmount: 5000,
     mprRate: 0.30,
     exitPassoireBonus: 0.10,
-    ecoPtzAmount: 180000,
-    remainingCost: 30000,
-    remainingCostPerUnit: 1500,
-    monthlyPayment: 250
+    ecoPtzAmount: 200000,
+    ceeAmount: 22000,
+    remainingCost: 85000,
+    monthlyPayment: 89,
+    remainingCostPerUnit: 4250,
 };
 
 const MOCK_VALUATION = {
-    currentValue: 350000,
-    projectedValue: 410000,
-    greenValueGain: 60000,
-    greenValueGainPercent: 0.15,
-    marketTrendApplied: -0.01,
-    netROI: 30000,
-    salesCount: 12,
+    currentValue: 280000,
+    projectedValue: 325000,
+    valueGain: 45000,
+    greenValueGain: 45000,
+    greenValueGainPercent: 0.16,
+    netROI: 45000 - 85000, // Just a placeholder logic
     pricePerSqm: 3200,
-    priceSource: "Etalab DVF"
+    roiYears: 7,
+    salesCount: 12,
+    priceSource: "Etalab DVF",
 };
 
 const MOCK_INACTION = {
-    currentCost: 30000,
+    currentCost: 12000, // Equivalent to costYear1
     projectedCost3Years: 38000,
     valueDepreciation: 15000,
-    totalInactionCost: 23000
+    totalInactionCost: 38000 + 15000, // Sum for logic
 };
 
 export default function DashboardPage() {
@@ -121,22 +124,31 @@ export default function DashboardPage() {
     // --- OBSIDIAN CARD CLASS (High-End Tactile) ---
     const CARD_CLASS = "bg-charcoal bg-glass-gradient shadow-glass border border-white/5 rounded-2xl shadow-inner-light backdrop-blur-md relative overflow-hidden group transition-all duration-300 hover:shadow-inner-depth hover:border-white/10";
 
+    // --- STATE FOR OBJECTIONS ---
+    const [showObjections, setShowObjections] = useState(false);
+
     // --- RENDER ---
     return (
-        <div className="min-h-screen bg-obsidian text-white font-sans pb-40 bg-noise selection:bg-gold/30 selection:text-white">
+        <div className="min-h-screen bg-obsidian text-white font-sans pb-48 bg-noise selection:bg-gold/30 selection:text-white relative">
 
-            <div className="max-w-[1920px] mx-auto p-4 md:p-6 lg:p-8 space-y-8">
+            <div className="max-w-[1920px] mx-auto p-4 md:p-6 lg:p-8 space-y-8 relative z-10">
 
-                {/* HEADER: En mode Demo, on affiche un petit header pour rassurer */}
-                <header className="flex justify-between items-center py-2">
+                {/* HEADER: Magical Entry Point */}
+                <header className="flex flex-col items-center gap-8 py-12">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-charcoal to-obsidian border border-white/10 shadow-inner-light flex items-center justify-center">
-                            <span className="text-gold font-bold text-xs">V</span>
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-charcoal to-obsidian border border-white/10 shadow-inner-light flex items-center justify-center">
+                            <span className="text-gold font-bold text-sm">V</span>
                         </div>
-                        <h1 className="text-sm font-mono text-white/60 tracking-widest uppercase">
+                        <h1 className="text-lg font-mono text-white/60 tracking-[0.3em] uppercase">
                             Cockpit <span className="text-white">Valo-Syndic</span>
                         </h1>
                     </div>
+
+                    <MagicalAddressInput
+                        onStartSimulation={(data) => {
+                            console.log("Starting simulation with:", data);
+                        }}
+                    />
                 </header>
 
                 {/* ZONE A: ALERTES (Contextual) */}
@@ -239,8 +251,38 @@ export default function DashboardPage() {
 
             </div>
 
+            {/* MODAL: OBJECTIONS HANDLER */}
+            <AnimatePresence>
+                {showObjections && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            onClick={() => setShowObjections(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]"
+                        />
+                        <motion.div
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="fixed top-0 right-0 h-full w-full max-w-md bg-obsidian border-l border-white/10 shadow-2xl z-[100] p-6 overflow-y-auto"
+                        >
+                            <div className="flex justify-between items-center mb-8">
+                                <h2 className="text-xl font-bold text-gold">Avocat du Diable</h2>
+                                <button onClick={() => setShowObjections(false)} className="text-white/50 hover:text-white">
+                                    ✕
+                                </button>
+                            </div>
+
+                            <ObjectionHandler />
+
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
             {/* ZONE E: SPACESHIP CONTROL BAR (Sticky Bottom) */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none flex justify-center pb-8 perspective-[1000px]">
+            <div className="fixed bottom-0 left-0 right-0 z-[100] pointer-events-none flex justify-center pb-8 perspective-[1000px]">
                 <motion.div
                     initial={{ y: 100, opacity: 0, rotateX: 20 }}
                     animate={{ y: 0, opacity: 1, rotateX: 0 }}
@@ -250,17 +292,11 @@ export default function DashboardPage() {
                     {/* Glow Line Top */}
                     <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-gold/30 to-transparent opacity-50" />
 
-                    {/* LEFT: Profile (Personas) */}
+                    {/* LEFT: Branding/Status */}
                     <div className="hidden md:flex items-center gap-4 min-w-[200px]">
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">Persona</span>
-                        <div className="flex -space-x-3 hover:space-x-1 transition-all duration-300">
-                            {['#3B82F6', '#EAB308', '#8B5CF6'].map((color, i) => (
-                                <button
-                                    key={color}
-                                    className="w-8 h-8 rounded-full border border-white/10 shadow-inner-light transition-all hover:scale-125 hover:z-20 hover:shadow-neon-gold"
-                                    style={{ backgroundColor: color }}
-                                />
-                            ))}
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-gold animate-pulse shadow-[0_0_8px_rgba(212,175,55,0.8)]" />
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">Cockpit Live</span>
                         </div>
                     </div>
 
@@ -274,7 +310,10 @@ export default function DashboardPage() {
 
                     {/* RIGHT: Export Actions */}
                     <div className="flex items-center gap-3 min-w-[200px] justify-end">
-                        <button className="h-10 px-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-mono text-white/60 tracking-wide transition-all active:scale-95 flex items-center gap-2">
+                        <button
+                            onClick={() => setShowObjections(!showObjections)}
+                            className={`h-10 px-4 rounded-lg border hover:bg-white/10 text-xs font-mono tracking-wide transition-all active:scale-95 flex items-center gap-2 ${showObjections ? 'bg-gold/10 border-gold/30 text-gold' : 'bg-white/5 border-white/10 text-white/60'}`}
+                        >
                             <span className="text-gold">⚡</span> Objections
                         </button>
 
