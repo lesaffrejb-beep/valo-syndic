@@ -2,91 +2,55 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
     content: [
-        "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-        "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+        "./src/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
         extend: {
             colors: {
-                // 1. BASES (Le "Canvas" — Cockpit Jet Privé)
-                app: '#09090B',           // Obsidian Deep Black
-                'app-darker': '#000000',  // Pure Black for Inputs
-                surface: '#161719',       // Cartes (Léger détachement)
-                'surface-hover': '#1F2125', // Interaction card
-                'surface-highlight': '#1A1B1E', // Pour details/accordion
-
-                // 2. BRAND (L'Identité Champagne Mat)
+                obsidian: "#050505", // Plus profond que noir
+                charcoal: "#0F1115", // Carte de base
+                gold: {
+                    DEFAULT: "#D4AF37",
+                    glow: "rgba(212, 175, 55, 0.5)",
+                },
+                // Maintaining existing semantic colors for code compatibility if needed, map to new system where possible
                 primary: {
-                    DEFAULT: '#D4B679',     // Champagne Mat (L'Or Finary)
-                    50: '#FAF6ED',
-                    100: '#F2E9D4',
-                    200: '#E8D5B0',
-                    400: '#C9A85C',         // Hover state
-                    600: '#B89B4A',         // Active state
-                    700: '#9A7F3A',
-                    800: '#7A642D',
-                    900: '#5A4A22',
-                    glow: 'rgba(212, 182, 121, 0.15)', // Effet lumineux
+                    DEFAULT: "#D4AF37", // Mapped to Gold
+                    glow: "rgba(212, 175, 55, 0.5)",
                 },
-                'primary-foreground': '#000000',    // Texte sur bouton primary
-
-                // 3. TEXT (Hiérarchie)
-                main: '#FFFFFF',          // Titres & Valeurs
-                muted: '#A1A1AA',         // Zinc-400 (Gris froid tech)
-                subtle: '#52525B',        // Zinc-600
-
-                // 4. BORDERS (Structure)
-                boundary: 'rgba(255, 255, 255, 0.08)', // Ligne plus visible pour séparation bento
-                'boundary-active': 'rgba(255, 255, 255, 0.15)',
-
-                // 5. SEMANTIC (États — Neon subtil)
-                success: {
-                    DEFAULT: '#10B981',
-                    50: 'rgba(16, 185, 129, 0.05)',
-                    100: 'rgba(16, 185, 129, 0.1)',
-                    500: '#10B981',
-                    600: '#059669',
-                },
-                warning: {
-                    DEFAULT: '#F59E0B',
-                    50: 'rgba(245, 158, 11, 0.05)',
-                    100: 'rgba(245, 158, 11, 0.1)',
-                    500: '#F59E0B',
-                    600: '#D97706',
-                },
-                danger: {
-                    DEFAULT: '#EF4444',
-                    50: 'rgba(239, 68, 68, 0.05)',
-                    100: 'rgba(239, 68, 68, 0.1)',
-                    500: '#EF4444',
-                    600: '#DC2626',
-                },
-
-                // Legacy / Compat
-                background: '#09090B',
-                foreground: '#FFFFFF',
+                app: "#050505",
+                surface: "#0F1115",
+                main: "#FFFFFF",
+                muted: "#A1A1AA",
+                subtle: "#52525B",
+                boundary: "rgba(255, 255, 255, 0.1)",
+                'boundary-active': "rgba(255, 255, 255, 0.2)",
+                danger: { DEFAULT: '#EF4444' },
+                success: { DEFAULT: '#10B981' },
+                warning: { DEFAULT: '#F59E0B' },
             },
-            borderRadius: {
-                'card': '16px', // Rounded-xl standard
-                'input': '12px',
-                'xl': '16px',
-                '2xl': '24px',
-                '3xl': '32px',
+            backgroundImage: {
+                'glass-gradient': 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
+                'glass-shine': 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%)',
+                'active-gradient': 'linear-gradient(180deg, rgba(59,130,246,0.2) 0%, rgba(59,130,246,0.05) 100%)',
+                'noise': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
             },
-            spacing: {
-                'section': '48px',
-                'card-pad': '24px', // Padding interne des cartes
+            boxShadow: {
+                // C'est ICI que se joue le "Tactile"
+                'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)', // Lumière du haut
+                'inner-depth': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)', // Profondeur intérieure
+                'glass': '0 4px 30px rgba(0, 0, 0, 0.5)', // Ombre portée douce
+                'neon-gold': '0 0 20px -5px rgba(212, 175, 55, 0.3)', // Glow actif
+            },
+            backdropBlur: {
+                'xs': '2px',
             },
             fontFamily: {
                 sans: ["Inter", "Geist Sans", "system-ui", "sans-serif"],
                 mono: ["JetBrains Mono", "monospace"],
             },
-            boxShadow: {
-                'glow': '0 0 20px rgba(212, 182, 121, 0.15)',
-                'glow-active': '0 0 40px rgba(212, 182, 121, 0.25)',
-                'obsidian': '0 4px 40px -10px rgba(0, 0, 0, 0.5)', // Deep shadow
-                'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+            borderRadius: {
+                'card': '16px',
             },
         },
     },
