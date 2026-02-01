@@ -10,8 +10,8 @@ const config: Config = {
         extend: {
             colors: {
                 // 1. BASES (Le "Canvas" — Cockpit Jet Privé)
-                app: '#0B0C0E',           // Fond de page (Anthracite profond Finary)
-                'app-darker': '#06070A',  // Inputs (Encore plus profond)
+                app: '#09090B',           // Obsidian Deep Black
+                'app-darker': '#000000',  // Pure Black for Inputs
                 surface: '#161719',       // Cartes (Léger détachement)
                 'surface-hover': '#1F2125', // Interaction card
                 'surface-highlight': '#1A1B1E', // Pour details/accordion
@@ -33,12 +33,12 @@ const config: Config = {
 
                 // 3. TEXT (Hiérarchie)
                 main: '#FFFFFF',          // Titres & Valeurs
-                muted: '#9CA3AF',         // Labels & Légendes (Gris froid)
-                subtle: '#4B5563',        // Bordures discrètes ou placeholder
+                muted: '#A1A1AA',         // Zinc-400 (Gris froid tech)
+                subtle: '#52525B',        // Zinc-600
 
                 // 4. BORDERS (Structure)
                 boundary: 'rgba(255, 255, 255, 0.08)', // Ligne plus visible pour séparation bento
-                'boundary-active': 'rgba(255, 255, 255, 0.1)',
+                'boundary-active': 'rgba(255, 255, 255, 0.15)',
 
                 // 5. SEMANTIC (États — Neon subtil)
                 success: {
@@ -64,18 +64,19 @@ const config: Config = {
                 },
 
                 // Legacy / Compat
-                background: '#0B0C0E',
+                background: '#09090B',
                 foreground: '#FFFFFF',
             },
             borderRadius: {
-                'card': '24px',
-                'input': '16px',
+                'card': '16px', // Rounded-xl standard
+                'input': '12px',
                 'xl': '16px',
                 '2xl': '24px',
+                '3xl': '32px',
             },
             spacing: {
                 'section': '48px',
-                'card-pad': '32px', // Padding interne des cartes (aéré)
+                'card-pad': '24px', // Padding interne des cartes
             },
             fontFamily: {
                 sans: ["Inter", "Geist Sans", "system-ui", "sans-serif"],
@@ -83,9 +84,9 @@ const config: Config = {
             },
             boxShadow: {
                 'glow': '0 0 20px rgba(212, 182, 121, 0.15)',
-                'glow-active': '0 0 30px rgba(212, 182, 121, 0.3)',
-                'glow-danger': '0 0 25px rgba(239, 68, 68, 0.4)',
-                'glow-warning': '0 0 25px rgba(245, 158, 11, 0.4)',
+                'glow-active': '0 0 40px rgba(212, 182, 121, 0.25)',
+                'obsidian': '0 4px 40px -10px rgba(0, 0, 0, 0.5)', // Deep shadow
+                'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
             },
         },
     },

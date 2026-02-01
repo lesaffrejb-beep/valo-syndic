@@ -9,81 +9,117 @@ interface TransparentReceiptProps {
 }
 
 export function TransparentReceipt({ financing }: TransparentReceiptProps) {
-    const items = [
-        { label: "MaPrimeRénov' Copropriété", value: financing.mprAmount, type: "grant" },
-        { label: "Prime AMO (Accompagnement)", value: financing.amoAmount, type: "grant" },
-        { label: "Certificats Économie Énergie (CEE)", value: financing.ceeAmount, type: "grant" },
-        { label: "Aides Locales (Détectées)", value: financing.localAidAmount, type: "grant" },
-        { label: "Éco-Prêt à Taux Zéro (Eco-PTZ)", value: financing.ecoPtzAmount, type: "loan" },
+    // 1. Dépense INITIALE
+    const costItems = [
+        { label: "Travaux & Honoraires TTC", value: financing.totalCostTTC, type: "cost", highlight: false },
+    ];
+
+    // 2. Les AIDES (Déductions)
+    const grantItems = [
+        { label: "MaPrimeRénov' Copro", value: financing.mprAmount, type: "deduction", highlight: true },
+        { label: "Prime CEE (Énergie)", value: financing.ceeAmount, type: "deduction", highlight: false },
+        { label: "Aide AMO", value: financing.amoAmount, type: "deduction", highlight: false },
+        { label: "Aides Locales", value: financing.localAidAmount, type: "deduction", highlight: false },
     ].filter(item => item.value > 0);
+
+    // 3. Le FINANCEMENT (Éco-PTZ)
+    const loanItems = [
+        { label: "Éco-PTZ (0% d'intérêts)", value: financing.ecoPtzAmount, type: "loan", highlight: false },
+    ];
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-zinc-950 border border-white/5 rounded-2xl p-6 shadow-2xl relative overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="h-full flex flex-col justify-between p-6 relative"
         >
-            {/* Header aesthetic */}
-            <div className="flex justify-between items-center mb-8 border-b border-dashed border-zinc-800 pb-4">
-                <div className="flex flex-col">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em]">Transaction</span>
-                    <span className="text-sm font-bold text-white">RÉCAPITULATIF FINANCIER</span>
+            {/* Header Ticket */}
+            <div className="text-center mb-6">
+                <div className="inline-block border-2 border-primary/20 rounded-full p-1 mb-2">
+                    <div className="w-12 h-1 bg-primary/20 rounded-full" />
                 </div>
-                <div className="text-right">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em]">Date</span>
-                    <span className="text-xs font-mono text-zinc-400 block">{new Date().toLocaleDateString('fr-FR')}</span>
-                </div>
+                <h2 className="text-lg font-bold text-white tracking-tight uppercase">Ticket de Caisse</h2>
+                <p className="text-xs text-muted font-mono">Détail du Reste à Charge Réel</p>
             </div>
 
-            {/* Receipt Content */}
-            <div className="space-y-4 mb-8">
-                {items.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center group">
-                        <span className="text-xs text-zinc-400 font-medium">{item.label}</span>
-                        <div className="flex-1 mx-4 border-b border-dashed border-zinc-900 group-hover:border-zinc-800 transition-colors" />
-                        <span className="text-sm font-mono text-white tabular-nums">
-                            {formatCurrency(item.value)}
-                        </span>
+            {/* BODY - La Cascade */}
+            <div className="flex-1 space-y-1 font-mono text-sm relative">
+
+                {/* Ligne pointillée verticale de liaison */}
+                <div className="absolute left-0 top-2 bottom-2 w-[1px] border-l border-dashed border-white/10 ml-[2px]" />
+
+                {/* 1. COÛT */}
+                {costItems.map((item, i) => (
+                    <div key={`cost-${i}`} className="flex justify-between items-baseline py-2 group pl-4">
+                        <span className="text-zinc-400">{item.label}</span>
+                        <span className="text-white font-bold">{formatCurrency(item.value)}</span>
                     </div>
                 ))}
+
+                {/* Separator */}
+                <div className="border-b border-dashed border-white/10 my-2" />
+
+                {/* 2. DEDUCTIONS (AIDES) */}
+                {grantItems.map((item, i) => (
+                    <div key={`grant-${i}`} className="flex justify-between items-baseline py-1 group pl-4 relative">
+                        <span className="absolute left-[-2px] top-1/2 -translate-y-1/2 text-[10px] text-emerald-500 font-bold">-</span>
+                        <span className={item.highlight ? "text-emerald-400 font-bold" : "text-zinc-500 group-hover:text-emerald-400/70 transition-colors"}>
+                            {item.label}
+                        </span>
+                        <span className="text-emerald-500 tabular-nums">- {formatCurrency(item.value)}</span>
+                    </div>
+                ))}
+
+                {/* Separator Reste à Charge */}
+                <div className="border-b-2 border-white/10 my-3" />
+
+                <div className="flex justify-between items-baseline py-2 pl-4">
+                    <span className="text-white font-bold uppercase text-xs tracking-wider">Reste à Financer</span>
+                    <span className="text-white font-bold text-lg">{formatCurrency(financing.remainingCost)}</span>
+                </div>
+
+                {/* 3. LOAN */}
+                {financing.remainingCost > 0 && (
+                    <div className="pl-4 pt-2">
+                        {loanItems.map((item, i) => (
+                            <div key={`loan-${i}`} className="flex justify-between items-baseline py-1 text-primary">
+                                <span className="flex items-center gap-2">
+                                    <span>↳</span>
+                                    <span>{item.label}</span>
+                                </span>
+                                <span>{formatCurrency(item.value)}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {/* Total / Reste à charge */}
-            <div className="pt-6 border-t-2 border-zinc-900">
-                <div className="flex justify-between items-center">
+            {/* FOOTER - THE MONEY SHOT (Effort Mensuel) */}
+            <div className="mt-6 pt-6 border-t border-dashed border-white/20">
+                <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex justify-between items-center group hover:bg-white/10 transition-colors cursor-pointer">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.2em]">Total Aides & Prêts</span>
-                        <span className="text-lg font-bold text-white">Impact Immédiat</span>
+                        <span className="label-technical text-primary mb-1">Effort d'épargne</span>
+                        <span className="text-xs text-muted">Mensualité réelle après aides</span>
                     </div>
+
                     <div className="text-right">
-                        <div className="relative">
-                            {financing.remainingCost === 0 && (
-                                <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full" />
-                            )}
-                            <span className={`text-2xl font-mono font-bold tabular-nums relative z-10 ${financing.remainingCost === 0 ? 'text-emerald-400' : 'text-white'}`}>
-                                {formatCurrency(financing.mprAmount + financing.amoAmount + financing.ceeAmount + financing.localAidAmount + financing.ecoPtzAmount)}
-                            </span>
-                        </div>
+                        <span className="text-3xl font-bold text-white tracking-tighter group-hover:text-primary transition-colors">
+                            {financing.monthlyPayment}€
+                        </span>
+                        <span className="text-sm text-muted font-normal ml-1">/mois</span>
                     </div>
                 </div>
 
-                {financing.remainingCost === 0 && (
-                    <div className="mt-4 py-2 px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-center">
-                        <span className="text-emerald-400 text-xs font-bold uppercase tracking-widest animate-pulse">
-                            Reste à charge 0€ détecté
+                {financing.monthlyPayment < 50 && (
+                    <div className="text-center mt-3">
+                        <span className="text-[10px] text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 uppercase tracking-widest">
+                            Moins cher qu'un abonnement internet
                         </span>
                     </div>
                 )}
             </div>
 
-            {/* Footer aesthetics */}
-            <div className="mt-8 flex justify-center opacity-20 group-hover:opacity-40 transition-opacity">
-                <div className="w-16 h-16 border-4 border-zinc-800 rounded-full flex items-center justify-center">
-                    <div className="w-10 h-10 border-2 border-zinc-800 rounded-full" />
-                </div>
-            </div>
-
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+            {/* Background Noise Texture Overlay if possible/needed, simpler to keep clean for now */}
         </motion.div>
     );
 }

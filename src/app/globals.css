@@ -40,62 +40,46 @@
 
   /* Container */
   .container-custom {
-    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-12;
-  }
-
-  /* ================================================
-     SOFT BENTO — Les Cartes (Glassmorphism Subtil)
-     ================================================ */
-  .card-bento {
-    @apply bg-surface rounded-card p-card-pad border border-boundary transition-all duration-200;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
-  }
-
-  .card-bento:hover {
-    @apply bg-surface-hover border-boundary-active;
-  }
-
-  /* Legacy mapping pour compatibilité immédiate */
-  .card,
-  .glass-panel,
-  .glass-panel-spotlight {
-    @apply card-bento;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03) !important;
+    @apply max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8;
   }
 
   /* ================================================
      OBSIDIAN — Cards Ultra Premium (Deep Black)
      ================================================ */
   .card-obsidian {
-    @apply bg-[#111] border border-white/10 rounded-2xl p-6 transition-all duration-300;
-    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.4);
+    @apply bg-white/5 backdrop-blur-2xl border border-white/10 rounded-xl transition-all duration-300;
+    box-shadow: 0 0 40px -10px rgba(255, 255, 255, 0.05);
   }
 
   .card-obsidian:hover {
-    @apply border-white/20 bg-[#161616];
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px -1px rgba(0, 0, 0, 0.5);
+    @apply bg-white/[0.07] border-white/20;
+    box-shadow: 0 0 50px -10px rgba(255, 255, 255, 0.08);
   }
 
-  /* Glass Header Style */
-  .glass {
-    @apply bg-app/95 backdrop-blur-md border-b border-boundary;
+  .card-obsidian-active {
+    @apply bg-white/[0.08] border-primary/30;
+    box-shadow: 0 0 40px -5px rgba(212, 182, 121, 0.1);
+  }
+
+  /* Inner Glow for Depth */
+  .inner-glow {
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
   /* ================================================
      INPUTS & FORMS — Dalles Gravées Premium
      ================================================ */
   .input {
-    @apply w-full h-12 px-4 py-3 rounded-input text-main placeholder-subtle bg-app-darker border border-boundary transition-all duration-200 outline-none;
-    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+    @apply w-full h-12 px-4 py-3 rounded-input text-main placeholder-subtle bg-black/40 border border-boundary transition-all duration-200 outline-none backdrop-blur-sm;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.5);
   }
 
   .input:hover {
-    @apply border-boundary-active;
+    @apply border-boundary-active bg-black/60;
   }
 
   .input:focus {
-    @apply border-primary ring-1 ring-primary/50;
+    @apply border-primary/50 ring-1 ring-primary/20 bg-black/80;
     box-shadow: 0 0 0 1px rgba(212, 182, 121, 0.1);
   }
 
@@ -112,10 +96,10 @@
 
   /* Select styling */
   .input.appearance-none {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2352525B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
-    background-size: 20px;
+    background-size: 16px;
     padding-right: 44px;
   }
 
@@ -123,29 +107,29 @@
      BUTTONS — Feedback Haptique Visuel
      ================================================ */
   .btn-primary {
-    @apply px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-input transition-all duration-200 outline-none;
-    @apply hover:brightness-110 hover:-translate-y-0.5;
+    @apply px-6 py-3 bg-[#D4B679] text-black font-semibold rounded-input transition-all duration-200 outline-none;
+    @apply hover:bg-[#E8D5B0] hover:-translate-y-0.5;
     @apply focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-app;
     @apply active:scale-[0.98] active:brightness-100;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:brightness-100;
-    box-shadow: 0 4px 14px 0 rgba(212, 182, 121, 0.25);
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
+    box-shadow: 0 4px 20px -4px rgba(212, 182, 121, 0.4);
   }
 
   .btn-primary:hover {
-    box-shadow: 0 6px 20px 0 rgba(212, 182, 121, 0.35);
+    box-shadow: 0 8px 25px -4px rgba(212, 182, 121, 0.5);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-surface text-main font-medium rounded-input border border-boundary transition-all duration-200 outline-none;
-    @apply hover:bg-surface-hover hover:border-boundary-active hover:-translate-y-0.5;
-    @apply focus:ring-2 focus:ring-subtle focus:ring-offset-2 focus:ring-offset-app;
+    @apply px-6 py-3 bg-white/5 text-main font-medium rounded-input border border-white/10 transition-all duration-200 outline-none backdrop-blur-md;
+    @apply hover:bg-white/10 hover:border-white/20 hover:-translate-y-0.5;
+    @apply focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-app;
     @apply active:scale-[0.98];
   }
 
   /* Ghost button */
   .btn-ghost {
     @apply px-4 py-2 text-muted font-medium rounded-input transition-all duration-200;
-    @apply hover:text-main hover:bg-surface;
+    @apply hover:text-main hover:bg-white/5;
     @apply active:scale-[0.98];
   }
 
@@ -153,7 +137,7 @@
      TYPOGRAPHIE
      ================================================ */
   .label-technical {
-    @apply text-muted text-xs uppercase tracking-widest font-semibold;
+    @apply text-muted text-[10px] uppercase tracking-[0.2em] font-medium;
     font-family: var(--font-sans);
   }
 
@@ -162,20 +146,16 @@
   }
 
   .text-value-xl {
-    @apply text-4xl font-medium text-main tabular-nums tracking-tight;
+    @apply text-4xl font-semibold text-main tabular-nums tracking-tighter;
   }
 
   /* Gradient text for hero */
   .text-gradient {
-    @apply bg-gradient-to-r from-primary to-primary-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-white via-white/80 to-white/60 bg-clip-text text-transparent;
   }
 
-  /* Override des gradients Or précédents par la couleur unie */
   .text-gold-premium {
-    @apply text-primary;
-    background: none;
-    -webkit-background-clip: unset;
-    text-shadow: none;
+    @apply text-primary drop-shadow-[0_0_10px_rgba(212, 182, 121, 0.3)];
   }
 }
 
@@ -185,6 +165,11 @@
   /* Utilitaires spécifiques si besoin */
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Noise Texture Utility */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
   }
 
   /* Fade-in animation for smooth entrance */
@@ -225,10 +210,10 @@
   background-color: #000 !important;
 }
 
-.projection-mode .card-bento {
+.projection-mode .card-obsidian {
   /* Cards plus visibles */
-  border-width: 2px;
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .projection-mode h1,
@@ -240,11 +225,11 @@
 }
 
 .projection-mode .text-value-xl {
-  font-size: 3.5rem;
+  font-size: 4rem;
 }
 
 .projection-mode .text-value-lg {
-  font-size: 2.5rem;
+  font-size: 3rem;
 }
 
 .projection-mode .label-technical {
