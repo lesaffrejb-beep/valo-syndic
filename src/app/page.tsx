@@ -41,6 +41,10 @@ const DEFAULT_DIAGNOSTIC_INPUT: DiagnosticInput = {
     address: "12 Rue de la Paix, 49000 Angers",
     postalCode: "49000",
     city: "Angers",
+    coordinates: {
+        latitude: 47.4784,
+        longitude: -0.5632,
+    },
     currentDPE: "F" as DPELetter,
     targetDPE: "C" as DPELetter,
     numberOfUnits: 20,
@@ -252,7 +256,7 @@ export default function DashboardPage() {
 
                             <div className="flex-1 flex items-center justify-center p-4">
                                 <div className="scale-75 origin-center opacity-80 group-hover:opacity-100 group-hover:scale-95 transition-all duration-500">
-                                    <RisksCard />
+                                    <RisksCard coordinates={diagnosticInput.coordinates} />
                                 </div>
                             </div>
                         </motion.div>
