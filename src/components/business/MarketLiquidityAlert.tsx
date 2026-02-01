@@ -32,7 +32,7 @@ export function MarketLiquidityAlert({ shareOfSales }: MarketLiquidityAlertProps
 
                 <div className="flex items-baseline gap-2 mb-2">
                     <span className="text-5xl font-mono font-bold text-amber-500 tabular-nums">
-                        {formatPercent(shareOfSales / 100)}
+                        {formatPercent(shareOfSales)}
                     </span>
                     <TrendingUp className="w-5 h-5 text-amber-500/50" />
                 </div>
@@ -50,7 +50,7 @@ export function MarketLiquidityAlert({ shareOfSales }: MarketLiquidityAlertProps
                 <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden">
                     <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: `${shareOfSales}%` }}
+                        animate={{ width: `${shareOfSales * 100}%` }}
                         transition={{ duration: 1, delay: 0.5 }}
                         className="bg-amber-500 h-full shadow-[0_0_10px_rgba(245,158,11,0.5)]"
                     />

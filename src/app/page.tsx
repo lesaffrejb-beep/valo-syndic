@@ -5,17 +5,21 @@
  * - Depth: shadow-inner-light + shadow-glass
  * - Texture: bg-noise + bg-glass-gradient
  * - Logic: "Stealth Wealth"
+ *
+ * AUDIT 01/02/2026: Full wiring to calculator.ts engine
+ * - Removed MOCK data
+ * - generateDiagnostic() now drives all widgets
+ * - TantiemeCalculator updates trigger full recalculation
  */
 
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Activity, ShieldAlert, X, FileText, Download } from 'lucide-react';
+import { Zap, Activity, ShieldAlert, X, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
-import type { SavedSimulation } from '@/lib/schemas';
+import type { SavedSimulation, DiagnosticInput, DiagnosticResult } from '@/lib/schemas';
 import { MprSuspensionAlert } from '@/components/business/MprSuspensionAlert';
 import { MarketLiquidityAlert } from '@/components/business/MarketLiquidityAlert';
 import { ClimateRiskCard } from '@/components/business/ClimateRiskCard';
@@ -26,71 +30,70 @@ import { TantiemeCalculator } from '@/components/business/TantiemeCalculator';
 import { RisksCard } from '@/components/business/RisksCard';
 import { ObjectionHandler } from '@/components/business/ObjectionHandler';
 import { MagicalAddressInput } from '@/components/ui/MagicalAddressInput';
-import { isMprCoproSuspended, getLocalPassoiresShare } from '@/lib/market-data';
+import { isMprCoproSuspended, getLocalPassoiresShare, getMarketTrend } from '@/lib/market-data';
+import { generateDiagnostic } from '@/lib/calculator';
+import type { SimulationInputs } from '@/lib/subsidy-calculator';
+import type { DPELetter } from '@/lib/constants';
+import { useViewModeStore } from '@/stores/useViewModeStore';
 
-// --- MOCK DATA CONSTANTS ---
-const MOCK_FINANCING = {
-    worksCostHT: 400000,
-    totalCostHT: 420000,
-    totalCostTTC: 450000,
-    syndicFees: 12000,
-    doFees: 8000,
-    contingencyFees: 12000,
-    costPerUnit: 22000,
-    energyGainPercent: 0.45,
-    mprAmount: 135000,
-    amoAmount: 3000,
-    localAidAmount: 5000,
-    mprRate: 0.30,
-    exitPassoireBonus: 0.10,
-    ecoPtzAmount: 200000,
-    ceeAmount: 22000,
-    remainingCost: 85000,
-    monthlyPayment: 89,
-    remainingCostPerUnit: 4250,
-};
-
-const MOCK_VALUATION = {
-    currentValue: 280000,
-    projectedValue: 325000,
-    valueGain: 45000,
-    greenValueGain: 45000,
-    greenValueGainPercent: 0.16,
-    netROI: 45000 - 85000, // Just a placeholder logic
-    pricePerSqm: 3200,
-    roiYears: 7,
-    salesCount: 12,
+// --- DEFAULT INPUT VALUES (Demo Mode) ---
+const DEFAULT_DIAGNOSTIC_INPUT: DiagnosticInput = {
+    address: "12 Rue de la Paix, 49000 Angers",
+    postalCode: "49000",
+    city: "Angers",
+    coordinates: {
+        latitude: 47.4784,
+        longitude: -0.5632,
+    },
+    currentDPE: "F" as DPELetter,
+    targetDPE: "C" as DPELetter,
+    numberOfUnits: 20,
+    commercialLots: 0,
+    estimatedCostHT: 400000,
+    averagePricePerSqm: 3200,
     priceSource: "Etalab DVF",
+    salesCount: 12,
+    averageUnitSurface: 65,
+    localAidAmount: 10000,
+    alurFund: 0,
+    ceeBonus: 40000,
+    investorRatio: 30,
 };
-
-const MOCK_INACTION = {
-    currentCost: 12000,
-    projectedCost3Years: 38000,
-    valueDepreciation: 15000,
-    totalInactionCost: 38000 + 15000,
-};
-
-const MOCK_INPUTS = {
-    workAmountHT: 400000,
-    amoAmountHT: 12000,
-    nbLots: 10,
-    energyGain: 0.45,
-    initialDPE: 'F',
-    targetDPE: 'C',
-    isFragile: false,
-    ceePerLot: 2000,
-    localAidPerLot: 500,
-} as const;
 
 export default function DashboardPage() {
-    const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const [projects, setProjects] = useState<SavedSimulation[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
 
-    // --- LOGIC ---
+    // --- VIEW MODE STORE (Individual vs Global values) ---
+    const { viewMode, getAdjustedValue } = useViewModeStore();
+
+    // --- DIAGNOSTIC STATE (THE ENGINE) ---
+    const [diagnosticInput, setDiagnosticInput] = useState<DiagnosticInput>(DEFAULT_DIAGNOSTIC_INPUT);
+    const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(null);
+    const [calculationError, setCalculationError] = useState<string | null>(null);
+
+    // --- CALCULATION ENGINE ---
+    // Runs generateDiagnostic whenever inputs change
+    const runCalculation = useCallback((input: DiagnosticInput) => {
+        try {
+            setCalculationError(null);
+            const result = generateDiagnostic(input);
+            setDiagnosticResult(result);
+        } catch (err) {
+            console.error("Calculation error:", err);
+            setCalculationError(err instanceof Error ? err.message : "Erreur de calcul");
+            // Keep previous result if available, don't crash
+        }
+    }, []);
+
+    // Run calculation on mount and when inputs change
+    useEffect(() => {
+        runCalculation(diagnosticInput);
+    }, [diagnosticInput, runCalculation]);
+
+    // --- PROJECT LOADING ---
     useEffect(() => {
         if (!user) {
             setLoading(false);
@@ -105,7 +108,7 @@ export default function DashboardPage() {
                     .eq('user_id', user.id)
                     .order('created_at', { ascending: false });
                 if (fetchError) throw fetchError;
-                setProjects(data || []);
+                // Select the most recent project if available
                 if (data && data.length > 0) {
                     setSelectedProject(data[0]);
                 }
@@ -118,6 +121,34 @@ export default function DashboardPage() {
         fetchProjects();
     }, [user]);
 
+    // Update diagnostic input if a saved project is selected
+    useEffect(() => {
+        if (selectedProject?.json_data?.input) {
+            setDiagnosticInput(selectedProject.json_data.input);
+        }
+    }, [selectedProject]);
+
+    // --- CONVERT DiagnosticInput TO SimulationInputs (for TantiemeCalculator) ---
+    const simulationInputs: SimulationInputs | null = useMemo(() => {
+        if (!diagnosticInput || !diagnosticResult) return null;
+
+        return {
+            workAmountHT: diagnosticInput.estimatedCostHT,
+            amoAmountHT: diagnosticInput.numberOfUnits * 600, // AMO forfait par lot
+            nbLots: diagnosticInput.numberOfUnits,
+            energyGain: diagnosticResult.financing.energyGainPercent,
+            initialDPE: diagnosticInput.currentDPE,
+            targetDPE: diagnosticInput.targetDPE,
+            isFragile: false,
+            ceePerLot: diagnosticInput.ceeBonus ? diagnosticInput.ceeBonus / diagnosticInput.numberOfUnits : 0,
+            localAidPerLot: diagnosticInput.localAidAmount ? diagnosticInput.localAidAmount / diagnosticInput.numberOfUnits : 0,
+        };
+    }, [diagnosticInput, diagnosticResult]);
+
+    // --- GET MARKET TREND ---
+    const marketTrend = useMemo(() => getMarketTrend(), []);
+
+    // --- LOADING STATE ---
     if (authLoading || loading) {
         return (
             <div className="min-h-screen bg-obsidian flex items-center justify-center">
@@ -129,20 +160,28 @@ export default function DashboardPage() {
         );
     }
 
-    // fallback to mock data if no project/user (DEMO MODE)
-    const financingData = selectedProject?.json_data?.financing || MOCK_FINANCING;
-    const valuationData = selectedProject?.json_data?.result?.valuation || MOCK_VALUATION;
-    const inactionData = selectedProject?.json_data?.result?.inaction || MOCK_INACTION;
+    // --- FALLBACK: If no result yet, show placeholder ---
+    if (!diagnosticResult) {
+        return (
+            <div className="min-h-screen bg-obsidian flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-gold/50 animate-pulse font-mono tracking-[0.2em] text-xs uppercase flex items-center gap-2 justify-center mb-4">
+                        <span className="w-2 h-2 bg-gold rounded-full animate-bounce" />
+                        Initialisation du Diagnostic...
+                    </div>
+                    {calculationError && (
+                        <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+                            <p className="text-red-400 text-sm">{calculationError}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
-    // Make inputs interactive
-    const [inputsData, setInputsData] = useState(selectedProject?.json_data?.input || MOCK_INPUTS);
-
-    // Update inputs if project changes
-    useEffect(() => {
-        if (selectedProject?.json_data?.input) {
-            setInputsData(selectedProject.json_data.input);
-        }
-    }, [selectedProject]);
+    // --- EXTRACT CALCULATED DATA ---
+    const { financing, valuation, inactionCost } = diagnosticResult;
+    const isPassoire = diagnosticInput.currentDPE === "F" || diagnosticInput.currentDPE === "G";
 
     // --- OBSIDIAN CARD CLASS (High-End Tactile) ---
     const CARD_CLASS = "bg-charcoal bg-glass-gradient shadow-glass border border-white/5 rounded-2xl shadow-inner-light backdrop-blur-md relative overflow-hidden group transition-all duration-300 hover:shadow-inner-depth hover:border-white/10";
@@ -167,12 +206,13 @@ export default function DashboardPage() {
                     <MagicalAddressInput
                         onStartSimulation={(data) => {
                             console.log("Starting simulation with:", data);
-                            // 1. Update Inputs State
-                            setInputsData((prev: any) => ({
+                            // 1. Update DiagnosticInput State (This triggers recalculation)
+                            setDiagnosticInput((prev) => ({
                                 ...prev,
-                                nbLots: data.numberOfUnits,
-                                initialDPE: data.currentDPE,
-                                // Approximate heating logic or other fields if needed
+                                address: data.address || prev.address,
+                                numberOfUnits: data.numberOfUnits || prev.numberOfUnits,
+                                currentDPE: (data.currentDPE as DPELetter) || prev.currentDPE,
+                                // Keep other fields, they can be edited later
                             }));
 
                             // 2. Scroll to Cockpit
@@ -216,7 +256,7 @@ export default function DashboardPage() {
 
                             <div className="flex-1 flex items-center justify-center p-4">
                                 <div className="scale-75 origin-center opacity-80 group-hover:opacity-100 group-hover:scale-95 transition-all duration-500">
-                                    <RisksCard />
+                                    <RisksCard coordinates={diagnosticInput.coordinates} />
                                 </div>
                             </div>
                         </motion.div>
@@ -251,8 +291,8 @@ export default function DashboardPage() {
                             <div className="absolute -inset-1 bg-gold/5 blur-3xl opacity-20 pointer-events-none" />
 
                             <TantiemeCalculator
-                                financing={financingData}
-                                simulationInputs={inputsData}
+                                financing={financing}
+                                simulationInputs={simulationInputs || undefined}
                                 className="h-full"
                             />
                         </motion.div>
@@ -270,7 +310,7 @@ export default function DashboardPage() {
                         >
                             <div className="p-2 h-full">
                                 <TransparentReceipt
-                                    financing={financingData}
+                                    financing={financing}
                                 />
                             </div>
                         </motion.div>
@@ -284,8 +324,10 @@ export default function DashboardPage() {
                         >
                             <div className="absolute -top-24 -right-24 w-48 h-48 bg-gold/10 blur-[100px] group-hover:bg-gold/20 transition-colors duration-700" />
                             <ValuationCard
-                                valuation={valuationData}
-                                financing={financingData}
+                                valuation={valuation}
+                                financing={financing}
+                                marketTrend={marketTrend}
+                                isPassoire={isPassoire}
                             />
                         </motion.div>
 
@@ -298,7 +340,7 @@ export default function DashboardPage() {
                         >
                             <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-danger/5 blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <InactionCostCard
-                                inactionCost={inactionData}
+                                inactionCost={inactionCost}
                             />
                         </motion.div>
                     </div>
@@ -370,9 +412,13 @@ export default function DashboardPage() {
 
                     {/* CENTER: SUMMARY METRIC (Ex: Effort Epargne) */}
                     <div className="flex items-center gap-4 border-x border-white/10 px-8">
-                        <span className="text-white/40 text-xs uppercase tracking-wider">Effort Net</span>
+                        <span className="text-white/40 text-xs uppercase tracking-wider">
+                            {viewMode === 'maPoche' ? 'Mon Effort' : 'Effort Global'}
+                        </span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-xl font-bold text-white">83</span>
+                            <span className="text-xl font-bold text-white">
+                                {Math.round(getAdjustedValue(financing.monthlyPayment))}
+                            </span>
                             <span className="text-xs text-gold">€/mois</span>
                         </div>
                     </div>
