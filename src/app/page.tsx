@@ -333,7 +333,7 @@ export default function ScrollytellingPage() {
                             className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5 text-white"
                             onClick={scrollToPersonalImpact}
                         >
-                            Simuler l'impact individuel
+                            Simuler l&apos;impact individuel
                         </Button>
                     </div>
 
@@ -378,7 +378,7 @@ export default function ScrollytellingPage() {
             <Section id="diagnostic">
                 <SectionHeader
                     label="Le Diagnostic"
-                    title={<>L'Ingénierie Financière</>}
+                    title={<>L&apos;Ingénierie Financière</>}
                     subtitle="L'inaction a un coût invisible qui érode le patrimoine de vos copropriétaires."
                 />
 
