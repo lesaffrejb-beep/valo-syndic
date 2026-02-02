@@ -1,5 +1,3 @@
-"use client";
-
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,17 +6,36 @@ import { useBrandStore } from "@/stores/useBrandStore";
 import { useAuth } from "@/hooks/useAuth";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { ProjectionModeToggle } from "@/components/ui/ProjectionModeToggle";
+import { JsonImporter } from "@/components/import/JsonImporter";
+import { Save } from 'lucide-react';
+import { type GhostExtensionImport } from '@/lib/schemas';
 
 interface HeaderProps {
     onOpenBranding: () => void;
     onSave: () => void;
-    onLoad: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onImport?: (data: GhostExtensionImport) => void;
+    onLoad?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    fileInputRef?: React.RefObject<HTMLInputElement>;
     hasResult: boolean;
-    fileInputRef: React.RefObject<HTMLInputElement>;
     onOpenAuth?: () => void;
+    activeSection?: string;
+    onNavigate?: (sectionId: string) => void;
+    isSaving?: boolean;
 }
 
-export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef, onOpenAuth }: HeaderProps) {
+// Update signature to include optional props
+export function Header({
+    onOpenBranding,
+    onSave,
+    onImport,
+    onLoad,
+    fileInputRef,
+    hasResult,
+    onOpenAuth,
+    activeSection = 'diagnostic',
+    onNavigate,
+    isSaving = false
+}: HeaderProps) {
     const brand = useBrandStore((state) => state.brand);
     const { user, signOut } = useAuth();
     const router = useRouter();
@@ -34,98 +51,94 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
         }
     };
 
+    const navItems = [
+        { id: 'diagnostic', label: 'Adresse' },
+        { id: 'projection', label: 'Bascule' },
+        { id: 'my-pocket', label: 'Diagnostic' },
+        { id: 'finance', label: 'Détails' },
+        { id: 'action', label: 'Action' },
+    ];
+
     return (
         <motion.header
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-0 left-0 right-0 z-50 print:hidden"
+            className="fixed top-0 left-0 right-0 z-[60] print:hidden"
         >
             {/* Premium Glassmorphism Layer */}
             <div className="absolute inset-0 bg-[#0A0A0A]/80 backdrop-blur-[20px] supports-[backdrop-filter]:bg-[#0A0A0A]/60 border-b border-white/[0.06] shadow-[0_4px_30px_rgba(0,0,0,0.1)]" />
 
             {/* Subtle Gradient Shine */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.1] to-transparent opacity-50" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent opacity-50" />
 
             <div className="relative max-w-[1400px] mx-auto px-6 md:px-8">
                 <div className="flex items-center justify-between h-20">
 
-                    {/* Logo Section - Premium Style */}
-                    <Link href="/" className="group flex items-center gap-4">
-                        {brand.logoUrl ? (
-                            <div className="relative">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={brand.logoUrl}
-                                    alt="Logo Agence"
-                                    className="h-10 w-auto object-contain rounded-lg ring-1 ring-white/10 group-hover:ring-gold/30 transition-all duration-500"
+                    {/* Left: Actions (Import/Save) */}
+                    <div className="flex items-center gap-2">
+                        {onImport && <JsonImporter onImport={onImport} />}
+
+                        {/* File Import Button (Legacy support) */}
+                        {onLoad && fileInputRef && (
+                            <>
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-gold/40 transition-all duration-200 text-sm font-medium text-white"
+                                    title="Importer un fichier .valo"
+                                >
+                                    <span className="hidden md:inline">Ouvrir</span>
+                                    <span className="md:hidden">📂</span>
+                                </button>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".valo,.json"
+                                    onChange={onLoad}
+                                    className="hidden"
                                 />
-                                <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-white/5 group-hover:ring-gold/20 transition-all duration-500" />
-                            </div>
-                        ) : (
-                            <div className="relative">
-                                {/* Glow Effect */}
-                                <div className="absolute inset-0 bg-gold/20 blur-xl rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                                <div className="relative w-10 h-10 bg-gradient-to-br from-white/[0.08] to-white/[0.02] rounded-xl flex items-center justify-center ring-1 ring-white/10 group-hover:ring-gold/40 transition-all duration-500 shadow-lg shadow-black/20">
-                                    <span className="text-gold font-bold text-lg tracking-tight font-serif">
-                                        {brand.agencyName.charAt(0)}
-                                    </span>
-                                </div>
-                            </div>
+                            </>
                         )}
 
-                        <div className="flex flex-col gap-0.5">
-                            <span className="text-[15px] font-semibold text-white tracking-tight group-hover:text-gold transition-colors duration-300">
-                                {brand.agencyName}
-                            </span>
-                            <span className="text-[10px] text-muted tracking-[0.15em] uppercase font-medium">
-                                Diagnostic Patrimonial
-                            </span>
-                        </div>
-                    </Link>
+                        <button
+                            onClick={onSave}
+                            disabled={!hasResult || isSaving}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-gold/40 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium text-white"
+                            title="Sauvegarder le dossier"
+                        >
+                            <Save className="w-4 h-4" />
+                            <span className="hidden md:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
+                        </button>
+                    </div>
 
+                    {/* Center: Branding & Navigation */}
+                    <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+                        {/* Optional: Add Logo/Brand here if needed, but for now specific nav focus */}
+                        {onNavigate && (
+                            <div className="hidden md:flex items-center gap-4">
+                                {navItems.map((item, index) => (
+                                    <div key={item.id} className="flex items-center gap-4">
+                                        <button
+                                            onClick={() => onNavigate(item.id)}
+                                            className={`text-[10px] uppercase tracking-[0.3em] font-bold transition-all duration-300 ${activeSection === item.id
+                                                ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+                                                : 'text-white/40 hover:text-white/80'
+                                                }`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                        {index < navItems.length - 1 && (
+                                            <span className="text-white/10 text-[10px]">→</span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
-
-                    {/* Right Actions - Premium Buttons */}
-                    <div className="flex items-center gap-2 sm:gap-3">
-
-                        {/* Save/Load - Desktop Only */}
-                        <div className="hidden sm:flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.06] backdrop-blur-md">
-                            <button
-                                onClick={onSave}
-                                disabled={!hasResult}
-                                className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium text-muted hover:text-white hover:bg-white/[0.06] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-all duration-300"
-                                title="Sauvegarder"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                <span className="hidden lg:inline">Exporter</span>
-                            </button>
-
-                            <div className="w-px h-4 bg-white/[0.08]" />
-
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium text-muted hover:text-white hover:bg-white/[0.06] transition-all duration-300"
-                                title="Importer"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                </svg>
-                                <span className="hidden lg:inline">Importer</span>
-                            </button>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept=".valo,.json"
-                                onChange={onLoad}
-                                className="hidden"
-                            />
-                        </div>
-
-                        {/* Share & Projection */}
-                        <div className="flex items-center gap-1.5 pl-2">
+                    {/* Right: Tools & Auth */}
+                    <div className="flex items-center gap-2 sm:gap-4 pl-2">
+                        <div className="flex items-center gap-1.5">
                             <ShareButton />
                             <ProjectionModeToggle />
                         </div>
@@ -135,9 +148,8 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
 
                         {/* Authentication */}
                         {user ? (
-                            /* User Menu - Wrapper */
+                            /* User Menu */
                             <div className="relative group">
-                                {/* User Button */}
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
                                     className="flex items-center gap-3 pl-1 pr-2 py-1.5 rounded-full hover:bg-white/[0.04] transition-all duration-300 border border-transparent hover:border-white/[0.08]"

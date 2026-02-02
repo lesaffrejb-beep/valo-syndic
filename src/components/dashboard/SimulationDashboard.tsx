@@ -490,8 +490,8 @@ export function SimulationDashboard({ marketData }: SimulationDashboardProps) {
                                 <div className="space-y-8 pb-12">
                                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                                         <div>
-                                            <h2 className="text-3xl font-black text-main mb-2">Votre Réalité</h2>
-                                            <p className="text-muted text-lg">Simulez votre mensualité précise en fonction de votre situation.</p>
+                                            <h2 className="text-3xl font-black text-main mb-2">Projection Individuelle</h2>
+                                            <p className="text-muted text-lg">Simulez le reste à charge précis par copropriétaire.</p>
                                         </div>
                                     </div>
 

@@ -33,6 +33,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { JsonImporter } from '@/components/import/JsonImporter';
 import { ProjectionModeToggle } from '@/components/ui/ProjectionModeToggle';
+import { Header } from '@/components/layout/Header';
 
 // --- BUSINESS COMPONENTS ---
 import { StreetViewHeader } from '@/components/business/StreetViewHeader';
@@ -241,79 +242,16 @@ export default function ScrollytellingPage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-gold/30 selection:text-gold-light bg-deep text-white overflow-hidden">
-
-            <div className="sticky top-0 z-[60] w-full backdrop-blur-xl bg-deep/60 border-b border-white/[0.06]">
-                {/* Subtle gradient line */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-
-                <div className="max-w-7xl mx-auto px-4 md:px-8 py-2.5 flex items-center justify-between">
-                    {/* Left: Actions */}
-                    <div className="flex items-center gap-2">
-                        <JsonImporter onImport={handleGhostImport} />
-                        <button
-                            onClick={handleSaveProject}
-                            disabled={!diagnosticResult || isSaving}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-gold/40 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium text-main"
-                            title="Sauvegarder le dossier"
-                        >
-                            <Save className="w-4 h-4" />
-                            <span className="hidden md:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
-                        </button>
-                    </div>
-
-                    {/* Center: Navigation */}
-                    <div className="flex items-center gap-2 md:gap-4 text-[10px] uppercase tracking-[0.3em] font-bold text-white/60">
-                        <button
-                            className={`transition-colors ${activeSection === 'diagnostic' ? 'text-white' : 'hover:text-white/80'}`}
-                            onClick={() => scrollToSection('diagnostic')}
-                        >
-                            Adresse
-                        </button>
-                        <span className="text-white/15">→</span>
-                        <button
-                            className={`transition-colors ${activeSection === 'projection' ? 'text-white' : 'hover:text-white/80'}`}
-                            onClick={() => scrollToSection('projection')}
-                        >
-                            Bascule
-                        </button>
-                        <span className="text-white/15">→</span>
-                        <button
-                            className={`transition-colors ${activeSection === 'my-pocket' ? 'text-white' : 'hover:text-white/80'}`}
-                            onClick={() => scrollToSection('my-pocket')}
-                        >
-                            Diagnostic
-                        </button>
-                        <span className="text-white/15">→</span>
-                        <button
-                            className={`transition-colors ${activeSection === 'finance' ? 'text-white' : 'hover:text-white/80'}`}
-                            onClick={() => scrollToSection('finance')}
-                        >
-                            Détails
-                        </button>
-                        <span className="text-white/15">→</span>
-                        <button
-                            className={`transition-colors ${activeSection === 'action' ? 'text-white' : 'hover:text-white/80'}`}
-                            onClick={() => scrollToSection('action')}
-                        >
-                            Action
-                        </button>
-                    </div>
-
-                    {/* Right: User Status & Tools */}
-                    <div className="flex items-center gap-2">
-                        <ProjectionModeToggle />
-                        <div className="w-px h-6 bg-white/[0.08]" />
-                        {user ? (
-                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10">
-                                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                                <span className="text-[10px] text-muted hidden md:inline">{user.email}</span>
-                            </div>
-                        ) : (
-                            <div className="w-2 h-2 rounded-full bg-white/20" />
-                        )}
-                    </div>
-                </div>
-            </div>
+            <Header
+                onOpenBranding={() => { }}
+                onSave={handleSaveProject}
+                onImport={handleGhostImport}
+                hasResult={!!diagnosticResult}
+                onOpenAuth={() => setShowAuthModal(true)}
+                activeSection={activeSection}
+                onNavigate={scrollToSection}
+                isSaving={isSaving}
+            />
 
             {/* ================================================================
                 ZONE 0 — THE HOOK (Hero)
@@ -341,10 +279,10 @@ export default function ScrollytellingPage() {
                     >
                         <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
                             <span className="text-white">Révélez le potentiel</span><br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de votre copropriété</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de vos copropriétés</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-muted font-light max-w-2xl mx-auto">
-                            Transformez la rénovation énergétique en <span className="text-white font-medium border-b border-gold/50">levier patrimonial</span> puissant.
+                            Transformez la rénovation énergétique en <span className="text-white font-medium border-b border-gold/50">levier patrimonial</span> pour vos mandants.
                         </p>
                     </motion.div>
 
@@ -352,7 +290,7 @@ export default function ScrollytellingPage() {
                     <div className="w-full max-w-2xl relative z-30">
                         <AddressAutocomplete
                             defaultValue={diagnosticInput.address || ""}
-                            placeholder="Entrez l'adresse de votre copropriété..."
+                            placeholder="Rechercher un immeuble..."
                             className="text-lg shadow-2xl"
                             onSelect={(data) => {
                                 setIsAddressSelected(true);
@@ -395,7 +333,7 @@ export default function ScrollytellingPage() {
                             className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5 text-white"
                             onClick={scrollToPersonalImpact}
                         >
-                            Voir mon impact personnel
+                            Simuler l'impact individuel
                         </Button>
                     </div>
 
@@ -440,8 +378,8 @@ export default function ScrollytellingPage() {
             <Section id="diagnostic">
                 <SectionHeader
                     label="Le Diagnostic"
-                    title={<>Ce que votre immeuble<br /><span className="text-danger">vous cache</span></>}
-                    subtitle="L'inaction a un coût invisible qui érode votre patrimoine chaque jour. Voici la réalité des chiffres."
+                    title={<>L'Ingénierie Financière</>}
+                    subtitle="L'inaction a un coût invisible qui érode le patrimoine de vos copropriétaires."
                 />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full items-stretch">
@@ -493,8 +431,8 @@ export default function ScrollytellingPage() {
                 ================================================================ */}
             <Section id="my-pocket">
                 <SectionHeader
-                    label="Diagnostic Personnel"
-                    title="Impact direct sur votre portefeuille"
+                    label="Analyse Individuelle"
+                    title="Impact pour les copropriétaires"
                 />
 
                 {/* Switcher */}
