@@ -9,14 +9,16 @@ import { type OwnerProfileType } from '@/lib/pdf-profiles';
 
 interface PdfButtonContentProps {
     result: DiagnosticResult;
-    variant?: 'standard' | 'enhanced';
-    targetProfile?: OwnerProfileType;
+    variant?: 'standard' | 'enhanced' | undefined;
+    targetProfile?: OwnerProfileType | undefined;
+    className?: string | undefined;
 }
 
-export function PdfButtonContent({ 
-    result, 
+export function PdfButtonContent({
+    result,
     variant = 'enhanced',
-    targetProfile 
+    targetProfile,
+    className
 }: PdfButtonContentProps) {
     const brand = useBrandStore((state) => state.brand);
 
@@ -32,18 +34,21 @@ export function PdfButtonContent({
     // Choose document based on variant
     const DocumentComponent = variant === 'enhanced' ? PDFDocumentEnhanced : PDFDocument;
 
+    // Default class if none provided
+    const buttonClass = className || "btn-primary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-lg hover:shadow-xl";
+
     return (
         <PDFDownloadLink
             document={
-                <DocumentComponent 
-                    result={result} 
+                <DocumentComponent
+                    result={result}
                     brand={pdfBrand as { agencyName?: string; primaryColor?: string; logoUrl?: string; contactEmail?: string; contactPhone?: string }}
                     targetProfile={targetProfile}
                     showAllProfiles={true}
                 />
             }
             fileName={`audit-valo-syndic-${new Date().toISOString().split('T')[0]}.pdf`}
-            className="btn-primary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
+            className={buttonClass}
         >
             {/* @ts-ignore */}
             {({ loading, error }: { loading: boolean; error: Error | null }) => {

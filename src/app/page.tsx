@@ -517,10 +517,9 @@ export default function ScrollytellingPage() {
                 </div>
 
                 <ComparisonSplitScreen
-                    initialDPE={diagnosticInput.currentDPE}
-                    targetDPE={diagnosticInput.targetDPE}
-                    energyGain={financing.energyGainPercent}
-                    valuationIncrease={valuation.estimatedGain}
+                    inactionCost={inactionCost}
+                    valuation={valuation}
+                    financing={financing}
                 />
             </Section>
 
@@ -606,13 +605,11 @@ export default function ScrollytellingPage() {
                     <div className="flex flex-wrap justify-center gap-4">
                         <DownloadPdfButton
                             result={diagnosticResult}
-                            input={diagnosticInput}
                             variant="primary"
                             className="h-14 px-8 text-lg rounded-2xl shadow-glow-finance bg-amber-500 hover:bg-amber-400 text-black font-bold"
                         />
                         <DownloadPptxButton
                             result={diagnosticResult}
-                            input={diagnosticInput}
                         />
                     </div>
 

@@ -20,9 +20,11 @@ const PdfButtonContent = dynamic(
 
 interface DownloadPdfButtonProps {
     result: DiagnosticResult;
+    variant?: string;
+    className?: string;
 }
 
-export function DownloadPdfButton({ result }: DownloadPdfButtonProps) {
+export function DownloadPdfButton({ result, variant, className }: DownloadPdfButtonProps) {
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
@@ -31,5 +33,8 @@ export function DownloadPdfButton({ result }: DownloadPdfButtonProps) {
 
     if (!isClient) return null;
 
-    return <PdfButtonContent result={result} />;
+    // Map "primary" to "enhanced" for now, or pass through if it matches
+    const contentVariant: 'standard' | 'enhanced' = variant === 'primary' ? 'enhanced' : (variant as 'standard' | 'enhanced') || 'enhanced';
+
+    return <PdfButtonContent result={result} variant={contentVariant} className={className} />;
 }
