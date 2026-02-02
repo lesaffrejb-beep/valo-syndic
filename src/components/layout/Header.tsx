@@ -135,8 +135,9 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
 
                         {/* Authentication */}
                         {user ? (
-                            /* User Menu */
+                            /* User Menu - Wrapper */
                             <div className="relative group">
+                                {/* User Button */}
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
                                     className="flex items-center gap-3 pl-1 pr-2 py-1.5 rounded-full hover:bg-white/[0.04] transition-all duration-300 border border-transparent hover:border-white/[0.08]"
@@ -157,7 +158,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                                     </svg>
                                 </button>
 
-                                /* Dropdown Menu */
+                                {/* Dropdown Menu */}
                                 <AnimatePresence>
                                     {showUserMenu && (
                                         <>
