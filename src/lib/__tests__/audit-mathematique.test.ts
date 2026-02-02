@@ -123,8 +123,6 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
     const result = generateDiagnostic(input);
 
     it("vérifie les paramètres de base", () => {
-        console.log("\n📋 CAS #1: Petite copropriété F → C");
-        console.log(`   Lots: ${input.numberOfUnits} | Travaux: ${formatCurrency(input.estimatedCostHT)}`);
     });
 
     it("calcule correctement les frais de projet", () => {
@@ -296,8 +294,6 @@ describe("AUDIT MATHEMATIQUE - Cas #2: Grande copropriété G → A", () => {
     const result = generateDiagnostic(input);
 
     it("vérifie les paramètres", () => {
-        console.log("\n📋 CAS #2: Grande copropriété G → A");
-        console.log(`   Lots: ${input.numberOfUnits} (${input.numberOfUnits - (input.commercialLots || 0)} résidentiels + ${input.commercialLots} commerciaux)`);
     });
 
     it("exclut correctement les lots commerciaux du calcul MPR", () => {
@@ -369,8 +365,6 @@ describe("AUDIT MATHEMATIQUE - Cas #3: Projet non éligible MPR", () => {
     const result = generateDiagnostic(input);
 
     it("vérifie les paramètres", () => {
-        console.log("\n📋 CAS #3: Projet non éligible MPR (gain < 35%)");
-        console.log(`   DPE: ${input.currentDPE} → ${input.targetDPE} (amélioration mineure)`);
     });
 
     it("calcule correctement le faible gain énergétique", () => {
@@ -426,8 +420,6 @@ describe("AUDIT MATHEMATIQUE - Cas #4: Test de stress plafonnements", () => {
     const result = generateDiagnostic(input);
 
     it("vérifie les paramètres", () => {
-        console.log("\n📋 CAS #4: Test de stress - Plafonnements max");
-        console.log(`   Travaux: ${formatCurrency(input.estimatedCostHT)} (${formatCurrency(input.estimatedCostHT / input.numberOfUnits)}/lot)`);
     });
 
     it("respecte le plafond MPR par lot (25k€)", () => {
@@ -588,9 +580,6 @@ describe("AUDIT MATHEMATIQUE - Cas #6: Détection de bugs potentiels", () => {
 // ============================================================================
 
 afterAll(() => {
-    console.log("\n" + "=".repeat(80));
-    console.log("RAPPORT D'AUDIT MATHEMATIQUE - SYNTHÈSE");
-    console.log("=".repeat(80));
 
     const critical = auditResults.filter(r => r.severity === "CRITICAL");
     const warnings = auditResults.filter(r => r.severity === "WARNING");
@@ -600,34 +589,19 @@ afterAll(() => {
     const warningPassed = warnings.filter(r => r.passed).length;
     const warningFailed = warnings.filter(r => !r.passed).length;
 
-    console.log(`\n📊 STATISTIQUES GLOBALES:`);
-    console.log(`   - Tests CRITICAL: ${criticalPassed} ✅ | ${criticalFailed} ❌`);
-    console.log(`   - Tests WARNING: ${warningPassed} ✅ | ${warningFailed} ❌`);
-    console.log(`   - Total: ${auditResults.length} assertions`);
 
     if (criticalFailed > 0) {
-        console.log(`\n🔴 FAILLES CRITIQUES (${criticalFailed}):`);
         critical.filter(r => !r.passed).forEach(r => {
-            console.log(`   ❌ [${r.testCase}] ${r.test}`);
-            console.log(`      Attendu: ${r.expected} | Obtenu: ${r.actual}`);
         });
     }
 
     if (warningFailed > 0) {
-        console.log(`\n⚠️  AVERTISSEMENTS (${warningFailed}):`);
         warnings.filter(r => !r.passed).forEach(r => {
-            console.log(`   ⚠️  [${r.testCase}] ${r.test}`);
-            console.log(`      Attendu: ${r.expected} | Obtenu: ${r.actual}`);
         });
     }
 
-    console.log(`\n${"=".repeat(80)}`);
     if (criticalFailed === 0 && warningFailed === 0) {
-        console.log("✅ AUDIT TERMINÉ: Tous les tests sont passés!");
     } else if (criticalFailed === 0) {
-        console.log("⚠️  AUDIT TERMINÉ: Quelques avertissements mineurs");
     } else {
-        console.log(`🔴 AUDIT TERMINÉ: ${criticalFailed} FAILLE(S) CRITIQUE(S) À CORRIGER`);
     }
-    console.log("=".repeat(80));
 });

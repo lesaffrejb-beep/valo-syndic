@@ -81,9 +81,6 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
             ? nbLots * AMO_PARAMS_SUBSIDY.ceilingPerLotSmall  // 10,000€
             : nbLots * AMO_PARAMS_SUBSIDY.ceilingPerLotLarge; // 6,000€
 
-        console.log("\n⚠️  DIVERGENCE AMO DÉTECTÉE:");
-        console.log(`   Calculator.ts: ${amoCeilingCalculator.toLocaleString()}€ (600€/lot)`);
-        console.log(`   Subsidy.ts: ${amoCeilingSubsidy.toLocaleString()}€ (1000€/lot pour ≤20)`);
 
         // C'est une incohérence mais pas une erreur de calcul en soit
         // Le calculator.ts est plus conservateur (sous-estimation)
@@ -114,10 +111,6 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
         const reconstructed = result.remainingCostPerUnit * 7;
         const diff = Math.abs(result.remainingCost - reconstructed);
 
-        console.log(`\n📊 Vérification arrondis:`);
-        console.log(`   remainingCost: ${result.remainingCost}`);
-        console.log(`   remainingCostPerUnit × 7: ${reconstructed}`);
-        console.log(`   Écart: ${diff}€`);
 
         // L'écart devrait être ≤ 7€ (arrondi par lot)
         expect(diff).toBeLessThanOrEqual(7);
@@ -242,11 +235,6 @@ describe("🔍 AUDIT APPROFONDI - Précision numérique", () => {
         if (result.ecoPtzAmount > 0) {
             const expectedMonthly = result.ecoPtzAmount / (20 * 12);
 
-            console.log(`\n📊 Mensualité Éco-PTZ:`);
-            console.log(`   Capital: ${result.ecoPtzAmount}€`);
-            console.log(`   Durée: 20 ans (240 mois)`);
-            console.log(`   Théorique (0%): ${expectedMonthly.toFixed(2)}€/mois`);
-            console.log(`   Calculée: ${result.monthlyPayment}€/mois`);
 
             // Les deux doivent être identiques (à l'arrondi près)
             expect(result.monthlyPayment).toBeCloseTo(expectedMonthly, 0);
@@ -294,7 +282,6 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             const totalSurface = 10 * 50; // 500m²
             const expectedValue = totalSurface * expectedPrice;
 
-            console.log(`DPE ${dpe}: impact ${impacts[index]! * 100}% → valeur ${valuation.currentValue.toLocaleString()}€`);
 
             // Tolérance de 100€
             expect(valuation.currentValue).toBeCloseTo(expectedValue, -2);
@@ -327,11 +314,6 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
         // ROI Net = Gain Valeur Verte - Reste à charge
         const expectedNetROI = valuation.greenValueGain - financing.remainingCost;
 
-        console.log(`\n📊 Vérification ROI Net:`);
-        console.log(`   Gain Valeur Verte: ${valuation.greenValueGain.toLocaleString()}€`);
-        console.log(`   Reste à charge: ${financing.remainingCost.toLocaleString()}€`);
-        console.log(`   ROI Net attendu: ${expectedNetROI.toLocaleString()}€`);
-        console.log(`   ROI Net calculé: ${valuation.netROI.toLocaleString()}€`);
 
         expect(valuation.netROI).toBeCloseTo(expectedNetROI, 0);
     });
@@ -351,17 +333,11 @@ describe("🔍 AUDIT APPROFONDI - Coût de l'inaction", () => {
         const inflationRate = TECHNICAL_PARAMS.constructionInflationRate;
         const expectedProjected = cost * Math.pow(1 + inflationRate, 3);
 
-        console.log(`\n📊 Inflation BTP sur 3 ans:`);
-        console.log(`   Taux annuel: ${(inflationRate * 100).toFixed(1)}%`);
-        console.log(`   Coût actuel: ${cost.toLocaleString()}€`);
-        console.log(`   Coût 2029 attendu: ${expectedProjected.toLocaleString()}€`);
-        console.log(`   Coût 2029 calculé: ${result.projectedCost3Years.toLocaleString()}€`);
 
         expect(result.projectedCost3Years).toBeCloseTo(expectedProjected, 0);
 
         // Vérifier que ce n'est PAS linéaire (3 × 4.5% = 13.5%)
         const linearProjection = cost * (1 + inflationRate * 3);
-        console.log(`   Projection linéaire (incorrecte): ${linearProjection.toLocaleString()}€`);
 
         // La projection composée doit être supérieure à la linéaire
         expect(result.projectedCost3Years).toBeGreaterThan(linearProjection);
@@ -541,16 +517,4 @@ describe("🔍 AUDIT APPROFONDI - Bugs silencieux", () => {
 // ============================================================================
 
 afterAll(() => {
-    console.log("\n" + "=".repeat(80));
-    console.log("AUDIT APPROFONDI TERMINÉ");
-    console.log("=".repeat(80));
-    console.log("\n📋 RÉSUMÉ DES DÉCOUVERTES:");
-    console.log("   1. Divergence AMO: calculator.ts utilise 600€/lot uniformément");
-    console.log("      → subsidy-calculator.ts distingue ≤20 lots (1000€) et >20 lots (600€)");
-    console.log("      → Impact: sous-estimation de ~40% de l'aide AMO pour petites copros");
-    console.log("\n   2. Tous les edge cases sont gérés correctement");
-    console.log("   3. Les plafonds MPR (25k€/lot) et Éco-PTZ (50k€/lot) sont respectés");
-    console.log("   4. Les arrondis créent des écarts ≤ 7€ (tolérable)");
-    console.log("   5. Aucune division par zéro détectée");
-    console.log("=".repeat(80));
 });

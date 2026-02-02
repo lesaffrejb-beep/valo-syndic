@@ -298,13 +298,13 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                         <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Energie Primaire</label>
                                         <div className="grid grid-cols-3 gap-3">
                                             {[
-                                                { id: "fioul", label: "Fioul", Icon: Droplet, color: "rgba(239, 68, 68, 0.1)" },
-                                                { id: "gaz", label: "Gaz", Icon: Flame, color: "rgba(245, 158, 11, 0.1)" },
-                                                { id: "elec", label: "Élec", Icon: Zap, color: "rgba(59, 130, 246, 0.1)" }
+                                                { id: "fioul" as const, label: "Fioul", Icon: Droplet, color: "rgba(239, 68, 68, 0.1)" },
+                                                { id: "gaz" as const, label: "Gaz", Icon: Flame, color: "rgba(245, 158, 11, 0.1)" },
+                                                { id: "elec" as const, label: "Élec", Icon: Zap, color: "rgba(59, 130, 246, 0.1)" }
                                             ].map((sys) => (
                                                 <button
                                                     key={sys.id}
-                                                    onClick={() => setHeatingSystem(sys.id as any)}
+                                                    onClick={() => setHeatingSystem(sys.id)}
                                                     className={`
                                                         relative flex flex-col items-center justify-center py-4 rounded-2xl border transition-all gap-2 overflow-hidden
                                                         ${heatingSystem === sys.id
