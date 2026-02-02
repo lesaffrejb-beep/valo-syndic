@@ -82,13 +82,11 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
 
     return (
         <Card variant="premium" className="h-full min-h-[400px] border-white/5 bg-deep/50 overflow-hidden group">
-            {/* MAP BACKGROUND */}
-            <div className="absolute inset-0 z-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
-                {coordinates ? (
-                    <RisksMap lat={coordinates.latitude} lng={coordinates.longitude} />
-                ) : (
-                    <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
-                )}
+            {/* GLASSMORPHISM BACKGROUND - NO MAP */}
+            <div className="absolute inset-0 z-0">
+                {/* Abstract gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01]" />
+                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
                 <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/80 to-transparent" />
             </div>
 
