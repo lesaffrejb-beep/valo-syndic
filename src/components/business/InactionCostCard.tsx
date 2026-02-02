@@ -34,7 +34,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                 <h3 className="text-xl font-black text-white flex items-center gap-3 tracking-tight">
                     Érosion Patrimoniale
                 </h3>
-                <p className="text-[10px] text-white/40 uppercase tracking-wider">Coût de l'inaction sur 36 mois</p>
+                <p className="text-[10px] text-white/40 uppercase tracking-wider">Coût de l&apos;inaction sur 36 mois</p>
             </div>
 
             {/* Comparaison avant/after — INTERNAL TACTILE CARDS */}
