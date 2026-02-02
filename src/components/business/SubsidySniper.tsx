@@ -71,7 +71,7 @@ export function SubsidySniper({
                             <Target className="w-4 h-4 text-electricBlue" />
                         </div>
                         <div>
-                            <h3 className="text-base font-bold text-white">Subsidy Sniper</h3>
+                            <h3 className="text-lg font-bold text-white">Subsidy Sniper</h3>
                             <p className="text-[10px] text-white/40 uppercase tracking-wider">Optimisation Radicale</p>
                         </div>
                     </div>

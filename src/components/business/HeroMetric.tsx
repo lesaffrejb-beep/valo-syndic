@@ -56,10 +56,10 @@ export function HeroMetric({
                         </div>
                         <div>
                             <h2 className="text-[11px] uppercase tracking-[0.3em] text-gold/60 font-bold mb-1">
-                                {isMaPoche ? "Mon Effort Réel" : "Effort Mensuel Moyen"}
+                                {isMaPoche ? "Mon Effort Mensuel" : "Mensualité Projet"}
                             </h2>
                             <p className="text-xs text-white/30 font-mono">
-                                Prêt Taux Zéro • {durationYears} ans
+                                Financement 0% • {durationYears} ans
                             </p>
                         </div>
                     </div>

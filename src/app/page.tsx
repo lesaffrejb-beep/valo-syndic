@@ -385,18 +385,12 @@ export default function CockpitPage() {
                     initial={{ y: 100, opacity: 0, rotateX: 20 }}
                     animate={{ y: 0, opacity: 1, rotateX: 0 }}
                     transition={{ delay: 0.8, type: "spring", stiffness: 100, damping: 20 }}
-                    className="pointer-events-auto w-auto min-w-[580px] bg-[#0A0B0D]/95 backdrop-blur-2xl border border-white/[0.08] rounded-full px-6 py-2.5 flex items-center gap-6 justify-between group"
+                    className="pointer-events-auto w-auto min-w-[480px] bg-[#0A0B0D]/95 backdrop-blur-2xl border border-white/[0.08] rounded-full px-6 py-2.5 flex items-center gap-6 justify-center group"
                     style={{
                         boxShadow: "0 -8px 32px -16px rgba(0,0,0,0.6), inset 0 1px 0 0 rgba(255,255,255,0.06)"
                     }}
                 >
                     <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-gold/20 to-transparent opacity-40" />
-
-                    {/* LEFT: Status Indicator */}
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse shadow-[0_0_6px_rgba(212,175,55,0.6)]" />
-                        <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">Cockpit Live</span>
-                    </div>
 
                     {/* CENTER: Key Metric */}
                     <div className="flex items-center gap-3 border-x border-white/[0.06] px-6">
