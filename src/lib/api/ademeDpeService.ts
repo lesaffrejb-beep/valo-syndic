@@ -32,7 +32,7 @@ export interface AdemeDPEEntry {
     code_insee_commune: string;
     /** Coordonnées géographiques (centroïde IRIS) */
     coordonnees: [number, number] | null; // [lon, lat]
-    
+
     /** Classe énergie (A-G) */
     etiquette_dpe: DPELetter;
     /** Classe GES (A-G) */
@@ -43,50 +43,50 @@ export interface AdemeDPEEntry {
     emission_ges: number;
     /** Surface habitable (m²) */
     surface_habitable: number;
-    
+
     /** Date d'établissement du DPE */
     date_etablissement_dpe: string;
     /** Date de fin de validité */
     date_fin_validite_dpe: string;
-    
+
     /** Type de bâtiment */
     type_batiment: "appartement" | "maison" | "immeuble";
     /** Période de construction */
-    periode_construction?: string;
+    periode_construction?: string | undefined;
     /** Année de construction si disponible */
-    annee_construction?: number;
-    
+    annee_construction?: number | undefined;
+
     /** Type de chauffage */
-    type_chauffage?: string;
+    type_chauffage?: string | undefined;
     /** Type d'énergie de chauffage */
-    energie_chauffage?: string;
+    energie_chauffage?: string | undefined;
     /** Type d'eau chaude sanitaire */
-    type_ecs?: string;
-    
+    type_ecs?: string | undefined;
+
     /** Si le DPE est encore valide */
     is_valid: boolean;
 }
 
 export interface DPESearchOptions {
     /** Limite de résultats (défaut: 5, max: 100) */
-    limit?: number;
+    limit?: number | undefined;
     /** Recherche textuelle sur l'adresse */
-    query?: string;
+    query?: string | undefined;
     /** Filtre par code postal */
-    codePostal?: string;
+    codePostal?: string | undefined;
     /** Filtre par code INSEE */
-    codeInsee?: string;
+    codeInsee?: string | undefined;
     /** Filtre par classe DPE */
-    classeDPE?: DPELetter;
+    classeDPE?: DPELetter | undefined;
 }
 
 export interface DPESearchByLocationOptions {
     latitude: number;
     longitude: number;
     /** Rayon de recherche en mètres (défaut: 500) */
-    radius?: number;
+    radius?: number | undefined;
     /** Limite de résultats (défaut: 10) */
-    limit?: number;
+    limit?: number | undefined;
 }
 
 export interface DPEStats {
@@ -113,18 +113,18 @@ export async function searchDPEByAddress(
 
     try {
         const params = new URLSearchParams();
-        
+
         // Limite de résultats
         params.append("size", String(options.limit ?? 5));
-        
+
         // Recherche textuelle (q param)
         if (options.query) {
             params.append("q", options.query);
         }
-        
+
         // Filtres additionnels via le paramètre qs (query string avancée)
         const filters: string[] = [];
-        
+
         if (options.codePostal) {
             filters.push(`code_postal:"${options.codePostal}"`);
         }
@@ -134,11 +134,11 @@ export async function searchDPEByAddress(
         if (options.classeDPE) {
             filters.push(`etiquette_dpe:"${options.classeDPE}"`);
         }
-        
+
         if (filters.length > 0) {
             params.append("qs", filters.join(" AND "));
         }
-        
+
         // Tri par date d'établissement (plus récent d'abord)
         params.append("sort", "-date_etablissement_dpe");
 
@@ -160,8 +160,8 @@ export async function searchDPEByAddress(
             code_postal: String(item.code_postal || ""),
             nom_commune: String(item.nom_commune || ""),
             code_insee_commune: String(item.code_insee_commune || ""),
-            coordonnees: Array.isArray(item.coordonnees) 
-                ? [Number(item.coordonnees[0]), Number(item.coordonnees[1])] 
+            coordonnees: Array.isArray(item.coordonnees)
+                ? [Number(item.coordonnees[0]), Number(item.coordonnees[1])]
                 : null,
             etiquette_dpe: String(item.etiquette_dpe || "N") as DPELetter,
             etiquette_ges: String(item.etiquette_ges || "N"),
@@ -184,8 +184,8 @@ export async function searchDPEByAddress(
             url: "https://data.ademe.fr",
             fetchedAt: new Date(),
             status: results.length > 0 ? "success" : "partial",
-            dataPoints: results.length > 0 
-                ? ["dpe_class", "conso_kwh", "surface", "emission_ges", "date_etablissement"] 
+            dataPoints: results.length > 0
+                ? ["dpe_class", "conso_kwh", "surface", "emission_ges", "date_etablissement"]
                 : [],
         };
 
@@ -228,7 +228,7 @@ export async function searchDPEByLocation(
 
     try {
         const { latitude, longitude, radius = 500, limit = 10 } = options;
-        
+
         // Construction de la requête geo_distance
         // Format: geo_distance=lon,lat,distance
         const params = new URLSearchParams({
@@ -255,8 +255,8 @@ export async function searchDPEByLocation(
             code_postal: String(item.code_postal || ""),
             nom_commune: String(item.nom_commune || ""),
             code_insee_commune: String(item.code_insee_commune || ""),
-            coordonnees: Array.isArray(item.coordonnees) 
-                ? [Number(item.coordonnees[0]), Number(item.coordonnees[1])] 
+            coordonnees: Array.isArray(item.coordonnees)
+                ? [Number(item.coordonnees[0]), Number(item.coordonnees[1])]
                 : null,
             etiquette_dpe: String(item.etiquette_dpe || "N") as DPELetter,
             etiquette_ges: String(item.etiquette_ges || "N"),
@@ -279,8 +279,8 @@ export async function searchDPEByLocation(
             url: "https://data.ademe.fr",
             fetchedAt: new Date(),
             status: results.length > 0 ? "success" : "partial",
-            dataPoints: results.length > 0 
-                ? ["dpe_class", "conso_kwh", "surface", "emission_ges", "coordinates"] 
+            dataPoints: results.length > 0
+                ? ["dpe_class", "conso_kwh", "surface", "emission_ges", "coordinates"]
                 : [],
         };
 
@@ -359,8 +359,8 @@ export async function getDPEByNumber(
             code_postal: String(item.code_postal || ""),
             nom_commune: String(item.nom_commune || ""),
             code_insee_commune: String(item.code_insee_commune || ""),
-            coordonnees: Array.isArray(item.coordonnees) 
-                ? [Number(item.coordonnees[0]), Number(item.coordonnees[1])] 
+            coordonnees: Array.isArray(item.coordonnees)
+                ? [Number(item.coordonnees[0]), Number(item.coordonnees[1])]
                 : null,
             etiquette_dpe: String(item.etiquette_dpe || "N") as DPELetter,
             etiquette_ges: String(item.etiquette_ges || "N"),

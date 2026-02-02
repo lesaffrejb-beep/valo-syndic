@@ -19,55 +19,55 @@ export interface Setting {
     value: unknown;
     data_type: 'string' | 'number' | 'boolean' | 'json' | 'date';
     category: string;
-    description?: string;
-    source?: string;
-    source_url?: string;
-    reference_date?: string;
+    description?: string | undefined;
+    source?: string | undefined;
+    source_url?: string | undefined;
+    reference_date?: string | undefined;
     updated_at: string;
 }
 
 export interface BT01Data {
     value: number;
     display: string;
-    raw_value?: number;
-    raw_previous?: number;
-    monthly_change?: number;
+    raw_value?: number | undefined;
+    raw_previous?: number | undefined;
+    monthly_change?: number | undefined;
 }
 
 export interface PricingData {
     value: number;
     currency: string;
-    region?: string;
-    description?: string;
+    region?: string | undefined;
+    description?: string | undefined;
 }
 
 export interface RegulationData {
     value: boolean | number | string;
-    display?: string;
-    description?: string;
-    status?: 'active' | 'upcoming' | 'future';
+    display?: string | undefined;
+    description?: string | undefined;
+    status?: 'active' | 'upcoming' | 'future' | undefined;
 }
 
 export interface AidRateData {
     value: number;
     display: string;
-    threshold?: number;
+    threshold?: number | undefined;
 }
 
 export interface DynamicConstants {
     // Inflation
     bt01InflationRate: number;
     constructionInflationRate: number;
-    
+
     // Pricing
     basePricePerSqm: number;
     estimatedRenoCostPerSqm: number;
-    
+
     // Regulation
     mprCoproActive: boolean;
     ecoPtzRate: number;
     tvaRenovationRate: number;
-    
+
     // Aids
     mprMinEnergyGain: number;
     mprStandardRate: number;
@@ -76,17 +76,17 @@ export interface DynamicConstants {
     mprCeilingPerUnit: number;
     amoCostPerLot: number;
     amoAidRate: number;
-    
+
     // Technical
     electricityConversionCoeff: number;
     greenValueAppreciation: number;
     greenValueDrift: number;
-    
+
     // Project fees
     syndicRate: number;
     doRate: number;
     contingencyRate: number;
-    
+
     // DPE Prohibition dates
     dpeProhibitionDates: Record<DPELetter, Date | null>;
 }
@@ -99,16 +99,16 @@ const FALLBACK_CONSTANTS: DynamicConstants = {
     // Inflation
     bt01InflationRate: 0.02,
     constructionInflationRate: 0.02,
-    
+
     // Pricing
     basePricePerSqm: 3500,
     estimatedRenoCostPerSqm: 1350,
-    
+
     // Regulation
     mprCoproActive: false,
     ecoPtzRate: 0,
     tvaRenovationRate: 0.055,
-    
+
     // Aids
     mprMinEnergyGain: 0.35,
     mprStandardRate: 0.30,
@@ -117,17 +117,17 @@ const FALLBACK_CONSTANTS: DynamicConstants = {
     mprCeilingPerUnit: 25000,
     amoCostPerLot: 600,
     amoAidRate: 0.50,
-    
+
     // Technical
     electricityConversionCoeff: 1.9,
     greenValueAppreciation: 0.12,
     greenValueDrift: 0.015,
-    
+
     // Project fees
     syndicRate: 0.03,
     doRate: 0.02,
     contingencyRate: 0.05,
-    
+
     // DPE Prohibition dates
     dpeProhibitionDates: {
         G: new Date("2025-01-01"),
@@ -209,14 +209,14 @@ function extractDate(value: unknown): Date | null {
 async function getSupabaseClient() {
     // Dynamic import to avoid issues during SSR/build
     const { createClient } = await import("@supabase/supabase-js");
-    
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
+
     if (!supabaseUrl || !supabaseKey) {
         throw new Error("Supabase environment variables not configured");
     }
-    
+
     return createClient(supabaseUrl, supabaseKey);
 }
 
@@ -233,31 +233,31 @@ export async function fetchAllSettings(): Promise<Map<string, Setting>> {
     if (settingsCache && (Date.now() - cacheTimestamp) < CACHE_TTL) {
         return settingsCache;
     }
-    
+
     try {
         const supabase = await getSupabaseClient();
-        
+
         const { data, error } = await supabase
             .from('global_settings')
             .select('*')
             .eq('is_active', true);
-        
+
         if (error) {
             console.warn("Supabase settings fetch failed:", error);
             // Return empty map, fallback values will be used
             return new Map();
         }
-        
+
         const settingsMap = new Map<string, Setting>();
-        
+
         (data || []).forEach((setting: Setting) => {
             settingsMap.set(setting.key, setting);
         });
-        
+
         // Update cache
         settingsCache = settingsMap;
         cacheTimestamp = Date.now();
-        
+
         return settingsMap;
     } catch (error) {
         console.warn("Failed to fetch settings from Supabase:", error);
@@ -279,7 +279,7 @@ export async function getSetting(key: string): Promise<Setting | null> {
 export async function getNumericSetting(key: string, defaultValue: number): Promise<number> {
     const setting = await getSetting(key);
     if (!setting) return defaultValue;
-    
+
     const value = extractNumeric(setting.value);
     return value !== null ? value : defaultValue;
 }
@@ -290,7 +290,7 @@ export async function getNumericSetting(key: string, defaultValue: number): Prom
 export async function getBooleanSetting(key: string, defaultValue: boolean): Promise<boolean> {
     const setting = await getSetting(key);
     if (!setting) return defaultValue;
-    
+
     const value = extractBoolean(setting.value);
     return value !== null ? value : defaultValue;
 }
@@ -301,42 +301,42 @@ export async function getBooleanSetting(key: string, defaultValue: boolean): Pro
  */
 export async function getDynamicConstants(): Promise<DynamicConstants> {
     const settings = await fetchAllSettings();
-    
+
     const getNum = (key: string, fallback: number): number => {
         const setting = settings.get(key);
         if (!setting) return fallback;
         const value = extractNumeric(setting.value);
         return value !== null ? value : fallback;
     };
-    
+
     const getBool = (key: string, fallback: boolean): boolean => {
         const setting = settings.get(key);
         if (!setting) return fallback;
         const value = extractBoolean(setting.value);
         return value !== null ? value : fallback;
     };
-    
+
     const getDate = (key: string, fallback: Date | null): Date | null => {
         const setting = settings.get(key);
         if (!setting) return fallback;
         const value = extractDate(setting.value);
         return value !== null ? value : fallback;
     };
-    
+
     return {
         // Inflation
         bt01InflationRate: getNum('bt01_inflation_rate', FALLBACK_CONSTANTS.bt01InflationRate),
         constructionInflationRate: getNum('construction_inflation_rate', FALLBACK_CONSTANTS.constructionInflationRate),
-        
+
         // Pricing
         basePricePerSqm: getNum('base_price_per_sqm', FALLBACK_CONSTANTS.basePricePerSqm),
         estimatedRenoCostPerSqm: getNum('estimated_reno_cost_per_sqm', FALLBACK_CONSTANTS.estimatedRenoCostPerSqm),
-        
+
         // Regulation
         mprCoproActive: getBool('mpr_copro_active', FALLBACK_CONSTANTS.mprCoproActive),
         ecoPtzRate: getNum('eco_ptz_rate', FALLBACK_CONSTANTS.ecoPtzRate),
         tvaRenovationRate: getNum('tva_renovation_rate', FALLBACK_CONSTANTS.tvaRenovationRate),
-        
+
         // Aids
         mprMinEnergyGain: getNum('mpr_min_energy_gain', FALLBACK_CONSTANTS.mprMinEnergyGain),
         mprStandardRate: getNum('mpr_standard_rate', FALLBACK_CONSTANTS.mprStandardRate),
@@ -345,17 +345,17 @@ export async function getDynamicConstants(): Promise<DynamicConstants> {
         mprCeilingPerUnit: getNum('mpr_ceiling_per_unit', FALLBACK_CONSTANTS.mprCeilingPerUnit),
         amoCostPerLot: getNum('amo_cost_per_lot', FALLBACK_CONSTANTS.amoCostPerLot),
         amoAidRate: getNum('amo_aid_rate', FALLBACK_CONSTANTS.amoAidRate),
-        
+
         // Technical
         electricityConversionCoeff: getNum('electricity_conversion_coeff', FALLBACK_CONSTANTS.electricityConversionCoeff),
         greenValueAppreciation: getNum('green_value_appreciation', FALLBACK_CONSTANTS.greenValueAppreciation),
         greenValueDrift: getNum('green_value_drift', FALLBACK_CONSTANTS.greenValueDrift),
-        
+
         // Project fees
         syndicRate: getNum('project_syndic_rate', FALLBACK_CONSTANTS.syndicRate),
         doRate: getNum('project_do_rate', FALLBACK_CONSTANTS.doRate),
         contingencyRate: getNum('project_contingency_rate', FALLBACK_CONSTANTS.contingencyRate),
-        
+
         // DPE Prohibition dates
         dpeProhibitionDates: {
             G: getDate('dpe_prohibition_g', FALLBACK_CONSTANTS.dpeProhibitionDates.G),
@@ -374,14 +374,14 @@ export async function getDynamicConstants(): Promise<DynamicConstants> {
  */
 export async function getBT01Data(): Promise<BT01Data> {
     const setting = await getSetting('bt01_inflation_rate');
-    
+
     if (!setting) {
         return {
             value: FALLBACK_CONSTANTS.bt01InflationRate,
             display: `${(FALLBACK_CONSTANTS.bt01InflationRate * 100).toFixed(1)}%`,
         };
     }
-    
+
     const value = setting.value as BT01Data;
     return {
         value: value.value ?? FALLBACK_CONSTANTS.bt01InflationRate,
@@ -403,7 +403,7 @@ export async function getPricingData(): Promise<{
         getSetting('base_price_per_sqm'),
         getSetting('estimated_reno_cost_per_sqm'),
     ]);
-    
+
     return {
         basePricePerSqm: (basePriceSetting?.value as PricingData) || {
             value: FALLBACK_CONSTANTS.basePricePerSqm,
@@ -458,7 +458,7 @@ export async function getLiveConstants(): Promise<DynamicConstants> {
     if (!isSupabaseConfigured()) {
         return getFallbackConstants();
     }
-    
+
     try {
         return await getDynamicConstants();
     } catch (error) {

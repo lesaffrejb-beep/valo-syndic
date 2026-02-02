@@ -27,39 +27,39 @@ import type { APIResult, EnrichmentSource, APIError } from "./types";
 export interface CopropertyData {
     /** Identifiant unique */
     id: string;
-    
+
     // Adresse
     address: string;
     postalCode: string;
     city: string;
     cityCode: string; // Code INSEE
-    
+
     // Identification
-    name?: string; // Nom de la résidence/copro
-    referenceCadastrale?: string;
-    
+    name?: string | undefined; // Nom de la résidence/copro
+    referenceCadastrale?: string | undefined;
+
     // Données clés RNIC
     numberOfUnits: number; // Nombre total de lots
-    commercialLots?: number; // Locaux commerciaux
-    residentialLots?: number; // Lots d'habitation
-    parkingLots?: number; // Stationnements
-    
+    commercialLots?: number | undefined; // Locaux commerciaux
+    residentialLots?: number | undefined; // Lots d'habitation
+    parkingLots?: number | undefined; // Stationnements
+
     // Syndic
-    syndicName?: string;
-    syndicSiret?: string;
-    
+    syndicName?: string | undefined;
+    syndicSiret?: string | undefined;
+
     // Caractéristiques
-    constructionYear?: number;
-    totalSurface?: number; // Surface totale en m²
-    numberOfFloors?: number;
-    hasElevator?: boolean;
-    hasParking?: boolean;
-    
+    constructionYear?: number | undefined;
+    totalSurface?: number | undefined; // Surface totale en m²
+    numberOfFloors?: number | undefined;
+    hasElevator?: boolean | undefined;
+    hasParking?: boolean | undefined;
+
     // Métadonnées
     source: "rnic" | "supabase" | "api_entreprise" | "user" | "estimated";
     confidence: "high" | "medium" | "low";
     fetchedAt: Date;
-    lastUpdated?: Date;
+    lastUpdated?: Date | undefined;
 }
 
 /**
@@ -67,13 +67,13 @@ export interface CopropertyData {
  */
 export interface RNICSearchOptions {
     /** Recherche exacte par adresse normalisée */
-    exactAddress?: string;
+    exactAddress?: string | undefined;
     /** Recherche par code postal */
-    postalCode?: string;
+    postalCode?: string | undefined;
     /** Recherche par code INSEE */
-    cityCode?: string;
+    cityCode?: string | undefined;
     /** Rayon de recherche en mètres (si coordonnées disponibles) */
-    radius?: number;
+    radius?: number | undefined;
 }
 
 /**
@@ -103,27 +103,27 @@ async function searchSupabase(
 ): Promise<APIResult<CopropertyData[]>> {
     try {
         const { createClient } = await import("@supabase/supabase-js");
-        
+
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
         const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-        
+
         if (!supabaseUrl || !supabaseKey) {
             throw new Error("Supabase non configuré");
         }
-        
+
         const supabase = createClient(supabaseUrl, supabaseKey);
-        
+
         // Recherche par adresse (fuzzy match avec ilike)
         const { data, error } = await supabase
             .from('coproperty_data')
             .select('*')
             .ilike('address', `%${address}%`)
             .limit(5);
-        
+
         if (error) {
             throw error;
         }
-        
+
         const results: CopropertyData[] = (data || []).map(item => ({
             id: item.id,
             address: item.address,
@@ -148,17 +148,17 @@ async function searchSupabase(
             fetchedAt: new Date(),
             lastUpdated: item.updated_at ? new Date(item.updated_at) : undefined,
         }));
-        
+
         const source: EnrichmentSource = {
             name: "RNIC Supabase",
             url: "https://data.gouv.fr/fr/datasets/registre-national-des-coproprietes/",
             fetchedAt: new Date(),
             status: results.length > 0 ? "success" : "partial",
-            dataPoints: results.length > 0 
-                ? ["number_of_units", "syndic", "construction_year"] 
+            dataPoints: results.length > 0
+                ? ["number_of_units", "syndic", "construction_year"]
                 : [],
         };
-        
+
         return {
             success: true,
             data: results,
@@ -171,7 +171,7 @@ async function searchSupabase(
             message: error instanceof Error ? error.message : "Erreur inconnue",
             source: "RNIC Supabase",
         };
-        
+
         return {
             success: false,
             error: apiError,
@@ -195,14 +195,14 @@ async function searchApiEntreprise(
 ): Promise<APIResult<Partial<CopropertyData>>> {
     // Cette fonction est un placeholder
     // Elle nécessite une clé API Entreprise (non publique)
-    
+
     const apiError: APIError = {
         name: "APIError",
         code: "RNIC_API_ENTREPRISE_NOT_CONFIGURED",
         message: "API Entreprise non configurée. Nécessite une habilitation.",
         source: "API Entreprise",
     };
-    
+
     return {
         success: false,
         error: apiError,
@@ -226,11 +226,11 @@ async function searchSyndicsNearby(
     try {
         // Note: L'API Sirene nécessite une clé (gratuite sur api.insee.fr)
         const INSEE_API_KEY = process.env.INSEE_API_KEY;
-        
+
         if (!INSEE_API_KEY) {
             throw new Error("Clé API INSEE non configurée");
         }
-        
+
         // Recherche par code NAF et localisation
         const response = await fetch(
             `https://api.insee.fr/entreprises/sirene/V3/siret?q=codeActivitePrincipaleEtablissement:94.99Z AND codeCommuneEtablissement:${cityCode}`,
@@ -241,20 +241,20 @@ async function searchSyndicsNearby(
                 },
             }
         );
-        
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Mapper les résultats
-        const syndics = (data.etablissements || []).map((etab: Record<string, unknown>) => ({
+        const syndics = (data.etablissements || []).map((etab: any) => ({
             name: String(etab.uniteLegale?.denominationUniteLegale || "Nom inconnu"),
             siret: String(etab.siret || ""),
             address: `${etab.adresseEtablissement?.numeroVoieEtablissement || ""} ${etab.adresseEtablissement?.typeVoieEtablissement || ""} ${etab.adresseEtablissement?.libelleVoieEtablissement || ""}, ${etab.adresseEtablissement?.codePostalEtablissement || ""} ${etab.adresseEtablissement?.libelleCommuneEtablissement || ""}`.trim(),
         }));
-        
+
         const source: EnrichmentSource = {
             name: "API Sirene (Syndics)",
             url: "https://api.insee.fr",
@@ -262,7 +262,7 @@ async function searchSyndicsNearby(
             status: syndics.length > 0 ? "success" : "partial",
             dataPoints: syndics.length > 0 ? ["syndic_name", "siret", "address"] : [],
         };
-        
+
         return {
             success: true,
             data: syndics,
@@ -275,7 +275,7 @@ async function searchSyndicsNearby(
             message: error instanceof Error ? error.message : "Erreur inconnue",
             source: "API Sirene",
         };
-        
+
         return {
             success: false,
             error: apiError,
@@ -300,13 +300,13 @@ async function searchSyndicsNearby(
  */
 export async function enrichCoproperty(
     address: string,
-    options?: RNICSearchOptions & { cityCode?: string }
+    options?: RNICSearchOptions
 ): Promise<RNICEnrichmentResult> {
     const errors: string[] = [];
-    
+
     // 1. Essayer Supabase d'abord
     const supabaseResult = await searchSupabase(address, options);
-    
+
     if (supabaseResult.success && supabaseResult.data.length > 0) {
         return {
             coproperty: supabaseResult.data[0] || null,
@@ -315,17 +315,17 @@ export async function enrichCoproperty(
             errors: [],
         };
     }
-    
+
     if (!supabaseResult.success) {
         errors.push(`Supabase: ${supabaseResult.error.message}`);
     } else {
         errors.push("Aucune copropriété trouvée dans la base locale");
     }
-    
+
     // 2. Fallback: chercher les syndics du quartier
     if (options?.cityCode) {
         const syndicsResult = await searchSyndicsNearby(options.cityCode);
-        
+
         if (syndicsResult.success && syndicsResult.data.length > 0) {
             // Créer une entrée partielle avec les syndics trouvés
             const partialData: CopropertyData = {
@@ -341,7 +341,7 @@ export async function enrichCoproperty(
                 confidence: "low",
                 fetchedAt: new Date(),
             };
-            
+
             return {
                 coproperty: partialData,
                 suggestions: [],
@@ -356,7 +356,7 @@ export async function enrichCoproperty(
             };
         }
     }
-    
+
     // 3. Échec complet - retourner structure vide
     return {
         coproperty: null,
@@ -391,26 +391,26 @@ export async function getCopropertyById(
 ): Promise<APIResult<CopropertyData | null>> {
     try {
         const { createClient } = await import("@supabase/supabase-js");
-        
+
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
         const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-        
+
         if (!supabaseUrl || !supabaseKey) {
             throw new Error("Supabase non configuré");
         }
-        
+
         const supabase = createClient(supabaseUrl, supabaseKey);
-        
+
         const { data, error } = await supabase
             .from('coproperty_data')
             .select('*')
             .eq('id', id)
             .single();
-        
+
         if (error) {
             throw error;
         }
-        
+
         if (!data) {
             return {
                 success: true,
@@ -424,7 +424,7 @@ export async function getCopropertyById(
                 },
             };
         }
-        
+
         const result: CopropertyData = {
             id: data.id,
             address: data.address,
@@ -449,7 +449,7 @@ export async function getCopropertyById(
             fetchedAt: new Date(),
             lastUpdated: data.updated_at ? new Date(data.updated_at) : undefined,
         };
-        
+
         return {
             success: true,
             data: result,
@@ -468,7 +468,7 @@ export async function getCopropertyById(
             message: error instanceof Error ? error.message : "Erreur inconnue",
             source: "RNIC Supabase",
         };
-        
+
         return {
             success: false,
             error: apiError,
@@ -489,7 +489,7 @@ export function estimateNumberOfUnits(
     averageUnitSize: number = 80
 ): { estimated: number; confidence: "low" | "medium" | "high" } {
     const estimated = Math.round(totalSurface / averageUnitSize);
-    
+
     return {
         estimated: Math.max(1, estimated),
         confidence: "low",
@@ -515,13 +515,13 @@ export async function checkRNICStatus(): Promise<{
     sirene: boolean;
 }> {
     const supabaseOk = isRnicConfigured();
-    
+
     // API Entreprise: toujours false sans habilitation
     const apiEntrepriseOk = false;
-    
+
     // Sirene: vérifie si clé configurée
     const sireneOk = !!process.env.INSEE_API_KEY;
-    
+
     return {
         supabase: supabaseOk,
         apiEntreprise: apiEntrepriseOk,
