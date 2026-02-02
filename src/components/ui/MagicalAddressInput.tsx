@@ -14,7 +14,9 @@ interface MagicalAddressInputProps {
         city: string;
         numberOfUnits: number;
         currentDPE: DPELetter;
+        targetDPE: DPELetter;
         heatingSystem: "fioul" | "gaz" | "elec";
+        estimatedCostHT: number;
         pricePerSqm: number;
     }) => void;
     className?: string;
@@ -33,7 +35,9 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
     // Form State (Manual Override)
     const [numberOfUnits, setNumberOfUnits] = useState(20);
     const [currentDPE, setCurrentDPE] = useState<DPELetter>("F");
+    const [targetDPE, setTargetDPE] = useState<DPELetter>("C");
     const [heatingSystem, setHeatingSystem] = useState<"fioul" | "gaz" | "elec">("gaz");
+    const [estimatedCostHT, setEstimatedCostHT] = useState(400000);
     const [pricePerSqm, setPricePerSqm] = useState(3200);
     const [selectedAddress, setSelectedAddress] = useState<HybridSearchResult | null>(null);
 
@@ -78,7 +82,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
             {/* SEARCH BAR CONTAINER */}
             <div className="relative group">
                 <div className={`
-                    relative w-full bg-[#0D0F12] border border-white/5 shadow-tactile-inner 
+                    relative w-full bg-surface border border-white/5 shadow-tactile-inner 
                     rounded-3xl p-2 transition-all duration-500 z-50
                     ${isFocused ? 'border-gold/20 shadow-glow-vibrant scale-[1.01]' : 'hover:border-white/10'}
                 `}>
@@ -115,7 +119,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                 initial={{ opacity: 0, y: 15, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                                className="absolute top-[calc(100%+12px)] left-0 w-full bg-[#0D0F12]/95 backdrop-blur-3xl border border-white/5 rounded-3xl shadow-2xl overflow-hidden z-[60] p-2"
+                                className="absolute top-[calc(100%+12px)] left-0 w-full bg-surface/95 backdrop-blur-3xl border border-white/5 rounded-3xl shadow-2xl overflow-hidden z-[60] p-2"
                             >
                                 {hybridResults.map((result, idx) => (
                                     <button
@@ -172,7 +176,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                         transition={{ type: "spring", stiffness: 200, damping: 25 }}
                         className="relative z-40 overflow-hidden pt-2"
                     >
-                        <div className="bg-[#0D0F12]/80 backdrop-blur-3xl border border-white/5 rounded-[32px] p-8 shadow-2xl space-y-10">
+                        <div className="bg-surface/80 backdrop-blur-3xl border border-white/5 rounded-[32px] p-8 shadow-2xl space-y-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 {/* Left Section: Geometry & Finance */}
                                 <div className="space-y-8">
@@ -181,24 +185,37 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                             <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Volumes & Capacité</label>
                                             <span className="text--[10px] font-mono text-gold/60 bg-gold/5 px-2 py-0.5 rounded border border-gold/10">Configuration manuelle</span>
                                         </div>
-                                        <div className="bg-black/40 rounded-2xl p-4 border border-white/5 shadow-tactile-inner group hover:border-white/10 transition-all">
-                                            <div className="flex items-center justify-between mb-4">
+                                        <div className="bg-app/40 rounded-2xl p-4 border border-white/5 shadow-tactile-inner group hover:border-white/10 transition-all space-y-4">
+                                            <div className="flex items-center justify-between">
                                                 <span className="text-white text-sm font-medium">Nombre de lots</span>
-                                                <span className="text-2xl font-bold tracking-tighter">{numberOfUnits}</span>
+                                                <span className="text-white/40 text-xs font-mono">{numberOfUnits}</span>
                                             </div>
                                             <NumberStepper
                                                 value={numberOfUnits}
                                                 onChange={setNumberOfUnits}
                                                 min={2}
                                                 max={500}
-                                                className="h-14 bg-white/5 border-none shadow-glass rounded-xl"
+                                                className="h-12 bg-white/5 border-none shadow-glass rounded-xl"
                                             />
+                                            <div className="h-px bg-white/5" />
+                                            <div className="flex items-center justify-between gap-4">
+                                                <span className="text-white text-sm font-medium">Coût travaux (HT)</span>
+                                                <div className="flex items-baseline gap-2">
+                                                    <input
+                                                        type="number"
+                                                        value={estimatedCostHT}
+                                                        onChange={(e) => setEstimatedCostHT(Number(e.target.value))}
+                                                        className="bg-transparent border-none text-xl text-white focus:ring-0 w-36 p-0 font-bold tracking-tight text-right"
+                                                    />
+                                                    <span className="text-white/30 text-xs font-medium uppercase tracking-widest">EUR</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-4">
                                         <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Valorisation locale</label>
-                                        <div className="bg-black/40 rounded-2xl p-5 border border-white/5 shadow-tactile-inner focus-within:border-gold/30 transition-all flex items-center gap-4 group">
+                                        <div className="bg-app/40 rounded-2xl p-5 border border-white/5 shadow-tactile-inner focus-within:border-gold/30 transition-all flex items-center gap-4 group">
                                             <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 group-focus-within:border-gold/20 transition-all">
                                                 <Coins className="w-6 h-6 text-white/60 group-focus-within:text-gold" />
                                             </div>
@@ -222,22 +239,55 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                 <div className="space-y-8">
                                     <div className="space-y-4">
                                         <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Statut Énergétique</label>
-                                        <div className="bg-black/40 rounded-2xl p-2 border border-white/5 shadow-tactile-inner grid grid-cols-7 gap-1">
-                                            {DPE_OPTIONS.map((dpe) => (
-                                                <button
-                                                    key={dpe}
-                                                    onClick={() => setCurrentDPE(dpe)}
-                                                    className={`
-                                                        aspect-square flex items-center justify-center text-sm font-bold rounded-xl transition-all
-                                                        ${currentDPE === dpe
-                                                            ? 'bg-white text-black shadow-[0_4px_15px_rgba(255,255,255,0.3)] scale-[1.1] z-10'
-                                                            : 'text-white/20 hover:text-white/40 hover:bg-white/5'}
-                                                    `}
-                                                >
-                                                    {dpe}
-                                                </button>
-                                            ))}
+
+                                        <div className="space-y-3">
+                                            <div>
+                                                <div className="flex items-center justify-between px-1 mb-2">
+                                                    <span className="text-[10px] text-white/40 font-mono uppercase tracking-widest">DPE Actuel</span>
+                                                    <span className="text-[10px] text-white/20 font-mono">{currentDPE}</span>
+                                                </div>
+                                                <div className="bg-app/40 rounded-2xl p-2 border border-white/5 shadow-tactile-inner grid grid-cols-7 gap-1">
+                                                    {DPE_OPTIONS.map((dpe) => (
+                                                        <button
+                                                            key={dpe}
+                                                            onClick={() => setCurrentDPE(dpe)}
+                                                            className={`
+                                                                aspect-square flex items-center justify-center text-sm font-bold rounded-xl transition-all
+                                                                ${currentDPE === dpe
+                                                                    ? 'bg-white text-black shadow-[0_4px_15px_rgba(255,255,255,0.3)] scale-[1.05] z-10'
+                                                                    : 'text-white/20 hover:text-white/40 hover:bg-white/5'}
+                                                            `}
+                                                        >
+                                                            {dpe}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex items-center justify-between px-1 mb-2">
+                                                    <span className="text-[10px] text-white/40 font-mono uppercase tracking-widest">DPE Projeté</span>
+                                                    <span className="text-[10px] text-white/20 font-mono">{targetDPE}</span>
+                                                </div>
+                                                <div className="bg-app/40 rounded-2xl p-2 border border-white/5 shadow-tactile-inner grid grid-cols-7 gap-1">
+                                                    {DPE_OPTIONS.map((dpe) => (
+                                                        <button
+                                                            key={dpe}
+                                                            onClick={() => setTargetDPE(dpe)}
+                                                            className={`
+                                                                aspect-square flex items-center justify-center text-sm font-bold rounded-xl transition-all
+                                                                ${targetDPE === dpe
+                                                                    ? 'bg-white text-black shadow-[0_4px_15px_rgba(255,255,255,0.3)] scale-[1.05] z-10'
+                                                                    : 'text-white/20 hover:text-white/40 hover:bg-white/5'}
+                                                            `}
+                                                        >
+                                                            {dpe}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
+
                                         <div className="flex justify-between items-center px-1">
                                             <span className="text-[9px] text-emerald-500/60 uppercase tracking-widest font-bold">Performant</span>
                                             <span className="text-[9px] text-red-500/60 uppercase tracking-widest font-bold">Passoire</span>
@@ -259,7 +309,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                                         relative flex flex-col items-center justify-center py-4 rounded-2xl border transition-all gap-2 overflow-hidden
                                                         ${heatingSystem === sys.id
                                                             ? 'border-gold/30 scale-[1.02] shadow-glass'
-                                                            : 'bg-black/20 border-white/5 text-white/20 hover:border-white/10'}
+                                                            : 'bg-app/20 border-white/5 text-white/20 hover:border-white/10'}
                                                     `}
                                                 >
                                                     {heatingSystem === sys.id && (
@@ -289,7 +339,9 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                                 city: selectedAddress.city,
                                                 numberOfUnits,
                                                 currentDPE,
+                                                targetDPE,
                                                 heatingSystem,
+                                                estimatedCostHT,
                                                 pricePerSqm
                                             });
                                         }

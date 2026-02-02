@@ -29,7 +29,7 @@ const PROFILE_OPTIONS: { id: IncomeProfile; label: string; color: string }[] = [
  */
 export function TantiemeCalculator({ financing, simulationInputs, className = "" }: TantiemeCalculatorProps) {
     // Sync with global view mode store for "Ma Poche" mode
-    const { userTantiemes, setUserTantiemes, setViewMode } = useViewModeStore();
+    const { viewMode, userTantiemes, setUserTantiemes, setViewMode } = useViewModeStore();
 
     // Use store value as initial state, but allow local changes
     const [tantiemes, setTantiemesLocal] = useState(userTantiemes);
@@ -155,6 +155,13 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                             <p className="text-sm text-muted mt-0.5">Ajustez selon votre quote-part</p>
                         </div>
                     </div>
+
+                    <button
+                        onClick={() => setViewMode(viewMode === 'maPoche' ? 'immeuble' : 'maPoche')}
+                        className="h-9 px-4 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-[11px] font-mono tracking-widest uppercase text-white/60 hover:text-white/80 transition-all active:scale-95"
+                    >
+                        {viewMode === 'maPoche' ? 'Voir Immeuble' : 'Voir mon Lot'}
+                    </button>
                 </div>
 
                 {/* Profile Selector */}

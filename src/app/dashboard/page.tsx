@@ -15,13 +15,14 @@ import { useAuth } from '@/hooks/useAuth';
 import type { SavedSimulation } from '@/lib/schemas';
 import { MprSuspensionAlert } from '@/components/business/MprSuspensionAlert';
 import { MarketLiquidityAlert } from '@/components/business/MarketLiquidityAlert';
-import { ClimateRiskCard } from '@/components/business/ClimateRiskCard';
+import { ComplianceTimeline } from '@/components/ComplianceTimeline';
 import { TransparentReceipt } from '@/components/business/TransparentReceipt';
 import { ValuationCard } from '@/components/business/ValuationCard';
 import { InactionCostCard } from '@/components/business/InactionCostCard';
 import { TantiemeCalculator } from '@/components/business/TantiemeCalculator';
 import { RisksCard } from '@/components/business/RisksCard';
 import { isMprCoproSuspended, getLocalPassoiresShare } from '@/lib/market-data';
+import type { DPELetter } from '@/lib/constants';
 
 // --- MOCK DATA FOR UI DEVELOPMENT ---
 const MOCK_FINANCING = {
@@ -169,7 +170,10 @@ export default function DashboardPage() {
                             className="card-obsidian flex-1 flex flex-col justify-center min-h-[300px] relative overflow-hidden"
                         >
                             <div className="relative z-10 h-full">
-                                <ClimateRiskCard />
+                                <ComplianceTimeline
+                                    currentDPE={((selectedProject?.json_data?.input as any)?.currentDPE as DPELetter) || ("F" as DPELetter)}
+                                    className="h-full"
+                                />
                             </div>
                         </motion.div>
                     </div>

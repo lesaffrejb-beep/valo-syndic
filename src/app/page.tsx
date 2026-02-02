@@ -30,7 +30,7 @@ import { ValueShield } from '@/components/business/ValueShield';
 // EXISTING COMPONENTS (Kept)
 import { MprSuspensionAlert } from '@/components/business/MprSuspensionAlert';
 import { MarketLiquidityAlert } from '@/components/business/MarketLiquidityAlert';
-import { ClimateRiskCard } from '@/components/business/ClimateRiskCard';
+import { ComplianceTimeline } from '@/components/ComplianceTimeline';
 import { RisksCard } from '@/components/business/RisksCard';
 import { ObjectionHandler } from '@/components/business/ObjectionHandler';
 import { MagicalAddressInput } from '@/components/ui/MagicalAddressInput';
@@ -197,8 +197,14 @@ export default function CockpitPage() {
                             setDiagnosticInput((prev) => ({
                                 ...prev,
                                 address: data.address || prev.address,
+                                postalCode: data.postalCode || prev.postalCode,
+                                city: data.city || prev.city,
                                 numberOfUnits: data.numberOfUnits || prev.numberOfUnits,
                                 currentDPE: (data.currentDPE as DPELetter) || prev.currentDPE,
+                                targetDPE: (data.targetDPE as DPELetter) || prev.targetDPE,
+                                estimatedCostHT: typeof data.estimatedCostHT === 'number' ? data.estimatedCostHT : prev.estimatedCostHT,
+                                averagePricePerSqm: typeof data.pricePerSqm === 'number' ? data.pricePerSqm : prev.averagePricePerSqm,
+                                heatingSystem: data.heatingSystem || prev.heatingSystem,
                             }));
 
                             const cockpit = document.getElementById('cockpit-start');
@@ -273,8 +279,8 @@ export default function CockpitPage() {
                                 backdrop-blur-xl overflow-hidden h-[300px]"
                         >
                             <div className="absolute inset-0 bg-noise opacity-[0.015] pointer-events-none" />
-                            <div className="relative z-10 h-full p-2">
-                                <ClimateRiskCard />
+                            <div className="relative z-10 h-full p-6 overflow-hidden">
+                                <ComplianceTimeline currentDPE={diagnosticInput.currentDPE} className="h-full" />
                             </div>
                         </motion.div>
 
@@ -296,7 +302,7 @@ export default function CockpitPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="h-[520px]"
+                            className="min-h-[520px] overflow-hidden"
                         >
                             <ReceiptLedger financing={financing} />
                         </motion.div>
@@ -306,7 +312,7 @@ export default function CockpitPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="h-[500px]"
+                            className="min-h-[500px] overflow-hidden"
                         >
                             <SubsidySniper
                                 totalSubsidies={totalSubsidies}

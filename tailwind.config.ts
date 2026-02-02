@@ -7,13 +7,13 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                obsidian: "#020202", // Obsidian absolute - Stealth Wealth
+                obsidian: "#050505", // Obsidian absolute - Stealth Wealth
                 charcoal: "#0A0B0D", // Surface level 1
                 steel: "#12131A", // Surface level 2
                 gold: {
                     DEFAULT: "#D4AF37",
                     dark: "#B8941F",
-                    glow: "rgba(212, 175, 55, 0.5)",
+                    glow: "rgba(212, 175, 55, 0.15)",
                 },
                 electricBlue: {
                     DEFAULT: "#3B82F6",
@@ -22,9 +22,9 @@ const config: Config = {
                 // Maintaining existing semantic colors for code compatibility if needed, map to new system where possible
                 primary: {
                     DEFAULT: "#D4AF37", // Mapped to Gold
-                    glow: "rgba(212, 175, 55, 0.5)",
+                    glow: "rgba(212, 175, 55, 0.15)",
                 },
-                app: "#020202",
+                app: "#050505",
                 surface: "#0A0B0D",
                 'surface-highlight': "#12131A",
                 'surface-hover': "#1A1B22",
@@ -48,10 +48,10 @@ const config: Config = {
                 'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)', // Lumière du haut
                 'inner-depth': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)', // Profondeur intérieure
                 'glass': '0 4px 30px rgba(0, 0, 0, 0.5)', // Ombre portée douce
-                'neon-gold': '0 0 20px -5px rgba(212, 175, 55, 0.3)', // Glow actif
+                'neon-gold': '0 0 20px -5px rgba(212, 175, 55, 0.15)', // Glow actif
                 'tactile-inner': 'inset 0 2px 10px 0 rgba(0,0,0,0.4), inset 0 1px 1px 0 rgba(255,255,255,0.05)',
-                'glow-soft': '0 0 30px -10px rgba(212, 175, 55, 0.2)',
-                'glow-vibrant': '0 0 50px -10px rgba(212, 175, 55, 0.4)',
+                'glow-soft': '0 0 30px -10px rgba(212, 175, 55, 0.12)',
+                'glow-vibrant': '0 0 50px -10px rgba(212, 175, 55, 0.15)',
             },
             backdropBlur: {
                 'xs': '2px',
