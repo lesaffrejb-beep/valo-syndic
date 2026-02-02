@@ -15,6 +15,7 @@ export * from "./types";
 export * from "./addressService";
 export * from "./cadastreService";
 export * from "./dvfService";
+export * from "./ademeDpeService";
 
 import {
     searchAddress,
