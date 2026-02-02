@@ -213,7 +213,7 @@ export default function ScrollytellingPage() {
             (entries) => {
                 const visible = entries
                     .filter((e) => e.isIntersecting)
-                    .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
+                    .sort((a, b) => b.intersectionRect.height - a.intersectionRect.height);
 
                 const top = visible[0];
                 const id = top?.target?.id as typeof sectionIds[number] | undefined;
@@ -221,8 +221,8 @@ export default function ScrollytellingPage() {
             },
             {
                 root: null,
-                threshold: [0.2, 0.35, 0.5, 0.65],
-                rootMargin: '-20% 0px -55% 0px',
+                threshold: [0, 0.1, 0.5],
+                rootMargin: '-45% 0px -45% 0px',
             }
         );
 
@@ -262,6 +262,11 @@ export default function ScrollytellingPage() {
                 isSaving={isSaving}
             />
 
+            {/* Alert fixed below header */}
+            <div className="fixed top-20 left-0 right-0 z-[55] print:hidden">
+                <MprSuspensionAlert isSuspended={isMprCoproSuspended()} />
+            </div>
+
             {/* ================================================================
                 ZONE 0 — THE HOOK (Hero)
                 ================================================================ */}
@@ -273,9 +278,8 @@ export default function ScrollytellingPage() {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
 
                 {/* Top Actions */}
-                <div className="absolute top-0 left-0 w-full z-50">
-                    <MprSuspensionAlert isSuspended={isMprCoproSuspended()} />
-                </div>
+                <div className="absolute inset-0 z-10 bg-gradient-to-b from-deep/90 via-deep/60 to-deep" />
+
                 <div className="absolute top-24 right-6 z-50 flex gap-3">
                     {/* Buttons hidden for cleanliness until interaction? kept as is but styled */}
                 </div>
@@ -286,16 +290,7 @@ export default function ScrollytellingPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1 }}
                     >
-                        <div className="flex justify-center mb-6">
-                            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_0_40px_rgba(212,175,55,0.15)]">
-                                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-gold/80 font-semibold">
-                                    <Sparkles className="w-3 h-3 text-gold" />
-                                    Valo-Syndic
-                                </div>
-                                <span className="w-px h-4 bg-gold/30" />
-                                <span className="text-xs text-white/70 tracking-wide">Premium Advisory Desk</span>
-                            </div>
-                        </div>
+
                         <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
                             <span className="text-white">Révélez le potentiel</span><br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de vos copropriétés</span>
