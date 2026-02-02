@@ -327,15 +327,7 @@ export default function ScrollytellingPage() {
                         </AnimatePresence>
                     </div>
 
-                    <div className="flex justify-center">
-                        <Button
-                            variant="outline"
-                            className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5 text-white"
-                            onClick={scrollToPersonalImpact}
-                        >
-                            Simuler l&apos;impact individuel
-                        </Button>
-                    </div>
+
 
                     {/* Quick Stats - Glassmorphism */}
                     <AnimatePresence>

@@ -52,11 +52,11 @@ export function Header({
     };
 
     const navItems = [
-        { id: 'diagnostic', label: 'Adresse' },
-        { id: 'projection', label: 'Bascule' },
-        { id: 'my-pocket', label: 'Diagnostic' },
-        { id: 'finance', label: 'Détails' },
-        { id: 'action', label: 'Action' },
+        { id: 'diagnostic', label: 'Immeuble' },
+        { id: 'projection', label: 'Comparatif' },
+        { id: 'my-pocket', label: 'Quote-part' },
+        { id: 'finance', label: 'Financement' },
+        { id: 'action', label: 'Synthèse' },
     ];
 
     return (
@@ -84,7 +84,7 @@ export function Header({
                             <>
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-gold/40 transition-all duration-200 text-sm font-medium text-white"
+                                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-transparent hover:bg-white/[0.04] transition-all duration-200 text-sm font-medium text-muted hover:text-white"
                                     title="Importer un fichier .valo"
                                 >
                                     <span className="hidden md:inline">Ouvrir</span>
@@ -103,7 +103,7 @@ export function Header({
                         <button
                             onClick={onSave}
                             disabled={!hasResult || isSaving}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-gold/40 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium text-white"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold text-[#050507] font-semibold text-sm hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                             title="Sauvegarder le dossier"
                         >
                             <Save className="w-4 h-4" />
@@ -120,16 +120,13 @@ export function Header({
                                     <div key={item.id} className="flex items-center gap-4">
                                         <button
                                             onClick={() => onNavigate(item.id)}
-                                            className={`text-[10px] uppercase tracking-[0.3em] font-bold transition-all duration-300 ${activeSection === item.id
-                                                ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
-                                                : 'text-white/40 hover:text-white/80'
+                                            className={`text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-300 px-3 py-1 rounded-full ${activeSection === item.id
+                                                ? 'text-white bg-white/10 shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)] border border-white/10'
+                                                : 'text-muted hover:text-white hover:bg-white/5'
                                                 }`}
                                         >
                                             {item.label}
                                         </button>
-                                        {index < navItems.length - 1 && (
-                                            <span className="text-white/10 text-[10px]">→</span>
-                                        )}
                                     </div>
                                 ))}
                             </div>
