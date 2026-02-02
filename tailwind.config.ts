@@ -79,7 +79,6 @@ const config: Config = {
             'card': '16px',
         },
     },
-},
     plugins: [],
 };
 
