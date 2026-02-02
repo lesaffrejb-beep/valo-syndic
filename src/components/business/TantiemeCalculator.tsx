@@ -102,9 +102,14 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                 </div>
             </CardHeader>
 
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
-                {/* CONTROLS */}
-                <div className="space-y-8">
+            <CardContent className="space-y-8 pt-6">
+                {/* INPUTS SECTION */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-6">
+                    <div className="flex items-center gap-2 pb-4 border-b border-white/5">
+                        <div className="w-1 h-6 bg-gold rounded-full" />
+                        <h4 className="text-sm font-bold uppercase tracking-wider text-white">Paramètres de Simulation</h4>
+                    </div>
+
                     {/* Profile Selector */}
                     {simulationInputs && (
                         <div className="space-y-3">
@@ -169,10 +174,15 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                     </div>
                 </div>
 
-                {/* RESULTS - Hero Card */}
-                <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent rounded-3xl -m-4 border border-gold/10" />
-                    <div className="relative flex flex-col items-center justify-center h-full text-center space-y-2 p-4">
+                {/* RESULTS SECTION - Hero Card */}
+                <div className="relative bg-gradient-to-br from-gold/10 via-gold/5 to-transparent border border-gold/20 rounded-3xl overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 rounded-full blur-3xl -mr-32 -mt-32" />
+                    <div className="relative flex flex-col items-center justify-center text-center space-y-4 p-8">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1 h-6 bg-gold rounded-full" />
+                            <h4 className="text-sm font-bold uppercase tracking-wider text-white">Résultat Personnalisé</h4>
+                        </div>
+
                         <p className="text-xs uppercase tracking-[0.2em] text-muted font-medium">Votre effort d&apos;épargne</p>
 
                         <div className="text-6xl md:text-7xl font-sans font-light text-gold tracking-tighter financial-num">

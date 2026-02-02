@@ -13,15 +13,16 @@
 
 import { useEffect, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, X, Save, Upload, MapPin, Building2, TrendingUp, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, X, Save, Upload, MapPin, Building2, TrendingUp, AlertTriangle, Download } from 'lucide-react';
 
 // --- CORE IMPORTS ---
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/hooks/useAuth';
+import { useProjectSave } from '@/hooks/useProjectSave';
 import { generateDiagnostic } from '@/lib/calculator';
 import { isMprCoproSuspended, getMarketTrend } from '@/lib/market-data';
 import { useViewModeStore } from '@/stores/useViewModeStore';
-import { ValoSaveSchema, type SavedSimulation, type DiagnosticInput, type DiagnosticResult, type ValoSaveData } from '@/lib/schemas';
+import { ValoSaveSchema, type SavedSimulation, type DiagnosticInput, type DiagnosticResult, type ValoSaveData, type GhostExtensionImport } from '@/lib/schemas';
 import type { DPELetter } from '@/lib/constants';
 import type { SimulationInputs } from '@/lib/subsidy-calculator';
 import { formatCurrency } from '@/lib/calculator';
@@ -30,6 +31,8 @@ import { formatCurrency } from '@/lib/calculator';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { JsonImporter } from '@/components/import/JsonImporter';
+import { ProjectionModeToggle } from '@/components/ui/ProjectionModeToggle';
 
 // --- BUSINESS COMPONENTS ---
 import { StreetViewHeader } from '@/components/business/StreetViewHeader';
@@ -122,6 +125,7 @@ export default function ScrollytellingPage() {
     const [isAddressSelected, setIsAddressSelected] = useState(false);
     const [showProfileDetails, setShowProfileDetails] = useState(false);
     const [activeSection, setActiveSection] = useState<'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action'>('diagnostic');
+    const { saveProject, isLoading: isSaving, error: saveError, showAuthModal, setShowAuthModal } = useProjectSave();
 
     // --- DIAGNOSTIC STATE ---
     const [diagnosticInput, setDiagnosticInput] = useState<DiagnosticInput>(DEFAULT_DIAGNOSTIC_INPUT);
@@ -162,8 +166,19 @@ export default function ScrollytellingPage() {
     const marketTrend = useMemo(() => getMarketTrend(), []);
 
     // --- EXPORT / IMPORT LOGIC ---
-    const handleExport = useCallback(() => { /* Standard export logic */ }, []);
-    const handleImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => { /* Standard import logic */ }, []);
+    const handleSaveProject = useCallback(async () => {
+        if (!diagnosticResult) return;
+        const projectId = await saveProject(diagnosticResult, `Projet ${diagnosticResult.input.address}`);
+        if (projectId) {
+            alert('Projet sauvegardé avec succès !');
+        }
+    }, [diagnosticResult, saveProject]);
+
+    const handleGhostImport = useCallback((data: GhostExtensionImport) => {
+        // Logic to handle Ghost Extension import
+        console.log('Ghost data imported:', data);
+        // TODO: Update diagnosticInput with imported lots data
+    }, []);
 
     // --- SIMULATION INPUTS FOR SUBSIDY TABLE ---
     const simulationInputs: SimulationInputs = useMemo(() => {
@@ -227,8 +242,26 @@ export default function ScrollytellingPage() {
     return (
         <div className="min-h-screen font-sans selection:bg-gold/30 selection:text-gold-light bg-deep text-white overflow-hidden">
 
-            <div className="sticky top-0 z-[60] w-full backdrop-blur-md bg-deep/40 border-b border-white/5">
-                <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-center">
+            <div className="sticky top-0 z-[60] w-full backdrop-blur-xl bg-deep/60 border-b border-white/[0.06]">
+                {/* Subtle gradient line */}
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+
+                <div className="max-w-7xl mx-auto px-4 md:px-8 py-2.5 flex items-center justify-between">
+                    {/* Left: Actions */}
+                    <div className="flex items-center gap-2">
+                        <JsonImporter onImport={handleGhostImport} />
+                        <button
+                            onClick={handleSaveProject}
+                            disabled={!diagnosticResult || isSaving}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-gold/40 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium text-main"
+                            title="Sauvegarder le dossier"
+                        >
+                            <Save className="w-4 h-4" />
+                            <span className="hidden md:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
+                        </button>
+                    </div>
+
+                    {/* Center: Navigation */}
                     <div className="flex items-center gap-2 md:gap-4 text-[10px] uppercase tracking-[0.3em] font-bold text-white/60">
                         <button
                             className={`transition-colors ${activeSection === 'diagnostic' ? 'text-white' : 'hover:text-white/80'}`}
@@ -248,7 +281,7 @@ export default function ScrollytellingPage() {
                             className={`transition-colors ${activeSection === 'my-pocket' ? 'text-white' : 'hover:text-white/80'}`}
                             onClick={() => scrollToSection('my-pocket')}
                         >
-                            Mon impact
+                            Diagnostic
                         </button>
                         <span className="text-white/15">→</span>
                         <button
@@ -264,6 +297,20 @@ export default function ScrollytellingPage() {
                         >
                             Action
                         </button>
+                    </div>
+
+                    {/* Right: User Status & Tools */}
+                    <div className="flex items-center gap-2">
+                        <ProjectionModeToggle />
+                        <div className="w-px h-6 bg-white/[0.08]" />
+                        {user ? (
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10">
+                                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                                <span className="text-[10px] text-muted hidden md:inline">{user.email}</span>
+                            </div>
+                        ) : (
+                            <div className="w-2 h-2 rounded-full bg-white/20" />
+                        )}
                     </div>
                 </div>
             </div>
@@ -412,12 +459,16 @@ export default function ScrollytellingPage() {
                     {/* Right: The Cost */}
                     <div className="space-y-6">
                         <InactionCostCard inactionCost={inactionCost} />
-                        <BenchmarkChart
-                            currentDPE={diagnosticInput.currentDPE}
-                            city={diagnosticInput.city}
-                            className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
-                        />
                     </div>
+                </div>
+
+                {/* Benchmark Chart - Full Width (2 columns) */}
+                <div className="w-full mt-8">
+                    <BenchmarkChart
+                        currentDPE={diagnosticInput.currentDPE}
+                        city={diagnosticInput.city}
+                        className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
+                    />
                 </div>
             </Section>
 
@@ -438,11 +489,11 @@ export default function ScrollytellingPage() {
             </Section>
 
             {/* ================================================================
-                ZONE 4 — PERSONAL IMPACT (My Pocket)
+                ZONE 4 — DIAGNOSTIC PERSONNEL
                 ================================================================ */}
             <Section id="my-pocket">
                 <SectionHeader
-                    label="Votre Intérêt"
+                    label="Diagnostic Personnel"
                     title="Impact direct sur votre portefeuille"
                 />
 
