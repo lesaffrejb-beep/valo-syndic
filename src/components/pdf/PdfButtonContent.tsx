@@ -6,6 +6,7 @@ import { PDFDocumentEnhanced } from './PDFDocumentEnhanced';
 import { type DiagnosticResult } from '@/lib/schemas';
 import { useBrandStore } from "@/stores/useBrandStore";
 import { type OwnerProfileType } from '@/lib/pdf-profiles';
+import { FileText } from 'lucide-react';
 
 interface PdfButtonContentProps {
     result: DiagnosticResult;
@@ -57,8 +58,8 @@ export function PdfButtonContent({
                 if (loading) {
                     return (
                         <>
-                            <span className="animate-spin">*</span>
-                            <span>Generation...</span>
+                            <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                            <span>Génération...</span>
                         </>
                     );
                 }
@@ -66,16 +67,16 @@ export function PdfButtonContent({
                 if (error) {
                     return (
                         <>
-                            <span>X</span>
-                            <span>Erreur creation PDF</span>
+                            <FileText className="w-5 h-5 mr-2" />
+                            <span>Erreur</span>
                         </>
                     );
                 }
 
                 return (
                     <>
-                        <span>[PDF]</span>
-                        <span>Telecharger le Rapport</span>
+                        <FileText className="w-5 h-5 mr-2" />
+                        <span>Télécharger le Rapport</span>
                     </>
                 );
             }}

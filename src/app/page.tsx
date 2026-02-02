@@ -710,7 +710,7 @@ export default function ScrollytellingPage() {
                         {/* 2. Download Report (Center - MAIN) */}
                         <DownloadPdfButton
                             result={diagnosticResult}
-                            className="h-16 px-10 rounded-full bg-gradient-to-r from-gold-500 to-amber-600 text-black font-bold text-lg shadow-glow-gold hover:scale-105 transition-all w-full md:w-auto order-1 md:order-2"
+                            className="h-16 px-10 rounded-full bg-gradient-to-r from-gold to-amber-600 text-black font-bold text-lg shadow-glow-gold hover:scale-105 transition-all w-full md:w-auto order-1 md:order-2"
                         />
 
                         {/* 3. PowerPoint (Right) */}
