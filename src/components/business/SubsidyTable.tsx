@@ -127,7 +127,7 @@ export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
 
     return (
         <motion.div
-            className="group relative overflow-hidden p-8 md:p-12 h-full flex flex-col"
+            className="group relative overflow-hidden p-4 md:p-6 h-full flex flex-col bg-slate-900/50 backdrop-blur-md rounded-2xl border border-white/5"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={DEFAULT_TRANSITION}
@@ -135,8 +135,8 @@ export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h3 className="text-xl font-semibold text-main flex items-center gap-3">
-                        <span className="text-2xl">🎯</span>
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <span className="text-xl">🎯</span>
                         Tableau Décisionnel MPR Copro 2026
                     </h3>
                     <p className="text-sm text-muted mt-1">
@@ -190,28 +190,28 @@ export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
             <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full">
                     <thead>
-                        <tr className="border-b border-boundary">
-                            <th className="text-left py-4 px-4 text-xs font-semibold text-muted uppercase tracking-wider">
+                        <tr className="border-b border-white/10 text-white/50">
+                            <th className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
                                 Profil
                             </th>
-                            <th className="text-right py-4 px-4 text-xs font-semibold text-muted uppercase tracking-wider">
+                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
                                 Coût Réel
                             </th>
-                            <th className="text-right py-4 px-4 text-xs font-semibold text-muted uppercase tracking-wider">
-                                Total Aides Publiques
+                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
+                                Total Aides
                             </th>
-                            <th className="text-right py-4 px-4 text-xs font-semibold text-success uppercase tracking-wider">
-                                Boost Privé/Local
+                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                                Boost
                             </th>
-                            <th className="text-right py-4 px-4 text-xs font-semibold text-primary uppercase tracking-wider">
+                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-amber-500">
                                 Reste à Charge
                             </th>
-                            <th className="text-right py-4 px-4 text-xs font-semibold text-muted uppercase tracking-wider">
+                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
                                 Mensualité
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-white/5">
                         {profileOrder.map((profile, index) => {
                             const data = profiles[profile];
                             return (
@@ -222,47 +222,39 @@ export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.1 }}
                                 >
-                                    <td className="py-4 px-4">
+                                    <td className="py-2 px-3">
                                         <ProfileBadge profile={profile} />
                                     </td>
-                                    <td className="py-4 px-4 text-right text-main font-medium tabular-nums">
+                                    <td className="py-2 px-3 text-right text-white/90 font-medium tabular-nums text-sm">
                                         {formatCurrency(data.workShareBeforeAid)}
                                     </td>
-                                    <td className="py-4 px-4 text-right">
+                                    <td className="py-2 px-3 text-right">
                                         <div className="flex flex-col items-end">
-                                            <span className="text-main font-semibold tabular-nums">
+                                            <span className="text-white/90 font-semibold tabular-nums text-sm">
                                                 -{formatCurrency(data.totalPublicSubsidies)}
-                                            </span>
-                                            <span className="text-xs text-muted">
-                                                MPR {Math.round(data.mprRate * 100)}% + AMO + Prime
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="py-4 px-4 text-right">
+                                    <td className="py-2 px-3 text-right">
                                         {data.privateLocalBoost > 0 ? (
-                                            <div className="flex flex-col items-end">
-                                                <span className="text-success font-bold tabular-nums">
-                                                    -{formatCurrency(data.privateLocalBoost)}
-                                                </span>
-                                                <span className="text-xs text-success-400/70">
-                                                    CEE + Locales
-                                                </span>
-                                            </div>
+                                            <span className="text-emerald-400 font-bold tabular-nums text-sm">
+                                                -{formatCurrency(data.privateLocalBoost)}
+                                            </span>
                                         ) : (
-                                            <span className="text-subtle text-sm">—</span>
+                                            <span className="text-white/20 text-xs">—</span>
                                         )}
                                     </td>
-                                    <td className="py-4 px-4 text-right">
-                                        <span className="text-2xl font-bold text-primary tabular-nums">
+                                    <td className="py-2 px-3 text-right">
+                                        <span className="text-lg font-bold text-amber-500 tabular-nums">
                                             {formatCurrency(data.remainingCost)}
                                         </span>
                                     </td>
-                                    <td className="py-4 px-4 text-right">
+                                    <td className="py-2 px-3 text-right">
                                         <div className="flex flex-col items-end">
-                                            <span className="text-main font-medium tabular-nums">
+                                            <span className="text-white/90 font-medium tabular-nums text-sm">
                                                 {formatCurrency(data.monthlyPayment)}
                                             </span>
-                                            <span className="text-xs text-muted">
+                                            <span className="text-[10px] text-white/40">
                                                 / mois
                                             </span>
                                         </div>

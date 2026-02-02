@@ -261,7 +261,7 @@ export default function ScrollytellingPage() {
     // --- LOADING STATE ---
     if (authLoading || loading) {
         return (
-            <div className="min-h-screen bg-[#020202] flex items-center justify-center">
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
                 <div className="text-neutral-500 animate-pulse font-mono tracking-[0.2em] text-xs uppercase flex items-center gap-2">
                     <span className="w-2 h-2 bg-amber-600/50 rounded-full animate-bounce" />
                     Chargement...
@@ -273,7 +273,7 @@ export default function ScrollytellingPage() {
     // --- FALLBACK: If no result yet ---
     if (!diagnosticResult) {
         return (
-            <div className="min-h-screen bg-[#020202] flex items-center justify-center">
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
                 <div className="text-center">
                     <div className="text-neutral-500 animate-pulse font-mono tracking-[0.2em] text-xs uppercase flex items-center gap-2 justify-center mb-4">
                         <span className="w-2 h-2 bg-amber-600/50 rounded-full animate-bounce" />
@@ -300,7 +300,7 @@ export default function ScrollytellingPage() {
     // ==========================================================================
 
     return (
-        <div className="min-h-screen bg-[#020202] text-neutral-200 font-sans selection:bg-amber-600/30 selection:text-white">
+        <div className="min-h-screen bg-slate-950 text-neutral-200 font-sans selection:bg-amber-600/30 selection:text-white">
 
             {/* ================================================================
                 ZONE 0 — THE HOOK (L'Ancrage)
@@ -314,17 +314,20 @@ export default function ScrollytellingPage() {
                         coordinates={diagnosticInput.coordinates}
                     />
                     {/* Heavy gradient overlay for readability - 80% opacity */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/85 to-[#020202]" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/85 to-slate-950" />
+                </div>
+
+                {/* MPR Suspension Alert (Fixed at top) */}
+                <div className="absolute top-0 left-0 w-full z-[100]">
+                    <MprSuspensionAlert isSuspended={isMprCoproSuspended()} />
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 w-full max-w-3xl mx-auto flex flex-col items-center gap-10 py-20">
-                    {/* MPR Suspension Alert (conditional) */}
-                    <MprSuspensionAlert isSuspended={isMprCoproSuspended()} />
+                <div className="relative z-10 w-full max-w-3xl mx-auto flex flex-col items-center gap-8 py-20 pt-32">
 
-                    {/* Hero Text — More impactful typography */}
+                    {/* Hero Text — More impactful typography - REDUCED SIZE */}
                     <div className="text-center">
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6">
                             <span className="bg-gradient-to-r from-white via-white to-neutral-400 bg-clip-text text-transparent">
                                 Révélez le potentiel caché
                             </span>
@@ -338,8 +341,8 @@ export default function ScrollytellingPage() {
                         </p>
                     </div>
 
-                    {/* Address Input — Premium, Bigger (h-14), More prominent */}
-                    <div className="w-full max-w-2xl">
+                    {/* Address Input — Premium, Bigger (h-14), More prominent -- Z-INDEX FIX */}
+                    <div className="w-full max-w-2xl relative z-[60]">
                         <AddressAutocomplete
                             defaultValue={diagnosticInput.address || ""}
                             placeholder="Entrez l'adresse de votre copropriété..."
@@ -448,23 +451,22 @@ export default function ScrollytellingPage() {
                         </AnimatePresence>
                     </div>
 
-                    {/* Scroll indicator */}
+                    {/* Scroll indicator - SIMPLIFIED */}
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1, duration: 0.5 }}
                         className="mt-8"
                     >
-                        <div className="flex flex-col items-center gap-2 text-neutral-600">
-                            <span className="text-xs uppercase tracking-widest">Découvrir</span>
-                            <motion.div
-                                animate={{ y: [0, 8, 0] }}
-                                transition={{ repeat: Infinity, duration: 1.5 }}
-                                className="w-5 h-8 border border-neutral-700 rounded-full flex justify-center pt-1"
-                            >
-                                <div className="w-1 h-2 bg-neutral-600 rounded-full" />
-                            </motion.div>
-                        </div>
+                        <motion.div
+                            animate={{ y: [0, 8, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            className="text-neutral-600"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </motion.div>
                     </motion.div>
                 </div>
             </section>
@@ -472,8 +474,9 @@ export default function ScrollytellingPage() {
             {/* ================================================================
                 ZONE 1 — THE DIAGNOSTIC (La Douleur)
                 Vibe: Froid, Clinique, Urgent
+                Color: Red/Rose hint
             ================================================================ */}
-            <Section id="diagnostic">
+            <Section id="diagnostic" className="bg-red-950/5 rounded-[3rem] my-4 border border-red-500/5">
                 <div className="text-center mb-8">
                     <span className="text-xs uppercase tracking-[0.3em] text-red-500/70 font-medium">Le Diagnostic</span>
                     <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
@@ -507,8 +510,9 @@ export default function ScrollytellingPage() {
             {/* ================================================================
                 ZONE 2 — THE PROJECTION (La Vision)
                 Vibe: Lumineux (Gold/Bronze accents), Espoir
+                Color: Amber/Gold hint
             ================================================================ */}
-            <Section id="projection">
+            <Section id="projection" className="bg-amber-950/5 rounded-[3rem] my-4 border border-amber-500/5">
                 <div className="text-center mb-8">
                     <span className="text-xs uppercase tracking-[0.3em] text-amber-600/70 font-medium">La Projection</span>
                     <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
@@ -526,8 +530,9 @@ export default function ScrollytellingPage() {
             {/* ================================================================
                 ZONE 3 — THE FINANCING PLAN (La Logique)
                 Vibe: Sérieux, Technique mais clair (Slate/Blue)
+                Color: Emerald/Teal hint
             ================================================================ */}
-            <Section id="finance">
+            <Section id="finance" className="bg-emerald-950/5 rounded-[3rem] my-4 border border-emerald-500/5">
                 <div className="text-center mb-8">
                     <span className="text-xs uppercase tracking-[0.3em] text-emerald-500/70 font-medium">Le Financement</span>
                     <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
@@ -553,8 +558,9 @@ export default function ScrollytellingPage() {
             {/* ================================================================
                 ZONE 4 — THE PERSONAL IMPACT (Le Personnel)
                 Vibe: Intime, Direct (Gold again but warmer)
+                Color: Indigo/Violet hint
             ================================================================ */}
-            <Section id="my-pocket">
+            <Section id="my-pocket" className="bg-indigo-950/5 rounded-[3rem] my-4 border border-indigo-500/5">
                 <SectionTitle label="Votre Poche" title="Ce que ça change pour vous" labelColor="text-amber-500" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -576,13 +582,7 @@ export default function ScrollytellingPage() {
                     </div>
                 </div>
 
-                {/* Profile Selector for context switching */}
-                <div className="mt-12 max-w-xl mx-auto">
-                    <ProfileSelector
-                        selected={selectedProfile}
-                        onSelect={setSelectedProfile}
-                    />
-                </div>
+                {/* REMOVED DUPLICATE PROFILE SELECTOR */}
             </Section>
 
             {/* ================================================================
