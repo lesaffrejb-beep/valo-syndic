@@ -97,28 +97,28 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                 </motion.div>
             )}
 
-            {/* TOTAL — MONEY SHOT */}
+            {/* TOTAL — MONEY SHOT - RED/ORANGE for urgency */}
             <motion.div
-                className="bg-white/[0.03] rounded-[28px] p-8 text-center border border-white/10 relative z-10 shadow-glass group-hover:border-gold/30 transition-all duration-700"
+                className="bg-gradient-to-br from-red-950/40 to-orange-950/20 rounded-[28px] p-8 text-center border border-red-500/20 relative z-10 shadow-glass group-hover:border-red-500/40 transition-all duration-700"
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
             >
                 <div className="flex flex-col gap-4">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-red-400/70 font-bold">
                         Impact Patrimonial Total (36 mois)
                     </p>
                     <div className="relative inline-block">
-                        <p className="text-4xl md:text-5xl lg:text-5xl font-black text-white tabular-nums tracking-tighter drop-shadow-2xl">
+                        <p className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-gradient-to-r from-red-500 via-orange-500 to-red-400 bg-clip-text tabular-nums tracking-tighter drop-shadow-2xl">
                             <AnimatedCurrency value={getAdjustedValue(inactionCost.totalInactionCost)} duration={2} />
                         </p>
                         <motion.div
-                            className="absolute -inset-4 bg-gold/5 blur-xl rounded-full -z-10"
+                            className="absolute -inset-4 bg-red-500/10 blur-xl rounded-full -z-10"
                             animate={{ opacity: [0.2, 0.4, 0.2] }}
                             transition={{ duration: 4, repeat: Infinity }}
                         />
                     </div>
-                    {isMaPoche && <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold font-mono">Calculé sur votre part de millièmes</p>}
+                    {isMaPoche && <p className="text-[10px] text-red-300/50 uppercase tracking-widest font-bold font-mono">Calculé sur votre part de millièmes</p>}
                 </div>
             </motion.div>
 

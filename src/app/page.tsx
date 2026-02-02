@@ -67,10 +67,26 @@ const Section = ({ children, delay = 0, className = "", id }: SectionProps) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6, delay, ease: "easeOut" }}
-        className={`w-full max-w-3xl mx-auto py-24 px-4 flex flex-col gap-8 ${className}`}
+        className={`w-full max-w-5xl mx-auto py-28 px-6 flex flex-col gap-10 ${className}`}
     >
         {children}
     </motion.section>
+);
+
+// Section Title Component for consistent styling
+interface SectionTitleProps {
+    label: string;
+    title: string;
+    labelColor?: string;
+}
+
+const SectionTitle = ({ label, title, labelColor = "text-neutral-500" }: SectionTitleProps) => (
+    <div className="text-center mb-12">
+        <span className={`text-[10px] uppercase tracking-[0.3em] font-semibold ${labelColor}`}>{label}</span>
+        <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-3">
+            {title}
+        </h2>
+    </div>
 );
 
 // =============================================================================
@@ -93,18 +109,18 @@ const PROFILES: { id: IncomeProfile; label: string; color: string }[] = [
 
 const ProfileSelector = ({ selected, onSelect }: ProfileSelectorProps) => (
     <div className="w-full">
-        <p className="text-sm text-neutral-500 mb-3 tracking-tight">Votre profil fiscal</p>
-        <div className="flex bg-[#0A0A0A]/60 backdrop-blur-xl rounded-xl p-1 border border-white/5">
+        <p className="text-[10px] text-neutral-500 mb-3 uppercase tracking-[0.2em] font-medium">Votre profil fiscal</p>
+        <div className="flex bg-[#0A0A0A]/70 backdrop-blur-xl rounded-2xl p-1.5 border border-white/[0.08] shadow-lg">
             {PROFILES.map((profile) => (
                 <button
                     key={profile.id}
                     onClick={() => onSelect(selected === profile.id ? null : profile.id)}
-                    className={`flex-1 py-3 px-2 rounded-lg text-xs font-medium transition-all ${selected === profile.id
-                        ? 'bg-white/10 text-neutral-200 shadow-lg'
-                        : 'text-neutral-500 hover:text-neutral-300'
+                    className={`flex-1 py-3.5 px-3 rounded-xl text-xs font-semibold transition-all ${selected === profile.id
+                        ? 'bg-white/10 text-white shadow-lg border border-white/[0.08]'
+                        : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.03]'
                         }`}
                 >
-                    <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${profile.color} opacity-80`} />
+                    <span className={`inline-block w-2.5 h-2.5 rounded-full mr-2 ${profile.color} opacity-90`} />
                     {profile.label}
                 </button>
             ))}
@@ -287,39 +303,45 @@ export default function ScrollytellingPage() {
             {/* ================================================================
                 ZONE 0 — THE HOOK (L'Ancrage)
                 Presque plein écran, centré, Street View en fond
-            ================================================================ */}
-            <section className="relative min-h-[80vh] flex flex-col items-center justify-center px-4">
-                {/* Background: Street View with overlay */}
-                <div className="absolute inset-0 z-0">
+                ================================================================ */}
+            <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4">
+                {/* Background: Street View with heavy dark overlay (80%) */}
+                <div className="absolute inset-0 z-0 overflow-hidden">
                     <StreetViewHeader
                         address={diagnosticInput.address}
                         coordinates={diagnosticInput.coordinates}
                     />
-                    {/* Gradient overlay for readability */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-[#020202]" />
+                    {/* Heavy gradient overlay for readability - 80% opacity */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/85 to-[#020202]" />
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center gap-8 py-16">
+                <div className="relative z-10 w-full max-w-3xl mx-auto flex flex-col items-center gap-10 py-20">
                     {/* MPR Suspension Alert (conditional) */}
                     <MprSuspensionAlert isSuspended={isMprCoproSuspended()} />
 
-                    {/* Hero Text */}
+                    {/* Hero Text — More impactful typography */}
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold text-neutral-200 tracking-tight leading-tight mb-4">
-                            Révélez le potentiel caché<br />de votre copropriété.
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6">
+                            <span className="bg-gradient-to-r from-white via-white to-neutral-400 bg-clip-text text-transparent">
+                                Révélez le potentiel caché
+                            </span>
+                            <br />
+                            <span className="bg-gradient-to-r from-neutral-300 via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
+                                de votre copropriété.
+                            </span>
                         </h1>
-                        <p className="text-neutral-500 text-lg tracking-tight max-w-md mx-auto">
+                        <p className="text-neutral-400 text-lg md:text-xl tracking-tight max-w-lg mx-auto leading-relaxed">
                             Transformez une dépense en investissement patrimonial sécurisé.
                         </p>
                     </div>
 
-                    {/* Address Input — Premium Google Search Style */}
-                    <div className="w-full max-w-xl">
+                    {/* Address Input — Premium, Bigger (h-14), More prominent */}
+                    <div className="w-full max-w-2xl">
                         <AddressAutocomplete
                             defaultValue={diagnosticInput.address || ""}
                             placeholder="Entrez l'adresse de votre copropriété..."
-                            className="w-full"
+                            className="w-full [&_input]:h-14 [&_input]:text-lg [&_input]:px-6 [&_input]:rounded-2xl [&_input]:border-white/10 [&_input]:bg-black/60 [&_input]:backdrop-blur-xl [&_input]:shadow-2xl"
                             onSelect={(data) => {
                                 setDiagnosticInput((prev) => ({
                                     ...prev,
@@ -331,23 +353,33 @@ export default function ScrollytellingPage() {
                                 }));
                             }}
                         />
+                        {/* Address display below input */}
+                        {diagnosticInput.address && (
+                            <motion.p
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-center mt-4 text-neutral-500 text-sm"
+                            >
+                                📍 {diagnosticInput.address}
+                            </motion.p>
+                        )}
                     </div>
 
                     {/* Scroll indicator */}
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1, duration: 0.5 }}
-                        className="mt-8"
+                        transition={{ delay: 1.5, duration: 0.5 }}
+                        className="mt-12"
                     >
-                        <div className="flex flex-col items-center gap-2 text-neutral-600">
-                            <span className="text-xs uppercase tracking-widest">Découvrir</span>
+                        <div className="flex flex-col items-center gap-3 text-neutral-500">
+                            <span className="text-[10px] uppercase tracking-[0.3em] font-medium">Découvrir</span>
                             <motion.div
                                 animate={{ y: [0, 8, 0] }}
                                 transition={{ repeat: Infinity, duration: 1.5 }}
-                                className="w-5 h-8 border border-neutral-700 rounded-full flex justify-center pt-1"
+                                className="w-6 h-10 border border-neutral-600 rounded-full flex justify-center pt-2"
                             >
-                                <div className="w-1 h-2 bg-neutral-600 rounded-full" />
+                                <div className="w-1.5 h-2.5 bg-neutral-500 rounded-full" />
                             </motion.div>
                         </div>
                     </motion.div>
@@ -359,25 +391,24 @@ export default function ScrollytellingPage() {
                 Vibe: Froid, Clinique, Urgent
             ================================================================ */}
             <Section id="diagnostic">
-                <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-red-500/70 font-medium">Le Diagnostic</span>
-                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
-                        Ce que révèle votre immeuble
-                    </h2>
-                </div>
+                <SectionTitle
+                    label="Le Diagnostic"
+                    title="Ce que révèle votre immeuble"
+                    labelColor="text-red-500/70"
+                />
 
                 {/* Heating System Alert */}
                 <HeatingSystemAlert heatingType={diagnosticInput.heatingSystem || null} />
 
                 {/* Risks Card */}
                 {diagnosticInput.coordinates && (
-                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl overflow-hidden">
+                    <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] shadow-2xl overflow-hidden hover:border-white/[0.12] transition-colors">
                         <RisksCard coordinates={diagnosticInput.coordinates} />
                     </div>
                 )}
 
                 {/* Inaction Cost Card — Dominant, Warning accent */}
-                <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-2xl border border-red-500/10 shadow-2xl">
+                <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-red-500/15 shadow-2xl hover:border-red-500/25 transition-colors">
                     <InactionCostCard inactionCost={inactionCost} />
                 </div>
 
@@ -385,7 +416,7 @@ export default function ScrollytellingPage() {
                 <BenchmarkChart
                     currentDPE={diagnosticInput.currentDPE}
                     city={diagnosticInput.city}
-                    className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-2xl border border-white/5"
+                    className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] hover:border-white/[0.12] transition-colors"
                 />
             </Section>
 
@@ -394,12 +425,11 @@ export default function ScrollytellingPage() {
                 Vibe: Lumineux (Gold/Bronze accents), Espoir
             ================================================================ */}
             <Section id="projection">
-                <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-amber-600/70 font-medium">La Projection</span>
-                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
-                        Avant / Après : le point de bascule
-                    </h2>
-                </div>
+                <SectionTitle
+                    label="La Projection"
+                    title="Avant / Après : le point de bascule"
+                    labelColor="text-amber-500/80"
+                />
 
                 {/* Comparison Split Screen — The Visual Tipping Point */}
                 <ComparisonSplitScreen
@@ -421,13 +451,12 @@ export default function ScrollytellingPage() {
                 ZONE 3 — THE FINANCIAL ENGINE (La Logique)
                 Vibe: Technique, Dense mais structuré, Hedge Fund dashboard
             ================================================================ */}
-            <Section id="financing" className="max-w-4xl">
-                <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-neutral-500 font-medium">Le Moteur Financier</span>
-                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
-                        Plan de financement détaillé
-                    </h2>
-                </div>
+            <Section id="financing">
+                <SectionTitle
+                    label="Le Moteur Financier"
+                    title="Plan de financement détaillé"
+                    labelColor="text-neutral-500"
+                />
 
                 {/* Financing Card — The macro view */}
                 <FinancingCard
@@ -437,11 +466,11 @@ export default function ScrollytellingPage() {
 
                 {/* Subsidy Table — Collapsible for rhythm */}
                 <details className="group">
-                    <summary className="cursor-pointer flex items-center justify-between p-4 bg-[#0A0A0A]/60 backdrop-blur-xl rounded-xl border border-white/5 hover:border-white/10 transition-colors">
-                        <span className="text-sm font-medium text-neutral-300">
+                    <summary className="cursor-pointer flex items-center justify-between p-5 bg-[#0A0A0A]/70 backdrop-blur-xl rounded-2xl border border-white/[0.08] hover:border-white/[0.15] transition-all shadow-lg">
+                        <span className="text-sm font-semibold text-neutral-200">
                             Voir le tableau comparatif des aides par profil
                         </span>
-                        <span className="text-neutral-500 group-open:rotate-180 transition-transform">▼</span>
+                        <span className="text-neutral-400 group-open:rotate-180 transition-transform duration-300">▼</span>
                     </summary>
                     <div className="mt-4">
                         <SubsidyTable inputs={simulationInputs} />
@@ -453,19 +482,18 @@ export default function ScrollytellingPage() {
                 ZONE 4 — THE PERSONALIZATION (Le "Moi")
                 Vibe: Interactif, Personnel
             ================================================================ */}
-            <Section id="personalization" className="max-w-4xl">
-                <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-emerald-500/70 font-medium">Personnalisation</span>
-                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
-                        Et pour vous, concrètement ?
-                    </h2>
-                </div>
+            <Section id="personalization">
+                <SectionTitle
+                    label="Personnalisation"
+                    title="Et pour vous, concrètement ?"
+                    labelColor="text-emerald-500/80"
+                />
 
                 {/* Profile Selector — iOS style tabs */}
                 <ProfileSelector selected={selectedProfile} onSelect={setSelectedProfile} />
 
                 {/* Tantieme Calculator — Most interactive component */}
-                <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl overflow-hidden">
+                <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] shadow-2xl overflow-hidden hover:border-emerald-500/20 transition-colors">
                     <TantiemeCalculator
                         financing={financing}
                         simulationInputs={simulationInputs}
@@ -473,7 +501,7 @@ export default function ScrollytellingPage() {
                 </div>
 
                 {/* Transparent Receipt — The indisputable final result */}
-                <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl">
+                <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] shadow-2xl hover:border-white/[0.12] transition-colors">
                     <TransparentReceipt financing={financing} />
                 </div>
             </Section>
@@ -483,12 +511,11 @@ export default function ScrollytellingPage() {
                 Important bottom padding
             ================================================================ */}
             <Section id="closing" className="pb-32">
-                <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-amber-600/70 font-medium">Passez à l&apos;action</span>
-                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
-                        Téléchargez votre rapport
-                    </h2>
-                </div>
+                <SectionTitle
+                    label="Passez à l'action"
+                    title="Téléchargez votre rapport"
+                    labelColor="text-amber-500/80"
+                />
 
                 {/* Action Buttons Grid */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">

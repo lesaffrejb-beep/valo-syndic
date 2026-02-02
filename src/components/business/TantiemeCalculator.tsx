@@ -187,61 +187,80 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
             {/* Main Content */}
             <div className="flex-1 p-8 pt-4 flex flex-col justify-between gap-6">
 
-                {/* Hero Metric: Monthly Payment */}
-                <div className="text-center mb-2">
-                    <p className="text-sm text-primary-300 font-bold uppercase tracking-widest mb-3 opacity-80">
+                {/* Hero Metric: Monthly Payment — HUGE for impact */}
+                <div className="text-center mb-4">
+                    <p className="text-[10px] text-amber-400 font-bold uppercase tracking-[0.3em] mb-4">
                         Votre effort d&apos;épargne
                     </p>
-                    <div className="flex items-end justify-center gap-2 text-primary-100">
-                        <span className="text-7xl font-black tracking-tighter drop-shadow-2xl text-gradient-gold">
+                    <div className="flex items-end justify-center gap-3">
+                        <span className="text-8xl md:text-9xl font-black tracking-tighter drop-shadow-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
                             {Math.round(calculation.monthlyPayment)}
                         </span>
-                        <div className="flex flex-col text-left mb-4">
-                            <span className="text-2xl font-bold text-primary-400 leading-none">€</span>
-                            <span className="text-sm font-semibold text-muted leading-none mt-1">/mois</span>
+                        <div className="flex flex-col text-left mb-6">
+                            <span className="text-3xl font-bold text-amber-400 leading-none">€</span>
+                            <span className="text-base font-semibold text-neutral-500 leading-none mt-1">/mois</span>
                         </div>
                     </div>
-                    <div className="mt-4 inline-flex items-center px-4 py-1.5 bg-primary-900/20 border border-primary-500/20 rounded-full">
-                        <span className="text-xs font-medium text-primary-300">
+                    <div className="mt-6 inline-flex items-center px-5 py-2 bg-amber-900/20 border border-amber-500/20 rounded-full">
+                        <span className="text-xs font-semibold text-amber-300/90 tracking-wide">
                             Prêt Taux Zéro sur {calculation.durationYears} ans
                         </span>
                     </div>
                 </div>
 
-                {/* Slider Control */}
-                <div className="mb-2">
-                    <div className="flex justify-between items-center mb-4">
-                        <label htmlFor="tantiemes" className="text-base font-semibold text-main">
-                            Quote-part : <span className="text-primary-400 font-bold text-lg">{tantiemes}</span> <span className="text-muted text-sm font-normal">/ 1000èmes</span>
+                {/* Slider Control — Premium styling */}
+                <div className="mb-4">
+                    <div className="flex justify-between items-center mb-6">
+                        <label htmlFor="tantiemes" className="text-base font-semibold text-white">
+                            Quote-part : <span className="text-amber-400 font-black text-xl">{tantiemes}</span> <span className="text-neutral-500 text-sm font-normal">/ 1000èmes</span>
                         </label>
+                        {tantiemes === 1000 && (
+                            <span className="text-[10px] uppercase tracking-widest text-amber-400 font-bold">Mon Immeuble</span>
+                        )}
                     </div>
 
-                    <div className="relative h-10 flex items-center mb-6">
+                    {/* Premium Slider */}
+                    <div className="relative h-12 flex items-center mb-6">
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-800 shadow-inner" />
                         <input
                             type="range"
                             id="tantiemes"
                             min={1}
-                            max={400}
+                            max={1000}
                             value={tantiemes}
                             onChange={(e) => setTantiemes(Number(e.target.value))}
-                            className="w-full h-4 bg-surface-hover rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-surface-highlight ring-1 ring-white/10"
+                            className="relative w-full h-3 bg-transparent rounded-full appearance-none cursor-pointer z-10
+                                [&::-webkit-slider-track]:bg-gradient-to-r [&::-webkit-slider-track]:from-neutral-700 [&::-webkit-slider-track]:via-neutral-600 [&::-webkit-slider-track]:to-neutral-700 [&::-webkit-slider-track]:rounded-full [&::-webkit-slider-track]:h-3
+                                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-amber-400/50 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:cursor-grabbing
+                                [&::-moz-range-track]:bg-gradient-to-r [&::-moz-range-track]:from-neutral-700 [&::-moz-range-track]:via-neutral-600 [&::-moz-range-track]:to-neutral-700 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:h-3
+                                [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-amber-400/50 [&::-moz-range-thumb]:cursor-grab"
                         />
                     </div>
 
-                    {/* Presets */}
+                    {/* Presets — with "Mon Immeuble" option */}
                     <div className="flex justify-between gap-2 overflow-x-auto pb-2 no-scrollbar">
                         {presets.map((preset) => (
                             <button
                                 key={preset.label}
                                 onClick={() => setTantiemes(preset.val)}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border ${tantiemes === preset.val
-                                    ? 'bg-primary-900/30 text-primary-300 border-primary-500/30 shadow-glow-sm'
-                                    : 'bg-surface-highlight text-muted border-transparent hover:bg-surface-hover hover:text-main'
+                                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${tantiemes === preset.val
+                                    ? 'bg-amber-900/30 text-amber-300 border-amber-500/30 shadow-lg shadow-amber-500/10'
+                                    : 'bg-neutral-900/50 text-neutral-400 border-neutral-800 hover:bg-neutral-800/50 hover:text-white'
                                     }`}
                             >
                                 {preset.label}
                             </button>
                         ))}
+                        {/* Full building option */}
+                        <button
+                            onClick={() => setTantiemes(1000)}
+                            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${tantiemes === 1000
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-lg shadow-amber-500/10'
+                                : 'bg-neutral-900/50 text-neutral-400 border-neutral-800 hover:bg-neutral-800/50 hover:text-white'
+                                }`}
+                        >
+                            100%
+                        </button>
                     </div>
                 </div>
 
