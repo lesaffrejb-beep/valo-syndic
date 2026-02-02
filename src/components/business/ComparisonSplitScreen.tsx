@@ -30,7 +30,7 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
     const gainPct = maxVal > 0 ? (valueGain / maxVal) * 100 : 0;
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
             {/* LEFT: THE CRASH (Inaction) */}
             <Card variant="glass" className="border-danger/20 bg-danger/5 hover:border-danger/30 group">
                 <CardContent className="p-8 md:p-10 flex flex-col justify-between h-full">
