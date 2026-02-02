@@ -21,7 +21,6 @@ interface AddressAutocompleteProps {
     }) => void;
     /** Callback quand l'enrichissement est terminé */
     onEnriched?: (property: ReturnType<typeof usePropertyEnrichment>["property"]) => void;
-    onManualTrigger?: () => void;
     /** Placeholder */
     placeholder?: string;
     /** Classe CSS additionnelle */
@@ -49,7 +48,6 @@ export function AddressAutocomplete({
     defaultValue = "",
     onSelect,
     onEnriched,
-    onManualTrigger,
     placeholder = "Commencez à taper une adresse...",
     className = "",
     disabled = false,
@@ -262,21 +260,6 @@ export function AddressAutocomplete({
                     )}
                 </div>
             </div>
-
-            {/* Manual Fallback Link - Subtle & Close */}
-            {!showSuggestions && !isEnriching && !isLoading && (
-                <div
-                    onClick={() => {
-                        if (onManualTrigger) onManualTrigger();
-                        else if (window.dispatchEvent) window.dispatchEvent(new CustomEvent('toggle-manual-mode'));
-                    }}
-                    className="absolute -bottom-6 left-1 cursor-pointer group"
-                >
-                    <p className="text-[10px] text-neutral-500 group-hover:text-amber-500 transition-colors font-medium tracking-wide">
-                        Adresse introuvable ? <span className="underline decoration-neutral-700 group-hover:decoration-amber-500 underline-offset-2">Saisir manuellement</span>
-                    </p>
-                </div>
-            )}
 
             {/* Suggestions dropdown */}
             <AnimatePresence>
