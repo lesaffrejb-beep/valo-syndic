@@ -120,6 +120,8 @@ export default function ScrollytellingPage() {
     const [showObjections, setShowObjections] = useState(false);
     const [showManualForm, setShowManualForm] = useState(false);
     const [isAddressSelected, setIsAddressSelected] = useState(false);
+    const [showProfileDetails, setShowProfileDetails] = useState(false);
+    const [activeSection, setActiveSection] = useState<'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action'>('diagnostic');
 
     // --- DIAGNOSTIC STATE ---
     const [diagnosticInput, setDiagnosticInput] = useState<DiagnosticInput>(DEFAULT_DIAGNOSTIC_INPUT);
@@ -179,6 +181,42 @@ export default function ScrollytellingPage() {
         };
     }, [diagnosticResult, diagnosticInput]);
 
+    const scrollToPersonalImpact = useCallback(() => {
+        document.getElementById('my-pocket')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, []);
+
+    const scrollToSection = useCallback((id: string) => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, []);
+
+    useEffect(() => {
+        const sectionIds = ['diagnostic', 'projection', 'my-pocket', 'finance', 'action'] as const;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visible = entries
+                    .filter((e) => e.isIntersecting)
+                    .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
+
+                const top = visible[0];
+                const id = top?.target?.id as typeof sectionIds[number] | undefined;
+                if (id) setActiveSection(id);
+            },
+            {
+                root: null,
+                threshold: [0.2, 0.35, 0.5, 0.65],
+                rootMargin: '-20% 0px -55% 0px',
+            }
+        );
+
+        sectionIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
 
     // --- RENDERING ---
     if (!diagnosticResult) return null; // Or loader
@@ -188,6 +226,47 @@ export default function ScrollytellingPage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-gold/30 selection:text-gold-light bg-deep text-white overflow-hidden">
+
+            <div className="sticky top-0 z-[60] w-full backdrop-blur-md bg-deep/40 border-b border-white/5">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-center">
+                    <div className="flex items-center gap-2 md:gap-4 text-[10px] uppercase tracking-[0.3em] font-bold text-white/60">
+                        <button
+                            className={`transition-colors ${activeSection === 'diagnostic' ? 'text-white' : 'hover:text-white/80'}`}
+                            onClick={() => scrollToSection('diagnostic')}
+                        >
+                            Adresse
+                        </button>
+                        <span className="text-white/15">→</span>
+                        <button
+                            className={`transition-colors ${activeSection === 'projection' ? 'text-white' : 'hover:text-white/80'}`}
+                            onClick={() => scrollToSection('projection')}
+                        >
+                            Bascule
+                        </button>
+                        <span className="text-white/15">→</span>
+                        <button
+                            className={`transition-colors ${activeSection === 'my-pocket' ? 'text-white' : 'hover:text-white/80'}`}
+                            onClick={() => scrollToSection('my-pocket')}
+                        >
+                            Mon impact
+                        </button>
+                        <span className="text-white/15">→</span>
+                        <button
+                            className={`transition-colors ${activeSection === 'finance' ? 'text-white' : 'hover:text-white/80'}`}
+                            onClick={() => scrollToSection('finance')}
+                        >
+                            Détails
+                        </button>
+                        <span className="text-white/15">→</span>
+                        <button
+                            className={`transition-colors ${activeSection === 'action' ? 'text-white' : 'hover:text-white/80'}`}
+                            onClick={() => scrollToSection('action')}
+                        >
+                            Action
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             {/* ================================================================
                 ZONE 0 — THE HOOK (Hero)
@@ -234,6 +313,43 @@ export default function ScrollytellingPage() {
                             }}
                             onManualTrigger={() => setShowManualForm(true)}
                         />
+
+                        <AnimatePresence>
+                            {isAddressSelected && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    transition={{ duration: 0.25 }}
+                                    className="mt-4"
+                                >
+                                    <Card className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl overflow-hidden">
+                                        <CardContent className="py-4 flex items-center justify-between gap-4">
+                                            <div className="text-left">
+                                                <p className="text-xs uppercase tracking-widest text-muted">Adresse détectée</p>
+                                                <p className="text-sm font-bold text-white truncate">{diagnosticInput.address}</p>
+                                            </div>
+                                            <div className="shrink-0 flex items-center gap-2">
+                                                <span className="text-xs uppercase tracking-widest text-muted">DPE</span>
+                                                <span className="px-2 py-1 rounded-lg bg-danger text-white text-xs font-black">
+                                                    {diagnosticInput.currentDPE}
+                                                </span>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <Button
+                            variant="outline"
+                            className="h-12 px-8 rounded-full border-white/10 hover:bg-white/5 text-white"
+                            onClick={scrollToPersonalImpact}
+                        >
+                            Voir mon impact personnel
+                        </Button>
                     </div>
 
                     {/* Quick Stats - Glassmorphism */}
@@ -322,33 +438,6 @@ export default function ScrollytellingPage() {
             </Section>
 
             {/* ================================================================
-                ZONE 3 — THE FINANCING (Logic)
-                ================================================================ */}
-            <Section id="finance">
-                <SectionHeader
-                    label="L'Ingénierie Financière"
-                    title={<>Trésorerie Positive <span className="text-gold">immédiate</span></>}
-                />
-
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 w-full">
-                    {/* Main Financing Card */}
-                    <div className="xl:col-span-12">
-                        <FinancingCard
-                            financing={financing}
-                            numberOfUnits={diagnosticInput.numberOfUnits}
-                        />
-                    </div>
-                    {/* Detailed Table */}
-                    <div className="xl:col-span-12 mt-8">
-                        <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                            <span className="w-8 h-px bg-gold/50"></span> Détail des Aides par Profil
-                        </h3>
-                        <SubsidyTable inputs={simulationInputs} />
-                    </div>
-                </div>
-            </Section>
-
-            {/* ================================================================
                 ZONE 4 — PERSONAL IMPACT (My Pocket)
                 ================================================================ */}
             <Section id="my-pocket">
@@ -390,6 +479,53 @@ export default function ScrollytellingPage() {
                             simulationInputs={simulationInputs}
                             className="h-full bg-deep-light/30 border-white/5"
                         />
+                    </div>
+                </div>
+            </Section>
+
+            {/* ================================================================
+                ZONE 3 — THE FINANCING (Logic)
+                ================================================================ */}
+            <Section id="finance">
+                <SectionHeader
+                    label="L'Ingénierie Financière"
+                    title={<>Trésorerie Positive <span className="text-gold">immédiate</span></>}
+                />
+
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 w-full">
+                    <div className="xl:col-span-12">
+                        <FinancingCard
+                            financing={financing}
+                            numberOfUnits={diagnosticInput.numberOfUnits}
+                        />
+                    </div>
+
+                    <div className="xl:col-span-12 mt-8">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                <span className="w-8 h-px bg-gold/50"></span> Détail des Aides par Profil
+                            </h3>
+                            <Button
+                                variant="outline"
+                                className="h-10 px-5 rounded-full border-white/10 hover:bg-white/5 text-white"
+                                onClick={() => setShowProfileDetails((v) => !v)}
+                            >
+                                {showProfileDetails ? 'Masquer le détail' : 'Voir le détail par profil fiscal'}
+                            </Button>
+                        </div>
+
+                        <AnimatePresence>
+                            {showProfileDetails && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <SubsidyTable inputs={simulationInputs} />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </Section>
