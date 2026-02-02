@@ -3,8 +3,9 @@
 import { formatCurrency, formatPercent } from "@/lib/calculator";
 import { type ValuationResult, type FinancingPlan } from "@/lib/schemas";
 import { useViewModeStore } from "@/stores/useViewModeStore";
-import { ShieldAlert, TrendingUp, PiggyBank, BarChart3, AlertTriangle, CheckCircle2 } from "lucide-react";
-
+import { ShieldAlert, TrendingUp, BarChart3 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ValuationCardProps {
     valuation: ValuationResult;
@@ -17,18 +18,8 @@ interface ValuationCardProps {
     className?: string;
 }
 
-/**
- * VALUATION CARD — "Le Verdict Financier"
- * Design Updated: Obsidian / Premium
- *
- * AUDIT 31/01/2026: Narratif ajusté
- * - Terminologie "Protection de valeur" au lieu de "Gain" si marché baissier
- * - Contexte marché affiché pour transparence
- * - Mention de la source des données
- */
 export function ValuationCard({ valuation, financing, marketTrend, isPassoire = false, className = "" }: ValuationCardProps) {
-    const { viewMode, getAdjustedValue } = useViewModeStore();
-    const isMaPoche = viewMode === 'maPoche';
+    const { getAdjustedValue } = useViewModeStore();
 
     // Values
     const displayGreenValueGain = getAdjustedValue(valuation.greenValueGain);
@@ -37,133 +28,111 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
 
     // Protection Logic
     const isMarketDown = marketTrend ? marketTrend.national < 0 : false;
-    const title = isMarketDown ? "🛡️ Préservation de Capital" : "📈 Valorisation & ROI";
-    const accentColorClass = isMarketDown ? "text-cyan-400" : "text-success-500";
-    const badgeColorClass = isMarketDown
-        ? "bg-cyan-900/20 text-cyan-400 border-cyan-500/20"
-        : (displayNetROI >= 0 ? 'bg-success-900/20 text-success-400 border-success-500/20' : 'bg-warning-900/20 text-warning-400 border-warning-500/20');
+    const title = isMarketDown ? "Préservation de Capital" : "Valorisation & ROI";
+    const accentColorClass = isMarketDown ? "text-cyan-400" : "text-success";
+    const statusColor = isMarketDown ? "text-cyan-400" : (displayNetROI >= 0 ? 'text-success' : 'text-warning');
+    const statusBg = isMarketDown ? "bg-cyan-400/10 border-cyan-400/20" : (displayNetROI >= 0 ? 'bg-success/10 border-success/20' : 'bg-warning/10 border-warning/20');
 
-    // Smart display logic
     const isFullyFunded = financing ? financing.remainingCost === 0 : false;
 
-
     return (
-        <div className={`card-bento h-full relative overflow-hidden group p-0 hover:bg-white/[0.02] hover:border-indigo-500/30 transition-all duration-500 ${className}`}>
+        <Card variant="premium" className={cn("overflow-hidden group hover:border-white/10 transition-all duration-500", className)}>
             {/* Header Section */}
-            <div className="p-6 pb-4 border-b border-boundary/50 group-hover:border-indigo-500/30 transition-colors duration-500">
+            <div className="p-6 pb-4 border-b border-white/5 hover:bg-white/[0.02]">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h3 className="text-xl font-bold text-main flex items-center gap-2 group-hover:text-white transition-colors">
-                            {isMarketDown ? <ShieldAlert className="w-6 h-6 text-cyan-400" /> : <TrendingUp className="w-6 h-6 text-success-500" />}
+                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                            {isMarketDown ? <ShieldAlert className="w-5 h-5 text-cyan-400" /> : <TrendingUp className="w-5 h-5 text-success" />}
                             {title}
                         </h3>
-                        <p className="text-sm text-muted mt-1 group-hover:text-neutral-400 transition-colors">
+                        <p className="text-sm text-muted mt-1">
                             {isMarketDown ? "Sécurisation de votre actif immobilier" : "Impact financier de la rénovation"}
                         </p>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${isMarketDown
-                        ? "bg-cyan-900/20 text-cyan-400 border-cyan-500/20"
-                        : (displayNetROI >= 0 ? 'bg-success-900/20 text-success-400 border-success-500/20' : 'bg-warning-900/20 text-warning-400 border-warning-500/20')
-                        }`}>
-                        {isMarketDown ? 'SÉCURISÉ' : (displayNetROI >= 0 ? 'RENTABLE' : 'EFFORT REQUIS')}
+                    <div className={cn("px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest", statusBg, statusColor)}>
+                        {isMarketDown ? 'Sécurisé' : (displayNetROI >= 0 ? 'Rentable' : 'Effort Requis')}
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="p-6 pt-5 grid grid-cols-1 gap-6">
+            <CardContent className="p-6 space-y-6">
 
                 {/* 1. La Valeur Verde */}
-                <div className="relative z-10 bg-black/20 p-6 rounded-[24px] border border-white/5 shadow-tactile-inner group-hover:border-white/10 transition-all">
+                <div className="relative z-10 bg-black/40 p-6 rounded-2xl border border-white/5 shadow-inner transition-all group-hover:bg-black/50">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex flex-col">
-                            <span className="text-[10px] uppercase tracking-[0.25em] text-white/30 font-bold mb-1">
+                            <span className="text-[10px] uppercase tracking-[0.25em] text-muted font-bold mb-1">
                                 {isMarketDown ? "Capital Protégé" : "Plus-Value Latente"}
                             </span>
-                            <span className="text-[9px] font-mono text-white/20">Estimation Etalab 2026</span>
+                            <span className="text-[9px] font-mono text-white/30">Estimation Etalab 2026</span>
                         </div>
-                        <div className={`px-3 py-1.5 rounded-xl text-[10px] font-bold border ${isMarketDown ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' : 'bg-success-500/10 border-success-500/20 text-success-400'} flex items-center gap-1`}>
+                        <div className={cn("px-2 py-1 rounded-lg text-[10px] font-bold border flex items-center gap-1", statusBg, statusColor)}>
                             {isMarketDown ? <ShieldAlert className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
                             {isMarketDown ? 'ANTI-DÉCOTE' : `+${formatPercent(valuation.greenValueGainPercent)}`}
                         </div>
                     </div>
 
                     <div className="flex items-baseline gap-3">
-                        <span className={`text-5xl lg:text-6xl font-black tracking-tighter leading-none ${accentColorClass} transition-all duration-500`}>
+                        <span className={cn("text-5xl lg:text-6xl font-sans font-light tracking-tighter leading-none financial-num", accentColorClass)}>
                             +{formatCurrency(displayGreenValueGain)}
                         </span>
                     </div>
                 </div>
 
-                {/* Market Context - AUDIT 31/01/2026 */}
+                {/* Market Context */}
                 {isMarketDown && marketTrend && (
-                    <div className="bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4 text-xs group-hover:border-amber-500/20 transition-all">
-                        <div className="flex items-start gap-4">
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 border border-amber-500/10">
-                                <BarChart3 className="w-4 h-4 text-amber-500" />
-                            </div>
-                            <div>
-                                <p className="text-amber-200/60 font-medium uppercase tracking-widest text-[9px] mb-1">Contexte marché</p>
-                                <p className="text-white/40 leading-relaxed">
-                                    Tendance : <span className="text-amber-400 font-bold">{(marketTrend.national * 100).toFixed(1)}%</span>.
-                                    {isPassoire && " Sans rénovation, votre bien subit cette baisse + la décote passoire énergétique."}
-                                </p>
-                            </div>
+                    <div className="bg-warning/5 border border-warning/10 rounded-xl p-4 flex items-start gap-4">
+                        <div className="p-2 rounded-lg bg-warning/10 shrink-0">
+                            <BarChart3 className="w-4 h-4 text-warning" />
+                        </div>
+                        <div>
+                            <p className="text-warning/80 font-bold uppercase tracking-widest text-[9px] mb-1">Contexte marché</p>
+                            <p className="text-[11px] text-muted leading-relaxed">
+                                Tendance : <span className="text-warning font-bold">{(marketTrend.national * 100).toFixed(1)}%</span>.
+                                {isPassoire && " Sans rénovation, votre bien subit cette baisse + la décote passoire énergétique."}
+                            </p>
                         </div>
                     </div>
                 )}
 
-                {/* Divider with calculation logic */}
-                <div className="flex items-center gap-4 px-2">
-                    <div className="h-px flex-1 bg-white/5" />
-                    <span className="text-[9px] text-white/20 uppercase tracking-[0.3em] font-mono whitespace-nowrap">Net de Travaux</span>
-                    <div className="h-px flex-1 bg-white/5" />
+                {/* Divider */}
+                <div className="flex items-center gap-4 opacity-30">
+                    <div className="h-px flex-1 bg-white/20" />
+                    <span className="text-[9px] uppercase tracking-[0.3em] font-mono whitespace-nowrap">Net de Travaux</span>
+                    <div className="h-px flex-1 bg-white/20" />
                 </div>
 
                 {/* 2. Le Net (ROI) */}
-                <div className="relative z-10 flex items-center justify-between bg-white/[0.02] p-6 rounded-[24px] border border-white/5">
+                <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02]">
                     <div className="flex flex-col gap-1">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold">
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-muted font-bold">
                             Gain Net Réel
                         </p>
-                        <p className="text-[9px] text-white/10 font-mono italic">
+                        <p className="text-[9px] text-white/20 font-mono italic">
                             (Plus-value - Reste à charge)
                         </p>
                     </div>
 
-                    <div className={`text-right ${displayNetROI >= 0 ? 'text-white' : 'text-amber-500'}`}>
-                        <span className="text-4xl font-black tracking-tighter tabular-nums">
-                            {displayNetROI >= 0 ? '+' : ''}{formatCurrency(displayNetROI)}
-                        </span>
+                    <div className={cn("text-right font-bold text-3xl tracking-tighter financial-num", displayNetROI >= 0 ? 'text-white' : 'text-warning')}>
+                        {displayNetROI >= 0 ? '+' : ''}{formatCurrency(displayNetROI)}
                     </div>
                 </div>
 
                 {/* Context Hint */}
                 {financing && !isFullyFunded && (
-                    <div className="px-6 py-2 flex justify-between items-center text-[10px] font-mono">
-                        <span className="text-white/10">Coût travaux déduit :</span>
-                        <span className="text-white/40 font-bold">-{formatCurrency(displayRemainingCost)}</span>
+                    <div className="flex justify-between items-center text-[10px] font-mono px-2 text-muted/50">
+                        <span>Coût travaux déduit :</span>
+                        <span className="font-bold">-{formatCurrency(displayRemainingCost)}</span>
                     </div>
                 )}
-            </div>
+            </CardContent>
 
             {/* Footer Source */}
-            <div className="px-6 py-3 bg-surface-highlight/30 border-t border-boundary/50 text-[10px] text-muted">
-                <div className="flex justify-between items-center">
-                    <span>
-                        {valuation.salesCount ? `Basé sur ${valuation.salesCount} ventes réelles` : 'Estimation théorique'}
-                    </span>
-                    <span className="font-medium opacity-50">
-                        Source : {valuation.priceSource || 'Etalab DVF'}
-                    </span>
-                </div>
-                {isMarketDown && (
-                    <p className="mt-1 text-warning-400/70">
-                        Tendance marché : Notaires de France (12/2025)
-                    </p>
-                )}
+            <div className="px-6 py-3 bg-white/[0.02] border-t border-white/5 text-[10px] text-muted flex justify-between items-center uppercase tracking-wider">
+                <span>{valuation.salesCount ? `${valuation.salesCount} ventes analysées` : 'Estimation théorique'}</span>
+                <span className="opacity-50">Source : {valuation.priceSource || 'Etalab DVF'}</span>
             </div>
-        </div>
-
+        </Card>
     );
 }

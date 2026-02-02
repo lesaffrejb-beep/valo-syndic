@@ -12,30 +12,27 @@ import {
 import { type FinancingPlan } from "@/lib/schemas";
 import { formatPercent, formatCurrency } from "@/lib/calculator";
 import { AnimatedCurrency } from "@/components/ui/AnimatedNumber";
-import { Landmark, Zap, MapPin, HandCoins, Building2, TrendingUp, Wallet } from "lucide-react";
+import { Landmark, Zap, MapPin, HandCoins, Building2 } from "lucide-react";
 import { useViewModeStore } from "@/stores/useViewModeStore";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface FinancingCardProps {
     financing: FinancingPlan;
     numberOfUnits: number;
 }
 
-import { DEFAULT_TRANSITION } from "@/lib/animations";
-
 export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) {
-    const ref = useRef<HTMLDivElement>(null);
     const { viewMode, getAdjustedValue } = useViewModeStore();
     const isMaPoche = viewMode === 'maPoche';
 
-    // Market Watchdog — Benchmark Evaluation
+    // Market Watchdog
     const [benchmarkData, setBenchmarkData] = useState<BenchmarkData | null>(null);
     const [benchmarkResult, setBenchmarkResult] = useState<BenchmarkResult | null>(null);
 
     useEffect(() => {
         loadBenchmarks().then((data) => {
-            if (data) {
-                setBenchmarkData(data);
-            }
+            if (data) setBenchmarkData(data);
         });
     }, []);
 
@@ -51,180 +48,176 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
     }, [benchmarkData, financing.worksCostHT, numberOfUnits]);
 
     return (
-        <motion.div
-            ref={ref}
-            className="group relative overflow-hidden p-8 md:p-12 h-full flex flex-col"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={DEFAULT_TRANSITION}
-        >
-            <div className="relative z-10">
-                <h3 className="text-xl font-semibold text-main mb-8 flex items-center gap-3">
-                    <HandCoins className="w-6 h-6 text-gold" />
-                    <span>Plan de Financement & Aides</span>
-                </h3>
+        <Card variant="premium" className="h-full overflow-hidden group border-white/5 bg-deep/50">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full pointer-events-none" />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                    {/* Colonne GAUCHE : La Facture */}
-                    <div className="flex flex-col h-full border-b md:border-b-0 md:border-r border-boundary/50 md:pr-8 pb-8 md:pb-0">
-                        <div className="mb-6">
-                            <h4 className="text-sm font-medium text-muted uppercase tracking-wider mb-6">Détail du Projet</h4>
+            <CardHeader className="relative z-10 pb-2">
+                <CardTitle className="text-xl font-bold text-white flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gold/10 border border-gold/20">
+                        <HandCoins className="w-5 h-5 text-gold" />
+                    </div>
+                    <span>Plan de Financement</span>
+                </CardTitle>
+                <p className="text-sm text-muted">Structure des coûts et aides mobilisables</p>
+            </CardHeader>
 
-                            {/* Travaux Seuls */}
-                            <div className="flex justify-between items-baseline mb-4 group/item">
-                                <p className="text-sm text-body group-hover/item:text-main transition-colors">Travaux de rénovation (HT)</p>
-                                <p className="text-main font-medium"><AnimatedCurrency value={financing.worksCostHT} /></p>
-                            </div>
+            <CardContent className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pt-6">
+                {/* Colonne GAUCHE : La Facture */}
+                <div className="flex flex-col h-full border-b md:border-b-0 md:border-r border-white/5 md:pr-8 pb-8 md:pb-0">
+                    <div className="mb-6 space-y-4">
+                        <p className="text-xs font-bold text-muted uppercase tracking-widest mb-4">Détail du Projet</p>
 
-                            {/* Frais Annexes */}
-                            <div className="space-y-3 mb-6 pl-4 border-l-2 border-boundary">
-                                <div className="flex justify-between text-sm text-muted">
-                                    <span>Honoraires Syndic (3%)</span>
-                                    <span><AnimatedCurrency value={financing.syndicFees} /></span>
-                                </div>
-                                <div className="flex justify-between text-sm text-muted">
-                                    <span>Assurance DO (2%)</span>
-                                    <span><AnimatedCurrency value={financing.doFees} /></span>
-                                </div>
-                                <div className="flex justify-between text-sm text-muted">
-                                    <span>Aléas & Imprévus (3%)</span>
-                                    <span><AnimatedCurrency value={financing.contingencyFees} /></span>
-                                </div>
-                            </div>
+                        {/* Travaux Seuls */}
+                        <div className="flex justify-between items-baseline group/item">
+                            <p className="text-sm text-muted-foreground group-hover/item:text-white transition-colors">Travaux de rénovation (HT)</p>
+                            <p className="text-white font-medium financial-num"><AnimatedCurrency value={financing.worksCostHT} /></p>
                         </div>
 
-                        <div className="mt-auto">
-                            <div className="p-4 bg-surface-highlight rounded-xl border border-primary-500/20">
-                                <div className="flex justify-between items-end mb-2">
-                                    <div>
-                                        <p className="text-primary-400 font-bold uppercase text-xs tracking-wider">Total Projet</p>
-                                        <p className="text-xs text-muted">Avant déduction des aides</p>
-                                    </div>
-                                    <p className="text-2xl md:text-3xl font-bold text-main tabular-nums tracking-tight">
-                                        <AnimatedCurrency value={financing.totalCostHT} duration={1.2} />
-                                    </p>
-                                </div>
-                                {/* Market Watchdog Badge */}
-                                {benchmarkResult && (
-                                    <div className="mt-2">
-                                        <BenchmarkBadge
-                                            status={benchmarkResult.status}
-                                            label={benchmarkResult.label}
-                                        />
-                                    </div>
-                                )}
-                                <div className="text-right mt-2">
-                                    <p className="text-xs text-muted">
-                                        Soit <span className="text-main font-medium">{formatCurrency(financing.costPerUnit)}</span> / lot
-                                    </p>
-                                </div>
+                        {/* Frais Annexes */}
+                        <div className="space-y-3 pl-4 border-l border-white/5">
+                            <div className="flex justify-between text-sm text-muted">
+                                <span>Honoraires Syndic (3%)</span>
+                                <span className="financial-num"><AnimatedCurrency value={financing.syndicFees} /></span>
+                            </div>
+                            <div className="flex justify-between text-sm text-muted">
+                                <span>Assurance DO (2%)</span>
+                                <span className="financial-num"><AnimatedCurrency value={financing.doFees} /></span>
+                            </div>
+                            <div className="flex justify-between text-sm text-muted">
+                                <span>Aléas (3%)</span>
+                                <span className="financial-num"><AnimatedCurrency value={financing.contingencyFees} /></span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Colonne DROITE : Le Financement */}
-                    <div className="flex flex-col h-full">
-                        <h4 className="text-sm font-medium text-muted uppercase tracking-wider mb-6">Solutions de Financement</h4>
-
-                        <div className="space-y-3 flex-1">
-                            {/* MaPrimeRénov' */}
-                            <div
-                                className="flex items-center justify-between p-3 bg-zinc-900/50 rounded-xl border border-white/5 shadow-sm"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="p-1.5 bg-zinc-800/50 rounded-lg border border-white/5">
-                                        <Landmark className="w-5 h-5 text-indigo-400" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-main">MaPrimeRénov&apos;</p>
-                                        <p className="text-[10px] text-muted">
-                                            {formatPercent(financing.mprRate)} prise en charge
-                                        </p>
-                                    </div>
+                    <div className="mt-auto">
+                        <div className="p-5 bg-white/[0.03] rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                            <div className="flex justify-between items-end mb-2">
+                                <div>
+                                    <p className="text-gold/80 font-bold uppercase text-[10px] tracking-widest">Total Projet</p>
+                                    <p className="text-[10px] text-muted">Avant aides</p>
                                 </div>
-                                <span className="text-base font-bold text-indigo-300 tabular-nums">
-                                    -<AnimatedCurrency value={financing.mprAmount} duration={1.3} />
-                                </span>
+                                <p className="text-3xl font-black text-white tracking-tight financial-num">
+                                    <AnimatedCurrency value={financing.totalCostHT} />
+                                </p>
                             </div>
-
-                            {/* CEE (New) */}
-                            {financing.ceeAmount > 0 && (
-                                <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
-                                            <Zap className="w-5 h-5 text-amber-500" />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-sm text-main">Primes CEE</p>
-                                            <p className="text-[10px] text-muted">Certificats Énergie</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-base font-bold text-success-400 tabular-nums">
-                                        -<AnimatedCurrency value={financing.ceeAmount} duration={1.3} />
-                                    </span>
+                            {/* Market Watchdog Badge */}
+                            {benchmarkResult && (
+                                <div className="mt-3 flex items-center justify-between">
+                                    <BenchmarkBadge
+                                        status={benchmarkResult.status}
+                                        label={benchmarkResult.label}
+                                    />
+                                    <p className="text-[10px] text-muted text-right">
+                                        Soit <span className="text-white font-medium">{formatCurrency(financing.costPerUnit)}</span> / lot
+                                    </p>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>
 
-                            {/* Local Aid (New) */}
-                            {financing.localAidAmount > 0 && (
-                                <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
-                                            <MapPin className="w-5 h-5 text-emerald-500" />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-sm text-main">Aides Locales</p>
-                                            <p className="text-[10px] text-muted">Collectivités</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-base font-bold text-success-400 tabular-nums">
-                                        -<AnimatedCurrency value={financing.localAidAmount} duration={1.3} />
-                                    </span>
-                                </div>
-                            )}
+                {/* Colonne DROITE : Le Financement */}
+                <div className="flex flex-col h-full">
+                    <p className="text-xs font-bold text-muted uppercase tracking-widest mb-6">Solutions de Financement</p>
 
-                            {/* Éco-PTZ */}
-                            <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary hover:border-gold-500/30 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
-                                        <Building2 className="w-5 h-5 text-gold" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-main">Éco-PTZ Copro</p>
-                                        <p className="text-[10px] text-muted">Taux 0% • Durée 20 ans</p>
-                                    </div>
+                    <div className="space-y-3 flex-1">
+                        {/* MaPrimeRénov' */}
+                        <div className="flex items-center justify-between p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 shadow-sm relative overflow-hidden group/mpr">
+                            <div className="flex items-center gap-3 relative z-10">
+                                <div className="p-2 bg-indigo-500/20 rounded-lg">
+                                    <Landmark className="w-4 h-4 text-indigo-300" />
                                 </div>
-                                <span className="text-base font-bold text-body tabular-nums">
-                                    <AnimatedCurrency value={financing.ecoPtzAmount} duration={1.4} />
-                                </span>
+                                <div>
+                                    <p className="font-bold text-sm text-white">MaPrimeRénov&apos;</p>
+                                    <p className="text-[10px] text-indigo-200/60">
+                                        {formatPercent(financing.mprRate)} socle collectif
+                                    </p>
+                                </div>
                             </div>
+                            <span className="text-base font-bold text-indigo-300 tabular-nums relative z-10">
+                                -<AnimatedCurrency value={financing.mprAmount} />
+                            </span>
+                            <div className="absolute inset-0 bg-indigo-500/5 group-hover/mpr:bg-indigo-500/10 transition-colors" />
                         </div>
 
-                        {/* Reste à Charge & Mensualité */}
-                        <div className="mt-6 pt-4 border-t border-boundary">
-                            <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
-                                <div className="w-full sm:w-auto">
-                                    <p className="text-sm text-muted mb-1">
-                                        Reste à charge {isMaPoche ? '(votre part)' : 'final'}
-                                    </p>
-                                    <p className="text-3xl font-bold text-main tabular-nums">
-                                        <AnimatedCurrency value={getAdjustedValue(financing.remainingCost)} duration={1.5} />
-                                    </p>
-                                    <p className="text-xs text-subtle mt-1">
-                                        (Après subventions)
-                                    </p>
-                                </div>
-
-                                <div className="text-right">
-                                    <div className="inline-flex flex-col items-end p-3 bg-surface-highlight rounded-lg border border-primary-500/20 shadow-glow-sm">
-                                        <span className="text-xs text-primary-400 font-medium uppercase tracking-wide mb-1">
-                                            Mensualité {isMaPoche ? 'estimée' : 'Copro'}
-                                        </span>
-                                        <span className="text-2xl font-bold text-primary-300 tabular-nums">
-                                            <AnimatedCurrency value={getAdjustedValue(financing.monthlyPayment)} duration={1.6} />
-                                            <span className="text-sm font-normal text-muted ml-1">/mois</span>
-                                        </span>
+                        {/* CEE */}
+                        {financing.ceeAmount > 0 && (
+                            <div className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl border border-white/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/10">
+                                        <Zap className="w-4 h-4 text-amber-500" />
                                     </div>
+                                    <div>
+                                        <p className="font-bold text-sm text-white">Primes CEE</p>
+                                        <p className="text-[10px] text-muted">Certificats Énergie</p>
+                                    </div>
+                                </div>
+                                <span className="text-base font-bold text-success tabular-nums">
+                                    -<AnimatedCurrency value={financing.ceeAmount} />
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Local Aid */}
+                        {financing.localAidAmount > 0 && (
+                            <div className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl border border-white/5">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/10">
+                                        <MapPin className="w-4 h-4 text-emerald-500" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm text-white">Aides Locales</p>
+                                        <p className="text-[10px] text-muted">Collectivités</p>
+                                    </div>
+                                </div>
+                                <span className="text-base font-bold text-success tabular-nums">
+                                    -<AnimatedCurrency value={financing.localAidAmount} />
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Éco-PTZ */}
+                        <div className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl border border-white/5 hover:border-gold/30 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-gold/10 rounded-lg border border-gold/10">
+                                    <Building2 className="w-4 h-4 text-gold" />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-sm text-white">Éco-PTZ Copro</p>
+                                    <p className="text-[10px] text-muted">Taux 0% • Durée 20 ans</p>
+                                </div>
+                            </div>
+                            <span className="text-base font-bold text-white tabular-nums">
+                                <AnimatedCurrency value={financing.ecoPtzAmount} />
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Reste à Charge & Mensualité */}
+                    <div className="mt-6 pt-4 border-t border-white/10">
+                        <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
+                            <div className="w-full sm:w-auto">
+                                <p className="text-xs text-muted mb-1 uppercase tracking-wide">
+                                    Reste à charge {isMaPoche ? '(votre part)' : 'final'}
+                                </p>
+                                <p className="text-3xl font-black text-gold tabular-nums financial-num">
+                                    <AnimatedCurrency value={getAdjustedValue(financing.remainingCost)} />
+                                </p>
+                                <p className="text-[10px] text-muted mt-1 opacity-70">
+                                    (Après subventions)
+                                </p>
+                            </div>
+
+                            <div className="text-right w-full sm:w-auto">
+                                <div className="inline-flex flex-col items-end p-3 bg-white/[0.05] rounded-xl border border-white/10 shadow-lg w-full sm:w-auto">
+                                    <span className="text-[10px] text-gold/80 font-bold uppercase tracking-wider mb-1">
+                                        Mensualité {isMaPoche ? 'estimée' : 'Copro'}
+                                    </span>
+                                    <span className="text-2xl font-bold text-white tabular-nums financial-num">
+                                        <AnimatedCurrency value={getAdjustedValue(financing.monthlyPayment)} />
+                                        <span className="text-sm font-normal text-muted ml-1">/mois</span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -232,15 +225,15 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                 </div>
 
                 {/* Footer Gain Énergétique */}
-                <div className="mt-8 pt-4 border-t border-boundary/30 flex justify-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success-900/20 border border-success-500/20">
-                        <span className="text-xs text-success-400">⚡ Gain énergétique projeté :</span>
-                        <span className="text-sm font-bold text-success-400">
+                <div className="md:col-span-2 mt-4 pt-4 border-t border-white/5 flex justify-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 border border-success/20 hover:bg-success/20 transition-colors">
+                        <span className="text-[10px] font-bold text-success uppercase tracking-wider">⚡ Gain énergétique projeté</span>
+                        <span className="text-sm font-black text-success tabular-nums">
                             -{Math.round(financing.energyGainPercent * 100)}%
                         </span>
                     </div>
                 </div>
-            </div>
-        </motion.div>
+            </CardContent>
+        </Card>
     );
 }

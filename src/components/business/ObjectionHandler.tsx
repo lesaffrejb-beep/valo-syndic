@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Banknote, TrendingUp, Clock, ShieldAlert, ChevronDown, BadgeEuro, CalendarClock, AlertTriangle } from "lucide-react";
+import { BadgeEuro, TrendingUp, CalendarClock, ChevronDown, AlertTriangle } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ObjectionHandlerProps {
     className?: string;
@@ -30,7 +32,7 @@ const OBJECTIONS: Objection[] = [
         arguments: [
             {
                 heading: "L'Éco-PTZ à 0%",
-                content: "Le prêt collectif à taux zéro permet d'étaler le coût sur 20 ans. Votre mensualité peut être inférieure à 100€/mois selon vos tantièmes.",
+                content: "Le prêt collectif à taux zéro permet d'étaler le coût sur 20 ans. Votre mensualité peut être inférieure à 100€/mois.",
             },
             {
                 heading: "MaPrimeRénov' couvre 30-45%",
@@ -45,21 +47,21 @@ const OBJECTIONS: Objection[] = [
     {
         id: "too-old",
         Icon: TrendingUp,
-        title: "Je suis trop vieux / ROI trop long",
+        title: "Rentabilité & Âge",
         subtitle: "L'objection patrimoniale",
         color: "warning",
         arguments: [
             {
                 heading: "Valeur locative immédiate",
-                content: "Sans travaux, votre bien sera interdit à la location dès 2028 (DPE F) ou l'est déjà (DPE G). La valorisation se fait NOW, pas dans 20 ans.",
+                content: "Sans travaux, votre bien sera interdit à la location dès 2028 (DPE F). La valorisation est immédiate, pas dans 20 ans.",
             },
             {
                 heading: "Transmission du patrimoine",
-                content: "Léguer une passoire thermique = léguer une dette à vos héritiers. Un bien rénové se vend 10-15% plus cher (valeur verte ADEME).",
+                content: "Léguer une passoire thermique = léguer une dette. Un bien rénové se vend 10-15% plus cher (valeur verte).",
             },
             {
                 heading: "Confort immédiat",
-                content: "Isolation = moins de courants d'air, factures divisées, confort thermique été comme hiver. Le bénéfice est quotidien.",
+                content: "Isolation = moins de courants d'air, factures divisées, confort thermique été comme hiver.",
             },
         ],
     },
@@ -72,15 +74,15 @@ const OBJECTIONS: Objection[] = [
         arguments: [
             {
                 heading: "Inflation BTP : 4,5%/an",
-                content: "Chaque année d'attente augmente le coût des travaux de 4,5% (indice BT01). Sur 3 ans, c'est +14% sur le devis.",
+                content: "Chaque année d'attente augmente le coût des travaux de 4,5%. Sur 3 ans, c'est +14% sur le devis final.",
             },
             {
-                heading: "Calendrier législatif implacable",
-                content: "Les dates d'interdiction (G:2025, F:2028, E:2034) NE BOUGERONT PAS. Le Conseil Constitutionnel a validé la Loi Climat.",
+                heading: "Calendrier législatif",
+                content: "Les dates d'interdiction (G:2025, F:2028, E:2034) sont fermes. Le DPE collectif devient opposable.",
             },
             {
                 heading: "Course aux artisans",
-                content: "Tous les immeubles devront rénover. Attendre = subir des délais de 18-24 mois et des devis gonflés par la demande.",
+                content: "Tous les immeubles devront rénover. Attendre = subir des délais de 18-24 mois et des tarifs gonflés.",
             },
         ],
     },
@@ -93,69 +95,56 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
         setOpenId(openId === id ? null : id);
     };
 
-    const getColorClasses = (color: Objection["color"], isOpen: boolean) => {
-        // Linear/Clean style: solid borders, subtle backgrounds, no glassmorphism
-        const base = {
-            danger: {
-                bg: isOpen ? "bg-danger-500/10" : "bg-white/5 hover:bg-white/10",
-                border: "border border-white/10",
-                icon: "bg-danger-500/20 text-danger-400",
-                title: "text-danger-400",
-            },
-            warning: {
-                bg: isOpen ? "bg-warning-500/10" : "bg-white/5 hover:bg-white/10",
-                border: "border border-white/10",
-                icon: "bg-warning-500/20 text-warning-400",
-                title: "text-warning-400",
-            },
-            info: {
-                bg: isOpen ? "bg-primary-500/10" : "bg-white/5 hover:bg-white/10",
-                border: "border border-white/10",
-                icon: "bg-primary-500/20 text-primary-400",
-                title: "text-primary-400",
-            },
-        };
-        return base[color];
-    };
-
     return (
-        <div className={`card-bento p-6 ${className}`}>
-            {/* Header */}
-            {/* Removed internal header since it's now in a drawer with its own header */}
+        <Card variant="glass" className={cn("p-6 md:p-8", className)}>
+            <div className="mb-6 flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <span className="text-xl">💬</span> Réponses aux Objections
+                </h3>
+            </div>
 
-            {/* Accordéon */}
-            <div className="space-y-3">
+            <div className="space-y-4">
                 {OBJECTIONS.map((objection) => {
                     const isOpen = openId === objection.id;
-                    const colors = getColorClasses(objection.color, isOpen);
                     const Icon = objection.Icon;
+
+                    // Colors
+                    const colorMap = {
+                        danger: "text-danger border-danger/20 bg-danger/5 hover:bg-danger/10",
+                        warning: "text-warning border-warning/20 bg-warning/5 hover:bg-warning/10",
+                        info: "text-primary border-primary/20 bg-primary/5 hover:bg-primary/10"
+                    };
+                    const activeColorClass = colorMap[objection.color];
 
                     return (
                         <div
                             key={objection.id}
-                            className={`rounded-xl border overflow-hidden transition-all duration-300 ${colors.bg} ${colors.border}`}
+                            className={cn(
+                                "rounded-xl border overflow-hidden transition-all duration-300",
+                                isOpen ? "bg-white/[0.04] border-white/10" : "bg-transparent border-white/5"
+                            )}
                         >
-                            {/* Header bouton */}
                             <button
                                 onClick={() => toggle(objection.id)}
-                                className="w-full px-4 py-4 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-xl"
-                                aria-expanded={isOpen}
+                                className={cn(
+                                    "w-full px-5 py-4 flex items-center justify-between text-left transition-all",
+                                    !isOpen && "hover:bg-white/[0.02]"
+                                )}
                             >
-                                <div className="flex items-center gap-3">
-                                    <span className={`w-10 h-10 rounded-lg flex items-center justify-center ${colors.icon}`}>
+                                <div className="flex items-center gap-4">
+                                    <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center border transition-colors", activeColorClass)}>
                                         <Icon className="w-5 h-5" />
-                                    </span>
+                                    </div>
                                     <div>
-                                        <p className={`font-bold ${colors.title}`}>{objection.title}</p>
-                                        <p className="text-xs text-muted/70">{objection.subtitle}</p>
+                                        <p className="font-bold text-white text-sm md:text-base">{objection.title}</p>
+                                        <p className="text-xs text-muted">{objection.subtitle}</p>
                                     </div>
                                 </div>
                                 <ChevronDown
-                                    className={`w-5 h-5 text-muted transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                                    className={cn("w-5 h-5 text-muted transition-transform duration-300", isOpen && "rotate-180 text-white")}
                                 />
                             </button>
 
-                            {/* Contenu animé avec Framer Motion */}
                             <AnimatePresence initial={false}>
                                 {isOpen && (
                                     <motion.div
@@ -163,14 +152,15 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                                        style={{ overflow: "hidden" }}
+                                        transition={{ duration: 0.3 }}
+                                        className="overflow-hidden"
                                     >
-                                        <div className="px-4 pb-4 pt-2 space-y-3">
+                                        <div className="px-5 pb-5 pt-0 space-y-4">
+                                            <div className="h-px bg-white/5 w-full mb-4" />
                                             {objection.arguments.map((arg, idx) => (
-                                                <div key={idx} className="pl-4 border-l-2 border-boundary">
-                                                    <p className="font-semibold text-main text-sm">{arg.heading}</p>
-                                                    <p className="text-sm text-secondary mt-1">{arg.content}</p>
+                                                <div key={idx} className="pl-4 border-l-2 border-white/10 hover:border-gold/30 transition-colors">
+                                                    <p className="font-bold text-white text-xs uppercase tracking-wide mb-1">{arg.heading}</p>
+                                                    <p className="text-sm text-muted leading-relaxed">{arg.content}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -182,11 +172,12 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
                 })}
             </div>
 
-            {/* Footer */}
-            <p className="text-xs text-muted/50 mt-6 text-center flex items-center justify-center gap-2">
-                <AlertTriangle className="w-3 h-3" />
-                Conseil : Projeter ces réponses en AG, pas les envoyer par mail
-            </p>
-        </div>
+            <div className="mt-6 flex items-center justify-center gap-2 opacity-50">
+                <AlertTriangle className="w-3 h-3 text-warning" />
+                <p className="text-[10px] text-muted uppercase tracking-wider">
+                    Idéal pour projection en Assemblée Générale
+                </p>
+            </div>
+        </Card>
     );
 }

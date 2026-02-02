@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { AppProviders } from "@/components/AppProviders";
 
-// Typographie Sans-Serif : Lisibilité corps de texte & chiffres
-const inter = Inter({
+// Typographie Premium : Plus Jakarta Sans (Swiss Style)
+// Weight 500 for medium titles, 400 for body, 600 for emphasis
+const plusJakarta = Plus_Jakarta_Sans({
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-inter",
+    variable: "--font-jakarta",
+    weight: ["300", "400", "500", "600", "700"],
 });
 
-// Typographie Serif : Titres prestige (Contrat, Officiel)
-const playfair = Playfair_Display({
+// Typographie Mono : Pour données financières alignées
+const jetbrainsMono = JetBrains_Mono({
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-playfair",
-    weight: ["400", "500", "600", "700"],
+    variable: "--font-mono",
+    weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -38,11 +40,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="fr" className={`${inter.variable} ${playfair.variable}`}>
-            <body className="min-h-screen bg-background font-sans antialiased">
-                <AppProviders>
-                    {children}
-                </AppProviders>
+        <html lang="fr" className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}>
+            <body className="min-h-screen bg-deep font-sans antialiased">
+                <AppProviders>{children}</AppProviders>
             </body>
         </html>
     );

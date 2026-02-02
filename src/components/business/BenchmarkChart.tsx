@@ -1,12 +1,10 @@
-/**
- * BenchmarkChart — Comparaison DPE vs Moyenne Régionale
- * "Vous sur-consommez de X% par rapport à vos voisins"
- */
-
 "use client";
 
 import { useMemo } from "react";
 import { type DPELetter, DPE_NUMERIC_VALUE } from "@/lib/constants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart3, TrendingUp, CheckCircle2, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface BenchmarkChartProps {
     currentDPE: DPELetter;
@@ -24,23 +22,15 @@ const REGIONAL_BENCHMARK = {
 
 // Consommation moyenne par classe DPE (kWh/m²/an)
 const DPE_CONSUMPTION: Record<DPELetter, number> = {
-    A: 50,
-    B: 90,
-    C: 150,
-    D: 250,
-    E: 330,
-    F: 420,
-    G: 500,
+    A: 50, B: 90, C: 150, D: 250, E: 330, F: 420, G: 500,
 };
 
 export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: BenchmarkChartProps) {
     const analysis = useMemo(() => {
         const yourConsumption = DPE_CONSUMPTION[currentDPE];
         const avgConsumption = REGIONAL_BENCHMARK.averageConsumption;
-
         const excessPercent = Math.round(((yourConsumption - avgConsumption) / avgConsumption) * 100);
         const isAboveAverage = excessPercent > 0;
-
         const yourScore = DPE_NUMERIC_VALUE[currentDPE];
         const avgScore = DPE_NUMERIC_VALUE[REGIONAL_BENCHMARK.averageDPE];
         const scoreDiff = avgScore - yourScore;
@@ -54,118 +44,110 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
         };
     }, [currentDPE]);
 
+    // Pastel / Muted Colors for DPE
     const getDPEColor = (dpe: DPELetter): string => {
         const colors: Record<DPELetter, string> = {
-            A: "#00a651",
-            B: "#51b747",
-            C: "#b4ce00",
-            D: "#fff200",
-            E: "#f7981c",
-            F: "#ea5a0b",
-            G: "#e30613",
+            A: "#34D399", // Emerald-400
+            B: "#86EFAC", // Green-300
+            C: "#BEF264", // Lime-300
+            D: "#FCD34D", // Amber-300 (Pastel Gold)
+            E: "#FDBA74", // Orange-300
+            F: "#FDA4AF", // Rose-300
+            G: "#F87171", // Red-400
         };
         return colors[dpe];
     };
 
-    const yourBarWidth = Math.min((analysis.yourConsumption / 600) * 100, 100);
-    const avgBarWidth = (analysis.avgConsumption / 600) * 100;
+    const maxVal = 600;
+    const yourBarWidth = Math.min((analysis.yourConsumption / maxVal) * 100, 100);
+    const avgBarWidth = (analysis.avgConsumption / maxVal) * 100;
 
     return (
-        <div className={`card-bento p-6 ${className}`}>
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-600/40 to-orange-700/40 rounded-xl flex items-center justify-center border border-orange-500/20">
-                    <span className="text-orange-400 text-lg">📊</span>
-                </div>
-                <div>
-                    <h3 className="text-lg font-bold text-main">Benchmark Régional</h3>
-                    <p className="text-sm text-muted">Comparaison avec {city}</p>
-                </div>
-            </div>
-
-            {/* Barres de comparaison */}
-            <div className="space-y-4 mb-6">
-                {/* Votre copro */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-secondary">Votre Copro ({currentDPE})</span>
-                        <span className="text-sm font-bold text-main">{analysis.yourConsumption} kWh/m²</span>
+        <Card variant="glass" className={cn("border-white/5 bg-white/[0.02]", className)}>
+            <CardHeader className="pb-2">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gold/10 border border-gold/20">
+                        <BarChart3 className="w-5 h-5 text-gold" />
                     </div>
-                    <div className="h-8 bg-boundary rounded-lg overflow-hidden">
-                        <div
-                            className="h-full rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
-                            style={{
-                                width: `${yourBarWidth}%`,
-                                backgroundColor: getDPEColor(currentDPE),
-                            }}
-                        >
-                            <span className="text-xs font-bold text-black drop-shadow-sm">
-                                {currentDPE}
-                            </span>
+                    <div>
+                        <CardTitle className="text-lg font-medium tracking-tight text-white">Benchmark Régional</CardTitle>
+                        <p className="text-xs text-muted uppercase tracking-wider mt-1">Comparaison {city}</p>
+                    </div>
+                </div>
+            </CardHeader>
+
+            <CardContent className="pt-6 space-y-8">
+                {/* Visualization */}
+                <div className="space-y-6">
+                    {/* Your Copro */}
+                    <div className="group">
+                        <div className="flex justify-between items-end mb-2">
+                            <span className="text-sm text-white font-medium">Votre Copropriété</span>
+                            <div className="text-right">
+                                <span className={cn("text-2xl font-light tracking-tighter financial-num", analysis.isAboveAverage ? "text-terracotta" : "text-success")}>
+                                    {analysis.yourConsumption}
+                                </span>
+                                <span className="text-xs text-muted ml-1">kWh/m²</span>
+                            </div>
+                        </div>
+                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div
+                                className="h-full rounded-full transition-all duration-1000 ease-out"
+                                style={{ width: `${yourBarWidth}%`, backgroundColor: getDPEColor(currentDPE) }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Regional Average */}
+                    <div className="group opacity-60 hover:opacity-100 transition-opacity">
+                        <div className="flex justify-between items-end mb-2">
+                            <span className="text-sm text-muted">Moyenne {city}</span>
+                            <div className="text-right">
+                                <span className="text-lg font-light tracking-tighter text-white/70 financial-num">
+                                    {analysis.avgConsumption}
+                                </span>
+                                <span className="text-xs text-muted ml-1">kWh/m²</span>
+                            </div>
+                        </div>
+                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div
+                                className="h-full rounded-full transition-all duration-1000 ease-out bg-white/30"
+                                style={{ width: `${avgBarWidth}%` }}
+                            />
                         </div>
                     </div>
                 </div>
 
-                {/* Moyenne régionale */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-secondary">
-                            Moyenne {REGIONAL_BENCHMARK.city} ({REGIONAL_BENCHMARK.averageDPE})
-                        </span>
-                        <span className="text-sm font-bold text-main">{analysis.avgConsumption} kWh/m²</span>
-                    </div>
-                    <div className="h-8 bg-boundary rounded-lg overflow-hidden">
-                        <div
-                            className="h-full rounded-lg transition-all duration-500 flex items-center justify-end pr-2"
-                            style={{
-                                width: `${avgBarWidth}%`,
-                                backgroundColor: getDPEColor(REGIONAL_BENCHMARK.averageDPE),
-                            }}
-                        >
-                            <span className="text-xs font-bold text-black drop-shadow-sm">
-                                {REGIONAL_BENCHMARK.averageDPE}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                {/* Insight / Analysis */}
+                <div className={cn(
+                    "rounded-xl p-4 border flex items-start gap-3",
+                    analysis.isAboveAverage
+                        ? "bg-terracotta/5 border-terracotta/10"
+                        : "bg-success/5 border-success/10"
+                )}>
+                    {analysis.isAboveAverage ? (
+                        <TrendingUp className="w-5 h-5 text-terracotta mt-0.5" />
+                    ) : (
+                        <CheckCircle2 className="w-5 h-5 text-success mt-0.5" />
+                    )}
 
-            {/* Message clé */}
-            {analysis.isAboveAverage ? (
-                <div className="p-4 bg-danger-900/20 rounded-xl border border-danger-500/30">
-                    <div className="flex items-start gap-3">
-                        <span className="text-2xl">⚠️</span>
-                        <div>
-                            <p className="text-lg font-bold text-danger-400 mb-1">
-                                Vous sur-consommez de {analysis.excessPercent}%
-                            </p>
-                            <p className="text-sm text-danger-300">
-                                par rapport à vos voisins angevins.
-                                {analysis.scoreDiff >= 2 && " C'est " + analysis.scoreDiff + " classes DPE d'écart !"}
-                            </p>
-                        </div>
+                    <div className="space-y-1">
+                        <p className={cn("text-sm font-medium", analysis.isAboveAverage ? "text-terracotta" : "text-success")}>
+                            {analysis.isAboveAverage ? "Surconsommation détectée" : "Performance excellente"}
+                        </p>
+                        <p className="text-xs text-muted leading-relaxed">
+                            {analysis.isAboveAverage
+                                ? `Vous consommez ${analysis.excessPercent}% de plus que la moyenne locale. C'est un levier de valorisation immédiat.`
+                                : `Vous êtes ${analysis.excessPercent}% plus efficace que la moyenne. Votre bien est attractif.`
+                            }
+                        </p>
                     </div>
                 </div>
-            ) : (
-                <div className="p-4 bg-success-900/20 rounded-xl border border-success-500/30">
-                    <div className="flex items-start gap-3">
-                        <span className="text-2xl">✅</span>
-                        <div>
-                            <p className="text-lg font-bold text-success-400 mb-1">
-                                Vous êtes {analysis.excessPercent}% sous la moyenne
-                            </p>
-                            <p className="text-sm text-success-300">
-                                Votre copropriété est plus performante que la moyenne régionale.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
 
-            {/* Source */}
-            <p className="text-xs text-muted/50 mt-4 text-right">
-                Source : {REGIONAL_BENCHMARK.source}
-            </p>
-        </div>
+                <div className="text-right">
+                    <p className="text-[10px] text-white/20 uppercase tracking-widest font-mono">Source: {REGIONAL_BENCHMARK.source}</p>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

@@ -1,15 +1,3 @@
-/**
- * SubsidyTable — Tableau Comparatif MaPrimeRénov' Copro 2026
- * ===========================================================
- * Affichage premium des aides pour les 4 profils de revenus.
- * Design: Obsidian/Stealth Wealth (Noir, Gris, Or)
- *
- * AUDIT 31/01/2026: Clarification ajoutée
- * - Le taux collectif (30-55%) s'applique à TOUS les lots
- * - Les primes individuelles (0€ à 3000€) varient selon le profil
- * - Cette distinction doit être claire pour éviter la confusion
- */
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -17,11 +5,13 @@ import { useState } from "react";
 import {
     calculateSubsidies,
     type SimulationInputs,
-    type SubsidyBreakdown,
     type IncomeProfile,
 } from "@/lib/subsidy-calculator";
 import { formatCurrency } from "@/lib/calculator";
 import { DEFAULT_TRANSITION } from "@/lib/animations";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Info, ChevronDown, ChevronUp } from "lucide-react";
 
 // =============================================================================
 // CONFIGURATION DES PROFILS
@@ -32,361 +22,161 @@ const PROFILE_CONFIG: Record<
     {
         label: string;
         color: string;
-        bgColor: string;
         borderColor: string;
-        emoji: string;
-        hint: string;
+        bgGradient: string;
     }
 > = {
     Blue: {
         label: "Très Modeste",
-        color: "#60A5FA", // Blue-400
-        bgColor: "rgba(96, 165, 250, 0.1)",
+        color: "#60A5FA",
         borderColor: "rgba(96, 165, 250, 0.3)",
-        emoji: "🔵",
-        hint: "≤ 17 363 € (1 pers.)",
+        bgGradient: "from-blue-500/10 to-blue-500/5",
     },
     Yellow: {
         label: "Modeste",
-        color: "#FBBF24", // Yellow-400
-        bgColor: "rgba(251, 191, 36, 0.1)",
+        color: "#FBBF24",
         borderColor: "rgba(251, 191, 36, 0.3)",
-        emoji: "🟡",
-        hint: "≤ 22 461 € (1 pers.)",
+        bgGradient: "from-amber-500/10 to-amber-500/5",
     },
     Purple: {
         label: "Intermédiaire",
-        color: "#A78BFA", // Purple-400
-        bgColor: "rgba(167, 139, 250, 0.1)",
+        color: "#A78BFA",
         borderColor: "rgba(167, 139, 250, 0.3)",
-        emoji: "🟣",
-        hint: "≤ 30 549 € (1 pers.)",
+        bgGradient: "from-purple-500/10 to-purple-500/5",
     },
     Pink: {
         label: "Aisé",
-        color: "#F472B6", // Pink-400
-        bgColor: "rgba(244, 114, 182, 0.1)",
+        color: "#F472B6",
         borderColor: "rgba(244, 114, 182, 0.3)",
-        emoji: "🌸",
-        hint: "Au-dessus des plafonds",
+        bgGradient: "from-pink-500/10 to-pink-500/5",
     },
 };
 
-// =============================================================================
-// COMPOSANTS INTERNES
-// =============================================================================
-
-interface ProfileBadgeProps {
-    profile: IncomeProfile;
-    showHint?: boolean;
-}
-
-function ProfileBadge({ profile, showHint = false }: ProfileBadgeProps) {
-    const config = PROFILE_CONFIG[profile];
-
-    return (
-        <div className="flex flex-col gap-1">
-            <div
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border"
-                style={{
-                    backgroundColor: config.bgColor,
-                    borderColor: config.borderColor,
-                    color: config.color,
-                }}
-            >
-                <span className="text-sm">{config.emoji}</span>
-                <span className="font-semibold text-sm">{config.label}</span>
-            </div>
-            {showHint && (
-                <span className="text-xs text-muted mt-1">{config.hint}</span>
-            )}
-        </div>
-    );
-}
-
-// =============================================================================
-// COMPOSANT PRINCIPAL
-// =============================================================================
-
 interface SubsidyTableProps {
-    /** Paramètres de simulation */
     inputs: SimulationInputs;
-
-    /** Affichage compact (optionnel) */
-    compact?: boolean;
 }
 
-export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
+export function SubsidyTable({ inputs }: SubsidyTableProps) {
     const [showLegend, setShowLegend] = useState(false);
-
-    // Calcul des aides pour tous les profils
     const result = calculateSubsidies(inputs);
     const { profiles } = result;
-
     const profileOrder: IncomeProfile[] = ["Blue", "Yellow", "Purple", "Pink"];
 
     return (
-        <motion.div
-            className="group relative overflow-hidden p-4 md:p-6 h-full flex flex-col bg-[#0A0A0A]/80 backdrop-blur-md rounded-2xl border border-white/5"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={DEFAULT_TRANSITION}
-        >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+        <Card variant="glass" className="overflow-visible border-white/5 bg-white/[0.02]">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <span className="text-xl">🎯</span>
-                        Tableau Décisionnel MPR Copro 2026
-                    </h3>
-                    <p className="text-sm text-muted mt-1">
-                        Comparaison par profil de revenus (Hors Île-de-France)
-                    </p>
+                    <CardTitle className="text-lg text-white flex items-center gap-2">
+                        🎯 Tableau Décisionnel 2026
+                    </CardTitle>
+                    <p className="text-xs text-muted uppercase tracking-wider mt-1">Comparaison par profil fiscal</p>
                 </div>
-
-                {/* Bouton légende */}
                 <button
                     onClick={() => setShowLegend(!showLegend)}
-                    className="btn-ghost text-xs"
+                    className="flex items-center gap-1 text-xs text-muted hover:text-white transition-colors px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10"
                 >
-                    {showLegend ? "Masquer" : "Voir"} les seuils
+                    <Info className="w-3 h-3" />
+                    {showLegend ? "Masquer Seuils" : "Voir Seuils"}
                 </button>
-            </div>
+            </CardHeader>
 
-            {/* Légende (conditionnelle) */}
-            {showLegend && (
-                <motion.div
-                    className="mb-6 p-4 bg-surface-highlight rounded-xl border border-boundary"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                >
-                    <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
-                        Barème Revenus 2026 (Hors IdF)
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {profileOrder.map((profile) => {
-                            const config = PROFILE_CONFIG[profile];
-                            return (
-                                <div
-                                    key={profile}
-                                    className="flex items-center gap-2 text-xs"
-                                >
-                                    <span>{config.emoji}</span>
-                                    <div>
-                                        <p className="font-medium text-main">
-                                            {config.label}
-                                        </p>
-                                        <p className="text-muted">{config.hint}</p>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </motion.div>
-            )}
+            <CardContent className="space-y-4">
+                {/* HEADERS (Hidden on mobile, visible on desktop) */}
+                <div className="hidden md:flex items-center px-4 py-2 text-[10px] uppercase font-bold tracking-widest text-muted/50">
+                    <div className="w-1/4">Profil</div>
+                    <div className="w-1/6 text-right">Travaux</div>
+                    <div className="w-1/6 text-right">Aides</div>
+                    <div className="w-1/6 text-right text-emerald-400">Boost</div>
+                    <div className="w-1/6 text-right text-gold">Reste à charge</div>
+                    <div className="w-1/6 text-right">Mensualité</div>
+                </div>
 
-            {/* Table Desktop */}
-            <div className="hidden lg:block overflow-x-auto">
-                <table className="w-full">
-                    <thead>
-                        <tr className="border-b border-white/10 text-white/50">
-                            <th className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
-                                Profil
-                            </th>
-                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
-                                Coût Réel
-                            </th>
-                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
-                                Total Aides
-                            </th>
-                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
-                                Boost
-                            </th>
-                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-amber-500">
-                                Reste à Charge
-                            </th>
-                            <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest">
-                                Mensualité
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                        {profileOrder.map((profile, index) => {
-                            const data = profiles[profile];
-                            return (
-                                <motion.tr
-                                    key={profile}
-                                    className="border-b border-boundary/50 hover:bg-surface-hover transition-colors group"
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                >
-                                    <td className="py-2 px-3">
-                                        <ProfileBadge profile={profile} />
-                                    </td>
-                                    <td className="py-2 px-3 text-right text-white/90 font-medium tabular-nums text-sm">
-                                        {formatCurrency(data.workShareBeforeAid)}
-                                    </td>
-                                    <td className="py-2 px-3 text-right">
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-white/90 font-semibold tabular-nums text-sm">
-                                                -{formatCurrency(data.totalPublicSubsidies)}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="py-2 px-3 text-right">
-                                        {data.privateLocalBoost > 0 ? (
-                                            <span className="text-emerald-400 font-bold tabular-nums text-sm">
-                                                -{formatCurrency(data.privateLocalBoost)}
-                                            </span>
-                                        ) : (
-                                            <span className="text-white/20 text-xs">—</span>
-                                        )}
-                                    </td>
-                                    <td className="py-2 px-3 text-right">
-                                        <span className="text-lg font-bold text-amber-500 tabular-nums">
-                                            {formatCurrency(data.remainingCost)}
-                                        </span>
-                                    </td>
-                                    <td className="py-2 px-3 text-right">
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-white/90 font-medium tabular-nums text-sm">
-                                                {formatCurrency(data.monthlyPayment)}
-                                            </span>
-                                            <span className="text-[10px] text-white/40">
-                                                / mois
-                                            </span>
-                                        </div>
-                                    </td>
-                                </motion.tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Cards Mobile/Tablet */}
-            <div className="lg:hidden space-y-4">
-                {profileOrder.map((profile, index) => {
-                    const data = profiles[profile];
-                    const config = PROFILE_CONFIG[profile];
-
-                    return (
-                        <motion.div
-                            key={profile}
-                            className="p-4 rounded-xl border"
-                            style={{
-                                backgroundColor: config.bgColor,
-                                borderColor: config.borderColor,
-                            }}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                        >
-                            {/* Header Card */}
-                            <div className="flex items-center justify-between mb-4 pb-3 border-b border-boundary/30">
-                                <ProfileBadge profile={profile} showHint />
-                                <div className="text-right">
-                                    <p className="text-xs text-muted">
-                                        Reste à charge
-                                    </p>
-                                    <p
-                                        className="text-2xl font-bold tabular-nums"
-                                        style={{ color: config.color }}
-                                    >
-                                        {formatCurrency(data.remainingCost)}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Détails */}
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-baseline">
-                                    <span className="text-sm text-muted">
-                                        Coût Réel
-                                    </span>
-                                    <span className="text-main font-medium tabular-nums">
-                                        {formatCurrency(data.workShareBeforeAid)}
-                                    </span>
-                                </div>
-
-                                <div className="flex justify-between items-baseline">
-                                    <span className="text-sm text-muted">
-                                        Total Aides Publiques
-                                    </span>
-                                    <div className="text-right">
-                                        <p className="text-main font-semibold tabular-nums">
-                                            -{formatCurrency(data.totalPublicSubsidies)}
-                                        </p>
-                                        <p className="text-xs text-muted">
-                                            MPR {Math.round(data.mprRate * 100)}% + AMO + Prime
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {data.privateLocalBoost > 0 && (
-                                    <div className="flex justify-between items-baseline">
-                                        <span className="text-sm text-muted">
-                                            Boost Privé/Local
-                                        </span>
-                                        <div className="text-right">
-                                            <p className="text-success font-bold tabular-nums">
-                                                -{formatCurrency(data.privateLocalBoost)}
-                                            </p>
-                                            <p className="text-xs text-success-400/70">
-                                                CEE + Locales
-                                            </p>
-                                        </div>
-                                    </div>
+                {/* HORIZONTAL CARDS */}
+                <div className="space-y-3">
+                    {profileOrder.map((profile, index) => {
+                        const data = profiles[profile];
+                        const config = PROFILE_CONFIG[profile];
+                        return (
+                            <motion.div
+                                key={profile}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className={cn(
+                                    "relative flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border transition-all duration-300 group",
+                                    "hover:bg-white/[0.04] hover:border-white/10"
                                 )}
-
-                                <div className="flex justify-between items-baseline pt-3 border-t border-boundary/30">
-                                    <span className="text-sm text-muted">
-                                        Effort Mensuel
-                                    </span>
-                                    <div className="text-right">
-                                        <p className="text-main font-medium tabular-nums">
-                                            {formatCurrency(data.monthlyPayment)}
-                                        </p>
-                                        <p className="text-xs text-muted">
-                                            / mois (20 ans)
-                                        </p>
+                                style={{
+                                    borderColor: config.borderColor,
+                                    background: `linear-gradient(90deg, ${config.borderColor.replace('0.3', '0.05')}, transparent)`
+                                }}
+                            >
+                                {/* Profil Badge & Mobile Label */}
+                                <div className="flex items-center justify-between md:justify-start md:w-1/4 mb-3 md:mb-0">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-8 rounded-full" style={{ backgroundColor: config.color }} />
+                                        <div>
+                                            <p className="font-bold text-sm text-white">{config.label}</p>
+                                            {showLegend && <p className="text-[10px] text-muted">Seuil variable</p>}
+                                        </div>
+                                    </div>
+                                    {/* Mobile Only: Reste à charge value shown prominently */}
+                                    <div className="md:hidden">
+                                        <p className="text-lg font-bold text-gold tabular-nums">{formatCurrency(data.remainingCost)}</p>
                                     </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    );
-                })}
-            </div>
 
-            {/* Footer Notes */}
-            <div className="mt-6 pt-4 border-t border-boundary/30 space-y-3">
-                {/* Clarification Socle vs Prime - AUDIT 31/01/2026 */}
-                <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
-                    <p className="text-xs text-muted leading-relaxed">
-                        <span className="font-semibold text-primary">À savoir :</span> Le taux MPR affiché ({Math.round(result.profiles.Pink.mprRate * 100)}%) est le <strong>socle collectif</strong> versé à la copropriété.
-                        Il s&apos;applique à tous les lots, quel que soit le profil du propriétaire.
-                        Les <strong>primes individuelles</strong> (jusqu&apos;à 3 000€) sont versées en complément uniquement aux ménages modestes et très modestes.
+                                {/* DESKTOP: COLUMNS */}
+                                {/* Coût Travaux */}
+                                <div className="hidden md:block w-1/6 text-right">
+                                    <p className="text-sm font-medium text-muted tabular-nums">{formatCurrency(data.workShareBeforeAid)}</p>
+                                </div>
+
+                                {/* Aides */}
+                                <div className="md:w-1/6 flex justify-between md:block text-right mb-1 md:mb-0 border-b md:border-none border-white/5 pb-1 md:pb-0">
+                                    <span className="md:hidden text-xs text-muted uppercase">Aides Publiques</span>
+                                    <p className="text-sm font-medium text-white tabular-nums">-{formatCurrency(data.totalPublicSubsidies)}</p>
+                                </div>
+
+                                {/* Boost */}
+                                <div className="md:w-1/6 flex justify-between md:block text-right mb-1 md:mb-0 border-b md:border-none border-white/5 pb-1 md:pb-0">
+                                    <span className="md:hidden text-xs text-muted uppercase">Boost</span>
+                                    {data.privateLocalBoost > 0 ? (
+                                        <p className="text-sm font-bold text-emerald-400 tabular-nums">-{formatCurrency(data.privateLocalBoost)}</p>
+                                    ) : (
+                                        <span className="text-xs text-muted/30 hidden md:inline">—</span>
+                                    )}
+                                </div>
+
+                                {/* Raste à charge (Desktop) */}
+                                <div className="hidden md:block w-1/6 text-right">
+                                    <p className="text-lg font-bold text-gold tabular-nums">{formatCurrency(data.remainingCost)}</p>
+                                </div>
+
+                                {/* Mensualité */}
+                                <div className="md:w-1/6 flex justify-between md:block text-right pt-1 md:pt-0">
+                                    <span className="md:hidden text-xs text-muted uppercase">Mensualité (20 ans)</span>
+                                    <div>
+                                        <p className="text-sm font-bold text-white tabular-nums">{formatCurrency(data.monthlyPayment)}</p>
+                                        <p className="text-[10px] text-muted hidden md:block">/ mois</p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+
+                {/* Footer Notes */}
+                <div className="mt-4 pt-4 border-t border-white/5 flex flex-col md:flex-row gap-4 text-[10px] text-muted">
+                    <p className="flex-1 leading-relaxed">
+                        <strong className="text-white">Note :</strong> Le taux MPR affiché est le socle collectif. Les primes individuelles (jusqu'à 3000€) sont versées en complément aux ménages modestes.
                     </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 text-xs text-muted">
-                    <div className="flex items-start gap-2">
-                        <span>ℹ️</span>
-                        <p>
-                            Mensualité calculée sur un prêt <strong>Éco-PTZ à 0%</strong> sur{" "}
-                            <strong>20 ans</strong>. Aucun intérêt.
-                        </p>
-                    </div>
-                    <div className="flex items-start gap-2">
-                        <span>📋</span>
-                        <p>
-                            Barème hors Île-de-France. Simulation indicative.
-                        </p>
+                    <div className="flex gap-4 opacity-70">
+                        <span className="flex items-center gap-1">ℹ️ Éco-PTZ 0%</span>
+                        <span className="flex items-center gap-1">📍 Hors IdF</span>
                     </div>
                 </div>
-            </div>
-        </motion.div>
+            </CardContent>
+        </Card>
     );
 }

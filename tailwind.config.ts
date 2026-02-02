@@ -7,75 +7,60 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
+                // Backgrounds Deep Space
                 deep: {
-                    DEFAULT: "#030304",
-                    surface: "#08080A",
-                    highlight: "#121214",
+                    DEFAULT: "#050507", // Almost black
+                    surface: "#1a1f2e", // Dark Blueish Grey
+                    highlight: "#252b3d",
                 },
+                // Gold Premium (Refined)
                 gold: {
-                    DEFAULT: "#E5C07B", // More desaturated rich gold
+                    DEFAULT: "#E5C07B",
                     light: "#F2D8A7",
                     dark: "#997D3D",
-                    glow: "rgba(229, 192, 123, 0.2)",
-                    subtle: "rgba(229, 192, 123, 0.08)",
+                    dim: "rgba(229, 192, 123, 0.1)",
                 },
-                accent: {
-                    blue: "#3B82F6",
-                    purple: "#8B5CF6",
-                    teal: "#10B981",
-                    rose: "#F43F5E",
+                // Earthy Tones
+                terracotta: {
+                    DEFAULT: "#E07A5F",
+                    light: "#F2CCB7",
+                    dark: "#3D1F16",
                 },
-                // Legacy support (mapped)
-                obsidian: "#030304",
-                charcoal: "#0A0B0D",
-                steel: "#12131A",
-                primary: {
-                    DEFAULT: "#E5C07B",
-                    glow: "rgba(229, 192, 123, 0.2)",
-                },
-                app: "#000000",
-                surface: "#0A0A0A",
-                'surface-highlight': "#171717",
-                'surface-hover': "#262626",
-                main: "#EDEDED",
-                muted: "#A1A1AA",
-                subtle: "#52525B",
-                boundary: "rgba(255, 255, 255, 0.08)",
-                'boundary-active': "rgba(255, 255, 255, 0.16)",
-                danger: { DEFAULT: '#FF4D4D', glow: 'rgba(255, 77, 77, 0.2)' },
-                success: { DEFAULT: '#34D399', glow: 'rgba(52, 211, 153, 0.2)' },
-                warning: { DEFAULT: '#FBBF24', glow: 'rgba(251, 191, 36, 0.2)' },
-                finance: { DEFAULT: '#E5C07B', glow: 'rgba(229, 192, 123, 0.2)' },
-                valuation: { DEFAULT: '#34D399', glow: 'rgba(52, 211, 153, 0.2)' },
-                risks: { DEFAULT: '#FF4D4D', glow: 'rgba(255, 77, 77, 0.2)' }
-            },
-            backgroundImage: {
-                'hero-glow': 'radial-gradient(circle at 50% 0%, rgba(229, 192, 123, 0.15), transparent 70%)',
-                'section-gradient-1': 'radial-gradient(circle at 80% 20%, rgba(255, 77, 77, 0.08), transparent 50%)', // Risks - Red subtile
-                'section-gradient-2': 'radial-gradient(circle at 20% 80%, rgba(52, 211, 153, 0.08), transparent 50%)', // Valuation - Green subtile
-                'section-gradient-3': 'radial-gradient(circle at 50% 50%, rgba(229, 192, 123, 0.05), transparent 60%)', // Finance - Gold subtile
-                'glass-gradient': 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
-                'glass-shine': 'linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.1) 45%, transparent 60%)',
-                'noise': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E\")",
-            },
-            boxShadow: {
-                'tactile': '0 20px 40px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)',
-                'tactile-hover': '0 30px 60px -12px rgba(0, 0, 0, 0.9), inset 0 1px 0 0 rgba(255, 255, 255, 0.12)',
-                'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
-                'neon-gold': '0 0 20px -5px rgba(229, 192, 123, 0.3)',
-                'glow-finance': '0 0 50px -15px rgba(229, 192, 123, 0.2)',
-                'glow-risks': '0 0 50px -15px rgba(255, 77, 77, 0.2)',
-                'glow-valuation': '0 0 50px -15px rgba(52, 211, 153, 0.2)',
-            },
-            backdropBlur: {
-                'xs': '2px',
+                // Functional Colors (Muted/Pastel)
+                success: { DEFAULT: '#34D399', glow: 'rgba(52, 211, 153, 0.2)' }, // Emerald
+                warning: { DEFAULT: '#FBBF24', glow: 'rgba(251, 191, 36, 0.2)' }, // Amber
+                danger: { DEFAULT: '#F87171', glow: 'rgba(248, 113, 113, 0.2)' }, // Soft Red
+                info: { DEFAULT: '#60A5FA', glow: 'rgba(96, 165, 250, 0.2)' },   // Soft Blue
+
+                // Text Colors
+                main: "#EDEDED",      // High contrast text
+                muted: "#94A3B8",     // Secondary text
+                subtle: "#475569",    // Tertiary/Borders
             },
             fontFamily: {
-                sans: ["Inter", "Geist Sans", "system-ui", "sans-serif"],
-                mono: ["JetBrains Mono", "monospace"],
+                sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
+                mono: ["var(--font-mono)", "monospace"],
             },
-            borderRadius: {
-                'card': '16px',
+            backgroundImage: {
+                'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                'glass-gradient': 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+                'glass-border': 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
+                'dots-pattern': "radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px)",
+            },
+            boxShadow: {
+                'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+                'neon': '0 0 20px -5px rgba(229, 192, 123, 0.3)',
+                'card-premium': '0 20px 40px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+            },
+            animation: {
+                'fadeInUp': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+                fadeInUp: {
+                    '0%': { opacity: '0', transform: 'translateY(20px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
             },
         },
     },

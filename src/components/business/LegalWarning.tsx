@@ -2,8 +2,8 @@
  * LegalWarning — Composant d'alerte réglementaire
  * Affiche le disclaimer obligatoire OPQIBI.
  */
-
 import { LEGAL } from "@/lib/constants";
+import { AlertTriangle, BarChart3 } from "lucide-react";
 
 interface LegalWarningProps {
     variant?: "inline" | "banner" | "footer";
@@ -14,17 +14,18 @@ export function LegalWarning({
     variant = "inline",
     className = "",
 }: LegalWarningProps) {
-    const baseStyles = "text-xs text-muted";
+    const baseStyles = "text-xs text-muted flex items-start gap-2";
 
     const variantStyles = {
-        inline: "border-l-2 border-boundary pl-3 italic py-2",
-        banner: "py-4 text-center italic",
-        footer: "py-4 text-center border-t border-boundary mt-8",
+        inline: "border-l border-white/10 pl-3 italic py-2 opacity-60 hover:opacity-100 transition-opacity",
+        banner: "py-4 justify-center italic bg-white/5",
+        footer: "py-4 justify-center border-t border-white/10 mt-8",
     };
 
     return (
         <div className={`${baseStyles} ${variantStyles[variant]} ${className}`}>
-            <p>⚠️ {LEGAL.disclaimer}</p>
+            <AlertTriangle className="w-4 h-4 shrink-0 opacity-70" />
+            <p>{LEGAL.disclaimer}</p>
         </div>
     );
 }
@@ -34,8 +35,9 @@ export function LegalWarning({
  */
 export function DVFDisclaimer({ className = "" }: { className?: string }) {
     return (
-        <p className={`text-xs text-muted/70 italic ${className}`}>
-            📊 {LEGAL.dvfDisclaimer}
-        </p>
+        <div className={`text-[10px] text-muted/50 italic flex items-center gap-1.5 ${className}`}>
+            <BarChart3 className="w-3 h-3" />
+            <p>{LEGAL.dvfDisclaimer}</p>
+        </div>
     );
 }
