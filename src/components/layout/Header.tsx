@@ -115,7 +115,7 @@ export function Header({
                     <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
                         {/* Optional: Add Logo/Brand here if needed, but for now specific nav focus */}
                         {onNavigate && (
-                            <div className="hidden md:flex items-center gap-4">
+                            <div className="hidden lg:flex items-center gap-4">
                                 {navItems.map((item, index) => (
                                     <div key={item.id} className="flex items-center gap-4">
                                         <button
@@ -156,7 +156,7 @@ export function Header({
                                             {user.email?.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
-                                    <div className="hidden md:flex flex-col items-start">
+                                    <div className="hidden lg:flex flex-col items-start">
                                         <span className="text-xs font-medium text-white max-w-[100px] truncate leading-tight">
                                             {user.email?.split('@')[0]}
                                         </span>
