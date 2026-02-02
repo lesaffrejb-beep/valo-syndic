@@ -195,7 +195,9 @@ export default function ScrollytellingPage() {
             <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20">
                 {/* Background */}
                 <StreetViewHeader address={diagnosticInput.address} coordinates={diagnosticInput.coordinates} />
-                <div className="absolute inset-0 z-10 bg-gradient-to-b from-deep/80 via-deep/40 to-deep" />
+                <div className="absolute inset-0 z-10 bg-gradient-to-b from-deep/90 via-deep/60 to-deep" />
+                {/* Top Spotlight */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
 
                 {/* Top Actions */}
                 <div className="absolute top-0 left-0 w-full z-50">
@@ -211,7 +213,7 @@ export default function ScrollytellingPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1 }}
                     >
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
+                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
                             <span className="text-white">Révélez le potentiel</span><br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de votre copropriété</span>
                         </h1>
@@ -279,7 +281,7 @@ export default function ScrollytellingPage() {
                     subtitle="L'inaction a un coût invisible qui érode votre patrimoine chaque jour. Voici la réalité des chiffres."
                 />
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full items-stretch">
                     {/* Left: Alerts & Context */}
                     <div className="space-y-6">
                         <HeatingSystemAlert heatingType={diagnosticInput.heatingSystem || null} />
@@ -325,7 +327,7 @@ export default function ScrollytellingPage() {
             <Section id="finance">
                 <SectionHeader
                     label="L'Ingénierie Financière"
-                    title={<>Rentable dès <span className="text-gold">le premier jour</span></>}
+                    title={<>Trésorerie Positive <span className="text-gold">immédiate</span></>}
                 />
 
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 w-full">
@@ -357,17 +359,17 @@ export default function ScrollytellingPage() {
 
                 {/* Switcher */}
                 <div className="flex justify-center mb-8">
-                    <div className="bg-white/5 p-1 rounded-full border border-white/10 backdrop-blur-md flex relative">
+                    <div className="bg-white/5 p-1.5 rounded-full border border-white/20 backdrop-blur-md flex relative shadow-2xl">
                         {/* Simple toggle implementation */}
                         <button
                             onClick={() => useViewModeStore.getState().setViewMode('immeuble')}
-                            className={`px-6 py-2 rounded-full text-xs font-bold transition-all uppercase tracking-wide ${viewMode === 'immeuble' ? 'bg-white text-black shadow-lg' : 'text-muted hover:text-white'}`}
+                            className={`px-8 py-3 rounded-full text-sm font-bold transition-all uppercase tracking-wide border ${viewMode === 'immeuble' ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'}`}
                         >
                             Immeuble
                         </button>
                         <button
                             onClick={() => useViewModeStore.getState().setViewMode('maPoche')}
-                            className={`px-6 py-2 rounded-full text-xs font-bold transition-all uppercase tracking-wide ${viewMode === 'maPoche' ? 'bg-white text-black shadow-lg' : 'text-muted hover:text-white'}`}
+                            className={`px-8 py-3 rounded-full text-sm font-bold transition-all uppercase tracking-wide border ${viewMode === 'maPoche' ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'}`}
                         >
                             Mon Lot
                         </button>

@@ -69,7 +69,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                     <CardTitle className="text-lg text-white flex items-center gap-2">
                         🎯 Tableau Décisionnel 2026
                     </CardTitle>
-                    <p className="text-xs text-muted uppercase tracking-wider mt-1">Comparaison par profil fiscal</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mt-1">Comparaison par profil fiscal</p>
                 </div>
                 <button
                     onClick={() => setShowLegend(!showLegend)}
@@ -82,7 +82,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
 
             <CardContent className="space-y-4">
                 {/* HEADERS (Hidden on mobile, visible on desktop) */}
-                <div className="hidden md:flex items-center px-4 py-2 text-[10px] uppercase font-bold tracking-widest text-muted/50">
+                <div className="hidden md:flex items-center px-4 py-2 text-[10px] uppercase font-bold tracking-widest text-gray-400/70">
                     <div className="w-1/4">Profil</div>
                     <div className="w-1/6 text-right">Travaux</div>
                     <div className="w-1/6 text-right">Aides</div>
@@ -117,7 +117,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                                         <div className="w-2 h-8 rounded-full" style={{ backgroundColor: config.color }} />
                                         <div>
                                             <p className="font-bold text-sm text-white">{config.label}</p>
-                                            {showLegend && <p className="text-[10px] text-muted">Seuil variable</p>}
+                                            {showLegend && <p className="text-[10px] text-gray-400">Seuil variable</p>}
                                         </div>
                                     </div>
                                     {/* Mobile Only: Reste à charge value shown prominently */}
@@ -129,7 +129,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                                 {/* DESKTOP: COLUMNS */}
                                 {/* Coût Travaux */}
                                 <div className="hidden md:block w-1/6 text-right">
-                                    <p className="text-sm font-medium text-muted tabular-nums">{formatCurrency(data.workShareBeforeAid)}</p>
+                                    <p className="text-sm font-medium text-gray-300 tabular-nums">{formatCurrency(data.workShareBeforeAid)}</p>
                                 </div>
 
                                 {/* Aides */}
@@ -144,7 +144,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                                     {data.privateLocalBoost > 0 ? (
                                         <p className="text-sm font-bold text-emerald-400 tabular-nums">-{formatCurrency(data.privateLocalBoost)}</p>
                                     ) : (
-                                        <span className="text-xs text-muted/30 hidden md:inline">—</span>
+                                        <span className="text-xs text-gray-500 hidden md:inline">—</span>
                                     )}
                                 </div>
 
@@ -158,7 +158,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                                     <span className="md:hidden text-xs text-muted uppercase">Mensualité (20 ans)</span>
                                     <div>
                                         <p className="text-sm font-bold text-white tabular-nums">{formatCurrency(data.monthlyPayment)}</p>
-                                        <p className="text-[10px] text-muted hidden md:block">/ mois</p>
+                                        <p className="text-[10px] text-gray-400 hidden md:block">/ mois</p>
                                     </div>
                                 </div>
                             </motion.div>

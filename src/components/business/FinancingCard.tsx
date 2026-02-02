@@ -48,7 +48,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
     }, [benchmarkData, financing.worksCostHT, numberOfUnits]);
 
     return (
-        <Card variant="premium" className="h-full overflow-hidden group border-white/5 bg-deep/50">
+        <Card variant="premium" className="h-full overflow-hidden group">
             <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full pointer-events-none" />
 
             <CardHeader className="relative z-10 pb-2">
@@ -97,7 +97,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                     <p className="text-gold/80 font-bold uppercase text-[10px] tracking-widest">Total Projet</p>
                                     <p className="text-[10px] text-muted">Avant aides</p>
                                 </div>
-                                <p className="text-3xl font-black text-white tracking-tight financial-num">
+                                <p className="text-3xl font-black bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent tracking-tight financial-num">
                                     <AnimatedCurrency value={financing.totalCostHT} />
                                 </p>
                             </div>
@@ -123,30 +123,30 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
 
                     <div className="space-y-3 flex-1">
                         {/* MaPrimeRénov' */}
-                        <div className="flex items-center justify-between p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 shadow-sm relative overflow-hidden group/mpr">
+                        <div className="flex items-center justify-between p-3 bg-blue-900/30 rounded-xl border border-blue-500/30 shadow-sm relative overflow-hidden group/mpr">
                             <div className="flex items-center gap-3 relative z-10">
                                 <div className="p-2 bg-indigo-500/20 rounded-lg">
-                                    <Landmark className="w-4 h-4 text-indigo-300" />
+                                    <Landmark className="w-4 h-4 text-blue-200" />
                                 </div>
                                 <div>
                                     <p className="font-bold text-sm text-white">MaPrimeRénov&apos;</p>
-                                    <p className="text-[10px] text-indigo-200/60">
+                                    <p className="text-[10px] text-blue-200/60">
                                         {formatPercent(financing.mprRate)} socle collectif
                                     </p>
                                 </div>
                             </div>
-                            <span className="text-base font-bold text-indigo-300 tabular-nums relative z-10">
+                            <span className="text-base font-bold text-blue-100 tabular-nums relative z-10">
                                 -<AnimatedCurrency value={financing.mprAmount} />
                             </span>
-                            <div className="absolute inset-0 bg-indigo-500/5 group-hover/mpr:bg-indigo-500/10 transition-colors" />
+                            <div className="absolute inset-0 bg-blue-500/5 group-hover/mpr:bg-blue-500/10 transition-colors" />
                         </div>
 
                         {/* CEE */}
                         {financing.ceeAmount > 0 && (
                             <div className="flex items-center justify-between p-3 bg-white/[0.03] rounded-xl border border-white/5">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/10">
-                                        <Zap className="w-4 h-4 text-amber-500" />
+                                    <div className="p-2 bg-amber-900/30 rounded-lg border border-amber-500/30">
+                                        <Zap className="w-4 h-4 text-amber-200" />
                                     </div>
                                     <div>
                                         <p className="font-bold text-sm text-white">Primes CEE</p>
@@ -196,12 +196,12 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
 
                     {/* Reste à Charge & Mensualité */}
                     <div className="mt-6 pt-4 border-t border-white/10">
-                        <div className="flex flex-col sm:flex-row items-end justify-between gap-4">
+                        <div className="flex flex-col xl:flex-row items-end justify-between gap-6">
                             <div className="w-full sm:w-auto">
                                 <p className="text-xs text-muted mb-1 uppercase tracking-wide">
                                     Reste à charge {isMaPoche ? '(votre part)' : 'final'}
                                 </p>
-                                <p className="text-3xl font-black text-gold tabular-nums financial-num">
+                                <p className="text-5xl md:text-6xl font-black text-gold tabular-nums financial-num tracking-tighter">
                                     <AnimatedCurrency value={getAdjustedValue(financing.remainingCost)} />
                                 </p>
                                 <p className="text-[10px] text-muted mt-1 opacity-70">
