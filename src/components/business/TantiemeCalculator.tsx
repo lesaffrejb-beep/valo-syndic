@@ -155,13 +155,6 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                             <p className="text-sm text-muted mt-0.5">Ajustez selon votre quote-part</p>
                         </div>
                     </div>
-
-                    <button
-                        onClick={() => setViewMode(viewMode === 'maPoche' ? 'immeuble' : 'maPoche')}
-                        className="h-9 px-4 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-[11px] font-mono tracking-widest uppercase text-white/60 hover:text-white/80 transition-all active:scale-95"
-                    >
-                        {viewMode === 'maPoche' ? 'Voir Immeuble' : 'Voir mon Lot'}
-                    </button>
                 </div>
 
                 {/* Profile Selector */}
@@ -224,12 +217,12 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                             type="range"
                             id="tantiemes"
                             min={1}
-                            max={600}
+                            max={1000}
                             value={tantiemes}
                             onChange={(e) => setTantiemes(Number(e.target.value))}
                             className="w-full h-2.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-white/10 ring-1 ring-white/10"
                             style={{
-                                background: `linear-gradient(to right, #D4AF37 0%, #D4AF37 ${(tantiemes / 600) * 100}%, rgba(255,255,255,0.05) ${(tantiemes / 600) * 100}%, rgba(255,255,255,0.05) 100%)`
+                                background: `linear-gradient(to right, #6366f1 0%, #a855f7 ${(tantiemes / 1000) * 100}%, rgba(255,255,255,0.05) ${(tantiemes / 1000) * 100}%, rgba(255,255,255,0.05) 100%)`
                             }}
                         />
                     </div>

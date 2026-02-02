@@ -13,6 +13,7 @@ interface ValuationCardProps {
         comment?: string;
     };
     isPassoire?: boolean;
+    className?: string;
 }
 
 /**
@@ -24,7 +25,7 @@ interface ValuationCardProps {
  * - Contexte marché affiché pour transparence
  * - Mention de la source des données
  */
-export function ValuationCard({ valuation, financing, marketTrend, isPassoire = false }: ValuationCardProps) {
+export function ValuationCard({ valuation, financing, marketTrend, isPassoire = false, className = "" }: ValuationCardProps) {
     const { viewMode, getAdjustedValue } = useViewModeStore();
     const isMaPoche = viewMode === 'maPoche';
 
@@ -46,7 +47,7 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
 
 
     return (
-        <div className="card-bento h-full relative overflow-hidden group p-0">
+        <div className={`card-bento h-full relative overflow-hidden group p-0 ${className}`}>
             {/* Header Section */}
             <div className="p-6 pb-4 border-b border-boundary/50">
                 <div className="flex items-start justify-between">

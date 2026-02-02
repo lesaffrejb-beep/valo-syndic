@@ -67,7 +67,7 @@ const Section = ({ children, delay = 0, className = "", id }: SectionProps) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6, delay, ease: "easeOut" }}
-        className={`w-full max-w-5xl mx-auto py-28 px-6 flex flex-col gap-10 ${className}`}
+        className={`w-full max-w-5xl mx-auto py-32 md:py-40 px-6 flex flex-col gap-16 md:gap-24 ${className}`}
     >
         {children}
     </motion.section>
@@ -360,6 +360,16 @@ export default function ScrollytellingPage() {
                             }}
                         />
 
+                        {/* Manual Trigger Link */}
+                        <div className="mt-4 text-center">
+                            <button
+                                onClick={() => setShowManualForm(!showManualForm)}
+                                className="text-sm text-neutral-500 hover:text-white transition-colors underline decoration-neutral-700 underline-offset-4"
+                            >
+                                Adresse introuvable ? Saisir manuellement
+                            </button>
+                        </div>
+
                         {/* Early Data Proof / Property Summary */}
                         <AnimatePresence>
                             {isAddressSelected && (
@@ -556,24 +566,57 @@ export default function ScrollytellingPage() {
                 ZONE 4 — THE PERSONAL IMPACT (Le Personnel)
                 Theme: Deep Blue/Indigo (Trust)
             ================================================================ */}
-            <Section id="my-pocket" className="bg-deep-highlight/30 rounded-[3rem] my-4 border border-white/5 shadow-tactile">
-                <SectionTitle label="Votre Poche" title="Ce que ça change pour vous" labelColor="text-gold" />
+            <Section id="my-pocket" className="bg-indigo-950/10 rounded-[3rem] my-4 border border-indigo-500/10 shadow-tactile relative overflow-hidden">
+                {/* Background decorative blob */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[100px] pointer-events-none" />
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-8 relative z-10">
+                    <div className="text-left">
+                        <span className="text-xs uppercase tracking-[0.3em] text-indigo-400 font-medium">Votre Poche</span>
+                        <h2 className="text-3xl font-bold text-white tracking-tight mt-2">
+                            Ce que ça change pour vous
+                        </h2>
+                    </div>
+
+                    {/* GLOBAL VIEW TOGGLE for this section */}
+                    <div className="bg-black/40 backdrop-blur-md p-1 rounded-full border border-white/10 flex">
+                        <button
+                            onClick={() => useViewModeStore.getState().setViewMode('immeuble')}
+                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${viewMode === 'immeuble'
+                                ? 'bg-indigo-500 text-white shadow-lg'
+                                : 'text-neutral-500 hover:text-white'
+                                }`}
+                        >
+                            Immeuble
+                        </button>
+                        <button
+                            onClick={() => useViewModeStore.getState().setViewMode('maPoche')}
+                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${viewMode === 'maPoche'
+                                ? 'bg-indigo-500 text-white shadow-lg'
+                                : 'text-neutral-500 hover:text-white'
+                                }`}
+                        >
+                            Mon Lot
+                        </button>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
                     {/* Tantieme Calculator — Manual Override */}
-                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-amber-500/20 shadow-glow-finance">
+                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-500/20 shadow-glow-finance h-full">
                         <TantiemeCalculator
                             financing={financing}
                             simulationInputs={simulationInputs}
-                            className="bg-transparent border-none shadow-none"
+                            className="bg-transparent border-none shadow-none h-full"
                         />
                     </div>
 
                     {/* Valuation Card — The "Capital Gain" */}
-                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-emerald-500/20 shadow-glow-valuation p-8 md:p-10 flex flex-col justify-center">
+                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-500/20 shadow-glow-valuation p-8 md:p-10 flex flex-col justify-center h-full">
                         <ValuationCard
                             valuation={valuation}
                             financing={financing}
+                            className="bg-transparent border-none shadow-none h-full"
                         />
                     </div>
                 </div>
