@@ -13,7 +13,7 @@
 
 import { useEffect, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, X, Save, Upload, MapPin, Building2, TrendingUp, AlertTriangle, Download } from 'lucide-react';
+import { MapPin, Building2, TrendingUp, AlertTriangle, Sparkles } from 'lucide-react';
 
 // --- CORE IMPORTS ---
 import { supabase } from '@/lib/supabaseClient';
@@ -42,7 +42,6 @@ import { HeatingSystemAlert } from '@/components/business/HeatingSystemAlert';
 import { RisksCard } from '@/components/business/RisksCard';
 import { InactionCostCard } from '@/components/business/InactionCostCard';
 import { ComparisonSplitScreen } from '@/components/business/ComparisonSplitScreen';
-import { ValuationCard } from '@/components/business/ValuationCard';
 import { BenchmarkChart } from '@/components/business/BenchmarkChart';
 import { FinancingCard } from '@/components/business/FinancingCard';
 import { SubsidyTable } from '@/components/business/SubsidyTable';
@@ -135,7 +134,7 @@ export default function ScrollytellingPage() {
     const [calculationError, setCalculationError] = useState<string | null>(null);
 
     // --- VIEW MODE STORE ---
-    const { viewMode } = useViewModeStore();
+    const { viewMode, getAdjustedValue } = useViewModeStore();
 
     // --- CALCULATION ENGINE ---
     const runCalculation = useCallback((input: DiagnosticInput) => {
@@ -152,6 +151,7 @@ export default function ScrollytellingPage() {
     useEffect(() => {
         runCalculation(diagnosticInput);
     }, [diagnosticInput, runCalculation]);
+
 
     // --- PROJECT LOADING ---
     useEffect(() => {
@@ -239,6 +239,14 @@ export default function ScrollytellingPage() {
 
     const { financing, valuation, inactionCost } = diagnosticResult;
     const isPassoire = diagnosticInput.currentDPE === "F" || diagnosticInput.currentDPE === "G";
+    const greenValueGain = valuation?.greenValueGain ?? null;
+    const adjustedGreenValueGain = greenValueGain === null ? null : getAdjustedValue(greenValueGain);
+    const greenValueDisplay = adjustedGreenValueGain === null || Number.isNaN(adjustedGreenValueGain)
+        ? "0000"
+        : formatCurrency(adjustedGreenValueGain);
+    const averagePriceDisplay = diagnosticInput.averagePricePerSqm
+        ? formatCurrency(diagnosticInput.averagePricePerSqm)
+        : "0000";
 
     return (
         <div className="min-h-screen font-sans selection:bg-gold/30 selection:text-gold-light bg-deep text-white overflow-hidden">
@@ -277,12 +285,22 @@ export default function ScrollytellingPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1 }}
                     >
+                        <div className="flex justify-center mb-6">
+                            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_0_40px_rgba(212,175,55,0.15)]">
+                                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-gold/80 font-semibold">
+                                    <Sparkles className="w-3 h-3 text-gold" />
+                                    Valo-Syndic
+                                </div>
+                                <span className="w-px h-4 bg-gold/30" />
+                                <span className="text-xs text-white/70 tracking-wide">Premium Advisory Desk</span>
+                            </div>
+                        </div>
                         <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
                             <span className="text-white">Révélez le potentiel</span><br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de vos copropriétés</span>
                         </h1>
-                        <p className="text-xl md:text-2xl text-muted font-light max-w-2xl mx-auto">
-                            Transformez la rénovation énergétique en <span className="text-white font-medium border-b border-gold/50">levier patrimonial</span> pour vos mandants.
+                        <p className="text-lg md:text-2xl text-muted font-light max-w-none mx-auto whitespace-nowrap">
+                            Transformez la rénovation énergétique en levier patrimonial pour vos mandants.
                         </p>
                     </motion.div>
 
@@ -296,8 +314,97 @@ export default function ScrollytellingPage() {
                                 setIsAddressSelected(true);
                                 setDiagnosticInput((prev) => ({ ...prev, ...data }));
                             }}
-                            onManualTrigger={() => setShowManualForm(true)}
                         />
+
+                        <div className="mt-4">
+                            <button
+                                onClick={() => setShowManualForm((prev) => !prev)}
+                                className="w-full flex items-center justify-between gap-4 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all"
+                            >
+                                <div className="text-left">
+                                    <p className="text-xs uppercase tracking-[0.25em] text-white/50 font-semibold">Adresse introuvable</p>
+                                    <p className="text-sm text-white/80">Déployez la saisie manuelle premium</p>
+                                </div>
+                                <span className="text-xs uppercase tracking-[0.25em] text-gold font-semibold">
+                                    {showManualForm ? "Masquer" : "Déplier"}
+                                </span>
+                            </button>
+                            <AnimatePresence>
+                                {showManualForm && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/[0.02] border border-white/10 rounded-2xl p-5">
+                                            <div className="md:col-span-2 space-y-2">
+                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Adresse</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
+                                                    value={diagnosticInput.address}
+                                                    onChange={(e) => {
+                                                        const nextValue = e.target.value;
+                                                        setDiagnosticInput((prev) => ({ ...prev, address: nextValue }));
+                                                        setIsAddressSelected(Boolean(nextValue));
+                                                    }}
+                                                    placeholder="Ex : 12 rue de la Paix, Angers"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Code postal</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
+                                                    value={diagnosticInput.postalCode || ""}
+                                                    onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, postalCode: e.target.value }))}
+                                                    placeholder="0000"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Ville</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
+                                                    value={diagnosticInput.city || ""}
+                                                    onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, city: e.target.value }))}
+                                                    placeholder="0000"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">DPE actuel</label>
+                                                <select
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
+                                                    value={diagnosticInput.currentDPE}
+                                                    onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, currentDPE: e.target.value as DPELetter }))}
+                                                >
+                                                    {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => <option key={l} value={l}>{l}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Nombre de lots</label>
+                                                <input
+                                                    type="number"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
+                                                    value={diagnosticInput.numberOfUnits}
+                                                    onChange={(e) => setDiagnosticInput(prev => ({ ...prev, numberOfUnits: parseInt(e.target.value || "0", 10) }))}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Travaux (€ HT)</label>
+                                                <input
+                                                    type="number"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
+                                                    value={diagnosticInput.estimatedCostHT}
+                                                    onChange={(e) => setDiagnosticInput(prev => ({ ...prev, estimatedCostHT: parseInt(e.target.value || "0", 10) }))}
+                                                />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         <AnimatePresence>
                             {isAddressSelected && (
@@ -343,7 +450,7 @@ export default function ScrollytellingPage() {
                                 </div>
                                 <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
                                     <TrendingUp className="w-4 h-4 text-gold" />
-                                    <span className="text-sm font-bold financial-num">{formatCurrency(diagnosticInput.averagePricePerSqm || 0)} /m²</span>
+                                    <span className="text-sm font-bold financial-num">{averagePriceDisplay} /m²</span>
                                 </div>
                                 <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
                                     <Building2 className="w-4 h-4 text-gold" />
@@ -447,14 +554,18 @@ export default function ScrollytellingPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-                    <div className="h-full">
-                        <ValuationCard
-                            valuation={valuation}
-                            financing={financing}
-                            className="h-full bg-deep-light/30 border-white/5"
-                        />
-                    </div>
-                    <div className="h-full">
+                    <Card className="md:col-span-2 border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-xl">
+                        <CardContent className="p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                            <div>
+                                <p className="text-[10px] uppercase tracking-[0.35em] text-emerald-300/80 font-semibold">Valeur verte estimée</p>
+                                <p className="text-sm text-white/70 mt-2">Valorisation patrimoniale directement issue du moteur de calcul.</p>
+                            </div>
+                            <div className="text-4xl md:text-5xl font-light text-emerald-300 tracking-tighter financial-num">
+                                +{greenValueDisplay}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <div className="h-full md:col-span-2">
                         <TantiemeCalculator
                             financing={financing}
                             simulationInputs={simulationInputs}
@@ -560,51 +671,6 @@ export default function ScrollytellingPage() {
                 </div>
             </Section>
 
-            {/* Manual Form Modal would go here (simplified for this view) */}
-            {showManualForm && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="bg-deep border border-white/10 rounded-3xl p-8 max-w-lg w-full relative group">
-                        <button onClick={() => setShowManualForm(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
-                            <X className="w-6 h-6" />
-                        </button>
-                        <h3 className="text-2xl font-bold text-white mb-6">Saisie Manuelle</h3>
-                        {/* Form fields mimicking the original layout but with new styles */}
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-xs uppercase font-bold text-muted">DPE Actuel</label>
-                                <select
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                    value={diagnosticInput.currentDPE}
-                                    onChange={(e) => setDiagnosticInput(prev => ({ ...prev, currentDPE: e.target.value as DPELetter }))}
-                                >
-                                    {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => <option key={l} value={l}>{l}</option>)}
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs uppercase font-bold text-muted">Nombre de lots</label>
-                                <input
-                                    type="number"
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                    value={diagnosticInput.numberOfUnits}
-                                    onChange={(e) => setDiagnosticInput(prev => ({ ...prev, numberOfUnits: parseInt(e.target.value) }))}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs uppercase font-bold text-muted">Travaux (€ HT)</label>
-                                <input
-                                    type="number"
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                    value={diagnosticInput.estimatedCostHT}
-                                    onChange={(e) => setDiagnosticInput(prev => ({ ...prev, estimatedCostHT: parseInt(e.target.value) }))}
-                                />
-                            </div>
-                            <Button className="w-full bg-gold text-black font-bold h-12 mt-4 hover:bg-gold-light" onClick={() => setShowManualForm(false)}>
-                                Valider
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

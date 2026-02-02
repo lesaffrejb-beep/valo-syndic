@@ -6,7 +6,7 @@ import { type InactionCost } from "@/lib/schemas";
 import { AnimatedCurrency } from "@/components/ui/AnimatedNumber";
 import { useViewModeStore } from "@/stores/useViewModeStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
+import { AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils"; // Will adapt based on check results
 
 interface InactionCostCardProps {
@@ -23,7 +23,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
 
     return (
         <Card variant="glass" className="h-full border-white/5 bg-white/[0.02] overflow-visible">
-            <CardContent className="flex flex-col items-center justify-center py-16 px-6 relative z-10">
+            <CardContent className="flex flex-col items-center justify-center py-16 px-6 relative z-10 min-h-[520px]">
                 {/* Header Discret */}
                 <div className="flex items-center gap-2 mb-8 opacity-70">
                     <AlertCircle className="w-4 h-4 text-terracotta" />
@@ -59,15 +59,16 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                         )}
                     </button>
 
-                    <AnimatePresence>
-                        {isExpanded && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: "auto" }}
-                                exit={{ opacity: 0, height: 0 }}
-                                className="overflow-hidden"
-                            >
-                                <div className="pt-2 flex flex-col gap-2">
+                    <div className="relative mt-3 h-[116px]">
+                        <AnimatePresence mode="wait">
+                            {isExpanded && (
+                                <motion.div
+                                    key="details"
+                                    initial={{ opacity: 0, y: -6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -6 }}
+                                    className="absolute inset-0 flex flex-col gap-2"
+                                >
                                     <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
                                         <span className="text-xs text-muted">Surcoût Travaux (Inflation)</span>
                                         <span className="text-sm text-white financial-num">
@@ -80,10 +81,10 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                                             <AnimatedCurrency value={depreciation} />
                                         </span>
                                     </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
 
                 {/* Subtle Glow Background */}
