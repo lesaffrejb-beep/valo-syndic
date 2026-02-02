@@ -159,7 +159,7 @@ export default function ScrollytellingPage() {
     const marketTrend = useMemo(() => getMarketTrend(), []);
 
     // --- EXPORT / IMPORT LOGIC ---
-    const handleExport = useCallback(() => { /* Standard export logic */ }, [diagnosticInput, diagnosticResult]);
+    const handleExport = useCallback(() => { /* Standard export logic */ }, []);
     const handleImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => { /* Standard import logic */ }, []);
 
     // --- SIMULATION INPUTS FOR SUBSIDY TABLE ---

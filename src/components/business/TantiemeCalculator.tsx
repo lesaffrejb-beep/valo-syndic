@@ -163,7 +163,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
 
                         <div className="flex gap-2 justify-end">
                             <Button variant="ghost" onClick={() => setTantiemes(1000)} className="text-[10px] h-7 px-2">
-                                Tout l'immeuble
+                                Tout l&apos;immeuble
                             </Button>
                         </div>
                     </div>
@@ -173,7 +173,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                 <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent rounded-3xl -m-4 border border-gold/10" />
                     <div className="relative flex flex-col items-center justify-center h-full text-center space-y-2 p-4">
-                        <p className="text-xs uppercase tracking-[0.2em] text-muted font-medium">Votre effort d'épargne</p>
+                        <p className="text-xs uppercase tracking-[0.2em] text-muted font-medium">Votre effort d&apos;épargne</p>
 
                         <div className="text-6xl md:text-7xl font-sans font-light text-gold tracking-tighter financial-num">
                             <AnimatedCurrency value={calculation.monthlyPayment} />

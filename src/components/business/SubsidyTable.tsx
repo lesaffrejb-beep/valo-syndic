@@ -169,7 +169,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                 {/* Footer Notes */}
                 <div className="mt-4 pt-4 border-t border-white/5 flex flex-col md:flex-row gap-4 text-[10px] text-muted">
                     <p className="flex-1 leading-relaxed">
-                        <strong className="text-white">Note :</strong> Le taux MPR affiché est le socle collectif. Les primes individuelles (jusqu'à 3000€) sont versées en complément aux ménages modestes.
+                        <strong className="text-white">Note :</strong> Le taux MPR affiché est le socle collectif. Les primes individuelles (jusqu&apos;à 3000€) sont versées en complément aux ménages modestes.
                     </p>
                     <div className="flex gap-4 opacity-70">
                         <span className="flex items-center gap-1">ℹ️ Éco-PTZ 0%</span>
