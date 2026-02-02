@@ -204,12 +204,8 @@ const RiskGauge = ({ label, value, level, iconPath, isDanger }: RiskGaugeProps) 
 
     return (
         <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-black/40 border border-white/5 backdrop-blur-md relative overflow-hidden group hover:bg-black/60 transition-colors">
-            {/* Icon Background */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] group-hover:opacity-10 transition-opacity">
-                <svg className="w-16 h-16 fill-current text-white" viewBox="0 0 24 24">
-                    <path d={iconPath} />
-                </svg>
-            </div>
+            {/* Icon Background - REMOVED DUPLICATE */}
+
 
             <div className="relative mb-2">
                 {/* SVG Gauge */}

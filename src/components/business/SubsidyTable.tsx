@@ -127,7 +127,7 @@ export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
 
     return (
         <motion.div
-            className="card-bento"
+            className="group relative overflow-hidden p-8 md:p-12 h-full flex flex-col"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={DEFAULT_TRANSITION}

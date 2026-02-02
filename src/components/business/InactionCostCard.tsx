@@ -25,16 +25,17 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
 
     return (
         <motion.div
-            className="group card-bento overflow-visible relative"
+            className="group relative overflow-visible h-full flex flex-col"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={DEFAULT_TRANSITION}
         >
-            <div className="flex flex-col gap-1 mb-10 relative z-10">
-                <h3 className="text-xl font-black text-white flex items-center gap-3 tracking-tight">
+            <div className="flex flex-col gap-2 mb-12 relative z-10">
+                <h3 className="text-3xl font-black text-white flex items-center gap-4 tracking-tighter">
+                    <div className="w-2 h-8 bg-danger rounded-full" />
                     Érosion Patrimoniale
                 </h3>
-                <p className="text-[10px] text-white/40 uppercase tracking-wider">Coût de l&apos;inaction sur 36 mois</p>
+                <p className="text-[10px] text-danger font-bold uppercase tracking-[0.2em] ml-6">Coût de l&apos;inaction estimé à 36 mois</p>
             </div>
 
             {/* Comparaison avant/after — INTERNAL TACTILE CARDS */}

@@ -165,6 +165,8 @@ export default function ScrollytellingPage() {
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
     const [selectedProfile, setSelectedProfile] = useState<IncomeProfile | null>(null);
+    const [showManualForm, setShowManualForm] = useState(false);
+    const [isAddressSelected, setIsAddressSelected] = useState(false);
 
     // --- DIAGNOSTIC STATE ---
     const [diagnosticInput, setDiagnosticInput] = useState<DiagnosticInput>(DEFAULT_DIAGNOSTIC_INPUT);
@@ -343,6 +345,7 @@ export default function ScrollytellingPage() {
                             placeholder="Entrez l'adresse de votre copropriété..."
                             className="w-full [&_input]:h-14 [&_input]:text-lg [&_input]:px-6 [&_input]:rounded-2xl [&_input]:border-white/10 [&_input]:bg-black/60 [&_input]:backdrop-blur-xl [&_input]:shadow-2xl"
                             onSelect={(data) => {
+                                setIsAddressSelected(true);
                                 setDiagnosticInput((prev) => ({
                                     ...prev,
                                     address: data.address,
@@ -353,33 +356,113 @@ export default function ScrollytellingPage() {
                                 }));
                             }}
                         />
-                        {/* Address display below input */}
-                        {diagnosticInput.address && (
-                            <motion.p
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-center mt-4 text-neutral-500 text-sm"
-                            >
-                                📍 {diagnosticInput.address}
-                            </motion.p>
-                        )}
+
+                        {/* Early Data Proof / Property Summary */}
+                        <AnimatePresence>
+                            {isAddressSelected && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-6 p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-between gap-6"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500">
+                                            <ShieldAlert className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Zone de marché</p>
+                                            <p className="text-sm font-bold text-white">{diagnosticInput.city} ({diagnosticInput.postalCode})</p>
+                                        </div>
+                                    </div>
+                                    <div className="h-8 w-[1px] bg-white/10" />
+                                    <div>
+                                        <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Prix Quartier</p>
+                                        <p className="text-sm font-bold text-amber-500">{diagnosticInput.averagePricePerSqm} €/m²</p>
+                                    </div>
+                                    <div className="h-8 w-[1px] bg-white/10" />
+                                    <div className="flex flex-col items-center">
+                                        <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">DPE</p>
+                                        <span className={`text-xs font-black px-2 py-0.5 rounded bg-red-500 text-white`}>{diagnosticInput.currentDPE}</span>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Manual Form Fallback */}
+                        <AnimatePresence>
+                            {showManualForm && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="mt-8 p-8 bg-zinc-900/50 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden"
+                                >
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="col-span-2 flex items-center justify-between mb-4">
+                                            <h3 className="text-lg font-bold text-white tracking-tight">Saisie Manuelle</h3>
+                                            <button onClick={() => setShowManualForm(false)} className="text-white/40 hover:text-white transition-colors">
+                                                <X className="w-5 h-5" />
+                                            </button>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">DPE Actuel</label>
+                                            <select
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-amber-500/50 transition-colors appearance-none"
+                                                value={diagnosticInput.currentDPE}
+                                                onChange={(e) => setDiagnosticInput(prev => ({ ...prev, currentDPE: e.target.value as DPELetter }))}
+                                            >
+                                                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => <option key={l} value={l}>{l}</option>)}
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Nombre de lots</label>
+                                            <input
+                                                type="number"
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-amber-500/50 transition-colors"
+                                                value={diagnosticInput.numberOfUnits}
+                                                onChange={(e) => setDiagnosticInput(prev => ({ ...prev, numberOfUnits: parseInt(e.target.value) }))}
+                                            />
+                                        </div>
+
+                                        <div className="col-span-2 space-y-2">
+                                            <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Budget Travaux Estimé (€ HT)</label>
+                                            <input
+                                                type="number"
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-amber-500/50 transition-colors"
+                                                value={diagnosticInput.estimatedCostHT}
+                                                onChange={(e) => setDiagnosticInput(prev => ({ ...prev, estimatedCostHT: parseInt(e.target.value) }))}
+                                            />
+                                        </div>
+
+                                        <button
+                                            onClick={() => setShowManualForm(false)}
+                                            className="col-span-2 mt-4 py-4 bg-amber-500 text-black font-black uppercase tracking-widest rounded-2xl shadow-glow hover:scale-[1.02] transition-all"
+                                        >
+                                            Actualiser le Diagnostic
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Scroll indicator */}
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1.5, duration: 0.5 }}
-                        className="mt-12"
+                        transition={{ delay: 1, duration: 0.5 }}
+                        className="mt-8"
                     >
-                        <div className="flex flex-col items-center gap-3 text-neutral-500">
-                            <span className="text-[10px] uppercase tracking-[0.3em] font-medium">Découvrir</span>
+                        <div className="flex flex-col items-center gap-2 text-neutral-600">
+                            <span className="text-xs uppercase tracking-widest">Découvrir</span>
                             <motion.div
                                 animate={{ y: [0, 8, 0] }}
                                 transition={{ repeat: Infinity, duration: 1.5 }}
-                                className="w-6 h-10 border border-neutral-600 rounded-full flex justify-center pt-2"
+                                className="w-5 h-8 border border-neutral-700 rounded-full flex justify-center pt-1"
                             >
-                                <div className="w-1.5 h-2.5 bg-neutral-500 rounded-full" />
+                                <div className="w-1 h-2 bg-neutral-600 rounded-full" />
                             </motion.div>
                         </div>
                     </motion.div>
@@ -391,24 +474,25 @@ export default function ScrollytellingPage() {
                 Vibe: Froid, Clinique, Urgent
             ================================================================ */}
             <Section id="diagnostic">
-                <SectionTitle
-                    label="Le Diagnostic"
-                    title="Ce que révèle votre immeuble"
-                    labelColor="text-red-500/70"
-                />
+                <div className="text-center mb-8">
+                    <span className="text-xs uppercase tracking-[0.3em] text-red-500/70 font-medium">Le Diagnostic</span>
+                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
+                        Ce que révèle votre immeuble
+                    </h2>
+                </div>
 
                 {/* Heating System Alert */}
                 <HeatingSystemAlert heatingType={diagnosticInput.heatingSystem || null} />
 
                 {/* Risks Card */}
                 {diagnosticInput.coordinates && (
-                    <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] shadow-2xl overflow-hidden hover:border-white/[0.12] transition-colors">
+                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl overflow-hidden">
                         <RisksCard coordinates={diagnosticInput.coordinates} />
                     </div>
                 )}
 
-                {/* Inaction Cost Card — Dominant, Warning accent */}
-                <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-red-500/15 shadow-2xl hover:border-red-500/25 transition-colors">
+                {/* InactionCostCard — Dominant, Warning accent */}
+                <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2rem] border border-risks/20 shadow-glow-risks p-6 md:p-10">
                     <InactionCostCard inactionCost={inactionCost} />
                 </div>
 
@@ -416,7 +500,7 @@ export default function ScrollytellingPage() {
                 <BenchmarkChart
                     currentDPE={diagnosticInput.currentDPE}
                     city={diagnosticInput.city}
-                    className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] hover:border-white/[0.12] transition-colors"
+                    className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-2xl border border-white/5"
                 />
             </Section>
 
@@ -425,182 +509,147 @@ export default function ScrollytellingPage() {
                 Vibe: Lumineux (Gold/Bronze accents), Espoir
             ================================================================ */}
             <Section id="projection">
-                <SectionTitle
-                    label="La Projection"
-                    title="Avant / Après : le point de bascule"
-                    labelColor="text-amber-500/80"
-                />
+                <div className="text-center mb-8">
+                    <span className="text-xs uppercase tracking-[0.3em] text-amber-600/70 font-medium">La Projection</span>
+                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
+                        Avant / Après : le point de bascule
+                    </h2>
+                </div>
 
-                {/* Comparison Split Screen — The Visual Tipping Point */}
                 <ComparisonSplitScreen
-                    inactionCost={inactionCost}
-                    valuation={valuation}
-                    financing={financing}
-                />
-
-                {/* Valuation Card — Focus on the positive number */}
-                <ValuationCard
-                    valuation={valuation}
-                    financing={financing}
-                    marketTrend={marketTrend}
-                    isPassoire={isPassoire}
+                    initialDPE={diagnosticInput.currentDPE}
+                    targetDPE={diagnosticInput.targetDPE}
+                    energyGain={financing.energyGainPercent}
+                    valuationIncrease={valuation.estimatedGain}
                 />
             </Section>
 
             {/* ================================================================
-                ZONE 3 — THE FINANCIAL ENGINE (La Logique)
-                Vibe: Technique, Dense mais structuré, Hedge Fund dashboard
+                ZONE 3 — THE FINANCING PLAN (La Logique)
+                Vibe: Sérieux, Technique mais clair (Slate/Blue)
             ================================================================ */}
-            <Section id="financing">
-                <SectionTitle
-                    label="Le Moteur Financier"
-                    title="Plan de financement détaillé"
-                    labelColor="text-neutral-500"
-                />
+            <Section id="finance">
+                <div className="text-center mb-8">
+                    <span className="text-xs uppercase tracking-[0.3em] text-emerald-500/70 font-medium">Le Financement</span>
+                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
+                        Une rentabilité immédiate
+                    </h2>
+                </div>
 
-                {/* Financing Card — The macro view */}
-                <FinancingCard
-                    financing={financing}
-                    numberOfUnits={diagnosticInput.numberOfUnits}
-                />
-
-                {/* Subsidy Table — Collapsible for rhythm */}
-                <details className="group">
-                    <summary className="cursor-pointer flex items-center justify-between p-5 bg-[#0A0A0A]/70 backdrop-blur-xl rounded-2xl border border-white/[0.08] hover:border-white/[0.15] transition-all shadow-lg">
-                        <span className="text-sm font-semibold text-neutral-200">
-                            Voir le tableau comparatif des aides par profil
-                        </span>
-                        <span className="text-neutral-400 group-open:rotate-180 transition-transform duration-300">▼</span>
-                    </summary>
-                    <div className="mt-4">
-                        <SubsidyTable inputs={simulationInputs} />
-                    </div>
-                </details>
-            </Section>
-
-            {/* ================================================================
-                ZONE 4 — THE PERSONALIZATION (Le "Moi")
-                Vibe: Interactif, Personnel
-            ================================================================ */}
-            <Section id="personalization">
-                <SectionTitle
-                    label="Personnalisation"
-                    title="Et pour vous, concrètement ?"
-                    labelColor="text-emerald-500/80"
-                />
-
-                {/* Profile Selector — iOS style tabs */}
-                <ProfileSelector selected={selectedProfile} onSelect={setSelectedProfile} />
-
-                {/* Tantieme Calculator — Most interactive component */}
-                <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] shadow-2xl overflow-hidden hover:border-emerald-500/20 transition-colors">
-                    <TantiemeCalculator
+                {/* Financing Card — The "Breakdown" and "Bottom Line" */}
+                {/* Add standard Bento padding wrapper */}
+                <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2rem] border border-emerald-500/10 shadow-glow-finance p-8 md:p-12">
+                    <FinancingCard
                         financing={financing}
-                        simulationInputs={simulationInputs}
+                        numberOfUnits={diagnosticInput.numberOfUnits}
                     />
                 </div>
 
-                {/* Transparent Receipt — The indisputable final result */}
-                <div className="bg-[#0A0A0A]/70 backdrop-blur-xl rounded-3xl border border-white/[0.08] shadow-2xl hover:border-white/[0.12] transition-colors">
-                    <TransparentReceipt financing={financing} />
+                {/* Subsidy Table — The PROOF */}
+                <div className="mt-8">
+                    <SubsidyTable inputs={simulationInputs} />
                 </div>
             </Section>
 
             {/* ================================================================
-                ZONE 5 — THE CLOSING (Action)
-                Important bottom padding
+                ZONE 4 — THE PERSONAL IMPACT (Le Personnel)
+                Vibe: Intime, Direct (Gold again but warmer)
             ================================================================ */}
-            <Section id="closing" className="pb-32">
-                <SectionTitle
-                    label="Passez à l'action"
-                    title="Téléchargez votre rapport"
-                    labelColor="text-amber-500/80"
-                />
+            <Section id="my-pocket">
+                <SectionTitle label="Votre Poche" title="Ce que ça change pour vous" labelColor="text-amber-500" />
 
-                {/* Action Buttons Grid */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    {/* Primary: PDF Download */}
-                    <DownloadPdfButton result={diagnosticResult} />
-
-                    {/* Secondary: PPTX Download */}
-                    <DownloadPptxButton result={diagnosticResult} />
-                </div>
-
-                {/* Legal Warning */}
-                <div className="mt-12">
-                    <LegalWarning variant="footer" className="opacity-40 text-[10px]" />
-                </div>
-            </Section>
-
-            {/* ================================================================
-                FLOATING MODULE — OBJECTION HANDLER
-                Fixed bottom-right, opens side drawer
-            ================================================================ */}
-            <motion.button
-                onClick={() => setShowObjections(true)}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 2 }}
-                className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#0A0A0A]/90 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center shadow-2xl hover:bg-white/10 hover:border-amber-600/30 transition-all group"
-                title="Avocat du Diable — Répondre aux objections"
-            >
-                <MessageCircle className="w-6 h-6 text-neutral-400 group-hover:text-amber-500 transition-colors" />
-            </motion.button>
-
-            {/* Objection Handler Drawer */}
-            <AnimatePresence mode="wait">
-                {showObjections && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[90] flex justify-end"
-                        key="objection-modal"
-                    >
-                        {/* Backdrop */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setShowObjections(false)}
-                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Tantieme Calculator — Manual Override */}
+                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-amber-500/20 shadow-glow-finance">
+                        <TantiemeCalculator
+                            financing={financing}
+                            simulationInputs={simulationInputs}
+                            className="bg-transparent border-none shadow-none"
                         />
+                    </div>
 
-                        {/* Drawer */}
-                        <motion.div
-                            initial={{ x: "100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "100%" }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="relative h-full w-full max-w-md bg-[#020202] border-l border-white/10 shadow-2xl overflow-y-auto z-[100]"
-                        >
-                            <div className="p-6">
-                                {/* Header */}
-                                <div className="flex justify-between items-center mb-8">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-amber-600/10 border border-amber-600/20 rounded-xl flex items-center justify-center">
-                                            <ShieldAlert className="w-5 h-5 text-amber-500" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-lg font-bold text-neutral-200 tracking-tight">Avocat du Diable</h2>
-                                            <p className="text-xs text-neutral-500">Répondez aux objections en AG</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => setShowObjections(false)}
-                                        className="p-2 hover:bg-white/5 rounded-lg transition-colors text-neutral-500 hover:text-neutral-300"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </button>
+                    {/* Valuation Card — The "Capital Gain" */}
+                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-emerald-500/20 shadow-glow-valuation p-8 md:p-10 flex flex-col justify-center">
+                        <ValuationCard
+                            valuation={valuation}
+                            financing={financing}
+                        />
+                    </div>
+                </div>
+
+                {/* Profile Selector for context switching */}
+                <div className="mt-12 max-w-xl mx-auto">
+                    <ProfileSelector
+                        selected={selectedProfile}
+                        onSelect={setSelectedProfile}
+                    />
+                </div>
+            </Section>
+
+            {/* ================================================================
+                ZONE 5 — THE CALL TO ACTION (L'Action)
+                Vibe: Concluant, Urgence positive
+            ================================================================ */}
+            <Section id="action">
+                <div className="text-center mb-10">
+                    <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6">
+                        Ne laissez pas dormir<br />
+                        <span className="text-amber-500">votre patrimoine.</span>
+                    </h2>
+                    <p className="text-neutral-400 text-lg max-w-lg mx-auto">
+                        Votre immeuble a un potentiel inattendu. Téléchargez votre rapport complet pour le présenter en AG.
+                    </p>
+                </div>
+
+                <div className="flex flex-col items-center gap-6">
+                    {/* Download Buttons */}
+                    <div className="flex flex-wrap justify-center gap-4">
+                        <DownloadPdfButton
+                            result={diagnosticResult}
+                            input={diagnosticInput}
+                            variant="primary"
+                            className="h-14 px-8 text-lg rounded-2xl shadow-glow-finance bg-amber-500 hover:bg-amber-400 text-black font-bold"
+                        />
+                        <DownloadPptxButton
+                            result={diagnosticResult}
+                            input={diagnosticInput}
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-8 opacity-60">
+                        <LegalWarning />
+                        <span className="text-[10px] text-neutral-600 uppercase tracking-widest">Version Beta 3.0</span>
+                    </div>
+
+                    {/* Objection Handler (Hidden by default, can be toggled) */}
+                    <button
+                        onClick={() => setShowObjections(!showObjections)}
+                        className="mt-12 text-xs text-neutral-600 hover:text-neutral-400 underline decoration-neutral-800 underline-offset-4"
+                    >
+                        {showObjections ? "Masquer les objections" : "Voir les arguments pour l'AG"}
+                    </button>
+
+                    <AnimatePresence>
+                        {showObjections && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="w-full max-w-2xl overflow-hidden"
+                            >
+                                <div className="pt-8">
+                                    <ObjectionHandler />
                                 </div>
-
-                                {/* Content */}
-                                <ObjectionHandler />
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </Section>
         </div>
     );
 }
+
+// Add these to global css or tailwind config if missing
+// .shadow-glow-risks { ... }
+// .shadow-glow-finance { ... }
+// .shadow-glow-valuation { ... }

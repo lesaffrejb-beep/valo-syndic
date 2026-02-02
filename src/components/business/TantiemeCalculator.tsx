@@ -219,21 +219,18 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                         )}
                     </div>
 
-                    {/* Premium Slider */}
                     <div className="relative h-12 flex items-center mb-6">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-800 shadow-inner" />
                         <input
                             type="range"
                             id="tantiemes"
                             min={1}
-                            max={1000}
+                            max={600}
                             value={tantiemes}
                             onChange={(e) => setTantiemes(Number(e.target.value))}
-                            className="relative w-full h-3 bg-transparent rounded-full appearance-none cursor-pointer z-10
-                                [&::-webkit-slider-track]:bg-gradient-to-r [&::-webkit-slider-track]:from-neutral-700 [&::-webkit-slider-track]:via-neutral-600 [&::-webkit-slider-track]:to-neutral-700 [&::-webkit-slider-track]:rounded-full [&::-webkit-slider-track]:h-3
-                                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-amber-400/50 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:cursor-grabbing
-                                [&::-moz-range-track]:bg-gradient-to-r [&::-moz-range-track]:from-neutral-700 [&::-moz-range-track]:via-neutral-600 [&::-moz-range-track]:to-neutral-700 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:h-3
-                                [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-amber-400/50 [&::-moz-range-thumb]:cursor-grab"
+                            className="w-full h-2.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-white/10 ring-1 ring-white/10"
+                            style={{
+                                background: `linear-gradient(to right, #D4AF37 0%, #D4AF37 ${(tantiemes / 600) * 100}%, rgba(255,255,255,0.05) ${(tantiemes / 600) * 100}%, rgba(255,255,255,0.05) 100%)`
+                            }}
                         />
                     </div>
 

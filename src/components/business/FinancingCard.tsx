@@ -52,7 +52,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
     return (
         <motion.div
             ref={ref}
-            className="card-bento group relative overflow-hidden"
+            className="group relative overflow-hidden p-8 md:p-12 h-full flex flex-col"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={DEFAULT_TRANSITION}

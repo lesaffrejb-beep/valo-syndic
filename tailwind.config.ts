@@ -19,23 +19,44 @@ const config: Config = {
                     DEFAULT: "#3B82F6",
                     light: "#60A5FA",
                 },
-                // Maintaining existing semantic colors for code compatibility if needed, map to new system where possible
+                // Maintains existing semantic colors for code compatibility if needed, map to new system where possible
                 primary: {
                     DEFAULT: "#D4AF37", // Mapped to Gold
                     glow: "rgba(212, 175, 55, 0.15)",
                 },
-                app: "#050505",
-                surface: "#0A0B0D",
-                'surface-highlight': "#12131A",
-                'surface-hover': "#1A1B22",
-                main: "#FFFFFF",
-                muted: "#A1A1AA",
-                subtle: "#52525B",
-                boundary: "rgba(255, 255, 255, 0.1)",
-                'boundary-active': "rgba(255, 255, 255, 0.2)",
-                danger: { DEFAULT: '#EF4444' },
-                success: { DEFAULT: '#10B981' },
-                warning: { DEFAULT: '#F59E0B' },
+                app: "#020202", // Pure Obsidian
+                surface: "#080808",
+                'surface-highlight': "#0D0D0D",
+                'surface-hover': "#121212",
+                main: "#F5F5F7", // Apple-style white
+                muted: "#86868B",
+                subtle: "#424245",
+                boundary: "rgba(255, 255, 255, 0.06)",
+                'boundary-active': "rgba(255, 255, 255, 0.12)",
+                danger: {
+                    DEFAULT: '#EF4444',
+                    glow: 'rgba(239, 68, 68, 0.15)'
+                },
+                success: {
+                    DEFAULT: '#10B981',
+                    glow: 'rgba(16, 185, 129, 0.15)'
+                },
+                warning: {
+                    DEFAULT: '#F59E0B',
+                    glow: 'rgba(245, 158, 11, 0.15)'
+                },
+                finance: {
+                    DEFAULT: '#D4AF37',
+                    glow: 'rgba(212, 175, 55, 0.18)'
+                },
+                valuation: {
+                    DEFAULT: '#10B981',
+                    glow: 'rgba(16, 185, 129, 0.18)'
+                },
+                risks: {
+                    DEFAULT: '#EF4444',
+                    glow: 'rgba(239, 68, 68, 0.18)'
+                }
             },
             backgroundImage: {
                 'glass-gradient': 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
@@ -45,13 +66,14 @@ const config: Config = {
             },
             boxShadow: {
                 // C'est ICI que se joue le "Tactile"
-                'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)', // Lumière plus subtile
-                'inner-depth': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.2)', // Profondeur atténuée
-                'glass': '0 4px 20px rgba(0, 0, 0, 0.4)', // Ombre portée plus matte
-                'neon-gold': '0 0 10px -2px rgba(212, 175, 55, 0.1)', // Glow très léger
-                'tactile-inner': 'inset 0 1px 3px 0 rgba(0,0,0,0.3), inset 0 1px 1px 0 rgba(255,255,255,0.03)',
-                'glow-soft': '0 0 20px -5px rgba(212, 175, 55, 0.08)',
-                'glow-vibrant': '0 0 30px -5px rgba(212, 175, 55, 0.12)',
+                'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+                'inner-depth': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)',
+                'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.8)',
+                'neon-gold': '0 0 20px -5px rgba(212, 175, 55, 0.3)',
+                'tactile-inner': 'inset 0 1px 1px 0 rgba(255,255,255,0.05), inset 0 2px 4px 0 rgba(0,0,0,0.5)',
+                'glow-finance': '0 0 40px -10px rgba(212, 175, 55, 0.2)',
+                'glow-risks': '0 0 40px -10px rgba(239, 68, 68, 0.2)',
+                'glow-valuation': '0 0 40px -10px rgba(16, 185, 129, 0.2)',
             },
             backdropBlur: {
                 'xs': '2px',
