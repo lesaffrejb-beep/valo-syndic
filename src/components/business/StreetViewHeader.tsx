@@ -14,6 +14,7 @@ interface StreetViewHeaderProps {
  * STREET VIEW HEADER
  * Affiche la façade de l'immeuble via Google Maps Static API
  * Fallback : Dégradé élégant si pas de clé API ou erreur
+ * Full-screen background version for hero section
  */
 export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps) => {
     const [imageLoaded, setImageLoaded] = useState(false);
@@ -21,49 +22,39 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 
-    // Construire l'URL Street View
+    // Construire l'URL Street View - larger image for full background
     const streetViewUrl = apiKey && (coordinates || address)
-        ? `https://maps.googleapis.com/maps/api/streetview?size=1200x400&location=${coordinates
+        ? `https://maps.googleapis.com/maps/api/streetview?size=1600x900&location=${coordinates
             ? `${coordinates.latitude},${coordinates.longitude}`
             : encodeURIComponent(address || '')
-        }&key=${apiKey}&fov=90&pitch=0`
+        }&key=${apiKey}&fov=100&pitch=5`
         : null;
 
     useEffect(() => {
-        // Debug logs requested by user
-
-
         setImageLoaded(false);
         setImageError(false);
     }, [streetViewUrl, apiKey]);
 
-    // Fallback : Dégradé élégant (ou erreur rouge si debug)
+    // Fallback: Elegant gradient with subtle texture (no text overlay - handled by parent)
     if (!streetViewUrl || imageError) {
         return (
-            <div className={`relative w-full h-64 lg:h-80 rounded-2xl overflow-hidden flex items-center justify-center ${imageError ? 'bg-red-900/20 border border-red-500/50' : 'bg-gradient-to-r from-zinc-900 to-zinc-800'
-                }`}>
-                <div className="text-center z-10 px-6">
-                    <h2 className={`text-3xl lg:text-4xl font-bold mb-2 ${imageError ? 'text-red-500' : 'text-white'}`}>
-                        {imageError ? "Erreur Google Maps" : (address || "Copropriété")}
-                    </h2>
-                    <p className={`${imageError ? 'text-red-400 font-mono' : 'text-zinc-400'} text-sm`}>
-                        {imageError ? "Vérifier la console pour le debug" : "Évaluation Patrimoniale"}
-                    </p>
-                </div>
-                {/* Effet de profondeur */}
-                {!imageError && <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),transparent_70%)]" />}
+            <div className="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+                {/* Subtle radial gradient for depth */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)]" />
+                {/* Noise texture for premium feel */}
+                <div className="absolute inset-0 opacity-30 bg-[url('data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20200%20200%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22noiseFilter%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.9%22%20numOctaves%3D%221%22%20stitchTiles%3D%22stitch%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23noiseFilter%29%22%20opacity%3D%220.03%22%2F%3E%3C%2Fsvg%3E')]" />
             </div>
         );
     }
 
     return (
-        <div className="relative w-full h-64 lg:h-80 rounded-2xl overflow-hidden group">
-            {/* Image Street View */}
+        <div className="absolute inset-0 overflow-hidden">
+            {/* Image Street View - Full cover */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 src={streetViewUrl}
                 alt={`Façade - ${address}`}
-                className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 scale-105 ${imageLoaded ? 'opacity-40' : 'opacity-0'
                     }`}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
@@ -71,24 +62,11 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
 
             {/* Loading state */}
             {!imageLoaded && !imageError && (
-                <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 to-zinc-800 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 animate-pulse" />
             )}
 
-            {/* Overlay avec dégradé */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-            {/* Texte par-dessus */}
-            <div className="absolute bottom-6 left-6 z-10">
-                <h2 className="text-2xl lg:text-3xl font-bold text-white mb-1 drop-shadow-lg">
-                    {address || "Adresse sélectionnée"}
-                </h2>
-                <p className="text-zinc-200 text-sm drop-shadow-md">
-                    📍 Vue de la façade
-                </p>
-            </div>
-
-            {/* Effet hover */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+            {/* Subtle vignette for depth */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
         </div>
     );
 };
