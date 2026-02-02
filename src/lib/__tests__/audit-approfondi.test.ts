@@ -39,6 +39,20 @@ import {
 
 import { calculateSubsidies, type SimulationInputs } from "../subsidy-calculator";
 
+// Mock Supabase to prevent console warnings
+jest.mock('../supabaseClient', () => ({
+    supabase: {
+        from: jest.fn(() => ({
+            select: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                    single: jest.fn(() => Promise.resolve({ data: null, error: null })),
+                    data: null,
+                })),
+            })),
+        })),
+    },
+}));
+
 // ============================================================================
 // ANALYSE DES INCOHÉRENCES INTER-MODULES
 // ============================================================================

@@ -15,6 +15,22 @@ import {
     formatCurrency,
 } from '../calculator';
 
+import { TECHNICAL_PARAMS } from '../constants';
+
+// Mock Supabase to prevent console warnings
+jest.mock('../supabaseClient', () => ({
+    supabase: {
+        from: jest.fn(() => ({
+            select: jest.fn(() => ({
+                eq: jest.fn(() => ({
+                    single: jest.fn(() => Promise.resolve({ data: null, error: null })),
+                    data: null,
+                })),
+            })),
+        })),
+    },
+}));
+
 describe('MaPrimeRénov Copropriété 2026', () => {
     describe('simulateFinancing', () => {
         it('calcule correctement 55% pour sortie passoire F → C (45% base + 10% bonus)', () => {
@@ -154,9 +170,12 @@ describe('Coût de l\'inaction', () => {
                 65      // surface moyenne
             );
 
-            // Inflation 4.5% composée sur 3 ans
-            const expectedInflation = cost * (Math.pow(1.045, 3) - 1);
+            // Inflation calculée dynamiquement selon la constante
+            const inflationRate = TECHNICAL_PARAMS.constructionInflationRate;
+            const expectedInflation = cost * (Math.pow(1 + inflationRate, 3) - 1);
             const actualInflation = result.projectedCost3Years - result.currentCost;
+
+            // On vérifie que le calcul correspond bien à la formule composée
             expect(actualInflation).toBeCloseTo(expectedInflation, 0);
             expect(result.projectedCost3Years).toBeGreaterThan(cost);
         });
