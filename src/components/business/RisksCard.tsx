@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { riskService, type GeoRisk } from "@/services/riskService";
 import { motion } from "framer-motion";
+import { AlertTriangle } from "lucide-react";
 
 // Dynamic import for Leaflet map to avoid SSR issues
 const RisksMap = dynamic(() => import("./RisksMap"), {
@@ -59,6 +60,22 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
     const safeRisks = risks || riskService.getDefaultRisk();
     const hasInondation = safeRisks.inondation;
     const isDegraded = error || !coordinates || risks === null;
+
+    // Si risks est null (API HS), on affiche l'état dégradé
+    if (risks === null) {
+        return (
+            <div className="h-full bg-obsidian border-white/10 flex items-center justify-center p-6 rounded-xl border">
+                <div className="text-center space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto">
+                        <AlertTriangle className="w-6 h-6 text-yellow-500/50" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        Données Géorisques indisponibles
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     // Loading State
     if (loading && !risks) {

@@ -54,15 +54,12 @@ const RisksMap = ({ lat, lng }: RisksMapProps) => {
     const position: [number, number] = [lat, lng];
 
     return (
-        <div className="w-full h-full absolute inset-0 z-0 bg-[#111]">
+        <div className="h-full w-full relative z-0">
             <MapContainer
                 key={`${lat}-${lng}`}
                 center={position}
                 zoom={13}
-                scrollWheelZoom={false}
-                zoomControl={false}
-                className="w-full h-full opacity-60 grayscale hover:grayscale-0 transition-all duration-700"
-                style={{ background: "#000" }}
+                style={{ height: "100%", width: "100%" }}
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
