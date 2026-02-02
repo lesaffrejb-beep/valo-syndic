@@ -268,7 +268,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                     <div>
                         <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Le Twist Valo-Syndic</p>
                         <p className="text-xs text-white/80 leading-tight">
-                            Effort d'épargne {Math.round(calculation.monthlyPayment)}€ vs Gain mensuel énergie estimé ~{Math.round(calculation.monthlyPayment * 0.4)}€.
+                            Effort d&apos;épargne {Math.round(calculation.monthlyPayment)}€ vs Gain mensuel énergie estimé ~{Math.round(calculation.monthlyPayment * 0.4)}€.
                         </p>
                     </div>
                 </div>

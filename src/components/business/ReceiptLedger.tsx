@@ -217,7 +217,7 @@ export function ReceiptLedger({ financing, className = "" }: ReceiptLedgerProps)
                                 </span>
                             </div>
                             <div className="mt-1 text-[9px] text-white/30 text-right">
-                                Prêt à 0% d'intérêts sur 20 ans
+                                Prêt à 0% d&apos;intérêts sur 20 ans
                             </div>
                         </div>
                     )}
