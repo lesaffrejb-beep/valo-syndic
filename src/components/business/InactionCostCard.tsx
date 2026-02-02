@@ -105,17 +105,17 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                 transition={{ delay: 0.5 }}
             >
                 <div className="flex flex-col gap-4">
-                    <p className="text-[11px] uppercase tracking-[0.4em] text-white/30 font-bold">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold">
                         Impact Patrimonial Total (36 mois)
                     </p>
                     <div className="relative inline-block">
-                        <p className="text-6xl font-black text-white tabular-nums tracking-tighter drop-shadow-2xl">
+                        <p className="text-4xl md:text-5xl lg:text-5xl font-black text-white tabular-nums tracking-tighter drop-shadow-2xl">
                             <AnimatedCurrency value={getAdjustedValue(inactionCost.totalInactionCost)} duration={2} />
                         </p>
                         <motion.div
-                            className="absolute -inset-2 bg-gold/10 blur-xl rounded-full -z-10"
-                            animate={{ opacity: [0.3, 0.6, 0.3] }}
-                            transition={{ duration: 3, repeat: Infinity }}
+                            className="absolute -inset-4 bg-gold/5 blur-xl rounded-full -z-10"
+                            animate={{ opacity: [0.2, 0.4, 0.2] }}
+                            transition={{ duration: 4, repeat: Infinity }}
                         />
                     </div>
                     {isMaPoche && <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold font-mono">Calculé sur votre part de millièmes</p>}

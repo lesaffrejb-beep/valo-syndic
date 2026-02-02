@@ -45,13 +45,13 @@ const config: Config = {
             },
             boxShadow: {
                 // C'est ICI que se joue le "Tactile"
-                'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)', // Lumière du haut
-                'inner-depth': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)', // Profondeur intérieure
-                'glass': '0 4px 30px rgba(0, 0, 0, 0.5)', // Ombre portée douce
-                'neon-gold': '0 0 20px -5px rgba(212, 175, 55, 0.15)', // Glow actif
-                'tactile-inner': 'inset 0 2px 10px 0 rgba(0,0,0,0.4), inset 0 1px 1px 0 rgba(255,255,255,0.05)',
-                'glow-soft': '0 0 30px -10px rgba(212, 175, 55, 0.12)',
-                'glow-vibrant': '0 0 50px -10px rgba(212, 175, 55, 0.15)',
+                'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)', // Lumière plus subtile
+                'inner-depth': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.2)', // Profondeur atténuée
+                'glass': '0 4px 20px rgba(0, 0, 0, 0.4)', // Ombre portée plus matte
+                'neon-gold': '0 0 10px -2px rgba(212, 175, 55, 0.1)', // Glow très léger
+                'tactile-inner': 'inset 0 1px 3px 0 rgba(0,0,0,0.3), inset 0 1px 1px 0 rgba(255,255,255,0.03)',
+                'glow-soft': '0 0 20px -5px rgba(212, 175, 55, 0.08)',
+                'glow-vibrant': '0 0 30px -5px rgba(212, 175, 55, 0.12)',
             },
             backdropBlur: {
                 'xs': '2px',

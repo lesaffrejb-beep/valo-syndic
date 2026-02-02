@@ -256,25 +256,9 @@ export default function CockpitPage() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="relative bg-charcoal bg-glass-gradient rounded-3xl border border-white/10
-                                shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.1)]
-                                backdrop-blur-xl overflow-hidden group h-[340px]"
+                            className="h-[380px]"
                         >
-                            <div className="absolute inset-0 bg-noise opacity-[0.015] pointer-events-none" />
-
-                            <div className="relative z-10 p-6">
-                                <h3 className="font-mono text-[10px] uppercase tracking-widest text-gold mb-1">Analyse Terrain</h3>
-                                <div className="flex items-center gap-2">
-                                    <Activity className="w-3 h-3 text-white/50" />
-                                    <p className="text-xs text-white/50">Risques Naturels</p>
-                                </div>
-                            </div>
-
-                            <div className="flex-1 flex items-center justify-center p-4">
-                                <div className="scale-90 origin-center opacity-90 group-hover:opacity-100 group-hover:scale-95 transition-all duration-500">
-                                    <RisksCard coordinates={diagnosticInput.coordinates} />
-                                </div>
-                            </div>
+                            <RisksCard coordinates={diagnosticInput.coordinates} />
                         </motion.div>
 
                         {/* Climate Timeline */}
@@ -284,7 +268,7 @@ export default function CockpitPage() {
                             transition={{ delay: 0.3 }}
                             className="relative bg-charcoal bg-glass-gradient rounded-3xl border border-white/10
                                 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.1)]
-                                backdrop-blur-xl overflow-hidden h-[300px]"
+                                backdrop-blur-xl overflow-hidden min-h-[400px]"
                         >
                             <div className="absolute inset-0 bg-noise opacity-[0.015] pointer-events-none" />
                             <div className="relative z-10 h-full p-6 overflow-hidden">
@@ -297,7 +281,7 @@ export default function CockpitPage() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="h-[280px]"
+                            className="min-h-[280px]"
                         >
                             <InactionCostCard inactionCost={inactionCost} />
                         </motion.div>
