@@ -17,6 +17,7 @@ export * from "./cadastreService";
 export * from "./dvfService";
 export * from "./ademeDpeService";
 export * from "./settingsService";
+export * from "./rnicService";
 
 import {
     searchAddress,
