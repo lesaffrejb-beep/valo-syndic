@@ -38,7 +38,15 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
 
         riskService
             .fetchRisks(coordinates.latitude, coordinates.longitude)
-            .then(setRisks)
+            .then((data) => {
+                if (!data) {
+                    setError(true);
+                    setRisks(riskService.getDefaultRisk());
+                    return;
+                }
+
+                setRisks(data);
+            })
             .catch((err) => {
                 console.error("Risk fetch error:", err);
                 setError(true);
@@ -50,6 +58,7 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
     // Safe fallback keys
     const safeRisks = risks || riskService.getDefaultRisk();
     const hasInondation = safeRisks.inondation;
+    const isDegraded = error || !coordinates;
 
     // Loading State
     if (loading && !risks) {
@@ -87,12 +96,14 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                     </h3>
 
                     {/* Global Status Badge */}
-                    <div className={`px-3 py-1 rounded-full border backdrop-blur-md shadow-lg ${hasInondation
-                            ? 'bg-red-500/20 border-red-500/50 text-red-200'
-                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                    <div className={`px-3 py-1 rounded-full border backdrop-blur-md shadow-lg ${isDegraded
+                            ? 'bg-white/5 border-white/10 text-white/70'
+                            : hasInondation
+                                ? 'bg-red-500/20 border-red-500/50 text-red-200'
+                                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
                         }`}>
                         <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                            {hasInondation ? 'Zone à Risque' : 'Zone Sécurisée'}
+                            {isDegraded ? 'Données indisponibles' : hasInondation ? 'Zone à Risque' : 'Zone Sécurisée'}
                         </span>
                     </div>
                 </div>
