@@ -7,7 +7,7 @@ interface StreetViewHeaderProps {
     coordinates?: {
         latitude: number;
         longitude: number;
-    };
+    } | undefined;
 }
 
 /**
