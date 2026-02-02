@@ -53,7 +53,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
             D: "#FCD34D", // Amber-300 (Pastel Gold)
             E: "#FDBA74", // Orange-300
             F: "#FDA4AF", // Rose-300
-            G: "#F87171", // Red-400
+            G: "#E07A5F", // Terracotta (was Red-400)
         };
         return colors[dpe];
     };

@@ -18,7 +18,7 @@ interface DPEGaugeProps {
 
 // Configuration des couleurs et positions pour chaque classe DPE
 const DPE_CONFIG: Record<DPELetter, { color: string; position: number; bgClass: string }> = {
-    G: { color: "#dc2626", position: 7, bgClass: "bg-red-600" },
+    G: { color: "#E07A5F", position: 7, bgClass: "bg-[#E07A5F]" },
     F: { color: "#ea580c", position: 14, bgClass: "bg-orange-600" },
     E: { color: "#f59e0b", position: 28, bgClass: "bg-amber-500" },
     D: { color: "#eab308", position: 43, bgClass: "bg-yellow-500" },

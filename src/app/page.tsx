@@ -123,7 +123,8 @@ export default function ScrollytellingPage() {
 
     // --- DIAGNOSTIC STATE ---
     const [diagnosticInput, setDiagnosticInput] = useState<DiagnosticInput>(DEFAULT_DIAGNOSTIC_INPUT);
-    const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(null);
+    // HYDRATION FIX: Initialize synchronously to allow SSR/first render to be populated
+    const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(() => generateDiagnostic(DEFAULT_DIAGNOSTIC_INPUT));
     const [calculationError, setCalculationError] = useState<string | null>(null);
 
     // --- VIEW MODE STORE ---

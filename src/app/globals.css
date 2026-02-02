@@ -39,7 +39,7 @@
   body {
     @apply bg-transparent text-main antialiased selection:bg-gold/20 selection:text-gold-light;
     /* Ultra-subtle noise texture - lowered opacity for cleaner look */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.008'/%3E%3C/svg%3E");
     background-attachment: fixed;
   }
 
@@ -87,7 +87,7 @@
      ================================================ */
   .card-premium {
     @apply relative overflow-hidden rounded-3xl transition-all duration-500;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     /* Invisible Gradient Border - Thiner and more subtle */
@@ -119,7 +119,7 @@
   }
 
   .card-bento {
-    @apply card-premium h-full p-10;
+    @apply card-premium h-full p-8;
   }
 
   .card-obsidian {

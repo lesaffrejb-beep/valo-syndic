@@ -292,8 +292,8 @@ export type ValoSaveData = z.infer<typeof ValoSaveSchema>;
 /** Schéma pour un lot importé depuis l'extension */
 export const ImportedLotSchema = z.object({
     id: z.string().min(1, "ID requis"),
-    tantiemes: z.number().int().min(1, "Tantièmes minimum 1"),
-    surface: z.number().positive("Surface doit être positive").optional(),
+    tantiemes: z.preprocess((val) => typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val, z.number().int().min(1, "Tantièmes minimum 1")),
+    surface: z.preprocess((val) => typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val, z.number().positive("Surface doit être positive").optional()),
     type: z.string().optional(),
 });
 
