@@ -27,7 +27,7 @@ export function MprSuspensionAlert({ isSuspended }: MprSuspensionAlertProps) {
                             <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
                             <p className="truncate">
                                 <span className="font-bold text-red-400 uppercase tracking-wider mr-2">Alerte Réglementaire</span>
-                                Suspension temporaire MaPrimeRénov' 2026 en attente du vote budgétaire.
+                                Suspension temporaire MaPrimeRénov&apos; 2026 en attente du vote budgétaire.
                             </p>
                         </div>
                         <button
