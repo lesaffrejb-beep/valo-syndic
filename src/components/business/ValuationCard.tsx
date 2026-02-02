@@ -48,7 +48,7 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
 
 
     return (
-        <div className={`card-bento h-full relative overflow-hidden group p-0 ${className}`}>
+        <div className={`card-bento h-full relative overflow-hidden group p-0 hover:bg-white/[0.02] hover:border-indigo-500/30 transition-all duration-500 ${className}`}>
             {/* Header Section */}
             <div className="p-6 pb-4 border-b border-boundary/50 group-hover:border-indigo-500/30 transition-colors duration-500">
                 <div className="flex items-start justify-between">

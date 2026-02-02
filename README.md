@@ -24,9 +24,8 @@ Aider les gestionnaires de copropriété à **débloquer les votes en AG** grâc
 | Feature | Description |
 |---------|-------------|
 | 🧮 **Calculateur Tantièmes** | Convertit "300k€" en "87€/mois pour vous" |
-| 📊 **Benchmark Régional** | Compare à la moyenne DPE Angers |
+| 📊 **Benchmark Régional** | Compare à la moyenne DPE Angers ou de sa rue |
 | ⚔️ **Avocat du Diable** | Réponses aux 3 objections classiques |
-| 📱 **QR Code Vote** | Engagement en temps réel en AG |
 | 📄 **PDF 3 pages** | Synthèse, Financement, Argumentaire |
 | 💾 **Sauvegarde JSON** | Export/Import de simulations (.valo) |
 

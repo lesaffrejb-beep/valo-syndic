@@ -114,12 +114,12 @@ Le monde s'effondre (crise immo, climat, inflation), donc on s'arme de **rigueur
 ## 1.6 Design System — "Stealth Wealth"
 | Élément | Spécification |
 |---------|---------------|
-| **Direction Artistique** | Fintech Sombre / Editorial (Style Finary / Linear / Cron) |
-| **Ambiance** | Obsidian, Glass & Steel, Or Alchimique. "Luxe Discret" |
-| **Dark Mode** | **OBLIGATOIRE** — Fond #020202 (Obsidian) avec Noise Texture subtile. Jamais de blanc pur |
-| **Matériaux** | `.glass-panel` (Bordure white/5, Flou 24px) et Effets de Lueur (Glow) |
-| **Typographie** | Titres stylisés, corps de texte lisible |
-| **Iconographie** | **Lucide React** (Strokes fins). Pas d'Emojis (sauf exception rare). |
+| **Direction Artistique** | Fintech Sombre / Editorial (Style Finary / Linear / Cron). **Stealth Wealth**. |
+| **Ambiance** | Obsidian, Glass & Steel, Or Alchimique. "Luxe Discret". |
+| **Dark Mode** | **OBLIGATOIRE** — Fond #020202 ou #0A0A0A. **INTERDICTION** des fonds bleus/slate "cheap". |
+| **Matériaux** | `.glass-panel` (Bordure with/5), Glassmorphism prononcé (Backdrop Blur XL). |
+| **Typographie** | Titres stylisés, corps de texte lisible, espacement généreux. |
+| **Iconographie** | **Lucide React** uniquement. **INTERDICTION** formelle des Emojis dans l'UI pro. |
 
 ---
 

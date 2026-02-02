@@ -142,7 +142,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
     ];
 
     return (
-        <div className={`card-bento p-0 flex flex-col h-full ${className}`}>
+        <div className={`card-bento p-0 flex flex-col h-full bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-500/20 shadow-glow-finance ${className}`}>
             {/* Header */}
             <div className="p-8 pb-4">
                 <div className="flex items-center justify-between">
@@ -156,131 +156,118 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                         </div>
                     </div>
                 </div>
-
-                {/* Profile Selector */}
-                {simulationInputs && (
-                    <div className="flex bg-surface-highlight rounded-xl p-1.5 mt-6 gap-2">
-                        {PROFILE_OPTIONS.map((profile) => (
-                            <button
-                                key={profile.id}
-                                onClick={() => setSelectedProfile(selectedProfile === profile.id ? null : profile.id)}
-                                className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${selectedProfile === profile.id
-                                    ? 'bg-surface shadow text-main ring-1 ring-primary-500/50'
-                                    : 'text-muted hover:text-main'
-                                    }`}
-                            >
-                                <span className={`inline-block w-2.5 h-2.5 rounded-full mr-2 ${profile.color} opacity-80`} />
-                                {profile.label}
-                            </button>
-                        ))}
-                    </div>
-                )}
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1 p-8 pt-4 flex flex-col justify-between gap-6">
+            {/* Main Content Grid - 2 Columns */}
+            <div className="flex-1 p-8 pt-4 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
 
-                {/* Hero Metric: Monthly Payment — HUGE for impact */}
-                <div className="text-center mb-4">
-                    <p className="text-[10px] text-amber-400 font-bold uppercase tracking-[0.3em] mb-4">
-                        Votre effort d&apos;épargne
-                    </p>
-                    <div className="flex items-end justify-center gap-3">
-                        <span className="text-8xl md:text-9xl font-black tracking-tighter drop-shadow-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-                            {Math.round(calculation.monthlyPayment)}
-                        </span>
-                        <div className="flex flex-col text-left mb-6">
-                            <span className="text-3xl font-bold text-amber-400 leading-none">€</span>
-                            <span className="text-base font-semibold text-neutral-500 leading-none mt-1">/mois</span>
-                        </div>
-                    </div>
-                    <div className="mt-6 inline-flex items-center px-5 py-2 bg-amber-900/20 border border-amber-500/20 rounded-full">
-                        <span className="text-xs font-semibold text-amber-300/90 tracking-wide">
-                            Prêt Taux Zéro sur {calculation.durationYears} ans
-                        </span>
-                    </div>
-                </div>
-
-                {/* Slider Control — Premium styling */}
-                <div className="mb-4">
-                    <div className="flex justify-between items-center mb-6">
-                        <label htmlFor="tantiemes" className="text-base font-semibold text-white">
-                            Quote-part : <span className="text-amber-400 font-black text-xl">{tantiemes}</span> <span className="text-neutral-500 text-sm font-normal">/ 1000èmes</span>
-                        </label>
-                        {tantiemes === 1000 && (
-                            <span className="text-[10px] uppercase tracking-widest text-amber-400 font-bold">Mon Immeuble</span>
-                        )}
-                    </div>
-
-                    <div className="relative h-12 flex items-center mb-6">
-                        <input
-                            type="range"
-                            id="tantiemes"
-                            min={1}
-                            max={1000}
-                            value={tantiemes}
-                            onChange={(e) => setTantiemes(Number(e.target.value))}
-                            className="w-full h-2.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-white/10 ring-1 ring-white/10"
-                            style={{
-                                background: `linear-gradient(to right, #6366f1 0%, #a855f7 ${(tantiemes / 1000) * 100}%, rgba(255,255,255,0.05) ${(tantiemes / 1000) * 100}%, rgba(255,255,255,0.05) 100%)`
-                            }}
-                        />
-                    </div>
-
-                    {/* Presets — with "Mon Immeuble" option */}
-                    <div className="flex justify-between gap-2 overflow-x-auto pb-2 no-scrollbar">
-                        {presets.map((preset) => (
-                            <button
-                                key={preset.label}
-                                onClick={() => setTantiemes(preset.val)}
-                                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${tantiemes === preset.val
-                                    ? 'bg-amber-900/30 text-amber-300 border-amber-500/30 shadow-lg shadow-amber-500/10'
-                                    : 'bg-neutral-900/50 text-neutral-400 border-neutral-800 hover:bg-neutral-800/50 hover:text-white'
-                                    }`}
-                            >
-                                {preset.label}
-                            </button>
-                        ))}
-                        {/* Full building option */}
-                        <button
-                            onClick={() => setTantiemes(1000)}
-                            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${tantiemes === 1000
-                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-lg shadow-amber-500/10'
-                                : 'bg-neutral-900/50 text-neutral-400 border-neutral-800 hover:bg-neutral-800/50 hover:text-white'
-                                }`}
-                        >
-                            100%
-                        </button>
-                    </div>
-                </div>
-
-                {/* Detail Breakdown - More Dense */}
-                <div className="space-y-3 mt-6 pt-6 border-t border-white/5">
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted">Quote-part Travaux</span>
-                        <span className="font-semibold text-white">{formatCurrency(calculation.partLotTotal)}</span>
-                    </div>
-                    {selectedProfile && profileData && (
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-success-300">Aides (MPR + CEE)</span>
-                            <span className="font-semibold text-success">- {formatCurrency(profileData[selectedProfile].workShareBeforeAid - profileData[selectedProfile].remainingCost)}</span>
+                {/* Column 1: Controls (Left) */}
+                <div className="flex flex-col justify-center space-y-8">
+                    {/* Profile Selector */}
+                    {simulationInputs && (
+                        <div>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-muted font-bold mb-3">Votre Profil</p>
+                            <div className="flex bg-surface-highlight rounded-xl p-1.5 gap-2">
+                                {PROFILE_OPTIONS.map((profile) => (
+                                    <button
+                                        key={profile.id}
+                                        onClick={() => setSelectedProfile(selectedProfile === profile.id ? null : profile.id)}
+                                        className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${selectedProfile === profile.id
+                                            ? 'bg-surface shadow text-main ring-1 ring-primary-500/50'
+                                            : 'text-muted hover:text-main'
+                                            }`}
+                                    >
+                                        <span className={`inline-block w-2.5 h-2.5 rounded-full mr-2 ${profile.color} opacity-80`} />
+                                        {profile.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     )}
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-primary-300">Reste à financer</span>
-                        <span className="font-bold text-primary-200">{formatCurrency(calculation.partLotLoan)}</span>
+
+                    {/* Slider Control */}
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <label htmlFor="tantiemes" className="text-[10px] uppercase tracking-[0.2em] text-muted font-bold">
+                                Quote-part (Tantièmes)
+                            </label>
+                            {tantiemes === 1000 && (
+                                <span className="text-[10px] uppercase tracking-widest text-amber-400 font-bold">Mon Immeuble</span>
+                            )}
+                        </div>
+
+                        <div className="relative h-12 flex items-center mb-6">
+                            <input
+                                type="range"
+                                id="tantiemes"
+                                min={1}
+                                max={1000}
+                                value={tantiemes}
+                                onChange={(e) => setTantiemes(Number(e.target.value))}
+                                className="w-full h-2.5 bg-white/5 rounded-full appearance-none cursor-pointer accent-white transition-all hover:bg-white/10 ring-1 ring-white/10"
+                                style={{
+                                    background: `linear-gradient(to right, #6366f1 0%, #a855f7 ${(tantiemes / 1000) * 100}%, rgba(255,255,255,0.05) ${(tantiemes / 1000) * 100}%, rgba(255,255,255,0.05) 100%)`
+                                }}
+                            />
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                            <span className="text-3xl font-black text-white">{tantiemes} <span className="text-lg text-muted font-normal">/ 1000</span></span>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setTantiemes(1000)}
+                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase border ${tantiemes === 1000
+                                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                        : 'bg-neutral-900/50 text-neutral-500 border-neutral-800 hover:text-white'
+                                        }`}
+                                >
+                                    100%
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="mt-4 bg-surface-highlight/30 rounded-lg p-3 border border-white/5 flex items-center gap-3">
-                    <div className="w-1 h-8 bg-gold/50 rounded-full" />
-                    <div>
-                        <p className="text-[10px] uppercase tracking-wider text-muted font-bold">Le Twist Valo-Syndic</p>
-                        <p className="text-xs text-white/80 leading-tight">
-                            Effort d&apos;épargne {Math.round(calculation.monthlyPayment)}€ vs Gain mensuel énergie estimé ~{Math.round(calculation.monthlyPayment * 0.4)}€.
+                {/* Column 2: Hero Metric (Right) */}
+                <div className="flex flex-col justify-center border-t md:border-t-0 md:border-l border-white/5 md:pl-8 pt-8 md:pt-0">
+                    {/* Hero Metric: Monthly Payment */}
+                    <div className="text-center mb-6">
+                        <p className="text-[10px] text-amber-400 font-bold uppercase tracking-[0.3em] mb-2">
+                            Votre effort d&apos;épargne
                         </p>
+                        <div className="flex items-baseline justify-center gap-1">
+                            <span className="text-7xl md:text-8xl font-black tracking-tighter drop-shadow-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+                                {Math.round(calculation.monthlyPayment)}
+                            </span>
+                            <span className="text-2xl font-bold text-amber-400">€</span>
+                            <span className="text-sm font-semibold text-neutral-500 mb-2">/mois</span>
+                        </div>
+                        <div className="mt-4 inline-flex items-center px-4 py-1.5 bg-amber-900/20 border border-amber-500/20 rounded-full">
+                            <span className="text-[10px] font-semibold text-amber-300/90 tracking-wide uppercase">
+                                Prêt Taux Zéro • {calculation.durationYears} ans
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Detail Breakdown */}
+                    <div className="space-y-3 pt-6 border-t border-white/5">
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-muted">Quote-part Travaux</span>
+                            <span className="font-semibold text-white">{formatCurrency(calculation.partLotTotal)}</span>
+                        </div>
+                        {selectedProfile && profileData && (
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-success-300">Aides (MPR + CEE)</span>
+                                <span className="font-semibold text-success">- {formatCurrency(profileData[selectedProfile].workShareBeforeAid - profileData[selectedProfile].remainingCost)}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-primary-300">Reste à financer</span>
+                            <span className="font-bold text-primary-200">{formatCurrency(calculation.partLotLoan)}</span>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     );

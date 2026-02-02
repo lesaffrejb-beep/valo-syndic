@@ -263,24 +263,18 @@ export function AddressAutocomplete({
                 </div>
             </div>
 
-            {/* Manual Fallback Link */}
+            {/* Manual Fallback Link - Subtle & Close */}
             {!showSuggestions && !isEnriching && !isLoading && (
-                <div className="mt-3 flex justify-center">
-                    <button
-                        onClick={() => {
-                            if (onManualTrigger) {
-                                onManualTrigger();
-                            } else if (window.dispatchEvent) {
-                                // Legacy fallback
-                                window.dispatchEvent(new CustomEvent('toggle-manual-mode'));
-                            }
-                        }}
-                        className="text-[10px] text-primary/60 hover:text-primary uppercase tracking-[0.2em] font-bold transition-colors flex items-center gap-2"
-                    >
-                        <span className="w-4 h-[1px] bg-primary/20" />
-                        Ou saisir les données manuellement
-                        <span className="w-4 h-[1px] bg-primary/20" />
-                    </button>
+                <div
+                    onClick={() => {
+                        if (onManualTrigger) onManualTrigger();
+                        else if (window.dispatchEvent) window.dispatchEvent(new CustomEvent('toggle-manual-mode'));
+                    }}
+                    className="absolute -bottom-6 left-1 cursor-pointer group"
+                >
+                    <p className="text-[10px] text-neutral-500 group-hover:text-amber-500 transition-colors font-medium tracking-wide">
+                        Adresse introuvable ? <span className="underline decoration-neutral-700 group-hover:decoration-amber-500 underline-offset-2">Saisir manuellement</span>
+                    </p>
                 </div>
             )}
 

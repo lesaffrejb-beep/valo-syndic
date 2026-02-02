@@ -127,7 +127,7 @@ export function SubsidyTable({ inputs, compact = false }: SubsidyTableProps) {
 
     return (
         <motion.div
-            className="group relative overflow-hidden p-4 md:p-6 h-full flex flex-col bg-slate-900/50 backdrop-blur-md rounded-2xl border border-white/5"
+            className="group relative overflow-hidden p-4 md:p-6 h-full flex flex-col bg-[#0A0A0A]/80 backdrop-blur-md rounded-2xl border border-white/5"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={DEFAULT_TRANSITION}
