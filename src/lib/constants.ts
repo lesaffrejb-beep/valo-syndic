@@ -2,6 +2,13 @@
  * VALO-SYNDIC — Constantes Métier Janvier 2026
  * ============================================
  * Source unique de vérité pour toutes les données réglementaires et financières.
+ * 
+ * 🎯 AUDIT CONNECTIVITÉ - Phase 2:
+ * Ces constantes servent de FALLBACK quand Supabase est indisponible.
+ * Pour les valeurs temps réel, utilisez:
+ * - useDynamicSettings() hook (React)
+ * - settingsService (API)
+ * 
  * ⚠️ NE PAS MODIFIER sans validation juridique.
  */
 
@@ -86,8 +93,13 @@ export const TECHNICAL_PARAMS = {
      * - Nouvelle valeur: 2.0% (BT01 Nov 2025: +1.37% + marge sécurité 0.5%)
      * - Source: INSEE Série 001710986
      *
+     * 🎯 AUDIT CONNECTIVITÉ - Phase 2:
+     * Cette valeur est écrasée par global_settings.construction_inflation_rate
+     * quand Supabase est disponible. Utilisez useDynamicSettings() pour accéder
+     * à la valeur temps réel.
+     *
      * @see /src/data/market_data.json pour données actualisées
-     * @todo Brancher sur API ou Supabase pour mise à jour automatique
+     * @see settingsService.ts pour l'intégration Supabase
      */
     constructionInflationRate: 0.02,
 
@@ -213,9 +225,40 @@ export const DPE_NUMERIC_VALUE: Record<DPELetter, number> = {
 // =============================================================================
 
 export const VALUATION_PARAMS = {
-    /** Prix de base au m² (Angers/Nantes - Moyenne conservatrice) */
+    /** 
+     * Prix de base au m² (Angers/Nantes - Moyenne conservatrice)
+     * 
+     * 🎯 AUDIT CONNECTIVITÉ: Écrasé par global_settings.base_price_per_sqm
+     * quand Supabase est disponible.
+     */
     BASE_PRICE_PER_SQM: 3500,
 
-    /** Coût moyen travaux rénovation globale au m² (pour estimation auto) */
+    /** 
+     * Coût moyen travaux rénovation globale au m² (pour estimation auto)
+     * 
+     * 🎯 AUDIT CONNECTIVITÉ: Écrasé par global_settings.estimated_reno_cost_per_sqm
+     * quand Supabase est disponible.
+     */
     ESTIMATED_RENO_COST_PER_SQM: 1350,
 } as const;
+
+// =============================================================================
+// 10. EXPORTS DYNAMIQUES (AUDIT CONNECTIVITÉ - Phase 2)
+// =============================================================================
+
+/**
+ * Re-export des types pour faciliter l'import
+ * @example import { useDynamicSettings } from "@/lib/constants";
+ */
+export { useDynamicSettings, usePricingData, useInflationData, useAidRates, useProjectFees } from "@/hooks/useDynamicSettings";
+export { getLiveConstants, getFallbackConstants, isSupabaseConfigured } from "@/lib/api/settingsService";
+
+/**
+ * Helper pour obtenir les constantes dynamiques de manière asynchrone
+ * 
+ * @example
+ * // Dans une fonction async:
+ * const liveConstants = await getLiveConstants();
+ * console.log(liveConstants.bt01InflationRate);
+ */
+export { getLiveConstants as getDynamicConstants } from "@/lib/api/settingsService";
