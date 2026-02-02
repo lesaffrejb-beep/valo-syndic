@@ -28,20 +28,26 @@ export const riskService = {
      * Récupère les risques naturels pour une position GPS donnée
      * API OPEN DATA : https://georisques.gouv.fr/api/v1/gaspar/risques
      */
-    async fetchRisks(latitude: number, longitude: number): Promise<GeoRisk> {
+    async fetchRisks(latitude: number, longitude: number): Promise<GeoRisk | null> {
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
             const response = await fetch(
                 `https://georisques.gouv.fr/api/v1/gaspar/risques?lat=${latitude}&long=${longitude}`,
                 {
                     headers: {
                         'Accept': 'application/json',
                     },
+                    signal: controller.signal,
                 }
             );
 
+            clearTimeout(timeoutId);
+
             if (!response.ok) {
                 console.warn(`Géorisques API failed: ${response.status}`);
-                return this.getDefaultRisk();
+                return null;
             }
 
             const data = await response.json();
@@ -75,13 +81,18 @@ export const riskService = {
                 mouvementTerrain: checkRisk('mouvement de terrain') || checkRisk('cavité'),
                 technologique: checkRisk('industriel') || checkRisk('technologique') || checkRisk('usine'),
                 minier: checkRisk('minier'),
-                feuxForet: checkRisk('eu de forêt'), // "Feu de forêt"
+                feuxForet: checkRisk('feu de forêt') || checkRisk('feux de forêt'),
             };
 
             return result;
         } catch (error) {
+            if (error instanceof DOMException && error.name === "AbortError") {
+                console.warn("Géorisques API timeout");
+                return null;
+            }
+
             console.error('Error fetching Géorisques:', error);
-            return this.getDefaultRisk();
+            return null;
         }
     },
 
