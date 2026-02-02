@@ -17,15 +17,16 @@
   html {
     font-family: var(--font-sans);
     scroll-behavior: smooth;
-    background-color: #050505;
-    /* Token: app */
+    background-color: #030304;
   }
 
   body {
-    @apply bg-obsidian text-white antialiased selection:bg-gold selection:text-obsidian;
+    @apply bg-deep text-main antialiased selection:bg-gold-glow selection:text-gold;
+    /* Global subtle noise */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    background-attachment: fixed;
   }
 
-  /* Plus de Serif. Tout en Sans. */
   h1,
   h2,
   h3,
@@ -40,25 +41,21 @@
 
   /* Container */
   .container-custom {
-    @apply max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8;
+    @apply max-w-[1400px] mx-auto px-6 md:px-12;
   }
 
   /* ================================================
-     TACTILE — Cards Ultra Premium (Refined Depth)
+     TACTILE — Cards Ultra Premium (Clean & Deep)
      ================================================ */
   .card-tactile {
-    @apply bg-[#0A0A0A]/90 border border-white/[0.05] rounded-[2rem] backdrop-blur-3xl transition-all duration-500 overflow-hidden;
-    box-shadow:
-      0 20px 40px -20px rgba(0, 0, 0, 0.8),
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+    @apply bg-deep-surface/60 backdrop-blur-2xl border border-boundary rounded-3xl transition-all duration-300;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .card-tactile:hover {
-    @apply border-white/[0.1] bg-[#0C0C0C]/95;
-    box-shadow:
-      0 30px 60px -20px rgba(0, 0, 0, 0.9),
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
-    transform: translateY(-4px) scale(1.005);
+    @apply border-boundary-active bg-deep-highlight/60;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
   }
 
   .card-bento {

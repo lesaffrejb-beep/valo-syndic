@@ -300,21 +300,21 @@ export default function ScrollytellingPage() {
     // ==========================================================================
 
     return (
-        <div className="min-h-screen bg-slate-950 text-neutral-200 font-sans selection:bg-amber-600/30 selection:text-white">
+        <div className="min-h-screen font-sans selection:bg-gold-glow selection:text-white">
 
             {/* ================================================================
-                ZONE 0 — THE HOOK (L'Ancrage)
-                Presque plein écran, centré, Street View en fond
+                ZONE 0 — THE HOOK
                 ================================================================ */}
-            <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4">
-                {/* Background: Street View with heavy dark overlay (80%) */}
-                <div className="absolute inset-0 z-0 overflow-hidden">
+            <section className="relative min-h-[95vh] flex flex-col items-center justify-center px-4 overflow-hidden">
+                {/* Background: Hero Glow + Noise */}
+                <div className="absolute inset-0 z-0 bg-hero-glow opacity-60" />
+
+                {/* Street View with heavy overlay */}
+                <div className="absolute inset-0 z-0 mix-blend-overlay opacity-40">
                     <StreetViewHeader
                         address={diagnosticInput.address}
                         coordinates={diagnosticInput.coordinates}
                     />
-                    {/* Heavy gradient overlay for readability - 80% opacity */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/85 to-slate-950" />
                 </div>
 
                 {/* MPR Suspension Alert (Fixed at top) */}
@@ -325,28 +325,28 @@ export default function ScrollytellingPage() {
                 {/* Content */}
                 <div className="relative z-10 w-full max-w-3xl mx-auto flex flex-col items-center gap-8 py-20 pt-32">
 
-                    {/* Hero Text — More impactful typography - REDUCED SIZE */}
-                    <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6">
-                            <span className="bg-gradient-to-r from-white via-white to-neutral-400 bg-clip-text text-transparent">
-                                Révélez le potentiel caché
+                    {/* Hero Text — Impact */}
+                    <div className="text-center relative z-10">
+                        <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter leading-[1.1] mb-8 drop-shadow-2xl">
+                            <span className="bg-gradient-to-br from-white via-white to-white/70 bg-clip-text text-transparent">
+                                Révélez le potentiel
                             </span>
                             <br />
-                            <span className="bg-gradient-to-r from-neutral-300 via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent">
                                 de votre copropriété.
                             </span>
                         </h1>
-                        <p className="text-neutral-400 text-lg md:text-xl tracking-tight max-w-lg mx-auto leading-relaxed">
-                            Transformez une dépense en investissement patrimonial sécurisé.
+                        <p className="text-neutral-400 text-lg md:text-xl font-medium max-w-lg mx-auto leading-relaxed text-balance">
+                            Transformez une obligation légale en <span className="text-white decoration-gold underline decoration-2 underline-offset-4">levier patrimonial</span>.
                         </p>
                     </div>
 
-                    {/* Address Input — Premium, Bigger (h-14), More prominent -- Z-INDEX FIX */}
+                    {/* Address Input — Premium Floating Slab */}
                     <div className="w-full max-w-2xl relative z-[60]">
                         <AddressAutocomplete
                             defaultValue={diagnosticInput.address || ""}
                             placeholder="Entrez l'adresse de votre copropriété..."
-                            className="w-full [&_input]:h-14 [&_input]:text-lg [&_input]:px-6 [&_input]:rounded-2xl [&_input]:border-white/10 [&_input]:bg-black/60 [&_input]:backdrop-blur-xl [&_input]:shadow-2xl"
+                            className="w-full [&_input]:h-16 [&_input]:text-lg [&_input]:px-8 [&_input]:rounded-2xl [&_input]:border-white/10 [&_input]:bg-black/80 [&_input]:backdrop-blur-xl [&_input]:shadow-2xl [&_input]:transition-all [&_input]:duration-300 focus:[&_input]:border-gold/50 focus:[&_input]:shadow-neon-gold"
                             onSelect={(data) => {
                                 setIsAddressSelected(true);
                                 setDiagnosticInput((prev) => ({
@@ -473,12 +473,11 @@ export default function ScrollytellingPage() {
 
             {/* ================================================================
                 ZONE 1 — THE DIAGNOSTIC (La Douleur)
-                Vibe: Froid, Clinique, Urgent
-                Color: Red/Rose hint
+                Theme: Risks (Red/Danger)
             ================================================================ */}
-            <Section id="diagnostic" className="bg-red-950/5 rounded-[3rem] my-4 border border-red-500/5">
+            <Section id="diagnostic" className="bg-section-gradient-1 rounded-[3rem] my-4 border border-risks/10 shadow-glow-risks">
                 <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-red-500/70 font-medium">Le Diagnostic</span>
+                    <span className="text-xs uppercase tracking-[0.3em] text-risks font-medium">Le Diagnostic</span>
                     <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
                         Ce que révèle votre immeuble
                     </h2>
@@ -509,13 +508,12 @@ export default function ScrollytellingPage() {
 
             {/* ================================================================
                 ZONE 2 — THE PROJECTION (La Vision)
-                Vibe: Lumineux (Gold/Bronze accents), Espoir
-                Color: Amber/Gold hint
+                Theme: Valuation (Green/Success)
             ================================================================ */}
-            <Section id="projection" className="bg-amber-950/5 rounded-[3rem] my-4 border border-amber-500/5">
+            <Section id="projection" className="bg-section-gradient-2 rounded-[3rem] my-4 border border-valuation/10 shadow-glow-valuation">
                 <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-amber-600/70 font-medium">La Projection</span>
-                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
+                    <span className="text-xs uppercase tracking-[0.3em] text-valuation font-medium">La Projection</span>
+                    <h2 className="text-3xl font-bold text-white tracking-tight mt-2">
                         Avant / Après : le point de bascule
                     </h2>
                 </div>
@@ -529,13 +527,12 @@ export default function ScrollytellingPage() {
 
             {/* ================================================================
                 ZONE 3 — THE FINANCING PLAN (La Logique)
-                Vibe: Sérieux, Technique mais clair (Slate/Blue)
-                Color: Emerald/Teal hint
+                Theme: Finance (Gold)
             ================================================================ */}
-            <Section id="finance" className="bg-emerald-950/5 rounded-[3rem] my-4 border border-emerald-500/5">
+            <Section id="finance" className="bg-section-gradient-3 rounded-[3rem] my-4 border border-gold/10 shadow-glow-finance">
                 <div className="text-center mb-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-emerald-500/70 font-medium">Le Financement</span>
-                    <h2 className="text-3xl font-bold text-neutral-200 tracking-tight mt-2">
+                    <span className="text-xs uppercase tracking-[0.3em] text-gold font-medium">Le Financement</span>
+                    <h2 className="text-3xl font-bold text-white tracking-tight mt-2">
                         Une rentabilité immédiate
                     </h2>
                 </div>
@@ -557,11 +554,10 @@ export default function ScrollytellingPage() {
 
             {/* ================================================================
                 ZONE 4 — THE PERSONAL IMPACT (Le Personnel)
-                Vibe: Intime, Direct (Gold again but warmer)
-                Color: Indigo/Violet hint
+                Theme: Deep Blue/Indigo (Trust)
             ================================================================ */}
-            <Section id="my-pocket" className="bg-indigo-950/5 rounded-[3rem] my-4 border border-indigo-500/5">
-                <SectionTitle label="Votre Poche" title="Ce que ça change pour vous" labelColor="text-amber-500" />
+            <Section id="my-pocket" className="bg-deep-highlight/30 rounded-[3rem] my-4 border border-white/5 shadow-tactile">
+                <SectionTitle label="Votre Poche" title="Ce que ça change pour vous" labelColor="text-gold" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Tantieme Calculator — Manual Override */}
