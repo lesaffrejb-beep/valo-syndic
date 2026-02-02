@@ -189,7 +189,7 @@ export function Header({ onOpenBranding, onSave, onLoad, hasResult, fileInputRef
                                                     </button>
                                                     <button
                                                         onClick={handleSignOut}
-                                                        className="w-full px-4 py-2.5 text-left text-sm text-muted hover:text-red-400 hover:bg-red-500/5 transition-colors flex items-center gap-3"
+                                                        className="w-full px-4 py-2.5 text-left text-sm text-muted hover:text-danger hover:bg-danger/5 transition-colors flex items-center gap-3"
                                                     >
                                                         <span>🚪</span>
                                                         <span>Se déconnecter</span>

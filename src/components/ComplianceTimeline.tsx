@@ -59,9 +59,9 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                     const isCurrentDPE = dpe === currentDPE;
 
                     // Status Colors
-                    const activeColor = isCurrentDPE ? "text-amber-400" : isPast ? "text-red-400" : "text-muted";
-                    const activeBorder = isCurrentDPE ? "border-amber-500/30 bg-amber-500/5 shadow-[0_0_15px_-5px_rgba(245,158,11,0.1)]" : isPast ? "border-red-500/10 bg-red-500/5" : "border-white/5 bg-surface/40";
-                    const dotColor = isCurrentDPE ? "bg-amber-500 border-amber-950" : isPast ? "bg-red-900/50 border-red-500/50" : "bg-surface border-white/10";
+                    const activeColor = isCurrentDPE ? "text-amber-400" : isPast ? "text-danger" : "text-muted";
+                    const activeBorder = isCurrentDPE ? "border-amber-500/30 bg-amber-500/5 shadow-[0_0_15px_-5px_rgba(245,158,11,0.1)]" : isPast ? "border-danger/10 bg-danger/5" : "border-white/5 bg-surface/40";
+                    const dotColor = isCurrentDPE ? "bg-amber-500 border-amber-950" : isPast ? "bg-danger/20 border-danger/50" : "bg-surface border-white/10";
 
                     return (
                         <motion.div
@@ -89,7 +89,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                                     {/* Date Badge */}
                                     <div className={`
                                             inline-flex items-center justify-center px-2 py-1 rounded-md text-[9px] font-mono font-bold uppercase tracking-widest border
-                                            ${isCurrentDPE ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : isPast ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-white/5 border-white/5 text-muted'}
+                                            ${isCurrentDPE ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : isPast ? 'bg-danger/10 border-danger/20 text-danger' : 'bg-white/5 border-white/5 text-muted'}
                                          `}>
                                         <span>{formatDate(date)}</span>
                                     </div>
@@ -110,7 +110,7 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                                 {/* Status Text (Right Side) */}
                                 <div className="text-right">
                                     {isPast ? (
-                                        <div className="flex items-center gap-1.5 justify-end text-red-400/80 text-[10px] font-medium uppercase tracking-wide">
+                                        <div className="flex items-center gap-1.5 justify-end text-danger/80 text-[10px] font-medium uppercase tracking-wide">
                                             Interdit
                                         </div>
                                     ) : (
@@ -127,8 +127,8 @@ export function ComplianceTimeline({ currentDPE, className = "" }: ComplianceTim
                         </motion.div>
                     );
                 })}
-            </div>
-        </motion.div>
+            </div >
+        </motion.div >
     );
 }
 

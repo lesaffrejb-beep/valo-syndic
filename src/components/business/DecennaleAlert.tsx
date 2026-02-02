@@ -16,10 +16,10 @@ export function DecennaleAlert({ status }: DecennaleAlertProps) {
 
     const urgencyColors = {
         critical: {
-            bg: "bg-red-500/10",
-            border: "border-red-500/30",
-            text: "text-red-400",
-            glow: "shadow-red-500/20"
+            bg: "bg-danger/10",
+            border: "border-danger/30",
+            text: "text-danger",
+            glow: "shadow-danger/20"
         },
         warning: {
             bg: "bg-amber-500/10",
@@ -78,7 +78,7 @@ export function DecennaleAlert({ status }: DecennaleAlertProps) {
                     </div>
 
                     {status.urgencyLevel === 'critical' && (
-                        <p className="text-xs text-red-400 mt-2 font-medium">
+                        <p className="text-xs text-danger mt-2 font-medium">
                             🛡️ Lancement d&apos;audit impératif avant expiration de la garantie.
                         </p>
                     )}

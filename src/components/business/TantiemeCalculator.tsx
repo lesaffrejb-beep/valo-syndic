@@ -102,7 +102,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                 </div>
             </CardHeader>
 
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-6">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
                 {/* CONTROLS */}
                 <div className="space-y-8">
                     {/* Profile Selector */}

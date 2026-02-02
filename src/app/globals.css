@@ -31,15 +31,15 @@
   html {
     font-family: var(--font-sans);
     scroll-behavior: smooth;
-    /* Deep Space Background with subtle gradient */
-    background: radial-gradient(ellipse at top, #1a1f2e 0%, #050507 100%);
+    /* Obsidian Background - Pure Deep Black with extremely subtle gradient */
+    background: linear-gradient(to bottom, #0A0A0A, #000000);
     background-attachment: fixed;
   }
 
   body {
     @apply bg-transparent text-main antialiased selection:bg-gold/20 selection:text-gold-light;
-    /* Ultra-subtle noise texture */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+    /* Ultra-subtle noise texture - lowered opacity for cleaner look */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
     background-attachment: fixed;
   }
 
@@ -87,21 +87,20 @@
      ================================================ */
   .card-premium {
     @apply relative overflow-hidden rounded-3xl transition-all duration-500;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    /* Invisible Gradient Border */
-    border: 1px solid transparent;
-    background-image: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 100%);
+    /* Invisible Gradient Border - Thiner and more subtle */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
     background-origin: border-box;
     background-clip: padding-box, border-box;
-    /* Multi-layer diffuse shadow */
+    /* Multi-layer diffuse shadow - reduced for flatter, cleaner look */
     box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.15),
-      0 10px 20px -5px rgba(0, 0, 0, 0.2),
-      0 25px 50px -12px rgba(0, 0, 0, 0.25),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+      0 4px 6px -1px rgba(0, 0, 0, 0.2),
+      0 10px 20px -5px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
   }
 
   .card-premium:hover {
@@ -136,9 +135,8 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  /* Inner content wrapper with premium padding */
   .card-content {
-    @apply p-10;
+    @apply p-6 md:p-8;
   }
 
   /* ================================================

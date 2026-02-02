@@ -142,7 +142,7 @@ export function BrandingModal({ isOpen, onClose }: BrandingModalProps) {
                     <div className="p-6 border-t border-boundary bg-surface-hover flex justify-between items-center">
                         <button
                             onClick={handleReset}
-                            className="text-xs text-red-400 hover:text-red-300 underline"
+                            className="text-xs text-danger hover:text-danger/80 underline"
                         >
                             Réinitialiser
                         </button>

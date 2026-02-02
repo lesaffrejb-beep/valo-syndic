@@ -20,17 +20,18 @@ const config: Config = {
                     dark: "#997D3D",
                     dim: "rgba(229, 192, 123, 0.1)",
                 },
-                // Earthy Tones
+                // Earthy Tones - Stealth Wealth Finance
                 terracotta: {
-                    DEFAULT: "#E07A5F",
+                    DEFAULT: "hsl(10, 60%, 65%)", // Softer Terracotta
                     light: "#F2CCB7",
                     dark: "#3D1F16",
+                    muted: "hsl(10, 40%, 50%)", // For text
                 },
                 // Functional Colors (Muted/Pastel)
-                success: { DEFAULT: '#34D399', glow: 'rgba(52, 211, 153, 0.2)' }, // Emerald
-                warning: { DEFAULT: '#FBBF24', glow: 'rgba(251, 191, 36, 0.2)' }, // Amber
-                danger: { DEFAULT: '#F87171', glow: 'rgba(248, 113, 113, 0.2)' }, // Soft Red
-                info: { DEFAULT: '#60A5FA', glow: 'rgba(96, 165, 250, 0.2)' },   // Soft Blue
+                success: { DEFAULT: '#34D399', glow: 'rgba(52, 211, 153, 0.1)' }, // Emerald
+                warning: { DEFAULT: '#FBBF24', glow: 'rgba(251, 191, 36, 0.1)' }, // Amber
+                danger: { DEFAULT: 'hsl(10, 60%, 65%)', glow: 'rgba(224, 122, 95, 0.1)' }, // Replaced Red with Terracotta
+                info: { DEFAULT: '#60A5FA', glow: 'rgba(96, 165, 250, 0.1)' },   // Soft Blue
 
                 // Text Colors
                 main: "#EDEDED",      // High contrast text

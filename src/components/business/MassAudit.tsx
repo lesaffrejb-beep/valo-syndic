@@ -285,9 +285,9 @@ export function MassAudit() {
                             <div className="card-bento p-6">
                                 <h3 className="text-lg font-bold text-main mb-4">Synthèse du Parc</h3>
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-3 bg-red-500/10 rounded-xl border border-red-500/20">
-                                        <span className="text-sm font-medium text-red-400">🚨 Risque Immédiat (G)</span>
-                                        <span className="text-xl font-bold text-red-500">
+                                    <div className="flex items-center justify-between p-3 bg-danger/10 rounded-xl border border-danger/20">
+                                        <span className="text-sm font-medium text-danger">🚨 Risque Immédiat (G)</span>
+                                        <span className="text-xl font-bold text-danger">
                                             {results.filter(r => r.currentDPE === 'G').length}
                                         </span>
                                     </div>
@@ -320,12 +320,12 @@ export function MassAudit() {
                                         .filter(r => r.compliance.status === 'danger')
                                         .slice(0, 5)
                                         .map(r => (
-                                            <div key={r.id} className="p-3 bg-surface rounded-xl border border-boundary flex items-center justify-between group hover:border-red-500/30 transition-colors">
+                                            <div key={r.id} className="p-3 bg-surface rounded-xl border border-boundary flex items-center justify-between group hover:border-danger/30 transition-colors">
                                                 <div>
                                                     <p className="text-xs font-bold text-main truncate max-w-[150px]">{r.address}</p>
-                                                    <p className="text-[10px] text-red-500">Gel locatif : {r.compliance.deadline || 'Immédiat'}</p>
+                                                    <p className="text-[10px] text-danger">Gel locatif : {r.compliance.deadline || 'Immédiat'}</p>
                                                 </div>
-                                                <span className="text-xs font-black text-red-500 bg-red-500/10 px-2 py-0.5 rounded">G</span>
+                                                <span className="text-xs font-black text-danger bg-danger/10 px-2 py-0.5 rounded">G</span>
                                             </div>
                                         ))
                                     }

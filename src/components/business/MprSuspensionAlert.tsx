@@ -20,13 +20,13 @@ export function MprSuspensionAlert({ isSuspended }: MprSuspensionAlertProps) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="w-full bg-red-950/80 backdrop-blur-md border-b border-red-500/20 text-red-200 z-[100] relative overflow-hidden"
+                    className="w-full bg-danger/10 backdrop-blur-md border-b border-danger/20 text-danger z-[100] relative overflow-hidden"
                 >
                     <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between text-xs md:text-sm">
                         <div className="flex items-center gap-3 overflow-hidden">
-                            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                            <AlertTriangle className="w-4 h-4 text-danger shrink-0" />
                             <p className="truncate">
-                                <span className="font-bold text-red-400 uppercase tracking-wider mr-2">Alerte Réglementaire</span>
+                                <span className="font-bold text-danger uppercase tracking-wider mr-2">Alerte Réglementaire</span>
                                 Suspension temporaire MaPrimeRénov&apos; 2026 en attente du vote budgétaire.
                             </p>
                         </div>
@@ -34,7 +34,7 @@ export function MprSuspensionAlert({ isSuspended }: MprSuspensionAlertProps) {
                             onClick={() => setIsVisible(false)}
                             className="p-1 hover:bg-white/5 rounded-full transition-colors ml-4 shrink-0"
                         >
-                            <X className="w-4 h-4 text-red-400" />
+                            <X className="w-4 h-4 text-danger" />
                         </button>
                     </div>
                 </motion.div>

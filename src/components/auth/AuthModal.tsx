@@ -175,9 +175,9 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
                                                 initial={{ opacity: 0, y: -10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: -10 }}
-                                                className="p-3 rounded-lg bg-red-500/10 border border-red-500/30"
+                                                className="p-3 rounded-lg bg-danger/10 border border-danger/30"
                                             >
-                                                <p className="text-sm text-red-400 flex items-center gap-2">
+                                                <p className="text-sm text-danger flex items-center gap-2">
                                                     <span>⚠️</span>
                                                     {error}
                                                 </p>

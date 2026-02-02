@@ -141,7 +141,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                                 <span className={`
                                                     font-mono text-[10px] px-2 py-1 rounded-lg border font-bold
                                                     ${['A', 'B'].includes(result.dpeData.dpe) ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                                                        ['F', 'G'].includes(result.dpeData.dpe) ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                                                        ['F', 'G'].includes(result.dpeData.dpe) ? 'bg-danger/10 border-danger/20 text-danger' :
                                                             'bg-gold/10 border-gold/20 text-gold'}
                                                 `}>
                                                     DPE {result.dpeData.dpe}
@@ -290,7 +290,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
 
                                         <div className="flex justify-between items-center px-1">
                                             <span className="text-[9px] text-emerald-500/60 uppercase tracking-widest font-bold">Performant</span>
-                                            <span className="text-[9px] text-red-500/60 uppercase tracking-widest font-bold">Passoire</span>
+                                            <span className="text-[9px] text-danger/60 uppercase tracking-widest font-bold">Passoire</span>
                                         </div>
                                     </div>
 
@@ -298,7 +298,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                         <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Energie Primaire</label>
                                         <div className="grid grid-cols-3 gap-3">
                                             {[
-                                                { id: "fioul" as const, label: "Fioul", Icon: Droplet, color: "rgba(239, 68, 68, 0.1)" },
+                                                { id: "fioul" as const, label: "Fioul", Icon: Droplet, color: "hsla(10, 60%, 65%, 0.1)" },
                                                 { id: "gaz" as const, label: "Gaz", Icon: Flame, color: "rgba(245, 158, 11, 0.1)" },
                                                 { id: "elec" as const, label: "Élec", Icon: Zap, color: "rgba(59, 130, 246, 0.1)" }
                                             ].map((sys) => (
