@@ -143,22 +143,6 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
                 )}
             </div>
 
-            {/* Footer Source */}
-            <div className="px-6 py-3 bg-surface-highlight/30 border-t border-boundary/50 text-[10px] text-muted">
-                <div className="flex justify-between items-center">
-                    <span>
-                        {valuation.salesCount ? `Basé sur ${valuation.salesCount} ventes réelles` : 'Estimation théorique'}
-                    </span>
-                    <span className="font-medium opacity-50">
-                        Source : {valuation.priceSource || 'Etalab DVF'}
-                    </span>
-                </div>
-                {isMarketDown && (
-                    <p className="mt-1 text-warning-400/70">
-                        Tendance marché : Notaires de France (12/2025)
-                    </p>
-                )}
-            </div>
         </div>
 
     );

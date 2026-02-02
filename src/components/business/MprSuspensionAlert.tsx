@@ -15,9 +15,9 @@ export function MprSuspensionAlert({ isSuspended }: MprSuspensionAlertProps) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="bg-red-950/20 border-b border-red-900/30 overflow-hidden sticky top-0 z-[100] backdrop-blur-md"
+                    className="bg-red-950/20 border border-red-900/30 rounded-2xl overflow-hidden backdrop-blur-md mx-6 my-3"
                 >
-                    <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+                    <div className="px-6 py-3 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div className="bg-red-500/10 p-1.5 rounded-full">
                                 <AlertTriangle className="w-4 h-4 text-red-400" />

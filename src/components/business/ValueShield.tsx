@@ -94,11 +94,6 @@ export function ValueShield({
                         </div>
                     </div>
 
-                    {/* Live Status */}
-                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[9px] uppercase tracking-widest text-white/40 font-mono">Live</span>
-                    </div>
                 </div>
             </div>
 

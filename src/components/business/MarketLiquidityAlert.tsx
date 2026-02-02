@@ -55,9 +55,6 @@ export function MarketLiquidityAlert({ shareOfSales }: MarketLiquidityAlertProps
                         className="bg-amber-500 h-full shadow-[0_0_10px_rgba(245,158,11,0.5)]"
                     />
                 </div>
-                <p className="text-[10px] text-zinc-600 mt-2 font-mono">
-                    ANALYTICS ENGINE V4.2 — VALO-SYNDIC
-                </p>
             </div>
         </motion.div>
     );
