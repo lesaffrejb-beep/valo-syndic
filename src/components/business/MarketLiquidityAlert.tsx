@@ -38,7 +38,7 @@ export function MarketLiquidityAlert({ shareOfSales }: MarketLiquidityAlertProps
                 </div>
 
                 <p className="text-sm text-zinc-500 leading-relaxed">
-                    Part des transactions réalisées par des passoires thermiques au cours des 12 derniers mois.
+                    Part de marché (12 derniers mois)
                 </p>
             </div>
 

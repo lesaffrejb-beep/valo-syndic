@@ -164,23 +164,14 @@ export function ValueShield({
                         transition={{ delay: 0.3 }}
                         className="mb-6 bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4"
                     >
-                        <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 border border-amber-500/10">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2">
                                 <TrendingDown className="w-4 h-4 text-amber-400" />
+                                <span className="text-xs text-amber-400 font-bold">Marché: {(marketTrend.national * 100).toFixed(1)}%</span>
                             </div>
-                            <div className="flex-1">
-                                <div className="text-[10px] uppercase tracking-widest text-amber-400/60 font-bold mb-1">
-                                    Contexte Marché
-                                </div>
-                                <p className="text-xs text-white/60 leading-relaxed">
-                                    Tendance nationale : <span className="text-amber-400 font-bold">{(marketTrend.national * 100).toFixed(1)}%</span>.
-                                    {isPassoire && (
-                                        <span className="text-amber-300">
-                                            {" "}Sans rénovation, votre bien subit cette baisse + la décote énergétique.
-                                        </span>
-                                    )}
-                                </p>
-                            </div>
+                            {isPassoire && (
+                                <span className="text-[10px] text-amber-300/60 uppercase tracking-wider">Protection active</span>
+                            )}
                         </div>
                     </motion.div>
                 )}

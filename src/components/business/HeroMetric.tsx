@@ -63,12 +63,6 @@ export function HeroMetric({
                             </p>
                         </div>
                     </div>
-
-                    {/* RIGHT: Context Badge */}
-                    <div className="px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse shadow-[0_0_8px_rgba(212,175,55,0.6)]" />
-                        <span className="text-[9px] uppercase tracking-widest text-white/40 font-mono">Live</span>
-                    </div>
                 </div>
 
                 {/* THE MONEY SHOT */}
@@ -106,9 +100,8 @@ export function HeroMetric({
                         >
                             <TrendingDown className="w-4 h-4 text-success" />
                             <div className="text-sm">
-                                <span className="text-white/50">Effort net estimé : </span>
+                                <span className="text-white/50">Effort net : </span>
                                 <span className="text-white font-bold">{Math.round(netEffort)}€/mois</span>
-                                <span className="text-success/70 text-xs ml-2">(après économie énergie ~{Math.round(energySavings)}€)</span>
                             </div>
                         </motion.div>
                     )}
@@ -137,10 +130,6 @@ export function HeroMetric({
                             }}
                         />
                     </div>
-
-                    <p className="text-[10px] text-white/20 mt-2 text-center font-mono">
-                        Étalé sur {durationYears} ans = Transformation psychologique du coût
-                    </p>
                 </div>
             </div>
 
