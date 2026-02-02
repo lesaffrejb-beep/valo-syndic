@@ -213,8 +213,33 @@ export default function ScrollytellingPage() {
     const marketTrend = useMemo(() => getMarketTrend(), []);
 
     // --- SIMULATION INPUTS FOR SUBSIDY TABLE ---
+    const simulationInputs: SimulationInputs = useMemo(() => {
+        if (!diagnosticResult) {
+            return {
+                workAmountHT: 0,
+                amoAmountHT: 0,
+                nbLots: diagnosticInput.numberOfUnits,
+                energyGain: 0,
+                initialDPE: diagnosticInput.currentDPE,
+                targetDPE: diagnosticInput.targetDPE,
+                ceePerLot: 0,
+                localAidPerLot: 0,
+            };
+        }
 
+        const { financing } = diagnosticResult;
 
+        return {
+            workAmountHT: financing.worksCostHT,
+            amoAmountHT: financing.totalCostHT - financing.worksCostHT - financing.syndicFees - financing.doFees - financing.contingencyFees,
+            nbLots: diagnosticInput.numberOfUnits,
+            energyGain: financing.energyGainPercent,
+            initialDPE: diagnosticInput.currentDPE,
+            targetDPE: diagnosticInput.targetDPE,
+            ceePerLot: (diagnosticInput.ceeBonus || 0) / diagnosticInput.numberOfUnits,
+            localAidPerLot: (diagnosticInput.localAidAmount || 0) / diagnosticInput.numberOfUnits,
+        };
+    }, [diagnosticResult, diagnosticInput]);
     // --- LOADING STATE ---
     if (authLoading || loading) {
         return (
@@ -250,26 +275,7 @@ export default function ScrollytellingPage() {
     const { financing, valuation, inactionCost } = diagnosticResult;
     const isPassoire = diagnosticInput.currentDPE === "F" || diagnosticInput.currentDPE === "G";
 
-    // --- SIMULATION INPUTS FOR SUBSIDY TABLE ---
-    const simulationInputs: SimulationInputs = useMemo(() => ({
-        workAmountHT: financing.worksCostHT,
-        amoAmountHT: financing.totalCostHT - financing.worksCostHT - financing.syndicFees - financing.doFees - financing.contingencyFees, // Approx AMO from residuals or use 0 if unsure. Better: worksCostHT * 0.03?
-        // Actually, let's use a simpler heuristic or just 0 for now to pass build, as exact AMO cost isn't in financing.
-        // Wait, calculateSubsidies uses it to calculate SUBSIDY.
-        // If we want correct subsidies, we need correct AMO cost. 
-        // Let's assume AMO is ~3-5% or calculate exactly if possible.
-        // For now, I will use: (financing.totalCostHT - financing.worksCostHT) / 1.2 (assuming tax/fees mix)? No.
-        // Let's use 0 to be safe on build, or better estimatedCostHT * 0.05.
-        // But wait, financing has calculated values.
-        // Let's put a TODO and use estimatedCostHT * 0.05.
-        // Re-reading subsidy-calculator.ts: IT IS INPUT.
-        nbLots: diagnosticInput.numberOfUnits,
-        energyGain: financing.energyGainPercent,
-        initialDPE: diagnosticInput.currentDPE,
-        targetDPE: diagnosticInput.targetDPE,
-        ceePerLot: (diagnosticInput.ceeBonus || 0) / diagnosticInput.numberOfUnits,
-        localAidPerLot: (diagnosticInput.localAidAmount || 0) / diagnosticInput.numberOfUnits,
-    }), [diagnosticInput, financing]);
+
 
     // ==========================================================================
     // RENDER — SCROLLYTELLING NARRATIVE
