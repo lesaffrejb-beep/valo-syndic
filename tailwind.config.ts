@@ -67,16 +67,16 @@ const config: Config = {
                 'glow-risks': '0 0 50px -15px rgba(255, 77, 77, 0.2)',
                 'glow-valuation': '0 0 50px -15px rgba(52, 211, 153, 0.2)',
             },
-        },
-        backdropBlur: {
-            'xs': '2px',
-        },
-        fontFamily: {
-            sans: ["Inter", "Geist Sans", "system-ui", "sans-serif"],
-            mono: ["JetBrains Mono", "monospace"],
-        },
-        borderRadius: {
-            'card': '16px',
+            backdropBlur: {
+                'xs': '2px',
+            },
+            fontFamily: {
+                sans: ["Inter", "Geist Sans", "system-ui", "sans-serif"],
+                mono: ["JetBrains Mono", "monospace"],
+            },
+            borderRadius: {
+                'card': '16px',
+            },
         },
     },
     plugins: [],
