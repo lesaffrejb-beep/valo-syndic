@@ -3,6 +3,7 @@
 import { formatCurrency, formatPercent } from "@/lib/calculator";
 import { type ValuationResult, type FinancingPlan } from "@/lib/schemas";
 import { useViewModeStore } from "@/stores/useViewModeStore";
+import { ShieldAlert, TrendingUp, PiggyBank, BarChart3, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 
 interface ValuationCardProps {
@@ -49,13 +50,14 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
     return (
         <div className={`card-bento h-full relative overflow-hidden group p-0 ${className}`}>
             {/* Header Section */}
-            <div className="p-6 pb-4 border-b border-boundary/50">
+            <div className="p-6 pb-4 border-b border-boundary/50 group-hover:border-indigo-500/30 transition-colors duration-500">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h3 className="text-xl font-bold text-main flex items-center gap-2">
+                        <h3 className="text-xl font-bold text-main flex items-center gap-2 group-hover:text-white transition-colors">
+                            {isMarketDown ? <ShieldAlert className="w-6 h-6 text-cyan-400" /> : <TrendingUp className="w-6 h-6 text-success-500" />}
                             {title}
                         </h3>
-                        <p className="text-sm text-muted mt-1">
+                        <p className="text-sm text-muted mt-1 group-hover:text-neutral-400 transition-colors">
                             {isMarketDown ? "Sécurisation de votre actif immobilier" : "Impact financier de la rénovation"}
                         </p>
                     </div>
@@ -80,8 +82,9 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
                             </span>
                             <span className="text-[9px] font-mono text-white/20">Estimation Etalab 2026</span>
                         </div>
-                        <div className={`px-3 py-1.5 rounded-xl text-[10px] font-bold border ${isMarketDown ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' : 'bg-success-500/10 border-success-500/20 text-success-400'}`}>
-                            {isMarketDown ? '🛡️ ANTI-DÉCOTE' : `📈 +${formatPercent(valuation.greenValueGainPercent)}`}
+                        <div className={`px-3 py-1.5 rounded-xl text-[10px] font-bold border ${isMarketDown ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400' : 'bg-success-500/10 border-success-500/20 text-success-400'} flex items-center gap-1`}>
+                            {isMarketDown ? <ShieldAlert className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
+                            {isMarketDown ? 'ANTI-DÉCOTE' : `+${formatPercent(valuation.greenValueGainPercent)}`}
                         </div>
                     </div>
 
@@ -94,10 +97,10 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
 
                 {/* Market Context - AUDIT 31/01/2026 */}
                 {isMarketDown && marketTrend && (
-                    <div className="bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4 text-xs">
+                    <div className="bg-amber-500/5 border border-amber-500/10 rounded-2xl p-4 text-xs group-hover:border-amber-500/20 transition-all">
                         <div className="flex items-start gap-4">
                             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 border border-amber-500/10">
-                                <span className="text-amber-400">📊</span>
+                                <BarChart3 className="w-4 h-4 text-amber-500" />
                             </div>
                             <div>
                                 <p className="text-amber-200/60 font-medium uppercase tracking-widest text-[9px] mb-1">Contexte marché</p>

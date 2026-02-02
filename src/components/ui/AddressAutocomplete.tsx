@@ -21,6 +21,7 @@ interface AddressAutocompleteProps {
     }) => void;
     /** Callback quand l'enrichissement est terminé */
     onEnriched?: (property: ReturnType<typeof usePropertyEnrichment>["property"]) => void;
+    onManualTrigger?: () => void;
     /** Placeholder */
     placeholder?: string;
     /** Classe CSS additionnelle */
@@ -48,6 +49,7 @@ export function AddressAutocomplete({
     defaultValue = "",
     onSelect,
     onEnriched,
+    onManualTrigger,
     placeholder = "Commencez à taper une adresse...",
     className = "",
     disabled = false,
@@ -266,7 +268,10 @@ export function AddressAutocomplete({
                 <div className="mt-3 flex justify-center">
                     <button
                         onClick={() => {
-                            if (window.dispatchEvent) {
+                            if (onManualTrigger) {
+                                onManualTrigger();
+                            } else if (window.dispatchEvent) {
+                                // Legacy fallback
                                 window.dispatchEvent(new CustomEvent('toggle-manual-mode'));
                             }
                         }}

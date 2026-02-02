@@ -12,6 +12,7 @@ import {
 import { type FinancingPlan } from "@/lib/schemas";
 import { formatPercent, formatCurrency } from "@/lib/calculator";
 import { AnimatedCurrency } from "@/components/ui/AnimatedNumber";
+import { Landmark, Zap, MapPin, HandCoins, Building2, TrendingUp, Wallet } from "lucide-react";
 import { useViewModeStore } from "@/stores/useViewModeStore";
 
 interface FinancingCardProps {
@@ -59,7 +60,8 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
         >
             <div className="relative z-10">
                 <h3 className="text-xl font-semibold text-main mb-8 flex items-center gap-3">
-                    <span className="text-2xl">💰</span> Plan de Financement & Aides
+                    <HandCoins className="w-6 h-6 text-gold" />
+                    <span>Plan de Financement & Aides</span>
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
@@ -127,20 +129,20 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                         <div className="space-y-3 flex-1">
                             {/* MaPrimeRénov' */}
                             <div
-                                className="flex items-center justify-between p-3 bg-gradient-to-br from-primary-900/40 to-primary-900/10 rounded-xl border border-primary-500/30 shadow-sm"
+                                className="flex items-center justify-between p-3 bg-zinc-900/50 rounded-xl border border-white/5 shadow-sm"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="p-1.5 bg-primary-900/50 rounded-lg border border-primary-500/20">
-                                        <span className="text-lg">🏛️</span>
+                                    <div className="p-1.5 bg-zinc-800/50 rounded-lg border border-white/5">
+                                        <Landmark className="w-5 h-5 text-indigo-400" />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-sm text-primary-300">MaPrimeRénov&apos;</p>
-                                        <p className="text-[10px] text-primary-400/80">
+                                        <p className="font-bold text-sm text-main">MaPrimeRénov&apos;</p>
+                                        <p className="text-[10px] text-muted">
                                             {formatPercent(financing.mprRate)} prise en charge
                                         </p>
                                     </div>
                                 </div>
-                                <span className="text-base font-bold text-primary-300 tabular-nums">
+                                <span className="text-base font-bold text-indigo-300 tabular-nums">
                                     -<AnimatedCurrency value={financing.mprAmount} duration={1.3} />
                                 </span>
                             </div>
@@ -150,7 +152,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                 <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary">
                                     <div className="flex items-center gap-3">
                                         <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
-                                            <span className="text-lg">⚡</span>
+                                            <Zap className="w-5 h-5 text-amber-500" />
                                         </div>
                                         <div>
                                             <p className="font-bold text-sm text-main">Primes CEE</p>
@@ -168,7 +170,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                 <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary">
                                     <div className="flex items-center gap-3">
                                         <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
-                                            <span className="text-lg">📍</span>
+                                            <MapPin className="w-5 h-5 text-emerald-500" />
                                         </div>
                                         <div>
                                             <p className="font-bold text-sm text-main">Aides Locales</p>
@@ -185,7 +187,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                             <div className="flex items-center justify-between p-3 bg-surface rounded-xl border border-boundary hover:border-gold-500/30 transition-colors">
                                 <div className="flex items-center gap-3">
                                     <div className="p-1.5 bg-surface-highlight rounded-lg border border-boundary">
-                                        <span className="text-lg">🏦</span>
+                                        <Building2 className="w-5 h-5 text-gold" />
                                     </div>
                                     <div>
                                         <p className="font-bold text-sm text-main">Éco-PTZ Copro</p>

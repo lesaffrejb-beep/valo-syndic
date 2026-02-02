@@ -67,7 +67,7 @@ const Section = ({ children, delay = 0, className = "", id }: SectionProps) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6, delay, ease: "easeOut" }}
-        className={`w-full max-w-5xl mx-auto py-32 md:py-40 px-6 flex flex-col gap-16 md:gap-24 ${className}`}
+        className={`w-full max-w-4xl mx-auto py-20 px-6 flex flex-col gap-12 ${className}`}
     >
         {children}
     </motion.section>
@@ -358,17 +358,8 @@ export default function ScrollytellingPage() {
                                     currentDPE: (data.dpeData?.dpe as DPELetter) || prev.currentDPE,
                                 }));
                             }}
+                            onManualTrigger={() => setShowManualForm(true)}
                         />
-
-                        {/* Manual Trigger Link */}
-                        <div className="mt-4 text-center">
-                            <button
-                                onClick={() => setShowManualForm(!showManualForm)}
-                                className="text-sm text-neutral-500 hover:text-white transition-colors underline decoration-neutral-700 underline-offset-4"
-                            >
-                                Adresse introuvable ? Saisir manuellement
-                            </button>
-                        </div>
 
                         {/* Early Data Proof / Property Summary */}
                         <AnimatePresence>
@@ -570,8 +561,8 @@ export default function ScrollytellingPage() {
                 {/* Background decorative blob */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[100px] pointer-events-none" />
 
-                <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-8 relative z-10">
-                    <div className="text-left">
+                <div className="flex flex-col items-center justify-center gap-6 mb-12 relative z-10 text-center">
+                    <div>
                         <span className="text-xs uppercase tracking-[0.3em] text-indigo-400 font-medium">Votre Poche</span>
                         <h2 className="text-3xl font-bold text-white tracking-tight mt-2">
                             Ce que ça change pour vous
@@ -601,21 +592,21 @@ export default function ScrollytellingPage() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10">
-                    {/* Tantieme Calculator — Manual Override */}
-                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-500/20 shadow-glow-finance h-full">
-                        <TantiemeCalculator
+                <div className="flex flex-col gap-6 relative z-10">
+                    {/* 1. Valuation Card (Top) */}
+                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-500/20 shadow-glow-valuation p-8 md:p-10 flex flex-col justify-center w-full">
+                        <ValuationCard
+                            valuation={valuation}
                             financing={financing}
-                            simulationInputs={simulationInputs}
                             className="bg-transparent border-none shadow-none h-full"
                         />
                     </div>
 
-                    {/* Valuation Card — The "Capital Gain" */}
-                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-500/20 shadow-glow-valuation p-8 md:p-10 flex flex-col justify-center h-full">
-                        <ValuationCard
-                            valuation={valuation}
+                    {/* 2. Tantieme Calculator (Bottom) */}
+                    <div className="bg-[#0A0A0A]/60 backdrop-blur-xl rounded-[2.5rem] border border-indigo-500/20 shadow-glow-finance w-full">
+                        <TantiemeCalculator
                             financing={financing}
+                            simulationInputs={simulationInputs}
                             className="bg-transparent border-none shadow-none h-full"
                         />
                     </div>
@@ -640,30 +631,34 @@ export default function ScrollytellingPage() {
                 </div>
 
                 <div className="flex flex-col items-center gap-6">
-                    {/* Download Buttons */}
-                    <div className="flex flex-wrap justify-center gap-4">
+                    {/* Action Buttons Row */}
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full">
+                        {/* 1. Objections Button */}
+                        <button
+                            onClick={() => setShowObjections(!showObjections)}
+                            className="h-14 px-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold transition-all flex items-center gap-2"
+                        >
+                            <MessageCircle className="w-5 h-5 text-neutral-400" />
+                            <span>{showObjections ? "Masquer les arguments" : "Arguments pour l'AG"}</span>
+                        </button>
+
+                        {/* 2. Primary Download Report */}
                         <DownloadPdfButton
                             result={diagnosticResult}
                             variant="primary"
-                            className="h-14 px-8 text-lg rounded-2xl shadow-glow-finance bg-amber-500 hover:bg-amber-400 text-black font-bold"
+                            className="h-14 px-8 text-lg rounded-2xl shadow-glow-finance bg-amber-500 hover:bg-amber-400 text-black font-bold flex items-center gap-2"
                         />
+
+                        {/* 3. PowerPoint */}
                         <DownloadPptxButton
                             result={diagnosticResult}
+                            className="h-14 px-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold transition-all"
                         />
                     </div>
 
                     <div className="flex items-center gap-4 mt-8 opacity-60">
                         <LegalWarning />
-                        <span className="text-[10px] text-neutral-600 uppercase tracking-widest">Version Beta 3.0</span>
                     </div>
-
-                    {/* Objection Handler (Hidden by default, can be toggled) */}
-                    <button
-                        onClick={() => setShowObjections(!showObjections)}
-                        className="mt-12 text-xs text-neutral-600 hover:text-neutral-400 underline decoration-neutral-800 underline-offset-4"
-                    >
-                        {showObjections ? "Masquer les objections" : "Voir les arguments pour l'AG"}
-                    </button>
 
                     <AnimatePresence>
                         {showObjections && (
@@ -679,9 +674,11 @@ export default function ScrollytellingPage() {
                             </motion.div>
                         )}
                     </AnimatePresence>
+
+
                 </div>
-            </Section>
-        </div>
+            </Section >
+        </div >
     );
 }
 

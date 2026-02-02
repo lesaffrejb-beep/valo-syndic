@@ -119,6 +119,7 @@ Le monde s'effondre (crise immo, climat, inflation), donc on s'arme de **rigueur
 | **Dark Mode** | **OBLIGATOIRE** — Fond #020202 (Obsidian) avec Noise Texture subtile. Jamais de blanc pur |
 | **Matériaux** | `.glass-panel` (Bordure white/5, Flou 24px) et Effets de Lueur (Glow) |
 | **Typographie** | Titres stylisés, corps de texte lisible |
+| **Iconographie** | **Lucide React** (Strokes fins). Pas d'Emojis (sauf exception rare). |
 
 ---
 
@@ -344,7 +345,7 @@ L'UI est construite en **composants isolés** (`src/components/business/`) prêt
 ## 5.2 Hiérarchie & Pattern
 
 1. **Page (`page.tsx`)** : Orchestrateur — Gère State `diagnosticInput`/`Result`, Hooks pour fetch
-2. **Layout Bento** : CSS Grid Container — Les cartes sont enfants directs
+2. **Layout Bento** : CSS Grid Container — Les cartes sont enfants directs (Stack vertical pour "My Pocket")
 3. **Leaf Components** : `AnimatedCurrency`, `BenchmarkBadge` — UI Pures
 
 ---

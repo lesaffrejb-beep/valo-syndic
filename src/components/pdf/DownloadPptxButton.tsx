@@ -8,6 +8,7 @@ import { useBrandStore } from "@/stores/useBrandStore";
 
 interface DownloadPptxButtonProps {
     result: DiagnosticResult;
+    className?: string;
 }
 
 /**
@@ -39,7 +40,7 @@ const DPE_COLORS: Record<string, string> = {
     D: "EAB308", C: "84CC16", B: "22C55E", A: "16A34A"
 };
 
-export function DownloadPptxButton({ result }: DownloadPptxButtonProps) {
+export function DownloadPptxButton({ result, className = "" }: DownloadPptxButtonProps) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const brand = useBrandStore((state) => state.brand);
@@ -364,7 +365,7 @@ export function DownloadPptxButton({ result }: DownloadPptxButtonProps) {
             <button
                 onClick={generatePptx}
                 disabled={isGenerating}
-                className="btn-secondary flex items-center justify-center gap-2"
+                className={`btn-secondary flex items-center justify-center gap-2 ${className}`}
                 title="Télécharger présentation PowerPoint"
             >
                 {isGenerating ? (
