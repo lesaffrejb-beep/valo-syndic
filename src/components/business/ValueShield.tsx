@@ -85,26 +85,19 @@ export function ValueShield({
                             <Shield className={`w-5 h-5 ${isProtection ? 'text-cyan-400' : 'text-emerald-400'}`} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                {isProtection ? "🛡️ Protection de Capital" : "📈 Valorisation"}
+                            <h3 className="text-lg font-bold text-white">
+                                {isProtection ? "Protection Capital" : "Valorisation"}
                             </h3>
-                            <p className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-2">
-                                <Activity className="w-3 h-3" />
+                            <p className="text-[10px] text-white/40 uppercase tracking-wider">
                                 {isMaPoche ? "Mon Actif" : "Actif Global"}
                             </p>
                         </div>
                     </div>
 
                     {/* Live Status */}
-                    <div className="flex flex-col items-end gap-1">
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[9px] uppercase tracking-widest text-white/40 font-mono">Live</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[9px] text-white/20 font-mono">
-                            <Clock className="w-3 h-3" />
-                            {dataAge}
-                        </div>
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[9px] uppercase tracking-widest text-white/40 font-mono">Live</span>
                     </div>
                 </div>
             </div>
@@ -166,10 +159,6 @@ export function ValueShield({
                         </div>
                     </div>
 
-                    {/* Source Tag */}
-                    <div className="mt-3 text-[9px] text-white/20 font-mono">
-                        Source : {valuation.priceSource || 'Etalab DVF'} • {valuation.salesCount || 0} ventes réelles
-                    </div>
                 </motion.div>
 
                 {/* MARKET CONTEXT ALERT */}
@@ -196,9 +185,6 @@ export function ValueShield({
                                         </span>
                                     )}
                                 </p>
-                                <div className="mt-2 text-[9px] text-white/30 font-mono">
-                                    Source : Notaires de France (Déc. 2025)
-                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -271,16 +257,6 @@ export function ValueShield({
                 </div>
             </div>
 
-            {/* FOOTER - Disclaimer */}
-            <div className="px-6 py-3 bg-surface-highlight/30 border-t border-white/5">
-                <div className="flex items-center justify-between text-[9px] text-white/20 font-mono">
-                    <span>Estimation Valeur Verte {new Date().getFullYear()}</span>
-                    <span className="flex items-center gap-1">
-                        <Shield className="w-3 h-3" />
-                        Calcul conservateur
-                    </span>
-                </div>
-            </div>
         </motion.div>
     );
 }

@@ -110,17 +110,10 @@ export function ReceiptLedger({ financing, className = "" }: ReceiptLedgerProps)
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-white">Plan de Financement</h3>
-                            <p className="text-[10px] text-white/40 uppercase tracking-wider flex items-center gap-2 mt-0.5">
-                                <Clock className="w-3 h-3" />
-                                Édité le {timestamp}
+                            <p className="text-[10px] text-white/40 uppercase tracking-wider mt-0.5">
+                                Résumé des Coûts et Aides
                             </p>
                         </div>
-                    </div>
-
-                    {/* Document Number */}
-                    <div className="text-right">
-                        <div className="text-[9px] uppercase tracking-wider text-white/20 font-mono">Doc. Réf.</div>
-                        <div className="text-xs font-mono text-white/60">VLS-{now.getTime().toString().slice(-8)}</div>
                     </div>
                 </div>
             </div>
@@ -167,11 +160,8 @@ export function ReceiptLedger({ financing, className = "" }: ReceiptLedgerProps)
                                                 {item.verified && (
                                                     <CheckCircle2 className="w-3 h-3 text-emerald-500/60" />
                                                 )}
-                                            </div>
-                                            <div className="flex items-center gap-2 text-[9px] text-white/20">
-                                                <span>Source : {item.source}</span>
                                                 {!item.verified && (
-                                                    <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded">
+                                                    <span className="ml-2 px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded text-[9px]">
                                                         À valider
                                                     </span>
                                                 )}
@@ -252,17 +242,8 @@ export function ReceiptLedger({ financing, className = "" }: ReceiptLedgerProps)
                     </div>
                 </div>
 
-                {/* Trust Indicator */}
-                <div className="mt-4 flex items-center justify-center gap-2 text-[9px] text-white/20">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-500/40" />
-                    <span>Document généré selon barèmes officiels 2026</span>
-                </div>
             </div>
 
-            {/* WATERMARK */}
-            <div className="absolute bottom-4 left-6 opacity-5 pointer-events-none">
-                <div className="text-6xl font-black text-white rotate-[-5deg]">VALO</div>
-            </div>
         </motion.div>
     );
 }
