@@ -215,4 +215,7 @@ export const DPE_NUMERIC_VALUE: Record<DPELetter, number> = {
 export const VALUATION_PARAMS = {
     /** Prix de base au m² (Angers/Nantes - Moyenne conservatrice) */
     BASE_PRICE_PER_SQM: 3500,
+
+    /** Coût moyen travaux rénovation globale au m² (pour estimation auto) */
+    ESTIMATED_RENO_COST_PER_SQM: 1350,
 } as const;

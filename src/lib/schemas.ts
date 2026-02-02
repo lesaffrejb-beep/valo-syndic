@@ -58,8 +58,12 @@ export const DiagnosticInputSchema = z.object({
     /** Coût estimé des travaux HT (€) */
     estimatedCostHT: z
         .number()
-        .min(1000, "Coût minimum 1 000 €")
-        .max(50_000_000, "Coût maximum 50 M€"),
+        .min(0, "Le coût ne peut pas être négatif")
+        .max(50_000_000, "Coût maximum 50 M€")
+        .default(0),
+
+    /** Système de chauffage actuel */
+    heatingSystem: z.enum(['electrique', 'gaz', 'fioul', 'bois', 'urbain', 'autre']).optional(),
 
     /** Prix moyen au m² dans le quartier (optionnel) */
     averagePricePerSqm: z.number().positive().optional(),
@@ -208,6 +212,9 @@ export const ValuationResultSchema = z.object({
 
     /** Nombre de ventes (pour crédibilité) */
     salesCount: z.number().optional(),
+
+    /** Détection automatique chaudière fossile (pour alertes) */
+    isFossilFuel: z.boolean().optional(),
 });
 
 export type ValuationResult = z.infer<typeof ValuationResultSchema>;

@@ -56,6 +56,7 @@ const RisksMap = ({ lat, lng }: RisksMapProps) => {
     return (
         <div className="w-full h-full absolute inset-0 z-0 bg-[#111]">
             <MapContainer
+                key={`${lat}-${lng}`}
                 center={position}
                 zoom={13}
                 scrollWheelZoom={false}

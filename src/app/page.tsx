@@ -29,6 +29,7 @@ import { ValueShield } from '@/components/business/ValueShield';
 
 // EXISTING COMPONENTS (Kept)
 import { MprSuspensionAlert } from '@/components/business/MprSuspensionAlert';
+import { HeatingSystemAlert } from '@/components/business/HeatingSystemAlert';
 import { MarketLiquidityAlert } from '@/components/business/MarketLiquidityAlert';
 import { ComplianceTimeline } from '@/components/ComplianceTimeline';
 import { RisksCard } from '@/components/business/RisksCard';
@@ -194,6 +195,12 @@ export default function CockpitPage() {
 
                     <MagicalAddressInput
                         onStartSimulation={(data) => {
+                            // Normalisation du type de chauffage pour le schéma
+                            let normalizedHeating: "electrique" | "gaz" | "fioul" | "bois" | "urbain" | "autre" | undefined;
+
+                            if (data.heatingSystem === 'elec') normalizedHeating = 'electrique';
+                            else if (data.heatingSystem === 'gaz' || data.heatingSystem === 'fioul') normalizedHeating = data.heatingSystem;
+
                             setDiagnosticInput((prev) => ({
                                 ...prev,
                                 address: data.address || prev.address,
@@ -204,7 +211,7 @@ export default function CockpitPage() {
                                 targetDPE: (data.targetDPE as DPELetter) || prev.targetDPE,
                                 estimatedCostHT: typeof data.estimatedCostHT === 'number' ? data.estimatedCostHT : prev.estimatedCostHT,
                                 averagePricePerSqm: typeof data.pricePerSqm === 'number' ? data.pricePerSqm : prev.averagePricePerSqm,
-                                heatingSystem: data.heatingSystem || prev.heatingSystem,
+                                heatingSystem: normalizedHeating || prev.heatingSystem,
                             }));
 
                             const cockpit = document.getElementById('cockpit-start');
@@ -221,6 +228,7 @@ export default function CockpitPage() {
                 {/* ZONE A: ALERTES CONTEXTUELLES */}
                 <div className="space-y-3">
                     <MprSuspensionAlert isSuspended={isMprCoproSuspended()} />
+                    <HeatingSystemAlert heatingType={diagnosticInput.heatingSystem} />
                     <MarketLiquidityAlert shareOfSales={getLocalPassoiresShare()} />
                 </div>
 

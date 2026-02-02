@@ -9,7 +9,7 @@ import { SubsidyTable } from "@/components/business/SubsidyTable";
 
 // [NEW] Data Reveal Features
 import { DPEDistributionChart } from "@/components/dashboard/DPEDistributionChart";
-import { HeatingSystemAlert } from "@/components/dashboard/HeatingSystemAlert";
+import { HeatingSystemAlert } from "@/components/business/HeatingSystemAlert";
 
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";

@@ -384,6 +384,11 @@ export function calculateValuation(
     // Reste à charge global = remainingCost (qui est déjà le total pour la copro après aides)
     const netROI = greenValueGain - financing.remainingCost;
 
+    // Détection fossile
+    const isFossilFuel = input.heatingSystem
+        ? ['gaz', 'fioul'].includes(input.heatingSystem)
+        : false;
+
     return {
         currentValue,
         projectedValue,
@@ -394,6 +399,7 @@ export function calculateValuation(
         pricePerSqm: BASE_PRICE_PER_SQM,
         priceSource: input.priceSource,
         salesCount: input.salesCount,
+        isFossilFuel,
     };
 }
 
@@ -408,8 +414,19 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
     const compliance = calculateComplianceStatus(input.currentDPE);
 
     // 2. Simulation financement
+    // AUDIT 02/02/2026: Logic Priorité Coût Manuel vs Auto
+    const averageSurface = input.averageUnitSurface || 65;
+    const totalSurface = input.numberOfUnits * averageSurface;
+
+    let workCostBase = input.estimatedCostHT;
+
+    // Si pas de coût saisi (ou 0), on estime automatiquement
+    if (!workCostBase || workCostBase <= 0) {
+        workCostBase = totalSurface * VALUATION_PARAMS.ESTIMATED_RENO_COST_PER_SQM;
+    }
+
     const financing = simulateFinancing(
-        input.estimatedCostHT,
+        workCostBase,
         input.numberOfUnits,
         input.currentDPE,
         input.targetDPE,
@@ -421,7 +438,7 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
 
     // 3. Coût de l'inaction
     const inactionCost = calculateInactionCost(
-        input.estimatedCostHT,
+        workCostBase,
         input.numberOfUnits,
         input.currentDPE,
         input.averagePricePerSqm,
