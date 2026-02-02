@@ -69,7 +69,8 @@
   }
 
   /* Financial Numbers: Military Precision */
-  .financial-num {
+  .financial-num,
+  .financial-nums {
     font-variant-numeric: tabular-nums;
     letter-spacing: var(--tracking-financial);
     font-feature-settings: "tnum" on, "lnum" on;

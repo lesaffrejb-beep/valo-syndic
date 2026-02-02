@@ -34,6 +34,7 @@ import { Button } from '@/components/ui/button';
 import { JsonImporter } from '@/components/import/JsonImporter';
 import { ProjectionModeToggle } from '@/components/ui/ProjectionModeToggle';
 import { Header } from '@/components/layout/Header';
+import { ViewModeToggle } from '@/components/ui/ViewModeToggle';
 
 // --- BUSINESS COMPONENTS ---
 import { StreetViewHeader } from '@/components/business/StreetViewHeader';
@@ -536,21 +537,7 @@ export default function ScrollytellingPage() {
 
                 {/* Switcher */}
                 <div className="flex justify-center mb-8">
-                    <div className="bg-white/5 p-1.5 rounded-full border border-white/20 backdrop-blur-md flex relative shadow-2xl">
-                        {/* Simple toggle implementation */}
-                        <button
-                            onClick={() => useViewModeStore.getState().setViewMode('immeuble')}
-                            className={`px-8 py-3 rounded-full text-sm font-bold transition-all uppercase tracking-wide border ${viewMode === 'immeuble' ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'}`}
-                        >
-                            Immeuble
-                        </button>
-                        <button
-                            onClick={() => useViewModeStore.getState().setViewMode('maPoche')}
-                            className={`px-8 py-3 rounded-full text-sm font-bold transition-all uppercase tracking-wide border ${viewMode === 'maPoche' ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'}`}
-                        >
-                            Mon Lot
-                        </button>
-                    </div>
+                    <ViewModeToggle />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">

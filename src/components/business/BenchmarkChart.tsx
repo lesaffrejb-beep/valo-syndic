@@ -111,7 +111,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                         </div>
                         <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
                             <div
-                                className="h-full rounded-full transition-all duration-1000 ease-out bg-white/30"
+                                className="h-full rounded-full transition-all duration-1000 ease-out bg-gold/80"
                                 style={{ width: `${avgBarWidth}%` }}
                             />
                         </div>

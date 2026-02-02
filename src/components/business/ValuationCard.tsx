@@ -74,7 +74,7 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
                     </div>
 
                     <div className="flex items-baseline gap-3">
-                        <span className={cn("text-5xl lg:text-6xl font-sans font-light tracking-tighter leading-none financial-num", accentColorClass)}>
+                        <span className={cn("text-5xl lg:text-6xl font-sans font-light tracking-tighter leading-none financial-nums", accentColorClass)}>
                             +{formatCurrency(displayGreenValueGain)}
                         </span>
                     </div>
@@ -89,7 +89,7 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
                         <div>
                             <p className="text-warning/80 font-bold uppercase tracking-widest text-[9px] mb-1">Contexte marché</p>
                             <p className="text-[11px] text-muted leading-relaxed">
-                                Tendance : <span className="text-warning font-bold">{(marketTrend.national * 100).toFixed(1)}%</span>.
+                                Tendance : <span className="text-warning font-bold financial-nums">{(marketTrend.national * 100).toFixed(1)}%</span>.
                                 {isPassoire && " Sans rénovation, votre bien subit cette baisse + la décote passoire énergétique."}
                             </p>
                         </div>
@@ -114,7 +114,7 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
                         </p>
                     </div>
 
-                    <div className={cn("text-right font-bold text-3xl tracking-tighter financial-num", displayNetROI >= 0 ? 'text-white' : 'text-warning')}>
+                    <div className={cn("text-right font-bold text-3xl tracking-tighter financial-nums", displayNetROI >= 0 ? 'text-white' : 'text-warning')}>
                         {displayNetROI >= 0 ? '+' : ''}{formatCurrency(displayNetROI)}
                     </div>
                 </div>

@@ -70,22 +70,22 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                         {/* Travaux Seuls */}
                         <div className="flex justify-between items-baseline group/item">
                             <p className="text-sm text-muted-foreground group-hover/item:text-white transition-colors">Travaux de rénovation (HT)</p>
-                            <p className="text-white font-medium financial-num"><AnimatedCurrency value={financing.worksCostHT} /></p>
+                            <p className="text-white font-medium financial-nums"><AnimatedCurrency value={financing.worksCostHT} /></p>
                         </div>
 
                         {/* Frais Annexes */}
                         <div className="space-y-3 pl-4 border-l border-white/5">
                             <div className="flex justify-between text-sm text-muted">
                                 <span>Honoraires Syndic (3%)</span>
-                                <span className="financial-num"><AnimatedCurrency value={financing.syndicFees} /></span>
+                                <span className="financial-nums"><AnimatedCurrency value={financing.syndicFees} /></span>
                             </div>
                             <div className="flex justify-between text-sm text-muted">
                                 <span>Assurance DO (2%)</span>
-                                <span className="financial-num"><AnimatedCurrency value={financing.doFees} /></span>
+                                <span className="financial-nums"><AnimatedCurrency value={financing.doFees} /></span>
                             </div>
                             <div className="flex justify-between text-sm text-muted">
                                 <span>Aléas (3%)</span>
-                                <span className="financial-num"><AnimatedCurrency value={financing.contingencyFees} /></span>
+                                <span className="financial-nums"><AnimatedCurrency value={financing.contingencyFees} /></span>
                             </div>
                         </div>
                     </div>
@@ -97,7 +97,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                     <p className="text-gold/80 font-bold uppercase text-[10px] tracking-widest">Total Projet</p>
                                     <p className="text-[10px] text-muted">Avant aides</p>
                                 </div>
-                                <p className="text-3xl font-black bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent tracking-tight financial-num">
+                                <p className="text-3xl font-black bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent tracking-tight financial-nums">
                                     <AnimatedCurrency value={financing.totalCostHT} />
                                 </p>
                             </div>
@@ -135,7 +135,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                     </p>
                                 </div>
                             </div>
-                            <span className="text-base font-bold text-blue-100 tabular-nums relative z-10">
+                            <span className="text-base font-bold text-blue-100 financial-nums relative z-10">
                                 -<AnimatedCurrency value={financing.mprAmount} />
                             </span>
                             <div className="absolute inset-0 bg-blue-500/5 group-hover/mpr:bg-blue-500/10 transition-colors" />
@@ -153,7 +153,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                         <p className="text-[10px] text-muted">Certificats Énergie</p>
                                     </div>
                                 </div>
-                                <span className="text-base font-bold text-success tabular-nums">
+                                <span className="text-base font-bold text-success financial-nums">
                                     -<AnimatedCurrency value={financing.ceeAmount} />
                                 </span>
                             </div>
@@ -171,7 +171,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                         <p className="text-[10px] text-muted">Collectivités</p>
                                     </div>
                                 </div>
-                                <span className="text-base font-bold text-success tabular-nums">
+                                <span className="text-base font-bold text-success financial-nums">
                                     -<AnimatedCurrency value={financing.localAidAmount} />
                                 </span>
                             </div>
@@ -188,7 +188,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                     <p className="text-[10px] text-muted">Taux 0% • Durée 20 ans</p>
                                 </div>
                             </div>
-                            <span className="text-base font-bold text-white tabular-nums">
+                            <span className="text-base font-bold text-white financial-nums">
                                 <AnimatedCurrency value={financing.ecoPtzAmount} />
                             </span>
                         </div>
@@ -201,7 +201,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                 <p className="text-xs text-muted mb-1 uppercase tracking-wide">
                                     Reste à charge {isMaPoche ? '(votre part)' : 'final'}
                                 </p>
-                                <p className="text-5xl md:text-6xl font-black text-gold tabular-nums financial-num tracking-tighter">
+                                <p className="text-5xl md:text-6xl font-black text-gold financial-nums financial-nums tracking-tighter">
                                     <AnimatedCurrency value={getAdjustedValue(financing.remainingCost)} />
                                 </p>
                                 <p className="text-[10px] text-muted mt-1 opacity-70">
@@ -214,7 +214,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                                     <span className="text-[10px] text-gold/80 font-bold uppercase tracking-wider mb-1">
                                         Mensualité {isMaPoche ? 'estimée' : 'Copro'}
                                     </span>
-                                    <span className="text-2xl font-bold text-white tabular-nums financial-num">
+                                    <span className="text-2xl font-bold text-white financial-nums financial-nums">
                                         <AnimatedCurrency value={getAdjustedValue(financing.monthlyPayment)} />
                                         <span className="text-sm font-normal text-muted ml-1">/mois</span>
                                     </span>
@@ -228,7 +228,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                 <div className="md:col-span-2 mt-4 pt-4 border-t border-white/5 flex justify-center">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 border border-success/20 hover:bg-success/20 transition-colors">
                         <span className="text-[10px] font-bold text-success uppercase tracking-wider">⚡ Gain énergétique projeté</span>
-                        <span className="text-sm font-black text-success tabular-nums">
+                        <span className="text-sm font-black text-success financial-nums">
                             -{Math.round(financing.energyGainPercent * 100)}%
                         </span>
                     </div>

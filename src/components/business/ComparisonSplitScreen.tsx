@@ -32,7 +32,7 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
             {/* LEFT: THE CRASH (Inaction) */}
-            <Card variant="glass" className="border-rose-500/20 bg-rose-500/5 hover:border-rose-500/30 group relative overflow-hidden">
+            <Card variant="glass" className="border-rose-500/20 bg-rose-500/5 hover:border-rose-500/30 group relative overflow-hidden h-full">
                 {/* Subtle Radial Gradient for Depth */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.15),transparent_70%)] blur-3xl pointer-events-none opacity-50" />
                 <CardContent className="p-8 md:p-10 flex flex-col justify-between h-full">
@@ -74,7 +74,7 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
             </Card>
 
             {/* RIGHT: THE UPSIDE (Action) */}
-            <Card variant="premium" className="group relative overflow-hidden bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/30">
+            <Card variant="premium" className="group relative overflow-hidden bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/30 h-full">
                 {/* Decorative Glow */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 
@@ -91,40 +91,40 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
                         </p>
                     </div>
 
-                    {/* BALANCE VISUAL */}
-                    <div className="mt-8 mb-4 space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-2">
-                                    <motion.div
-                                        className="h-full bg-rose-400/50"
-                                        style={{ width: `${costPct}%` }}
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${costPct}%` }}
-                                        transition={{ duration: 1.5, ease: "easeOut" }}
-                                    />
+                    {/* BALANCE VISUAL & TOTAL (Grouped for alignment) */}
+                    <div className="mt-12 space-y-6">
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-2">
+                                        <motion.div
+                                            className="h-full bg-rose-400/50"
+                                            style={{ width: `${costPct}%` }}
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${costPct}%` }}
+                                            transition={{ duration: 1.5, ease: "easeOut" }}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-muted uppercase tracking-wide">Coût Réel</p>
+                                    <p className="text-sm font-bold text-white tabular-nums">{formatCurrency(cost)}</p>
                                 </div>
-                                <p className="text-xs text-muted uppercase tracking-wide">Coût Réel</p>
-                                <p className="text-sm font-bold text-white tabular-nums">{formatCurrency(cost)}</p>
-                            </div>
-                            <div>
-                                <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-2">
-                                    <motion.div
-                                        className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
-                                        style={{ width: `${gainPct}%` }}
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${gainPct}%` }}
-                                        transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-                                    />
+                                <div>
+                                    <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-2">
+                                        <motion.div
+                                            className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                                            style={{ width: `${gainPct}%` }}
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${gainPct}%` }}
+                                            transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-emerald-400 uppercase tracking-wide">Plus-Value</p>
+                                    <p className="text-sm font-bold text-emerald-400 tabular-nums">+{formatCurrency(valueGain)}</p>
                                 </div>
-                                <p className="text-xs text-emerald-400 uppercase tracking-wide">Plus-Value</p>
-                                <p className="text-sm font-bold text-emerald-400 tabular-nums">+{formatCurrency(valueGain)}</p>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="mt-4 space-y-6 pt-6 border-t border-emerald-500/10">
-                        <div className="pt-2">
+                        <div className="pt-2 border-t border-emerald-500/10">
                             <p className="text-xs font-bold text-emerald-400/70 mb-1 uppercase tracking-widest">ENRICHISSEMENT NET</p>
                             <div className="text-5xl md:text-6xl font-black bg-gradient-to-br from-emerald-400 to-emerald-600 bg-clip-text text-transparent tracking-tighter flex items-center gap-2 financial-num">
                                 +<AnimatedCurrency value={netGain} />

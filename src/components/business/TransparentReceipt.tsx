@@ -33,57 +33,56 @@ export function TransparentReceipt({ financing }: TransparentReceiptProps) {
             animate={{ opacity: 1, scale: 1 }}
             className="h-full flex flex-col justify-between p-6 relative"
         >
-            {/* Header Ticket */}
+            {/* HEADER - Ticket de Caisse */}
             <div className="text-center mb-6">
-                <div className="inline-block border-2 border-primary/20 rounded-full p-1 mb-2">
-                    <div className="w-12 h-1 bg-primary/20 rounded-full" />
+                <div className="inline-block border border-white/10 rounded-full px-3 py-1 mb-3 bg-white/[0.02]">
+                    <span className="text-[10px] font-mono text-muted uppercase tracking-widest">RÉCAPITULATIF FINANCIER</span>
                 </div>
-                <h2 className="text-lg font-bold text-white tracking-tight uppercase">Ticket de Caisse</h2>
-                <p className="text-xs text-muted font-mono">Détail du Reste à Charge Réel</p>
             </div>
 
             {/* BODY - La Cascade */}
-            <div className="flex-1 space-y-1 font-mono text-sm relative">
+            <div className="flex-1 space-y-2 font-mono text-sm relative">
 
-                {/* Ligne pointillée verticale de liaison */}
-                <div className="absolute left-0 top-2 bottom-2 w-[1px] border-l border-dashed border-white/10 ml-[2px]" />
+                {/* Vertical Guide Line */}
+                <div className="absolute left-0 top-2 bottom-2 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent ml-[1px]" />
 
                 {/* 1. COÛT */}
                 {costItems.map((item, i) => (
-                    <div key={`cost-${i}`} className="flex justify-between items-baseline py-2 group pl-4">
-                        <span className="text-zinc-400">{item.label}</span>
-                        <span className="text-white font-bold">{formatCurrency(item.value)}</span>
+                    <div key={`cost-${i}`} className="flex justify-between items-baseline py-1 group pl-4">
+                        <span className="text-zinc-400 font-medium tracking-tight">{item.label}</span>
+                        <span className="text-white font-bold financial-nums tracking-normal">{formatCurrency(item.value)}</span>
                     </div>
                 ))}
 
                 {/* Separator */}
-                <div className="border-b border-dashed border-white/10 my-2" />
+                <div className="border-b border-dashed border-white/10 my-2 opacity-50" />
 
                 {/* 2. DEDUCTIONS (AIDES) */}
                 {grantItems.map((item, i) => (
-                    <div key={`grant-${i}`} className="flex justify-between items-baseline py-1 group pl-4 relative">
-                        <span className="absolute left-[-2px] top-1/2 -translate-y-1/2 text-[10px] text-emerald-500 font-bold">-</span>
-                        <span className={item.highlight ? "text-emerald-400 font-bold" : "text-zinc-500 group-hover:text-emerald-400/70 transition-colors"}>
+                    <div key={`grant-${i}`} className="flex justify-between items-baseline py-1.5 group pl-4 relative">
+                        <span className="absolute left-[-3px] top-1/2 -translate-y-1/2 text-[10px] text-emerald-500/80 font-bold opacity-0 group-hover:opacity-100 transition-opacity">›</span>
+                        <span className={item.highlight ? "text-emerald-400 font-bold" : "text-zinc-500 group-hover:text-emerald-400/80 transition-colors"}>
                             {item.label}
                         </span>
-                        <span className="text-emerald-500 tabular-nums">- {formatCurrency(item.value)}</span>
+                        <span className="text-emerald-500 financial-nums">- {formatCurrency(item.value)}</span>
                     </div>
                 ))}
 
-                {/* Separator Reste à Charge */}
-                <div className="border-b-2 border-white/10 my-3" />
+                {/* Separator Reste à Charge - Double Line */}
+                <div className="border-b border-white/10 mt-3 mb-1" />
+                <div className="border-b border-white/10 mb-3" />
 
-                <div className="flex justify-between items-baseline py-2 pl-4">
-                    <span className="text-white font-bold uppercase text-xs tracking-wider">Reste à Financer</span>
-                    <span className="text-white font-bold text-lg">{formatCurrency(financing.remainingCost)}</span>
+                <div className="flex justify-between items-baseline py-1 pl-4">
+                    <span className="text-white/90 font-bold uppercase text-[10px] tracking-widest">Reste à Financer</span>
+                    <span className="text-white font-bold text-lg financial-nums">{formatCurrency(financing.remainingCost)}</span>
                 </div>
 
                 {/* 3. LOAN */}
                 {financing.remainingCost > 0 && (
-                    <div className="pl-4 pt-2">
+                    <div className="pl-4 pt-4">
                         {loanItems.map((item, i) => (
-                            <div key={`loan-${i}`} className="flex justify-between items-baseline py-1 text-primary">
-                                <span className="flex items-center gap-2">
+                            <div key={`loan-${i}`} className="flex justify-between items-baseline py-1 text-primary/80 text-xs">
+                                <span className="flex items-center gap-2 italic">
                                     <span>↳</span>
                                     <span>{item.label}</span>
                                 </span>
@@ -95,18 +94,18 @@ export function TransparentReceipt({ financing }: TransparentReceiptProps) {
             </div>
 
             {/* FOOTER - THE MONEY SHOT (Effort Mensuel) */}
-            <div className="mt-6 pt-6 border-t border-dashed border-white/20">
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex justify-between items-center group hover:bg-white/10 transition-colors cursor-pointer">
+            <div className="mt-8 pt-6 border-t border-dashed border-white/20">
+                <div className="bg-gradient-to-br from-gold/10 to-gold/5 rounded-xl p-5 border border-gold/20 flex justify-between items-center group shadow-[0_0_30px_rgba(217,119,6,0.1)]">
                     <div className="flex flex-col">
-                        <span className="label-technical text-primary mb-1">Effort d&apos;épargne</span>
-                        <span className="text-xs text-muted">Mensualité réelle après aides</span>
+                        <span className="text-[10px] uppercase tracking-widest text-gold font-bold mb-1">Effort d&apos;épargne</span>
+                        <span className="text-xs text-gold/70">Mensualité réelle</span>
                     </div>
 
                     <div className="text-right">
-                        <span className="text-3xl font-bold text-white tracking-tighter group-hover:text-primary transition-colors">
+                        <span className="text-3xl font-black text-white tracking-tighter financial-nums">
                             {financing.monthlyPayment}€
                         </span>
-                        <span className="text-sm text-muted font-normal ml-1">/mois</span>
+                        <span className="text-sm text-gold/70 font-medium ml-1">/mois</span>
                     </div>
                 </div>
 

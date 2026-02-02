@@ -34,9 +34,9 @@ const PROFILE_CONFIG: Record<
     },
     Yellow: {
         label: "Modeste",
-        color: "#FBBF24",
-        borderColor: "rgba(251, 191, 36, 0.3)",
-        bgGradient: "from-amber-500/10 to-amber-500/5",
+        color: "#D97706", // Amber-600
+        borderColor: "rgba(217, 119, 6, 0.3)",
+        bgGradient: "from-amber-600/10 to-amber-600/5",
     },
     Purple: {
         label: "Intermédiaire",
@@ -46,9 +46,9 @@ const PROFILE_CONFIG: Record<
     },
     Pink: {
         label: "Aisé",
-        color: "#F472B6",
-        borderColor: "rgba(244, 114, 182, 0.3)",
-        bgGradient: "from-pink-500/10 to-pink-500/5",
+        color: "#E0B976", // Premium Gold
+        borderColor: "rgba(229, 192, 123, 0.3)",
+        bgGradient: "from-gold/10 to-gold/5",
     },
 };
 

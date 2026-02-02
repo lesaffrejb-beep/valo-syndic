@@ -20,9 +20,9 @@ interface TantiemeCalculatorProps {
 
 const PROFILE_OPTIONS: { id: IncomeProfile; label: string; color: string }[] = [
     { id: "Blue", label: "T. Modeste", color: "bg-blue-400" },
-    { id: "Yellow", label: "Modeste", color: "bg-yellow-400" },
+    { id: "Yellow", label: "Modeste", color: "bg-amber-600" },
     { id: "Purple", label: "Interm.", color: "bg-purple-400" },
-    { id: "Pink", label: "Aisé", color: "bg-pink-400" },
+    { id: "Pink", label: "Aisé", color: "bg-gold" }, // Gold instead of Pink
 ];
 
 export function TantiemeCalculator({ financing, simulationInputs, className = "" }: TantiemeCalculatorProps) {
