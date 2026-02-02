@@ -60,19 +60,20 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
             {/* Trigger Button */}
             <motion.button
                 onClick={() => setIsOpen(true)}
-                className="group relative px-4 py-2.5 rounded-lg border border-white/[0.08] bg-white/[0.02] 
-                           hover:border-primary/40 hover:bg-white/[0.04] transition-all duration-200"
+                className="group relative h-10 px-4 rounded-lg border border-white/[0.08] bg-white/[0.02] 
+                           hover:border-primary/40 hover:bg-white/[0.04] transition-all duration-200 flex items-center gap-2.5"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
             >
-                <div className="flex items-center gap-2.5">
-                    <span className="text-lg group-hover:scale-110 transition-transform duration-200">
-                        🕵️
-                    </span>
-                    <span className="text-sm font-medium text-main group-hover:text-primary transition-colors">
-                        Importer depuis Ghost
-                    </span>
-                </div>
+                <span className="text-lg group-hover:scale-110 transition-transform duration-200">
+                    🕵️
+                </span>
+                <span className="text-sm font-medium text-main group-hover:text-primary transition-colors hidden xl:inline">
+                    Importer depuis Ghost
+                </span>
+                <span className="text-sm font-medium text-main group-hover:text-primary transition-colors xl:hidden">
+                    Import
+                </span>
             </motion.button>
 
             {/* Modal */}

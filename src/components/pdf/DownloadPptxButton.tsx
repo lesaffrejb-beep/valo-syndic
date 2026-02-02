@@ -5,6 +5,7 @@ import pptxgen from "pptxgenjs";
 import { type DiagnosticResult } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/calculator";
 import { useBrandStore } from "@/stores/useBrandStore";
+import { Presentation } from "lucide-react";
 
 interface DownloadPptxButtonProps {
     result: DiagnosticResult;
@@ -360,22 +361,24 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
         }
     };
 
+
+
     return (
         <div className="relative">
             <button
                 onClick={generatePptx}
                 disabled={isGenerating}
-                className={`btn-secondary flex items-center justify-center gap-2 ${className}`}
+                className={`btn-secondary flex items-center justify-center gap-3 ${className}`}
                 title="Télécharger présentation PowerPoint"
             >
                 {isGenerating ? (
                     <>
-                        <span className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                        <span className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                         <span className="hidden sm:inline">Génération...</span>
                     </>
                 ) : (
                     <>
-                        <span>📊</span>
+                        <Presentation className="w-5 h-5 text-current" />
                         <span className="hidden sm:inline">PowerPoint</span>
                     </>
                 )}

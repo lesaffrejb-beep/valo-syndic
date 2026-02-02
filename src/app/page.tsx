@@ -621,21 +621,21 @@ export default function ScrollytellingPage() {
                     <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                         <Button
                             variant="outline"
-                            className="h-16 px-8 rounded-full border-white/10 hover:bg-white/5 text-white gap-3"
+                            className="h-16 px-8 rounded-full border-white/10 hover:bg-white/5 text-white gap-3 transition-all duration-300"
                             onClick={() => setShowObjections(!showObjections)}
                         >
                             <AlertTriangle className="w-5 h-5 text-muted" />
-                            Contrer les objections
+                            <span className="font-semibold">Contrer les objections</span>
                         </Button>
 
                         <DownloadPdfButton
                             result={diagnosticResult}
-                            className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg shadow-neon-gold transition-all hover:scale-105"
+                            className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg shadow-neon-gold transition-all duration-300 hover:scale-105 flex items-center gap-3"
                         />
 
                         <DownloadPptxButton
                             result={diagnosticResult}
-                            className="h-16 px-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white"
+                            className="h-16 px-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition-all duration-300"
                         />
                     </div>
 

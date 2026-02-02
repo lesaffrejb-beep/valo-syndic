@@ -73,10 +73,11 @@ export function Header({
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent opacity-50" />
 
             <div className="relative max-w-[1400px] mx-auto px-6 md:px-8">
-                <div className="flex items-center justify-between h-20">
+                {/* GRID LAYOUT: 1fr | auto | 1fr to ensure center is centered but safe from overlap if sides grow too much */}
+                <div className="grid grid-cols-[1fr_auto_1fr] items-center h-20 gap-4">
 
-                    {/* Left: Actions (Import/Save) */}
-                    <div className="flex items-center gap-2">
+                    {/* LEFT: Actions (Import/Save) */}
+                    <div className="flex items-center justify-start gap-2">
                         {onImport && <JsonImporter onImport={onImport} />}
 
                         {/* File Import Button (Legacy support) */}
@@ -84,11 +85,11 @@ export function Header({
                             <>
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-transparent hover:bg-white/[0.04] transition-all duration-200 text-sm font-medium text-muted hover:text-white"
+                                    className="h-10 flex items-center gap-2 px-3 rounded-lg border border-transparent hover:bg-white/[0.04] transition-all duration-200 text-sm font-medium text-muted hover:text-white"
                                     title="Importer un fichier .valo"
                                 >
-                                    <span className="hidden md:inline">Ouvrir</span>
-                                    <span className="md:hidden">📂</span>
+                                    <span className="hidden xl:inline">Ouvrir</span>
+                                    <span className="xl:hidden">📂</span>
                                 </button>
                                 <input
                                     ref={fileInputRef}
@@ -103,38 +104,37 @@ export function Header({
                         <button
                             onClick={onSave}
                             disabled={!hasResult || isSaving}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold text-[#050507] font-semibold text-sm hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                            className="h-10 flex items-center gap-2 px-4 rounded-lg bg-gold text-[#050507] font-semibold text-sm hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                             title="Sauvegarder le dossier"
                         >
                             <Save className="w-4 h-4" />
-                            <span className="hidden md:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
+                            <span className="hidden xl:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
                         </button>
                     </div>
 
-                    {/* Center: Branding & Navigation */}
-                    <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+                    {/* CENTER: Navigation */}
+                    <div className="flex justify-center">
                         {/* Optional: Add Logo/Brand here if needed, but for now specific nav focus */}
                         {onNavigate && (
-                            <div className="hidden lg:flex items-center gap-4">
+                            <div className="hidden lg:flex items-center gap-1 xl:gap-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5">
                                 {navItems.map((item, index) => (
-                                    <div key={item.id} className="flex items-center gap-4">
-                                        <button
-                                            onClick={() => onNavigate(item.id)}
-                                            className={`text-[11px] uppercase tracking-[0.2em] font-medium transition-all duration-300 px-3 py-1 rounded-full ${activeSection === item.id
-                                                ? 'text-white bg-white/10 shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)] border border-white/10'
-                                                : 'text-muted hover:text-white hover:bg-white/5'
-                                                }`}
-                                        >
-                                            {item.label}
-                                        </button>
-                                    </div>
+                                    <button
+                                        key={item.id}
+                                        onClick={() => onNavigate(item.id)}
+                                        className={`text-[10px] xl:text-[11px] uppercase tracking-[0.15em] font-medium transition-all duration-300 px-3 py-1.5 rounded-full ${activeSection === item.id
+                                            ? 'text-white bg-white/10 shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)] border border-white/10'
+                                            : 'text-muted hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        {item.label}
+                                    </button>
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Right: Tools & Auth */}
-                    <div className="flex items-center gap-2 sm:gap-4 pl-2">
+                    {/* RIGHT: Tools & Auth */}
+                    <div className="flex items-center justify-end gap-2 sm:gap-4 pl-2">
                         <div className="flex items-center gap-1.5">
                             <ShareButton />
                             <ProjectionModeToggle />
@@ -149,20 +149,20 @@ export function Header({
                             <div className="relative group">
                                 <button
                                     onClick={() => setShowUserMenu(!showUserMenu)}
-                                    className="flex items-center gap-3 pl-1 pr-2 py-1.5 rounded-full hover:bg-white/[0.04] transition-all duration-300 border border-transparent hover:border-white/[0.08]"
+                                    className="h-10 flex items-center gap-3 pl-1 pr-2 rounded-full hover:bg-white/[0.04] transition-all duration-300 border border-transparent hover:border-white/[0.08]"
                                 >
-                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/20 ring-2 ring-transparent group-hover:ring-gold/10 transition-all">
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/20 ring-2 ring-transparent group-hover:ring-gold/10 transition-all">
                                         <span className="text-xs font-bold text-gold font-serif">
                                             {user.email?.charAt(0).toUpperCase()}
                                         </span>
                                     </div>
-                                    <div className="hidden lg:flex flex-col items-start">
+                                    <div className="hidden xl:flex flex-col items-start text-left">
                                         <span className="text-xs font-medium text-white max-w-[100px] truncate leading-tight">
                                             {user.email?.split('@')[0]}
                                         </span>
-                                        <span className="text-[10px] text-muted leading-tight">Connecté</span>
+                                        <span className="text-[9px] text-muted leading-tight">Connecté</span>
                                     </div>
-                                    <svg className="w-3.5 h-3.5 text-muted group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="hidden xl:block w-3.5 h-3.5 text-muted group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
@@ -215,10 +215,10 @@ export function Header({
                             /* Login Button */
                             <button
                                 onClick={onOpenAuth}
-                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gold text-[#050507] hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10"
+                                className="h-10 flex items-center gap-2 px-5 rounded-lg text-sm font-semibold bg-gold text-[#050507] hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10"
                             >
                                 <span>🔐</span>
-                                <span className="hidden sm:inline">Se connecter</span>
+                                <span className="hidden sm:inline">Connexion</span>
                             </button>
                         )}
                     </div>
