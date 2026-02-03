@@ -849,6 +849,7 @@ Système de réponses aux objections classiques en AG.
 
 | Fichier | Description | Criticité |
 |---------|-------------|-----------|
+| `src/components/business/form/SimulationForm.tsx` | Formulaire simulation "Smart Fallback" (RNIC/DPE auto + mode dégradé) | **Haute** |
 | `src/components/business/form/DiagnosticForm.tsx` | Formulaire principal de saisie | Haute |
 
 ---
@@ -1284,6 +1285,7 @@ mv docs/VERIFICATION_MATHEMATIQUE_MPR_2026.md docs/archive/
 | 2026-01-31 | JB | Ajout §7.4 Déploiement CI/CD (Vercel) | §7.4 |
 | 2026-01-31 | JB | Complétion §13.11.3 Variables d'environnement | §13.11.3 |
 | 2026-02-02 | OpenAI Assistant | Raffinement du hero premium, panneau de saisie manuelle dépliable, et refonte de l'impact individuel (valeur verte déplacée, carte ROI retirée). | §5, §10 |
+| 2026-02-03 | OpenAI Assistant | Ajout du formulaire Simulation "Smart Fallback" (RNIC/DPE auto, estimation surface/budget) et hook dédié. | §5, §13.2.4 |
 
 **Comment ajouter une entrée :**
 ```
