@@ -411,7 +411,7 @@ export default function ScrollytellingPage() {
                 />
 
                 {/* Quote-part Selector */}
-                <div className="max-w-xl mx-auto mb-12">
+                <div className="max-w-2xl mx-auto mb-12 px-4">
                     <div className="text-center mb-4">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-gold/60 font-semibold">Votre quote-part</span>
                     </div>

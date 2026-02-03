@@ -86,7 +86,7 @@ export function ViewModeToggle({ className, totalUnits = 20, avgSurface = 65 }: 
     };
 
     return (
-        <div className={cn("relative w-full max-w-md mx-auto", className)}>
+        <div className={cn("relative w-full", className)}>
             {/* Container principal - La Barre */}
             <div
                 ref={containerRef}
