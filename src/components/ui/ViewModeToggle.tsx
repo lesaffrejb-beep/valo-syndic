@@ -2,224 +2,204 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useViewModeStore, type ViewMode } from "@/stores/useViewModeStore";
+import { useViewModeStore } from "@/stores/useViewModeStore";
 import { cn } from "@/lib/utils";
-import { Building2, User, ChevronDown } from "lucide-react";
+import { Building2, User } from "lucide-react";
 
 export function ViewModeToggle({ className }: { className?: string }) {
     const { viewMode, setViewMode, userTantiemes, setUserTantiemes } = useViewModeStore();
-    const [isEditing, setIsEditing] = useState(false);
-    const [tempValue, setTempValue] = useState(userTantiemes.toString());
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [showValue, setShowValue] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const percentage = (userTantiemes / 1000) * 100;
+    const isFullBuilding = userTantiemes >= 995;
+    const isIndividual = userTantiemes <= 50;
+
+    // Déterminer le label actif basé sur la valeur
+    const effectiveMode = isFullBuilding ? 'immeuble' : 'maPoche';
+
+    const handleContainerClick = (e: React.MouseEvent) => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        const tantiemes = Math.round((pct / 100) * 1000);
+        
+        setUserTantiemes(Math.max(1, tantiemes));
+        if (tantiemes >= 995) {
+            setViewMode('immeuble');
+        } else {
+            setViewMode('maPoche');
+        }
+    };
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setIsDragging(true);
+        handleContainerClick(e);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging) return;
+        handleContainerClick(e);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
 
     useEffect(() => {
-        setTempValue(userTantiemes.toString());
-    }, [userTantiemes]);
+        if (isDragging) {
+            window.addEventListener('mouseup', handleMouseUp);
+            window.addEventListener('mousemove', handleMouseMove as any);
+        }
+        return () => {
+            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('mousemove', handleMouseMove as any);
+        };
+    }, [isDragging]);
 
+    // Sync viewMode with value
     useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-            inputRef.current.select();
+        if (isFullBuilding && viewMode !== 'immeuble') {
+            setViewMode('immeuble');
+        } else if (!isFullBuilding && viewMode === 'immeuble') {
+            setViewMode('maPoche');
         }
-    }, [isEditing]);
+    }, [userTantiemes, isFullBuilding, viewMode, setViewMode]);
 
-    const handleModeChange = (mode: ViewMode) => {
-        setViewMode(mode);
-        if (mode === 'maPoche') {
-            setTimeout(() => setIsEditing(true), 150);
+    const setPreset = (value: number) => {
+        setUserTantiemes(value);
+        if (value >= 995) {
+            setViewMode('immeuble');
         } else {
-            setIsEditing(false);
+            setViewMode('maPoche');
         }
-    };
-
-    const handleSubmit = () => {
-        const val = parseInt(tempValue, 10);
-        if (!isNaN(val) && val >= 1 && val <= 1000) {
-            setUserTantiemes(val);
-        } else {
-            setTempValue(userTantiemes.toString());
-        }
-        setIsEditing(false);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') handleSubmit();
-        if (e.key === 'Escape') {
-            setTempValue(userTantiemes.toString());
-            setIsEditing(false);
-        }
-    };
-
-    const quickAdjust = (delta: number) => {
-        const newVal = Math.max(1, Math.min(1000, userTantiemes + delta));
-        setUserTantiemes(newVal);
     };
 
     return (
-        <div className={cn("relative", className)}>
-            {/* Container principal - Glass pill */}
-            <div className="inline-flex items-center bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-1.5 shadow-2xl shadow-black/20">
-                
-                {/* Option Immeuble */}
-                <button
-                    onClick={() => handleModeChange('immeuble')}
+        <div 
+            className={cn("relative w-full max-w-md mx-auto", className)}
+            onMouseEnter={() => setShowValue(true)}
+            onMouseLeave={() => setShowValue(false)}
+        >
+            {/* Container principal - La Barre */}
+            <div
+                ref={containerRef}
+                onMouseDown={handleMouseDown}
+                className={cn(
+                    "relative h-14 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300",
+                    isDragging && "scale-[1.02] border-white/20"
+                )}
+            >
+                {/* Barre de progression - La magie visuelle */}
+                <motion.div
                     className={cn(
-                        "relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300",
-                        viewMode === 'immeuble' 
-                            ? "text-black" 
-                            : "text-white/50 hover:text-white/80"
+                        "absolute left-0 top-0 bottom-0 transition-colors duration-500",
+                        isFullBuilding 
+                            ? "bg-gradient-to-r from-white/90 to-white" 
+                            : "bg-gradient-to-r from-gold/80 via-gold to-gold/90"
                     )}
-                >
-                    {viewMode === 'immeuble' && (
-                        <motion.div
-                            layoutId="active-pill-bg"
-                            className="absolute inset-0 bg-white rounded-xl shadow-lg"
-                            initial={false}
-                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                        />
-                    )}
-                    <span className="relative z-10 flex items-center gap-2">
-                        <Building2 className="w-4 h-4" />
-                        <span className="uppercase tracking-wide text-xs">Immeuble</span>
-                    </span>
-                </button>
+                    initial={false}
+                    animate={{ width: `${percentage}%` }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
 
-                {/* Option Ma Poche - avec valeur intégrée */}
-                <button
-                    onClick={() => handleModeChange('maPoche')}
+                {/* Label MA POCHE - Gauche (visible quand peu rempli) */}
+                <div 
                     className={cn(
-                        "relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300",
-                        viewMode === 'maPoche' 
-                            ? "text-black" 
-                            : "text-white/50 hover:text-white/80"
+                        "absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 transition-all duration-300",
+                        percentage > 40 ? "opacity-30" : "opacity-100"
                     )}
                 >
-                    {viewMode === 'maPoche' && (
-                        <motion.div
-                            layoutId="active-pill-bg"
-                            className="absolute inset-0 bg-white rounded-xl shadow-lg"
-                            initial={false}
-                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                        />
-                    )}
-                    <span className="relative z-10 flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        <span className="uppercase tracking-wide text-xs">Ma Poche</span>
-                        
-                        {/* Badge valeur tantièmes - visible uniquement en mode maPoche */}
-                        <AnimatePresence>
-                            {viewMode === 'maPoche' && (
-                                <motion.span
-                                    initial={{ opacity: 0, scale: 0.8, width: 0 }}
-                                    animate={{ opacity: 1, scale: 1, width: "auto" }}
-                                    exit={{ opacity: 0, scale: 0.8, width: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="ml-1 inline-flex items-center"
-                                >
-                                    <span className="bg-black/10 text-black/70 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                        {Math.round((userTantiemes / 1000) * 100)}%
-                                    </span>
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
+                    <User className={cn("w-4 h-4", percentage < 20 ? "text-black" : "text-white/70")} />
+                    <span className={cn(
+                        "text-xs font-bold uppercase tracking-wider",
+                        percentage < 20 ? "text-black" : "text-white/70"
+                    )}>
+                        Ma Poche
                     </span>
-                </button>
+                </div>
+
+                {/* Label IMMEUBLE - Droite (visible quand bien rempli) */}
+                <div 
+                    className={cn(
+                        "absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 transition-all duration-300",
+                        percentage < 60 ? "opacity-30" : "opacity-100"
+                    )}
+                >
+                    <span className={cn(
+                        "text-xs font-bold uppercase tracking-wider",
+                        percentage > 95 ? "text-black" : "text-white/70"
+                    )}>
+                        Immeuble
+                    </span>
+                    <Building2 className={cn("w-4 h-4", percentage > 95 ? "text-black" : "text-white/70")} />
+                </div>
+
+                {/* Valeur centrale - Affiche le % */}
+                <AnimatePresence>
+                    {(showValue || isDragging) && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8, y: 5 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, y: 5 }}
+                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+                        >
+                            <div className={cn(
+                                "px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md",
+                                percentage > 40 && percentage < 95 
+                                    ? "bg-black/30 text-white" 
+                                    : "bg-white/20 text-black"
+                            )}>
+                                {Math.round(percentage)}%
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Indicateur de drag */}
+                <motion.div
+                    className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] z-20"
+                    initial={false}
+                    animate={{ left: `${percentage}%` }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    style={{ x: '-50%' }}
+                />
             </div>
 
-            {/* Dropdown édition tantièmes - apparaît sous le toggle */}
-            <AnimatePresence>
-                {viewMode === 'maPoche' && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50"
+            {/* Labels sous la barre */}
+            <div className="flex justify-between mt-2 px-1">
+                <span className="text-[9px] uppercase tracking-widest text-white/30">
+                    {userTantiemes}/1000
+                </span>
+                <span className="text-[9px] uppercase tracking-widest text-white/30">
+                    {isFullBuilding ? 'Copropriété entière' : `Lot de ${Math.ceil(percentage * 0.1)} m² env.`}
+                </span>
+            </div>
+
+            {/* Presets rapides */}
+            <div className="flex justify-center gap-2 mt-3">
+                {[
+                    { val: 50, label: 'Studio' },
+                    { val: 100, label: 'T2' },
+                    { val: 200, label: 'T3' },
+                    { val: 1000, label: 'Tout' },
+                ].map(({ val, label }) => (
+                    <button
+                        key={val}
+                        onClick={() => setPreset(val)}
+                        className={cn(
+                            "px-3 py-1.5 rounded-full text-[10px] font-semibold transition-all duration-200 border",
+                            userTantiemes === val
+                                ? "bg-gold text-black border-gold"
+                                : "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-white/80"
+                        )}
                     >
-                        <div className="bg-[#0A0A0A]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-4 shadow-2xl min-w-[200px]">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-[10px] uppercase tracking-widest text-white/40 font-semibold">Votre quote-part</span>
-                                <span className="text-[10px] text-gold/60">sur 1000</span>
-                            </div>
-                            
-                            {/* Valeur éditable */}
-                            <div className="flex items-center gap-3 mb-4">
-                                <button 
-                                    onClick={() => quickAdjust(-10)}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors text-lg"
-                                >
-                                    −
-                                </button>
-                                
-                                <div className="flex-1 relative">
-                                    {isEditing ? (
-                                        <input
-                                            ref={inputRef}
-                                            type="number"
-                                            value={tempValue}
-                                            onChange={(e) => setTempValue(e.target.value)}
-                                            onBlur={handleSubmit}
-                                            onKeyDown={handleKeyDown}
-                                            className="w-full bg-gold/10 border border-gold/30 rounded-lg px-3 py-2 text-center text-xl font-bold text-gold focus:outline-none focus:ring-2 focus:ring-gold/50"
-                                            min={1}
-                                            max={1000}
-                                        />
-                                    ) : (
-                                        <button
-                                            onClick={() => setIsEditing(true)}
-                                            className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-center text-xl font-bold text-white transition-colors"
-                                        >
-                                            {userTantiemes}
-                                        </button>
-                                    )}
-                                </div>
-                                
-                                <button 
-                                    onClick={() => quickAdjust(10)}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors text-lg"
-                                >
-                                    +
-                                </button>
-                            </div>
-
-                            {/* Slider rapide */}
-                            <div className="space-y-2">
-                                <input
-                                    type="range"
-                                    min={1}
-                                    max={1000}
-                                    value={userTantiemes}
-                                    onChange={(e) => setUserTantiemes(Number(e.target.value))}
-                                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-gold [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-lg"
-                                />
-                                <div className="flex justify-between text-[9px] text-white/30 uppercase tracking-wider">
-                                    <span>Studio</span>
-                                    <span>T3</span>
-                                    <span>Tout</span>
-                                </div>
-                            </div>
-
-                            {/* Presets rapides */}
-                            <div className="flex gap-2 mt-4 pt-3 border-t border-white/5">
-                                {[50, 100, 200, 1000].map((val) => (
-                                    <button
-                                        key={val}
-                                        onClick={() => setUserTantiemes(val)}
-                                        className={cn(
-                                            "flex-1 py-1.5 rounded-lg text-[10px] font-medium transition-colors",
-                                            userTantiemes === val 
-                                                ? "bg-gold/20 text-gold border border-gold/30" 
-                                                : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80"
-                                        )}
-                                    >
-                                        {val === 1000 ? 'Tout' : val}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        {label}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
