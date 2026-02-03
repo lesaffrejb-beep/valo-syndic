@@ -13,7 +13,7 @@
 
 import { useEffect, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Building2, TrendingUp, AlertTriangle, Sparkles } from 'lucide-react';
+import { MapPin, Building2, TrendingUp, AlertTriangle } from 'lucide-react';
 
 // --- CORE IMPORTS ---
 import { supabase } from '@/lib/supabaseClient';
@@ -178,7 +178,6 @@ export default function ScrollytellingPage() {
 
     const handleGhostImport = useCallback((data: GhostExtensionImport) => {
         // Logic to handle Ghost Extension import
-        console.log('Ghost data imported:', data);
         // TODO: Update diagnosticInput with imported lots data
     }, []);
 
