@@ -81,7 +81,7 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
     }
 
     return (
-        <Card variant="premium" className="h-full min-h-[520px] border-white/5 bg-deep/50 overflow-hidden group">
+        <Card variant="premium" className="h-full min-h-[400px] border-white/5 bg-deep/50 overflow-hidden group">
             {/* GLASSMORPHISM BACKGROUND - NO MAP */}
             <div className="absolute inset-0 z-0">
                 {/* Abstract gradient background */}
@@ -116,17 +116,13 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                     </div>
                 </div>
 
-                {/* Gauges Grid - Vertical layout for Inondation/Argiles */}
-                <div className="flex gap-3 mb-auto">
-                    <div className="flex flex-col gap-3 flex-1">
-                        <RiskGauge label="Inondation" value={safeRisks.inondation ? 100 : 0} isDanger={safeRisks.inondation} />
-                        <RiskGauge label="Argiles" value={safeRisks.argile * 33} isDanger={safeRisks.argile >= 2} />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
-                        <RiskGauge label="Sismicité" value={safeRisks.sismicite * 20} isDanger={safeRisks.sismicite >= 3} />
-                        <RiskGauge label="Radon" value={safeRisks.radon * 33} isDanger={safeRisks.radon >= 3} />
-                        <RiskGauge label="Industriel" value={safeRisks.technologique ? 80 : 0} isDanger={safeRisks.technologique} />
-                    </div>
+                {/* Gauges Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-auto">
+                    <RiskGauge label="Inondation" value={safeRisks.inondation ? 100 : 0} isDanger={safeRisks.inondation} />
+                    <RiskGauge label="Argiles" value={safeRisks.argile * 33} isDanger={safeRisks.argile >= 2} />
+                    <RiskGauge label="Sismicité" value={safeRisks.sismicite * 20} isDanger={safeRisks.sismicite >= 3} />
+                    <RiskGauge label="Radon" value={safeRisks.radon * 33} isDanger={safeRisks.radon >= 3} />
+                    <RiskGauge label="Industriel" value={safeRisks.technologique ? 80 : 0} isDanger={safeRisks.technologique} />
                 </div>
             </div>
         </Card>

@@ -15,7 +15,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 // Feature Components
-import { SimulationForm } from "@/components/business/form/SimulationForm";
+import { DiagnosticForm } from "@/components/business/form/DiagnosticForm";
 import { ComplianceTimeline } from "@/components/ComplianceTimeline";
 import { FinancingCard } from "@/components/business/FinancingCard";
 import { InactionCostCard } from "@/components/business/InactionCostCard";
@@ -307,7 +307,7 @@ export function SimulationDashboard({ marketData }: SimulationDashboardProps) {
                                 </h3>
 
                                 <div className="animate-fade-in-up">
-                                    <SimulationForm
+                                    <DiagnosticForm
                                         onSubmit={handleSubmit}
                                         isLoading={isLoading}
                                     />

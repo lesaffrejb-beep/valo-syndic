@@ -69,13 +69,11 @@ async function seedRNIC() {
             city: pickFirst(row, [
                 'nom_commune',
                 'commune_adresse_de_reference',
-                'nom_officiel_commune',
             ]),
             city_code: pickFirst(row, [
                 'code_insee',
                 'code_officiel_commune',
                 'code_commune',
-                'commune', // Souvent le code INSEE dans ce dataset
             ]),
             number_of_units: toNumber(
                 pickFirst(row, ['nombre_total_lots', 'nombre_total_de_lots'])
@@ -87,23 +85,10 @@ async function seedRNIC() {
             // Ajoute ici les mappings nécessaires
         }));
 
-        // Filter out rows that are missing mandatory fields
-        const validBatch = batch.filter(item =>
-            item.address &&
-            item.postal_code &&
-            item.city &&
-            item.city_code
-        );
-
-        if (validBatch.length === 0) {
-            console.warn(`⚠️ Batch ${i}: Aucune ligne valide trouvée sur ${batch.length} lignes.`);
-            continue;
-        }
-
         // Deduplicate batch based on unique constraint (address, postal_code)
         // Keep the last occurrence
         const uniqueBatch = Array.from(
-            new Map(validBatch.map((item: any) => [`${item.address}|${item.postal_code}`, item])).values()
+            new Map(batch.map((item: any) => [`${item.address}|${item.postal_code}`, item])).values()
         );
 
         const { error } = await supabaseAdmin
