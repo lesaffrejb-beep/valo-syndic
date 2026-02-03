@@ -6,6 +6,7 @@ import { X, Search, CheckCircle2 } from "lucide-react";
 import { usePropertyEnrichment } from "@/hooks/usePropertyEnrichment";
 import type { AddressFeature } from "@/lib/api";
 import { dpeService, type DPEEntry, type HybridSearchResult } from "@/services/dpeService";
+import { useCoproSearch, type CoproSearchResult } from "@/hooks/useCoproSearch";
 
 interface AddressAutocompleteProps {
     /** Valeur initiale */
@@ -18,6 +19,11 @@ interface AddressAutocompleteProps {
         cityCode?: string;
         coordinates?: { longitude: number; latitude: number };
         dpeData?: DPEEntry;
+        rnicData?: {
+            numberOfLots?: number;
+            syndicName?: string;
+            constructionYear?: number;
+        };
     }) => void;
     /** Callback quand l'enrichissement est terminé */
     onEnriched?: (property: ReturnType<typeof usePropertyEnrichment>["property"]) => void;
@@ -58,6 +64,7 @@ export function AddressAutocomplete({
 
     // Hybrid Search Results (Local + API)
     const [hybridResults, setHybridResults] = useState<HybridSearchResult[]>([]);
+    const { results: rnicResults, searchCopro, clearResults: clearRnicResults, isLoading: isRnicLoading } = useCoproSearch();
 
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
@@ -108,8 +115,10 @@ export function AddressAutocomplete({
         searchTimeoutRef.current = setTimeout(() => {
             if (value.length >= 3) {
                 dpeService.hybridSearch(value, 6).then(setHybridResults);
+                searchCopro(value);
             } else {
                 setHybridResults([]);
+                clearRnicResults();
             }
         }, 300);
     };
@@ -144,6 +153,7 @@ export function AddressAutocomplete({
     const handleSelectHybrid = (result: HybridSearchResult) => {
         setInputValue(result.address);
         setHybridResults([]);
+        clearRnicResults();
         setIsFocused(false);
 
         if (onSelect) {
@@ -153,19 +163,42 @@ export function AddressAutocomplete({
                 city: result.city,
                 ...(result.cityCode ? { cityCode: result.cityCode } : {}),
                 ...(result.coordinates ? { coordinates: result.coordinates } : {}),
-                ...(result.dpeData ? { dpeData: result.dpeData } : {}), // Spread optional to avoid undefined
+                ...(result.dpeData ? { dpeData: result.dpeData } : {}),
+            });
+        }
+    };
+
+    const handleSelectRnic = (result: CoproSearchResult) => {
+        setInputValue(result.address);
+        setHybridResults([]);
+        clearRnicResults();
+        setIsFocused(false);
+
+        if (onSelect) {
+            onSelect({
+                address: result.address,
+                postalCode: result.postalCode,
+                city: result.city,
+                ...(result.cityCode ? { cityCode: result.cityCode } : {}),
+                ...(result.coordinates ? { coordinates: result.coordinates } : {}),
+                rnicData: {
+                    ...(result.numberOfLots ? { numberOfLots: result.numberOfLots } : {}),
+                    ...(result.syndicName ? { syndicName: result.syndicName } : {}),
+                    ...(result.constructionYear ? { constructionYear: result.constructionYear } : {}),
+                }
             });
         }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (hybridResults.length === 0) return;
+        const totalLength = hybridResults.length + rnicResults.length;
+        if (totalLength === 0) return;
 
         switch (e.key) {
             case "ArrowDown":
                 e.preventDefault();
                 setSelectedIndex((prev) =>
-                    prev < hybridResults.length - 1 ? prev + 1 : prev
+                    prev < totalLength - 1 ? prev + 1 : prev
                 );
                 break;
             case "ArrowUp":
@@ -174,12 +207,19 @@ export function AddressAutocomplete({
                 break;
             case "Enter":
                 e.preventDefault();
-                if (selectedIndex >= 0 && hybridResults[selectedIndex]) {
-                    handleSelectHybrid(hybridResults[selectedIndex]);
+                if (selectedIndex >= 0) {
+                    if (selectedIndex < rnicResults.length) {
+                        const item = rnicResults[selectedIndex];
+                        if (item) handleSelectRnic(item);
+                    } else if (selectedIndex < totalLength) {
+                        const item = hybridResults[selectedIndex - rnicResults.length];
+                        if (item) handleSelectHybrid(item);
+                    }
                 }
                 break;
             case "Escape":
                 setHybridResults([]);
+                clearRnicResults();
                 setIsFocused(false);
                 break;
         }
@@ -193,7 +233,7 @@ export function AddressAutocomplete({
         }, 200);
     };
 
-    const showSuggestions = isFocused && hybridResults.length > 0;
+    const showSuggestions = isFocused && (hybridResults.length > 0 || rnicResults.length > 0);
 
     return (
         <div className={`relative ${className}`}>
@@ -274,55 +314,91 @@ export function AddressAutocomplete({
                         className="absolute z-[100] w-full mt-1 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto"
                         role="listbox"
                     >
-                        {hybridResults.map((result, index) => (
+                        {/* RNIC RESULTS (SUPABASE) */}
+                        {rnicResults.map((result, index) => (
                             <li
-                                key={`${result.sourceType}-${index}`}
+                                key={`rnic-${index}`}
                                 role="option"
                                 aria-selected={index === selectedIndex}
-                                className={`px-4 py-3 cursor-pointer transition-colors border-b border-white/[0.03] last:border-0 ${index === selectedIndex
-                                    ? result.sourceType === 'local'
-                                        ? "bg-primary/20 text-primary"
-                                        : "bg-primary/10 text-primary"
-                                    : result.sourceType === 'local'
-                                        ? "hover:bg-surface-hover bg-primary/5"
-                                        : "hover:bg-surface-hover"
+                                className={`px-4 py-3 cursor-pointer transition-colors border-b border-white/[0.03] ${index === selectedIndex
+                                    ? "bg-amber-400/20 text-amber-300"
+                                    : "hover:bg-surface-hover bg-amber-400/5"
                                     }`}
-                                onClick={() => handleSelectHybrid(result)}
+                                onClick={() => handleSelectRnic(result)}
                             >
-                                {result.sourceType === 'local' && result.dpeData ? (
-                                    // LOCAL RESULT with DPE data
-                                    <div className="flex items-start gap-3">
-                                        <span className="text-primary mt-0.5">⚡</span>
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm font-bold text-main">
-                                                    {result.address}
-                                                </p>
-                                                <span className="text-[10px] bg-primary text-white px-1.5 py-0.5 rounded shadow-sm">
-                                                    DPE {result.dpeData.dpe}
-                                                </span>
-                                            </div>
-                                            <p className="text-xs text-muted mt-0.5">
-                                                Donnée certifiée • Construit en {result.dpeData.annee} • {result.dpeData.surface}m²
-                                            </p>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    // API RESULT (standard address)
-                                    <div className="flex items-start gap-3">
-                                        <span className="text-muted mt-0.5">📍</span>
-                                        <div>
-                                            <p className="text-sm font-medium text-main">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-amber-400 mt-0.5">✨</span>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-sm font-bold text-main">
                                                 {result.address}
                                             </p>
-                                            <p className="text-xs text-muted">
-                                                {result.postalCode} {result.city}
-                                            </p>
+                                            <span className="text-[10px] bg-amber-400 text-black font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                                <CheckCircle2 className="w-3 h-3" />
+                                                RNIC
+                                            </span>
                                         </div>
+                                        <p className="text-xs text-muted mt-0.5">
+                                            {result.postalCode} {result.city} • <span className="text-amber-200/80">{result.numberOfLots ?? '?'} lots</span> {result.syndicName ? `• ${result.syndicName}` : ''}
+                                        </p>
                                     </div>
-                                )}
+                                </div>
                             </li>
                         ))}
+
+                        {/* EXISTING HYBRID RESULTS */}
+                        {hybridResults.map((result, index) => {
+                            const globalIndex = rnicResults.length + index;
+                            return (
+                                <li
+                                    key={`${result.sourceType}-${index}`}
+                                    role="option"
+                                    aria-selected={globalIndex === selectedIndex}
+                                    className={`px-4 py-3 cursor-pointer transition-colors border-b border-white/[0.03] ${globalIndex === selectedIndex
+                                        ? result.sourceType === 'local'
+                                            ? "bg-primary/20 text-primary"
+                                            : "bg-primary/10 text-primary"
+                                        : result.sourceType === 'local'
+                                            ? "hover:bg-surface-hover bg-primary/5"
+                                            : "hover:bg-surface-hover"
+                                        }`}
+                                    onClick={() => handleSelectHybrid(result)}
+                                >
+                                    {result.sourceType === 'local' && result.dpeData ? (
+                                        // LOCAL RESULT with DPE data
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-primary mt-0.5">⚡</span>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-sm font-bold text-main">
+                                                        {result.address}
+                                                    </p>
+                                                    <span className="text-[10px] bg-primary text-white px-1.5 py-0.5 rounded shadow-sm">
+                                                        DPE {result.dpeData.dpe}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-muted mt-0.5">
+                                                    Donnée certifiée • Construit en {result.dpeData.annee} • {result.dpeData.surface}m²
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // API RESULT (standard address)
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-muted mt-0.5">📍</span>
+                                            <div>
+                                                <p className="text-sm font-medium text-main">
+                                                    {result.address}
+                                                </p>
+                                                <p className="text-xs text-muted">
+                                                    {result.postalCode} {result.city}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </li>
+                            );
+                        })}
 
                         {/* Attribution */}
                         <li className="px-4 py-2 bg-surface-hover border-t border-boundary">

@@ -57,9 +57,17 @@ export function SimulationForm({ onSubmit, onCsvImport, isLoading = false }: Sim
         cityCode?: string;
         coordinates?: { longitude: number; latitude: number };
         dpeData?: { dpe: string; surface: number };
+        rnicData?: {
+            numberOfLots?: number;
+            syndicName?: string;
+            constructionYear?: number;
+        };
     }) => {
         setAddressData((prev) => {
             const base = prev || {};
+            // Prioriser les données RNIC selectionnées directement
+            const rnicLots = data.rnicData?.numberOfLots;
+
             return {
                 ...base,
                 address: data.address,
@@ -71,6 +79,9 @@ export function SimulationForm({ onSubmit, onCsvImport, isLoading = false }: Sim
                     : base.coordinates,
                 dpe_label: data.dpeData?.dpe as SimulationApiData["dpe_label"],
                 living_area: data.dpeData?.surface,
+                // Si on a le nombre de lots depuis la recherche, on l'utilise direct
+                total_units: rnicLots || base.total_units,
+                // On peut aussi stocker le syndic si on veut (pas dans SimulationApiData pour l'instant)
             } as SimulationApiData;
         });
 
