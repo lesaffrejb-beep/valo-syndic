@@ -27,18 +27,15 @@ const PROFILE_OPTIONS: { id: IncomeProfile; label: string; color: string }[] = [
 
 export function TantiemeCalculator({ financing, simulationInputs, className = "" }: TantiemeCalculatorProps) {
     const { viewMode, userTantiemes, setUserTantiemes, setViewMode } = useViewModeStore();
-    const [tantiemes, setTantiemesLocal] = useState(userTantiemes);
     const [selectedProfile, setSelectedProfile] = useState<IncomeProfile | null>(null);
 
     const setTantiemes = (value: number) => {
-        setTantiemesLocal(value);
         setUserTantiemes(value);
         setViewMode('maPoche');
     };
 
-    useEffect(() => {
-        setTantiemesLocal(userTantiemes);
-    }, [userTantiemes]);
+    // Use store value directly
+    const tantiemes = userTantiemes;
 
     const profileData = useMemo(() => {
         if (!simulationInputs) return null;

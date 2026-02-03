@@ -1,13 +1,12 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useViewModeStore, type ViewMode } from "@/stores/useViewModeStore";
 import { cn } from "@/lib/utils";
 import { Building2, User } from "lucide-react";
-import { NumberStepper } from "@/components/ui/NumberStepper";
 
 export function ViewModeToggle({ className }: { className?: string }) {
-    const { viewMode, setViewMode, userTantiemes, setUserTantiemes } = useViewModeStore();
+    const { viewMode, setViewMode } = useViewModeStore();
 
     const options: { id: ViewMode; label: string; icon: React.ElementType }[] = [
         { id: 'immeuble', label: 'Immeuble', icon: Building2 },
@@ -45,29 +44,6 @@ export function ViewModeToggle({ className }: { className?: string }) {
                 })}
             </div>
 
-            {/* TANTIEMES INPUT (Ma Poche Only) */}
-            <AnimatePresence mode="popLayout">
-                {viewMode === 'maPoche' && (
-                    <motion.div
-                        initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: -20, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                        className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-4 py-1.5"
-                    >
-                        <span className="text-xs text-muted uppercase tracking-wider font-semibold">Tantièmes</span>
-                        <NumberStepper
-                            value={userTantiemes}
-                            onChange={setUserTantiemes}
-                            min={1}
-                            max={1000}
-                            step={1}
-                            suffix="/ 1000"
-                            className="bg-transparent border-none text-white font-bold w-32 shadow-none"
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 }

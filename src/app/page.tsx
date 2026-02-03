@@ -126,7 +126,7 @@ export default function ScrollytellingPage() {
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
     const [showCsvModal, setShowCsvModal] = useState(false);
-    const [showProfileDetails, setShowProfileDetails] = useState(false);
+
     const [activeSection, setActiveSection] = useState<'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action'>('diagnostic');
     const { saveProject, isLoading: isSaving, error: saveError, showAuthModal, setShowAuthModal } = useProjectSave();
     const isManualNavigating = useRef(false);
@@ -455,31 +455,7 @@ export default function ScrollytellingPage() {
                     </div>
 
                     <div className="xl:col-span-12 mt-8">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                <span className="w-8 h-px bg-gold/50"></span> Détail des Aides par Profil
-                            </h3>
-                            <Button
-                                variant="outline"
-                                className="h-10 px-5 rounded-full border-white/10 hover:bg-white/5 text-white"
-                                onClick={() => setShowProfileDetails((v) => !v)}
-                            >
-                                {showProfileDetails ? 'Masquer le détail' : 'Voir le détail par profil fiscal'}
-                            </Button>
-                        </div>
-
-                        <AnimatePresence>
-                            {showProfileDetails && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    className="overflow-hidden"
-                                >
-                                    <SubsidyTable inputs={simulationInputs} />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        <SubsidyTable inputs={simulationInputs} />
                     </div>
                 </div>
             </Section>

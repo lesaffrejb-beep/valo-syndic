@@ -52,11 +52,11 @@ export function Header({
     };
 
     const navItems = [
-        { id: 'diagnostic', label: 'Immeuble' },
-        { id: 'projection', label: 'Comparatif' },
-        { id: 'my-pocket', label: 'Quote-part' },
+        { id: 'diagnostic', label: 'Diagnostique' },
+        { id: 'projection', label: 'Projection' },
+        { id: 'my-pocket', label: 'Analyse' },
         { id: 'finance', label: 'Financement' },
-        { id: 'action', label: 'Synthèse' },
+        { id: 'action', label: 'Action' },
     ];
 
     return (
