@@ -127,7 +127,7 @@ export default function ScrollytellingPage() {
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
     const [showCsvModal, setShowCsvModal] = useState(false);
-    const [showProfileDetails, setShowProfileDetails] = useState(false);
+    const [showProfileDetails, setShowProfileDetails] = useState(true);
     const [activeSection, setActiveSection] = useState<'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action'>('diagnostic');
     const { saveProject, isLoading: isSaving, error: saveError, showAuthModal, setShowAuthModal } = useProjectSave();
     const isManualNavigating = useRef(false);
