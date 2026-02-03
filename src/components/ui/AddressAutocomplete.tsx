@@ -18,7 +18,12 @@ interface AddressAutocompleteProps {
         city: string;
         cityCode?: string;
         coordinates?: { longitude: number; latitude: number };
-        dpeData?: DPEEntry;
+        dpeData?: {
+            dpe: string;
+            surface: number;
+            annee?: number;
+            [key: string]: any;
+        };
         rnicData?: {
             numberOfLots?: number;
             syndicName?: string;
@@ -181,6 +186,7 @@ export function AddressAutocomplete({
                 city: result.city,
                 ...(result.cityCode ? { cityCode: result.cityCode } : {}),
                 ...(result.coordinates ? { coordinates: result.coordinates } : {}),
+                ...(result.dpeData ? { dpeData: result.dpeData } : {}),
                 rnicData: {
                     ...(result.numberOfLots ? { numberOfLots: result.numberOfLots } : {}),
                     ...(result.syndicName ? { syndicName: result.syndicName } : {}),
