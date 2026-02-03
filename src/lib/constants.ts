@@ -262,3 +262,17 @@ export { getLiveConstants, getFallbackConstants, isSupabaseConfigured } from "@/
  * console.log(liveConstants.bt01InflationRate);
  */
 export { getLiveConstants as getDynamicConstants } from "@/lib/api/settingsService";
+
+// =============================================================================
+// COULEURS DPE (pour UI)
+// =============================================================================
+
+export const DPE_COLORS: Record<DPELetter, string> = {
+  A: "#2E7D32", // Vert foncé
+  B: "#4CAF50", // Vert
+  C: "#8BC34A", // Vert clair
+  D: "#CDDC39", // Jaune-vert
+  E: "#FFEB3B", // Jaune
+  F: "#FF9800", // Orange
+  G: "#F44336", // Rouge
+} as const;

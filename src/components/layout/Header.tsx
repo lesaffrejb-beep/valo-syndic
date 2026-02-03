@@ -117,7 +117,7 @@ export function Header({
                     <div className="flex justify-center">
                         {/* Optional: Add Logo/Brand here if needed, but for now specific nav focus */}
                         {onNavigate && (
-                            <div className="hidden lg:flex items-center gap-1 xl:gap-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5 relative">
+                            <div className="hidden md:flex items-center gap-1 xl:gap-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5 relative">
                                 {navItems.map((item) => {
                                     const isActive = activeSection === item.id;
                                     return (

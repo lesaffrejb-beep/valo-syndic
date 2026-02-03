@@ -54,6 +54,9 @@ import { LegalWarning } from '@/components/business/LegalWarning';
 import { DownloadPdfButton } from '@/components/pdf/DownloadPdfButton';
 import { DownloadPptxButton } from '@/components/pdf/DownloadPptxButton';
 
+// --- NEW ONBOARDING COMPONENTS (FEV 2026) ---
+import { SmartAddressForm, CsvImportModal } from '@/components/onboarding';
+
 // =============================================================================
 // ANIMATION & LAYOUT
 // =============================================================================
@@ -122,8 +125,7 @@ export default function ScrollytellingPage() {
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
-    const [showManualForm, setShowManualForm] = useState(true);
-    const [isAddressSelected, setIsAddressSelected] = useState(false);
+    const [showCsvModal, setShowCsvModal] = useState(false);
     const [showProfileDetails, setShowProfileDetails] = useState(false);
     const [activeSection, setActiveSection] = useState<'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action'>('diagnostic');
     const { saveProject, isLoading: isSaving, error: saveError, showAuthModal, setShowAuthModal } = useProjectSave();
@@ -179,7 +181,27 @@ export default function ScrollytellingPage() {
 
     const handleGhostImport = useCallback((data: GhostExtensionImport) => {
         // Logic to handle Ghost Extension import
-        // TODO: Update diagnosticInput with imported lots data
+        console.log("Ghost import:", data);
+    }, []);
+
+    const handleFormSubmit = useCallback((data: DiagnosticInput) => {
+        setDiagnosticInput(data);
+        // Scroll to diagnostic section
+        document.getElementById('diagnostic')?.scrollIntoView({ behavior: 'smooth' });
+    }, []);
+
+    const handleCsvImport = useCallback((data: Array<{ address: string; postalCode: string; city: string }>) => {
+        console.log("CSV import:", data);
+        // Pour l'instant, on prend juste le premier immeuble
+        const first = data[0];
+        if (first) {
+            setDiagnosticInput(prev => ({
+                ...prev,
+                address: first.address,
+                postalCode: first.postalCode,
+                city: first.city,
+            }));
+        }
     }, []);
 
     // --- SIMULATION INPUTS FOR SUBSIDY TABLE ---
@@ -296,225 +318,24 @@ export default function ScrollytellingPage() {
                     {/* Buttons hidden for cleanliness until interaction? kept as is but styled */}
                 </div>
 
-                <div className={`relative z-20 w-full max-w-4xl mx-auto flex flex-col items-center transition-all duration-700 ${isAddressSelected ? 'gap-6 pt-10' : 'gap-10 justify-center min-h-[60vh]'}`}>
+                {/* Smart Form Container - NOUVEAU FEV 2026 */}
+                <div className="relative z-20 w-full max-w-4xl mx-auto pt-10">
+                    <SmartAddressForm
+                        initialData={diagnosticInput}
+                        onSubmit={handleFormSubmit}
+                        onCsvImport={() => setShowCsvModal(true)}
+                    />
+                </div>
 
-                    {/* TITLE: Fades out when address selected */}
-                    <AnimatePresence>
-                        {!isAddressSelected && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 30, height: 'auto' }}
-                                animate={{ opacity: 1, y: 0, height: 'auto' }}
-                                exit={{ opacity: 0, y: -20, height: 0, overflow: 'hidden' }}
-                                transition={{ duration: 0.5 }}
-                                className="text-center"
-                            >
-                                <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
-                                    <span className="text-white">Révélez le potentiel</span><br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de vos copropriétés</span>
-                                </h1>
-                                <p className="text-lg md:text-2xl text-muted font-light max-w-none mx-auto whitespace-nowrap">
-                                    Transformez la rénovation énergétique en levier patrimonial pour vos mandants.
-                                </p>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* ADDRESS INPUT: Glides to top */}
-                    <motion.div
-                        layout
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="w-full max-w-2xl relative z-30"
-                    >
-                        <AddressAutocomplete
-                            defaultValue={diagnosticInput.address || ""}
-                            placeholder="Rechercher un immeuble..."
-                            className="text-lg shadow-2xl"
-                            onSelect={(data) => {
-                                setIsAddressSelected(true);
-                                setDiagnosticInput((prev) => ({ ...prev, ...data }));
-                                setShowManualForm(true); // Reveal form MAGICALLY
-                            }}
-                        />
-
-                        {/* CSV IMPORT LINK (Only visible when NO address selected) */}
-                        {!isAddressSelected && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.5 }}
-                                className="mt-6 text-center"
-                            >
-                                <button
-                                    onClick={() => alert("Fonctionnalité d'import CSV (Mass Audit) bientôt disponible ici !")}
-                                    className="text-gold/60 text-sm font-medium hover:text-gold hover:underline transition-colors flex items-center justify-center gap-2 mx-auto"
-                                >
-                                    <TrendingUp className="w-3 h-3" />
-                                    Importer un portefeuille (CSV)
-                                </button>
-                            </motion.div>
-                        )}
-
-                        {/* MANUAL FORM: Reveals smoothly */}
-                        <AnimatePresence>
-                            {showManualForm && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0, y: 20 }}
-                                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.6, ease: "easeOut" }}
-                                    className="overflow-hidden"
-                                >
-                                    {/* Fallback Link if auto-open didn't happen (rare) or to toggle close */}
-                                    <div className="flex justify-end mt-2 mb-2">
-                                        <button
-                                            onClick={() => setShowManualForm(false)}
-                                            className="text-[10px] uppercase tracking-widest text-white/20 hover:text-white/40 transition-colors"
-                                        >
-                                            Masquer les détails
-                                        </button>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-md shadow-2xl">
-                                        <div className="md:col-span-2 space-y-2">
-                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Adresse Complète</label>
-                                            <input
-                                                type="text"
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-medium"
-                                                value={diagnosticInput.address}
-                                                onChange={(e) => {
-                                                    const nextValue = e.target.value;
-                                                    setDiagnosticInput((prev) => ({ ...prev, address: nextValue }));
-                                                }}
-                                                placeholder="Ex : 12 rue de la Paix, Angers"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Code postal</label>
-                                            <input
-                                                type="text"
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-mono"
-                                                value={diagnosticInput.postalCode || ""}
-                                                onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, postalCode: e.target.value }))}
-                                                placeholder="00000"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Ville</label>
-                                            <input
-                                                type="text"
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10"
-                                                value={diagnosticInput.city || ""}
-                                                onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, city: e.target.value }))}
-                                                placeholder="Ville"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">DPE actuel</label>
-                                            <select
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 appearance-none"
-                                                value={diagnosticInput.currentDPE}
-                                                onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, currentDPE: e.target.value as DPELetter }))}
-                                            >
-                                                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => <option key={l} value={l} className="bg-deep text-white">{l}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Nombre de lots</label>
-                                            <input
-                                                type="number"
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-mono"
-                                                value={diagnosticInput.numberOfUnits}
-                                                onChange={(e) => setDiagnosticInput(prev => ({ ...prev, numberOfUnits: parseInt(e.target.value || "0", 10) }))}
-                                            />
-                                        </div>
-
-                                        {/* Added Travaux field back as it was in previous version but cleaner */}
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Budget Travaux (€)</label>
-                                            <input
-                                                type="number"
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-mono"
-                                                value={diagnosticInput.estimatedCostHT}
-                                                onChange={(e) => setDiagnosticInput(prev => ({ ...prev, estimatedCostHT: parseInt(e.target.value || "0", 10) }))}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Manual Fallback for "Address Not Found" case */}
-                                    {!isAddressSelected && (
-                                        <div className="mt-4 text-center">
-                                            <p className="text-white/40 text-sm">L&apos;adresse n&apos;apparaît pas ? <button onClick={() => setShowManualForm(true)} className="text-gold hover:underline">Saisie manuelle</button></p>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        {/* Explicit "Not found" trigger if form is hidden and address selected logic failed or user wants to force it */}
-                        {!showManualForm && !isAddressSelected && (
-                            <div className="mt-8 text-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                                <button
-                                    onClick={() => setShowManualForm(true)}
-                                    className="text-[10px] uppercase tracking-[0.2em] text-white/20 hover:text-gold transition-colors"
-                                >
-                                    Saisie manuelle forcée
-                                </button>
-                            </div>
-                        )}
-                        <AnimatePresence>
-                            {isAddressSelected && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    transition={{ duration: 0.25 }}
-                                    className="mt-4"
-                                >
-                                    <Card className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl overflow-hidden">
-                                        <CardContent className="py-4 flex items-center justify-between gap-4">
-                                            <div className="text-left">
-                                                <p className="text-xs uppercase tracking-widest text-muted">Adresse détectée</p>
-                                                <p className="text-sm font-bold text-white truncate">{diagnosticInput.address}</p>
-                                            </div>
-                                            <div className="shrink-0 flex items-center gap-2">
-                                                <span className="text-xs uppercase tracking-widest text-muted">DPE</span>
-                                                <span className="px-2 py-1 rounded-lg bg-danger text-white text-xs font-black">
-                                                    {diagnosticInput.currentDPE}
-                                                </span>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
+                {/* CSV Import Modal */}
+                <CsvImportModal
+                    isOpen={showCsvModal}
+                    onClose={() => setShowCsvModal(false)}
+                    onImport={handleCsvImport}
+                />
 
 
 
-                {/* Quick Stats - Glassmorphism */}
-                <AnimatePresence>
-                    {isAddressSelected && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex flex-wrap justify-center gap-4 md:gap-8"
-                        >
-                            <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
-                                <MapPin className="w-4 h-4 text-gold" />
-                                <span className="text-sm font-bold">{diagnosticInput.city}</span>
-                            </div>
-                            <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
-                                <TrendingUp className="w-4 h-4 text-gold" />
-                                <span className="text-sm font-bold financial-num">{averagePriceDisplay} /m²</span>
-                            </div>
-                            <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
-                                <Building2 className="w-4 h-4 text-gold" />
-                                <span className="text-sm font-bold">DPE <span className="px-1.5 py-0.5 rounded bg-danger text-white ml-1">{diagnosticInput.currentDPE}</span></span>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
 
             {/* Scroll Indicator */}
             <motion.div
