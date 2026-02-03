@@ -20,7 +20,7 @@ import { DPE_COLORS } from "@/lib/constants";
 
 // Sub-components
 import { AddressSearch } from "./AddressSearch";
-import { FormProgress } from "./FormProgress";
+
 import { SmartField } from "./SmartField";
 import { DataSourcePills } from "./DataSourcePills";
 
@@ -93,232 +93,231 @@ export function SmartAddressForm({
           Analyse complète en 60 secondes • Gratuit • Sans engagement
         </motion.p>
 
-        <FormProgress progress={form.progress} state={form.state} className="max-w-xs mx-auto" />
-      </div>
 
-      {/* Formulaire */}
-      <motion.form
-        onSubmit={handleSubmit}
-        className="space-y-6"
-      >
-        {/* ÉTAPE 1: Adresse (toujours visible) */}
-        <div className="space-y-4">
-          <AddressSearch
-            value={form.searchQuery}
-            onChange={form.setSearchQuery}
-            onSelect={form.selectAddress}
-            results={form.searchResults}
-            isSearching={form.state === "SEARCHING"}
-            placeholder="12 rue de la Paix, 75002 Paris..."
-          />
 
-          {/* Import CSV (visible quand pas d'adresse sélectionnée) */}
+        {/* Formulaire */}
+        <motion.form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+        >
+          {/* ÉTAPE 1: Adresse (toujours visible) */}
+          <div className="space-y-4">
+            <AddressSearch
+              value={form.searchQuery}
+              onChange={form.setSearchQuery}
+              onSelect={form.selectAddress}
+              results={form.searchResults}
+              isSearching={form.state === "SEARCHING"}
+              placeholder="12 rue de la Paix, 75002 Paris..."
+            />
+
+            {/* Import CSV (visible quand pas d'adresse sélectionnée) */}
+            <AnimatePresence>
+              {!form.selectedAddress && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="text-center"
+                >
+                  <button
+                    type="button"
+                    onClick={onCsvImport}
+                    className="text-sm text-gold/60 hover:text-gold transition-colors flex items-center justify-center gap-2 mx-auto"
+                  >
+                    <FileUp className="w-4 h-4" />
+                    Importer un portefeuille (CSV)
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* ÉTAPE 2: Formulaire détaillé (apparaît après sélection) */}
           <AnimatePresence>
-            {!form.selectedAddress && (
+            {form.state !== "IDLE" && form.state !== "TYPING" && form.state !== "SEARCHING" && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="text-center"
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                className="overflow-hidden"
               >
-                <button
-                  type="button"
-                  onClick={onCsvImport}
-                  className="text-sm text-gold/60 hover:text-gold transition-colors flex items-center justify-center gap-2 mx-auto"
-                >
-                  <FileUp className="w-4 h-4" />
-                  Importer un portefeuille (CSV)
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 backdrop-blur-sm">
+                  {/* Adresse sélectionnée */}
+                  {form.selectedAddress && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-3 pb-4 border-b border-white/10"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center">
+                        <Building2 className="w-5 h-5 text-gold" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">
+                          {form.selectedAddress}
+                        </p>
+                        <p className="text-xs text-muted">
+                          {form.enrichmentSources.dpe ? "Données certifiées trouvées" : "Saisie manuelle"}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
 
-        {/* ÉTAPE 2: Formulaire détaillé (apparaît après sélection) */}
-        <AnimatePresence>
-          {form.state !== "IDLE" && form.state !== "TYPING" && form.state !== "SEARCHING" && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-              className="overflow-hidden"
-            >
-              <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 backdrop-blur-sm">
-                {/* Adresse sélectionnée */}
-                {form.selectedAddress && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-3 pb-4 border-b border-white/10"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center">
-                      <Building2 className="w-5 h-5 text-gold" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {form.selectedAddress}
-                      </p>
-                      <p className="text-xs text-muted">
-                        {form.enrichmentSources.dpe ? "Données certifiées trouvées" : "Saisie manuelle"}
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
+                  {/* Pills des sources de données */}
+                  <DataSourcePills sources={form.enrichmentSources} isLoading={form.isEnriching} />
 
-                {/* Pills des sources de données */}
-                <DataSourcePills sources={form.enrichmentSources} isLoading={form.isEnriching} />
-
-                {/* Grid des champs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* DPE Actuel */}
-                  <SmartField
-                    label="DPE Actuel"
-                    name="currentDPE"
-                    status={form.fieldStatus("currentDPE").status}
-                    source={form.fieldStatus("currentDPE").source}
-                    confidence={form.fieldStatus("currentDPE").confidence}
-                    onVerify={() => form.verifyField("currentDPE")}
-                  >
-                    <select
+                  {/* Grid des champs */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* DPE Actuel */}
+                    <SmartField
+                      label="DPE Actuel"
                       name="currentDPE"
-                      value={form.formData.values.currentDPE || ""}
-                      onChange={(e) => form.updateField("currentDPE", e.target.value as DPELetter)}
-                      className="w-full bg-transparent px-4 py-3 text-white focus:outline-none appearance-none cursor-pointer"
+                      status={form.fieldStatus("currentDPE").status}
+                      source={form.fieldStatus("currentDPE").source}
+                      confidence={form.fieldStatus("currentDPE").confidence}
+                      onVerify={() => form.verifyField("currentDPE")}
                     >
-                      {["A", "B", "C", "D", "E", "F", "G"].map((dpe) => (
-                        <option key={dpe} value={dpe} className="bg-deep">
-                          Classe {dpe}
-                          {dpe === "F" && " (Passoire)"}
-                          {dpe === "G" && " (Passoire)"}
-                        </option>
-                      ))}
-                    </select>
-                  </SmartField>
+                      <select
+                        name="currentDPE"
+                        value={form.formData.values.currentDPE || ""}
+                        onChange={(e) => form.updateField("currentDPE", e.target.value as DPELetter)}
+                        className="w-full bg-transparent px-4 py-3 text-white focus:outline-none appearance-none cursor-pointer"
+                      >
+                        {["A", "B", "C", "D", "E", "F", "G"].map((dpe) => (
+                          <option key={dpe} value={dpe} className="bg-deep">
+                            Classe {dpe}
+                            {dpe === "F" && " (Passoire)"}
+                            {dpe === "G" && " (Passoire)"}
+                          </option>
+                        ))}
+                      </select>
+                    </SmartField>
 
-                  {/* DPE Cible */}
-                  <SmartField
-                    label="DPE Cible"
-                    name="targetDPE"
-                    status={form.fieldStatus("targetDPE").status}
-                    hint="Objectif recommandé: C"
-                  >
-                    <select
+                    {/* DPE Cible */}
+                    <SmartField
+                      label="DPE Cible"
                       name="targetDPE"
-                      value={form.formData.values.targetDPE || ""}
-                      onChange={(e) => form.updateField("targetDPE", e.target.value as DPELetter)}
-                      className="w-full bg-transparent px-4 py-3 text-white focus:outline-none appearance-none cursor-pointer"
+                      status={form.fieldStatus("targetDPE").status}
+                      hint="Objectif recommandé: C"
                     >
-                      {["A", "B", "C", "D", "E"].map((dpe) => (
-                        <option key={dpe} value={dpe} className="bg-deep">
-                          Classe {dpe}
-                          {dpe === "C" && " (Recommandé)"}
-                        </option>
-                      ))}
-                    </select>
-                  </SmartField>
+                      <select
+                        name="targetDPE"
+                        value={form.formData.values.targetDPE || ""}
+                        onChange={(e) => form.updateField("targetDPE", e.target.value as DPELetter)}
+                        className="w-full bg-transparent px-4 py-3 text-white focus:outline-none appearance-none cursor-pointer"
+                      >
+                        {["A", "B", "C", "D", "E"].map((dpe) => (
+                          <option key={dpe} value={dpe} className="bg-deep">
+                            Classe {dpe}
+                            {dpe === "C" && " (Recommandé)"}
+                          </option>
+                        ))}
+                      </select>
+                    </SmartField>
 
-                  {/* Nombre de lots */}
-                  <SmartField
-                    label="Nombre de lots"
-                    name="numberOfUnits"
-                    status={form.fieldStatus("numberOfUnits").status}
-                  >
-                    <div className="flex items-center gap-3 px-4 py-3">
-                      <Users className="w-4 h-4 text-muted" />
-                      <input
-                        type="number"
-                        name="numberOfUnits"
-                        value={form.formData.values.numberOfUnits || ""}
-                        onChange={(e) => form.updateField("numberOfUnits", parseInt(e.target.value) || 0)}
-                        min={2}
-                        max={500}
-                        className="flex-1 bg-transparent text-white focus:outline-none"
-                        placeholder="20"
-                      />
-                    </div>
-                  </SmartField>
+                    {/* Nombre de lots */}
+                    <SmartField
+                      label="Nombre de lots"
+                      name="numberOfUnits"
+                      status={form.fieldStatus("numberOfUnits").status}
+                    >
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <Users className="w-4 h-4 text-muted" />
+                        <input
+                          type="number"
+                          name="numberOfUnits"
+                          value={form.formData.values.numberOfUnits || ""}
+                          onChange={(e) => form.updateField("numberOfUnits", parseInt(e.target.value) || 0)}
+                          min={2}
+                          max={500}
+                          className="flex-1 bg-transparent text-white focus:outline-none"
+                          placeholder="20"
+                        />
+                      </div>
+                    </SmartField>
 
-                  {/* Budget travaux */}
-                  <SmartField
-                    label="Budget travaux HT"
-                    name="estimatedCostHT"
-                    status={form.fieldStatus("estimatedCostHT").status}
-                  >
-                    <div className="flex items-center gap-3 px-4 py-3">
-                      <Euro className="w-4 h-4 text-muted" />
-                      <input
-                        type="number"
-                        name="estimatedCostHT"
-                        value={form.formData.values.estimatedCostHT || ""}
-                        onChange={(e) => form.updateField("estimatedCostHT", parseInt(e.target.value) || 0)}
-                        min={0}
-                        step={1000}
-                        className="flex-1 bg-transparent text-white focus:outline-none"
-                        placeholder="400000"
-                      />
-                      <span className="text-muted text-sm">€</span>
-                    </div>
-                  </SmartField>
-                </div>
+                    {/* Budget travaux */}
+                    <SmartField
+                      label="Budget travaux HT"
+                      name="estimatedCostHT"
+                      status={form.fieldStatus("estimatedCostHT").status}
+                    >
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <Euro className="w-4 h-4 text-muted" />
+                        <input
+                          type="number"
+                          name="estimatedCostHT"
+                          value={form.formData.values.estimatedCostHT || ""}
+                          onChange={(e) => form.updateField("estimatedCostHT", parseInt(e.target.value) || 0)}
+                          min={0}
+                          step={1000}
+                          className="flex-1 bg-transparent text-white focus:outline-none"
+                          placeholder="400000"
+                        />
+                        <span className="text-muted text-sm">€</span>
+                      </div>
+                    </SmartField>
+                  </div>
 
-                {/* Options avancées (collapsible) */}
-                <AdvancedOptions form={form} />
+                  {/* Options avancées (collapsible) */}
+                  <AdvancedOptions form={form} />
 
-                {/* Bouton de soumission */}
-                <motion.button
-                  type="submit"
-                  disabled={!form.isReadyToSubmit || form.state === "SUBMITTING"}
-                  whileHover={{ scale: form.isReadyToSubmit ? 1.02 : 1 }}
-                  whileTap={{ scale: form.isReadyToSubmit ? 0.98 : 1 }}
-                  className={`
+                  {/* Bouton de soumission */}
+                  <motion.button
+                    type="submit"
+                    disabled={!form.isReadyToSubmit || form.state === "SUBMITTING"}
+                    whileHover={{ scale: form.isReadyToSubmit ? 1.02 : 1 }}
+                    whileTap={{ scale: form.isReadyToSubmit ? 0.98 : 1 }}
+                    className={`
                     w-full py-4 px-6 rounded-xl font-semibold text-lg
                     transition-all duration-300
                     flex items-center justify-center gap-3
                     ${form.isReadyToSubmit
-                      ? "bg-gold hover:bg-gold-light text-black shadow-lg shadow-gold/20"
-                      : "bg-white/5 text-white/40 cursor-not-allowed"
-                    }
-                  `}
-                >
-                  {form.state === "SUBMITTING" ? (
-                    <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full"
-                      />
-                      Calcul en cours...
-                    </>
-                  ) : (
-                    <>
-                      <TrendingUp className="w-5 h-5" />
-                      {form.progress < 100
-                        ? `Complétez le formulaire (${form.progress}%)`
-                        : "Lancer l'analyse"
+                        ? "bg-gold hover:bg-gold-light text-black shadow-lg shadow-gold/20"
+                        : "bg-white/5 text-white/40 cursor-not-allowed"
                       }
-                    </>
-                  )}
-                </motion.button>
+                  `}
+                  >
+                    {form.state === "SUBMITTING" ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full"
+                        />
+                        Calcul en cours...
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="w-5 h-5" />
+                        {form.progress < 100
+                          ? `Complétez le formulaire (${form.progress}%)`
+                          : "Lancer l'analyse"
+                        }
+                      </>
+                    )}
+                  </motion.button>
 
-                {/* Message d'erreur */}
-                <AnimatePresence>
-                  {form.error && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="p-4 bg-danger/10 border border-danger/30 rounded-xl text-danger text-sm text-center"
-                    >
-                      {form.error}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.form>
+                  {/* Message d'erreur */}
+                  <AnimatePresence>
+                    {form.error && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="p-4 bg-danger/10 border border-danger/30 rounded-xl text-danger text-sm text-center"
+                      >
+                        {form.error}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.form>
     </motion.div>
   );
 }
