@@ -5,7 +5,7 @@ import { type FinancingPlan } from "@/lib/schemas";
 import { ECO_PTZ_COPRO } from "@/lib/constants";
 import { formatCurrency } from "@/lib/calculator";
 import { calculateSubsidies, type IncomeProfile, type SimulationInputs } from "@/lib/subsidy-calculator";
-import { Calculator, Euro, PiggyBank, Scale } from "lucide-react";
+import { Calculator, Euro, PiggyBank } from "lucide-react";
 import { useViewModeStore } from "@/stores/useViewModeStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,12 +29,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
     const { viewMode, userTantiemes, setUserTantiemes, setViewMode } = useViewModeStore();
     const [selectedProfile, setSelectedProfile] = useState<IncomeProfile | null>(null);
 
-    const setTantiemes = (value: number) => {
-        setUserTantiemes(value);
-        setViewMode('maPoche');
-    };
-
-    // Use store value directly
+    // Use store value directly - no local state to avoid sync issues
     const tantiemes = userTantiemes;
 
     const profileData = useMemo(() => {
@@ -133,42 +128,6 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
                         </div>
                     )}
 
-                    {/* Tantiemes Slider */}
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                            <label className="text-xs uppercase tracking-wider font-medium text-muted flex items-center gap-2">
-                                <Scale className="w-3 h-3" /> Quote-part ({tantiemes}/1000)
-                            </label>
-                            {tantiemes === 1000 && (
-                                <span className="text-[10px] text-gold font-bold uppercase tracking-wider animate-pulse">Immeuble Entier</span>
-                            )}
-                        </div>
-
-                        <div className="relative h-2 w-full bg-white/10 rounded-full">
-                            <input
-                                type="range"
-                                min={1}
-                                max={1000}
-                                value={tantiemes}
-                                onChange={(e) => setTantiemes(Number(e.target.value))}
-                                className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-20"
-                            />
-                            <div
-                                className="absolute top-0 left-0 h-full bg-gradient-to-r from-gold-dark to-gold rounded-full z-10"
-                                style={{ width: `${(tantiemes / 1000) * 100}%` }}
-                            />
-                            <div
-                                className="absolute top-1/2 -translate-y-1/2 bg-white w-4 h-4 rounded-full shadow-lg z-10 pointer-events-none transition-all"
-                                style={{ left: `${(tantiemes / 1000) * 100}%`, transform: `translate(-50%, -50%)` }}
-                            />
-                        </div>
-
-                        <div className="flex gap-2 justify-end">
-                            <Button variant="ghost" onClick={() => setTantiemes(1000)} className="text-[10px] h-7 px-2">
-                                Tout l&apos;immeuble
-                            </Button>
-                        </div>
-                    </div>
                 </div>
 
                 {/* RESULTS SECTION - Hero Card */}
