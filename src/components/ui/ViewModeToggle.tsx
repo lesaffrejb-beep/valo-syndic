@@ -105,36 +105,46 @@ export function ViewModeToggle({ className }: { className?: string }) {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
 
-                {/* Label MA POCHE - Gauche (visible quand peu rempli) */}
-                <div 
-                    className={cn(
-                        "absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 transition-all duration-300",
-                        percentage > 40 ? "opacity-30" : "opacity-100"
-                    )}
-                >
-                    <User className={cn("w-4 h-4", percentage < 20 ? "text-black" : "text-white/70")} />
-                    <span className={cn(
-                        "text-xs font-bold uppercase tracking-wider",
-                        percentage < 20 ? "text-black" : "text-white/70"
+                {/* Label MA POCHE - Toujours lisible */}
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10 pointer-events-none">
+                    <div className={cn(
+                        "px-2 py-1 rounded-lg flex items-center gap-2 transition-colors duration-300",
+                        percentage < 35 
+                            ? "bg-transparent" 
+                            : "bg-black/40 backdrop-blur-sm"
                     )}>
-                        Ma Poche
-                    </span>
+                        <User className={cn(
+                            "w-4 h-4 transition-colors duration-300",
+                            percentage < 35 ? "text-black" : "text-white"
+                        )} />
+                        <span className={cn(
+                            "text-xs font-bold uppercase tracking-wider transition-colors duration-300",
+                            percentage < 35 ? "text-black" : "text-white"
+                        )}>
+                            Ma Poche
+                        </span>
+                    </div>
                 </div>
 
-                {/* Label IMMEUBLE - Droite (visible quand bien rempli) */}
-                <div 
-                    className={cn(
-                        "absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 transition-all duration-300",
-                        percentage < 60 ? "opacity-30" : "opacity-100"
-                    )}
-                >
-                    <span className={cn(
-                        "text-xs font-bold uppercase tracking-wider",
-                        percentage > 95 ? "text-black" : "text-white/70"
+                {/* Label IMMEUBLE - Toujours lisible */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10 pointer-events-none">
+                    <div className={cn(
+                        "px-2 py-1 rounded-lg flex items-center gap-2 transition-colors duration-300",
+                        percentage > 85 
+                            ? "bg-transparent" 
+                            : "bg-black/40 backdrop-blur-sm"
                     )}>
-                        Immeuble
-                    </span>
-                    <Building2 className={cn("w-4 h-4", percentage > 95 ? "text-black" : "text-white/70")} />
+                        <span className={cn(
+                            "text-xs font-bold uppercase tracking-wider transition-colors duration-300",
+                            percentage > 85 ? "text-black" : "text-white"
+                        )}>
+                            Immeuble
+                        </span>
+                        <Building2 className={cn(
+                            "w-4 h-4 transition-colors duration-300",
+                            percentage > 85 ? "text-black" : "text-white"
+                        )} />
+                    </div>
                 </div>
 
                 {/* Valeur centrale - Affiche le % */}
