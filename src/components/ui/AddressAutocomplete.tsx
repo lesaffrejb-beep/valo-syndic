@@ -118,8 +118,8 @@ export function AddressAutocomplete({
 
         // Debounce search (300ms)
         searchTimeoutRef.current = setTimeout(() => {
-            if (value.length >= 3) {
-                dpeService.hybridSearch(value, 6).then(setHybridResults);
+            if (value.length >= 2) {
+                dpeService.hybridSearch(value, 8).then(setHybridResults);
                 searchCopro(value);
             } else {
                 setHybridResults([]);

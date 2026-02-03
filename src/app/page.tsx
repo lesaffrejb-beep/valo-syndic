@@ -55,7 +55,8 @@ import { DownloadPdfButton } from '@/components/pdf/DownloadPdfButton';
 import { DownloadPptxButton } from '@/components/pdf/DownloadPptxButton';
 
 // --- NEW ONBOARDING COMPONENTS (FEV 2026) ---
-import { SmartAddressForm, CsvImportModal } from '@/components/onboarding';
+import { CsvImportModal } from '@/components/onboarding';
+import { SimulationForm } from '@/components/business/form/SimulationForm';
 
 // =============================================================================
 // ANIMATION & LAYOUT
@@ -126,7 +127,7 @@ export default function ScrollytellingPage() {
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
     const [showCsvModal, setShowCsvModal] = useState(false);
-    const [showProfileDetails, setShowProfileDetails] = useState(false);
+    const [showProfileDetails, setShowProfileDetails] = useState(true);
     const [activeSection, setActiveSection] = useState<'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action'>('diagnostic');
     const { saveProject, isLoading: isSaving, error: saveError, showAuthModal, setShowAuthModal } = useProjectSave();
     const isManualNavigating = useRef(false);
@@ -320,8 +321,7 @@ export default function ScrollytellingPage() {
 
                 {/* Smart Form Container - NOUVEAU FEV 2026 */}
                 <div className="relative z-20 w-full max-w-4xl mx-auto pt-10">
-                    <SmartAddressForm
-                        initialData={diagnosticInput}
+                    <SimulationForm
                         onSubmit={handleFormSubmit}
                         onCsvImport={() => setShowCsvModal(true)}
                     />
@@ -337,17 +337,17 @@ export default function ScrollytellingPage() {
 
 
 
-            {/* Scroll Indicator */}
-            <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
-            >
-                <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
-                <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-            </motion.div>
-        </section>
+                {/* Scroll Indicator */}
+                <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
+                >
+                    <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
+                    <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                </motion.div>
+            </section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 1 — THE DIAGNOSTIC (Risks)
                 ================================================================ */}
             <Section id="diagnostic">
@@ -375,17 +375,17 @@ export default function ScrollytellingPage() {
                     </div>
                 </div>
 
-                    {/* Benchmark Chart - Full Width (2 columns) */}
-                    <div className="w-full mt-8">
-                        <BenchmarkChart
-                            currentDPE={diagnosticInput.currentDPE}
-                            city={diagnosticInput.city}
-                            className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
-                        />
-                    </div>
-                </Section>
+                {/* Benchmark Chart - Full Width (2 columns) */}
+                <div className="w-full mt-8">
+                    <BenchmarkChart
+                        currentDPE={diagnosticInput.currentDPE}
+                        city={diagnosticInput.city}
+                        className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
+                    />
+                </div>
+            </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 2 — THE PROJECTION (Vision)
                 ================================================================ */}
             <Section id="projection" className="bg-gradient-to-b from-deep to-deep-light/20">
@@ -401,7 +401,7 @@ export default function ScrollytellingPage() {
                 />
             </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 4 — DIAGNOSTIC PERSONNEL
                 ================================================================ */}
             <Section id="my-pocket">
@@ -437,7 +437,7 @@ export default function ScrollytellingPage() {
                 </div>
             </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 3 — THE FINANCING (Logic)
                 ================================================================ */}
             <Section id="finance">
@@ -484,7 +484,7 @@ export default function ScrollytellingPage() {
                 </div>
             </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 5 — ACTION
                 ================================================================ */}
             <Section id="action" className="pb-40">

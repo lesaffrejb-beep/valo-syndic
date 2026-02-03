@@ -124,7 +124,7 @@ export function Header({
                                         <button
                                             key={item.id}
                                             onClick={() => onNavigate(item.id)}
-                                            className={`relative z-10 px-4 py-1.5 rounded-full text-[10px] xl:text-[11px] uppercase tracking-[0.15em] font-medium transition-colors duration-200 ${isActive ? 'text-white' : 'text-muted hover:text-white'
+                                            className={`relative z-10 px-4 py-1.5 rounded-full text-[10px] xl:text-[11px] uppercase tracking-[0.15em] font-medium transition-colors duration-200 whitespace-nowrap ${isActive ? 'text-white' : 'text-muted hover:text-white'
                                                 }`}
                                         >
                                             {isActive && (
