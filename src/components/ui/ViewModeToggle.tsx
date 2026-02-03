@@ -6,15 +6,23 @@ import { useViewModeStore } from "@/stores/useViewModeStore";
 import { cn } from "@/lib/utils";
 import { Building2, User } from "lucide-react";
 
-export function ViewModeToggle({ className }: { className?: string }) {
+interface ViewModeToggleProps {
+    className?: string;
+    totalUnits?: number;
+    avgSurface?: number;
+}
+
+export function ViewModeToggle({ className, totalUnits = 20, avgSurface = 65 }: ViewModeToggleProps) {
     const { viewMode, setViewMode, userTantiemes, setUserTantiemes } = useViewModeStore();
     const [isDragging, setIsDragging] = useState(false);
-    const [showValue, setShowValue] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const percentage = (userTantiemes / 1000) * 100;
     const isFullBuilding = userTantiemes >= 995;
-    const isIndividual = userTantiemes <= 50;
+
+    // Calcul correct de la surface
+    const totalSurface = totalUnits * avgSurface;
+    const lotSurface = Math.round((userTantiemes / 1000) * totalSurface);
 
     // Déterminer le label actif basé sur la valeur
     const effectiveMode = isFullBuilding ? 'immeuble' : 'maPoche';
@@ -78,11 +86,7 @@ export function ViewModeToggle({ className }: { className?: string }) {
     };
 
     return (
-        <div 
-            className={cn("relative w-full max-w-md mx-auto", className)}
-            onMouseEnter={() => setShowValue(true)}
-            onMouseLeave={() => setShowValue(false)}
-        >
+        <div className={cn("relative w-full max-w-md mx-auto", className)}>
             {/* Container principal - La Barre */}
             <div
                 ref={containerRef}
@@ -147,44 +151,36 @@ export function ViewModeToggle({ className }: { className?: string }) {
                     </div>
                 </div>
 
-                {/* Valeur centrale - Affiche le % */}
-                <AnimatePresence>
-                    {(showValue || isDragging) && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8, y: 5 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.8, y: 5 }}
-                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
-                        >
-                            <div className={cn(
-                                "px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md",
-                                percentage > 40 && percentage < 95 
-                                    ? "bg-black/30 text-white" 
-                                    : "bg-white/20 text-black"
-                            )}>
-                                {Math.round(percentage)}%
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Indicateur de drag */}
+                {/* Indicateur avec pourcentage - Suit la barre */}
                 <motion.div
-                    className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] z-20"
+                    className="absolute top-0 bottom-0 z-20 flex items-center justify-center"
                     initial={false}
                     animate={{ left: `${percentage}%` }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     style={{ x: '-50%' }}
-                />
+                >
+                    <div className={cn(
+                        "px-2 py-1 rounded-full text-xs font-bold backdrop-blur-md shadow-lg transition-colors duration-200",
+                        percentage < 50 
+                            ? "bg-gold text-black" 
+                            : percentage > 90 
+                                ? "bg-black/40 text-white"
+                                : "bg-black/30 text-white"
+                    )}>
+                        {Math.round(percentage)}%
+                    </div>
+                </motion.div>
             </div>
 
             {/* Labels sous la barre */}
             <div className="flex justify-between mt-2 px-1">
                 <span className="text-[9px] uppercase tracking-widest text-white/30">
-                    {userTantiemes}/1000
+                    {userTantiemes} tantièmes
                 </span>
                 <span className="text-[9px] uppercase tracking-widest text-white/30">
-                    {isFullBuilding ? 'Copropriété entière' : `Lot de ${Math.ceil(percentage * 0.1)} m² env.`}
+                    {isFullBuilding 
+                        ? `${totalUnits} lots · ${totalSurface} m²` 
+                        : `~${lotSurface} m² · ${Math.round((userTantiemes/1000)*totalUnits)} lots env.`}
                 </span>
             </div>
 

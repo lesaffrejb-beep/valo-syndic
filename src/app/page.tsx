@@ -410,9 +410,15 @@ export default function ScrollytellingPage() {
                     title="Impact pour les copropriétaires"
                 />
 
-                {/* Switcher */}
-                <div className="flex justify-center mb-8">
-                    <ViewModeToggle />
+                {/* Quote-part Selector */}
+                <div className="max-w-xl mx-auto mb-12">
+                    <div className="text-center mb-4">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-gold/60 font-semibold">Votre quote-part</span>
+                    </div>
+                    <ViewModeToggle 
+                        totalUnits={diagnosticInput.numberOfUnits}
+                        avgSurface={diagnosticInput.averageUnitSurface || 65}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
