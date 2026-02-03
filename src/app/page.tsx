@@ -443,7 +443,7 @@ export default function ScrollytellingPage() {
                                     {/* Manual Fallback for "Address Not Found" case */}
                                     {!isAddressSelected && (
                                         <div className="mt-4 text-center">
-                                            <p className="text-white/40 text-sm">L'adresse n'apparaît pas ? <button onClick={() => setShowManualForm(true)} className="text-gold hover:underline">Saisie manuelle</button></p>
+                                            <p className="text-white/40 text-sm">L&apos;adresse n&apos;apparaît pas ? <button onClick={() => setShowManualForm(true)} className="text-gold hover:underline">Saisie manuelle</button></p>
                                         </div>
                                     )}
                                 </motion.div>
@@ -461,34 +461,33 @@ export default function ScrollytellingPage() {
                                 </button>
                             </div>
                         )}
+                        <AnimatePresence>
+                            {isAddressSelected && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    transition={{ duration: 0.25 }}
+                                    className="mt-4"
+                                >
+                                    <Card className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl overflow-hidden">
+                                        <CardContent className="py-4 flex items-center justify-between gap-4">
+                                            <div className="text-left">
+                                                <p className="text-xs uppercase tracking-widest text-muted">Adresse détectée</p>
+                                                <p className="text-sm font-bold text-white truncate">{diagnosticInput.address}</p>
+                                            </div>
+                                            <div className="shrink-0 flex items-center gap-2">
+                                                <span className="text-xs uppercase tracking-widest text-muted">DPE</span>
+                                                <span className="px-2 py-1 rounded-lg bg-danger text-white text-xs font-black">
+                                                    {diagnosticInput.currentDPE}
+                                                </span>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
-                    <AnimatePresence>
-                        {isAddressSelected && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
-                                transition={{ duration: 0.25 }}
-                                className="mt-4"
-                            >
-                                <Card className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl overflow-hidden">
-                                    <CardContent className="py-4 flex items-center justify-between gap-4">
-                                        <div className="text-left">
-                                            <p className="text-xs uppercase tracking-widest text-muted">Adresse détectée</p>
-                                            <p className="text-sm font-bold text-white truncate">{diagnosticInput.address}</p>
-                                        </div>
-                                        <div className="shrink-0 flex items-center gap-2">
-                                            <span className="text-xs uppercase tracking-widest text-muted">DPE</span>
-                                            <span className="px-2 py-1 rounded-lg bg-danger text-white text-xs font-black">
-                                                {diagnosticInput.currentDPE}
-                                            </span>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
 
 
 
@@ -515,22 +514,22 @@ export default function ScrollytellingPage() {
                         </motion.div>
                     )}
                 </AnimatePresence>
-        </div>
+            </div>
 
-                {/* Scroll Indicator */ }
-    <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
-    >
-        <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
-        <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-    </motion.div>
-            </section >
+            {/* Scroll Indicator */}
+            <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
+            >
+                <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
+                <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+            </motion.div>
+        </section>
 
     {/* ================================================================
                 ZONE 1 — THE DIAGNOSTIC (Risks)
                 ================================================================ */}
-        < Section id = "diagnostic" >
+            <Section id="diagnostic">
                 <SectionHeader
                     label="Le Diagnostic"
                     title={<>L&apos;Ingénierie Financière</>}
@@ -555,20 +554,20 @@ export default function ScrollytellingPage() {
                     </div>
                 </div>
 
-    {/* Benchmark Chart - Full Width (2 columns) */ }
-    <div className="w-full mt-8">
-        <BenchmarkChart
-            currentDPE={diagnosticInput.currentDPE}
-            city={diagnosticInput.city}
-            className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
-        />
-    </div>
-            </Section >
+                    {/* Benchmark Chart - Full Width (2 columns) */}
+                    <div className="w-full mt-8">
+                        <BenchmarkChart
+                            currentDPE={diagnosticInput.currentDPE}
+                            city={diagnosticInput.city}
+                            className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
+                        />
+                    </div>
+                </Section>
 
     {/* ================================================================
                 ZONE 2 — THE PROJECTION (Vision)
                 ================================================================ */}
-        < Section id = "projection" className = "bg-gradient-to-b from-deep to-deep-light/20" >
+            <Section id="projection" className="bg-gradient-to-b from-deep to-deep-light/20">
                 <SectionHeader
                     label="La Projection"
                     title={<>Le point de <span className="text-success">bascule</span></>}
@@ -579,18 +578,18 @@ export default function ScrollytellingPage() {
                     valuation={valuation}
                     financing={financing}
                 />
-            </Section >
+            </Section>
 
     {/* ================================================================
                 ZONE 4 — DIAGNOSTIC PERSONNEL
                 ================================================================ */}
-        < Section id = "my-pocket" >
-            <SectionHeader
-                label="Analyse Individuelle"
-                title="Impact pour les copropriétaires"
-            />
+            <Section id="my-pocket">
+                <SectionHeader
+                    label="Analyse Individuelle"
+                    title="Impact pour les copropriétaires"
+                />
 
-    {/* Switcher */ }
+                {/* Switcher */}
                 <div className="flex justify-center mb-8">
                     <ViewModeToggle />
                 </div>
@@ -615,12 +614,12 @@ export default function ScrollytellingPage() {
                         />
                     </div>
                 </div>
-            </Section >
+            </Section>
 
     {/* ================================================================
                 ZONE 3 — THE FINANCING (Logic)
                 ================================================================ */}
-        < Section id = "finance" >
+            <Section id="finance">
                 <SectionHeader
                     label="L'Ingénierie Financière"
                     title={<>Trésorerie Positive <span className="text-gold">immédiate</span></>}
@@ -662,57 +661,57 @@ export default function ScrollytellingPage() {
                         </AnimatePresence>
                     </div>
                 </div>
-            </Section >
+            </Section>
 
     {/* ================================================================
                 ZONE 5 — ACTION
                 ================================================================ */}
-        < Section id = "action" className = "pb-40" >
-            <div className="max-w-4xl mx-auto text-center">
-                <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-10">
-                    Passez à l&apos;<span className="text-gold">action</span>.
-                </h2>
+            <Section id="action" className="pb-40">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-10">
+                        Passez à l&apos;<span className="text-gold">action</span>.
+                    </h2>
 
-                <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                    <Button
-                        variant="outline"
-                        className="h-16 px-8 rounded-full border-white/10 hover:bg-white/5 text-white gap-3 transition-all duration-300"
-                        onClick={() => setShowObjections(!showObjections)}
-                    >
-                        <AlertTriangle className="w-5 h-5 text-muted" />
-                        <span className="font-semibold">Contrer les objections</span>
-                    </Button>
-
-                    <DownloadPdfButton
-                        result={diagnosticResult}
-                        className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg shadow-neon-gold transition-all duration-300 hover:scale-105 flex items-center gap-3"
-                    />
-
-                    <DownloadPptxButton
-                        result={diagnosticResult}
-                        className="h-16 px-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition-all duration-300"
-                    />
-                </div>
-
-                <div className="mt-16 flex justify-center">
-                    <LegalWarning variant="inline" />
-                </div>
-
-                <AnimatePresence>
-                    {showObjections && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="w-full max-w-2xl mx-auto mt-12 overflow-hidden text-left"
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                        <Button
+                            variant="outline"
+                            className="h-16 px-8 rounded-full border-white/10 hover:bg-white/5 text-white gap-3 transition-all duration-300"
+                            onClick={() => setShowObjections(!showObjections)}
                         >
-                            <ObjectionHandler />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-            </Section >
+                            <AlertTriangle className="w-5 h-5 text-muted" />
+                            <span className="font-semibold">Contrer les objections</span>
+                        </Button>
 
-        </div >
+                        <DownloadPdfButton
+                            result={diagnosticResult}
+                            className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg shadow-neon-gold transition-all duration-300 hover:scale-105 flex items-center gap-3"
+                        />
+
+                        <DownloadPptxButton
+                            result={diagnosticResult}
+                            className="h-16 px-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition-all duration-300"
+                        />
+                    </div>
+
+                    <div className="mt-16 flex justify-center">
+                        <LegalWarning variant="inline" />
+                    </div>
+
+                    <AnimatePresence>
+                        {showObjections && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="w-full max-w-2xl mx-auto mt-12 overflow-hidden text-left"
+                            >
+                                <ObjectionHandler />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </Section>
+
+        </div>
     );
 }
