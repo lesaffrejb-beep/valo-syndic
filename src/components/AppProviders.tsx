@@ -9,8 +9,9 @@ interface AppProvidersProps {
 
 export function AppProviders({ children }: AppProvidersProps) {
     return (
-        <ProjectionModeProvider>
+        <>
+            <ProjectionModeProvider />
             {children}
-        </ProjectionModeProvider>
+        </>
     );
 }

@@ -71,7 +71,7 @@ export function SmartAddressForm({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+      transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
       className={`w-full max-w-3xl mx-auto ${className}`}
     >
       {/* Header avec titre et progression */}
@@ -182,7 +182,7 @@ export function SmartAddressForm({
                   >
                     <select
                       name="currentDPE"
-                      value={form.formData.values.currentDPE || "F"}
+                      value={form.formData.values.currentDPE || ""}
                       onChange={(e) => form.updateField("currentDPE", e.target.value as DPELetter)}
                       className="w-full bg-transparent px-4 py-3 text-white focus:outline-none appearance-none cursor-pointer"
                     >
@@ -205,7 +205,7 @@ export function SmartAddressForm({
                   >
                     <select
                       name="targetDPE"
-                      value={form.formData.values.targetDPE || "C"}
+                      value={form.formData.values.targetDPE || ""}
                       onChange={(e) => form.updateField("targetDPE", e.target.value as DPELetter)}
                       className="w-full bg-transparent px-4 py-3 text-white focus:outline-none appearance-none cursor-pointer"
                     >
@@ -293,8 +293,8 @@ export function SmartAddressForm({
                   ) : (
                     <>
                       <TrendingUp className="w-5 h-5" />
-                      {form.progress < 100 
-                        ? `Complétez le formulaire (${form.progress}%)` 
+                      {form.progress < 100
+                        ? `Complétez le formulaire (${form.progress}%)`
                         : "Lancer l'analyse"
                       }
                     </>

@@ -415,77 +415,107 @@
    MODE PROJECTION AG — Grand Ecran
    ================================================ */
 .projection-mode {
-  font-size: 130%;
+  /* Scale & Readability */
+  font-size: 150%;
+  --space-card: 3.5rem;
 }
 
 .projection-mode * {
-  transition-duration: 500ms !important;
+  /* Slow transitions for grandeur */
+  transition-duration: 400ms !important;
 }
 
 .projection-mode body {
-  background: linear-gradient(180deg, #0a0d14 0%, #000 100%) !important;
+  /* Pure Black for infinite contrast ratio on projectors */
+  background: #000000 !important;
+  background-image: none !important;
 }
 
-.projection-mode .card-premium {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
+.projection-mode .card-premium,
+.projection-mode .card-glass,
+.projection-mode .input {
+  /* Higher contrast borders and backgrounds */
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: none !important;
+  backdrop-filter: none !important; /* Performance & Clarity on low res */
 }
 
 .projection-mode h1,
 .projection-mode h2,
 .projection-mode h3 {
   letter-spacing: -0.01em;
-  line-height: 1.2;
+  line-height: 1.1;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Better legibility against light leaks */
 }
 
+/* Hyper-legible values */
 .projection-mode .text-value-xl {
-  font-size: 5rem;
+  font-size: 6rem;
+  font-weight: 600;
+  text-shadow: 0 0 30px rgba(229, 192, 123, 0.3);
 }
 
 .projection-mode .text-value-lg {
-  font-size: 3.5rem;
+  font-size: 4rem;
+  font-weight: 600;
 }
 
 .projection-mode .label-technical {
-  font-size: 0.9rem;
-  letter-spacing: 0.12em;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  opacity: 0.9;
 }
 
-/* QR Code toujours visible en mode projection */
+.projection-mode .text-muted {
+  color: #a3a3a3 !important; /* Lighter grey for contrast */
+}
+
+/* Hide non-essential decorative elements */
+.projection-mode .bg-noise,
+.projection-mode [class*="dots-pattern"] {
+  opacity: 0 !important;
+}
+
+/* QR Code toujours visible et GROS en mode projection */
 .projection-mode [data-qr-container] {
   position: fixed !important;
-  bottom: 32px;
-  right: 32px;
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.95);
-  padding: 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(229, 192, 123, 0.3);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  bottom: 40px;
+  right: 40px;
+  z-index: 9999;
+  background: #FFF;
+  padding: 24px;
+  border-radius: 24px;
+  border: 4px solid #E5C07B;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8);
+  transform: scale(1.2);
+  transform-origin: bottom right;
 }
 
-/* Badge mode projection */
+/* Badge mode projection Discret */
 .projection-mode::after {
   content: "MODE PROJECTION";
   position: fixed;
-  top: 16px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #E5C07B, #C9A85C);
-  color: #050507;
-  padding: 8px 20px;
-  border-radius: 24px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
+  background: #E5C07B;
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   z-index: 9999;
-  box-shadow: 0 4px 24px rgba(229, 192, 123, 0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  opacity: 0.5; /* Non-intrusive */
 }
 
-/* Focus states plus visibles */
+/* Focus states ULTRA visibles (laser pointer style) */
 .projection-mode :focus-visible {
-  outline: 2px solid #E5C07B;
-  outline-offset: 4px;
+  outline: 4px solid #E5C07B;
+  outline-offset: 6px;
+  box-shadow: 0 0 0 10px rgba(229, 192, 123, 0.2);
 }
 
 /* Respect reduced motion */

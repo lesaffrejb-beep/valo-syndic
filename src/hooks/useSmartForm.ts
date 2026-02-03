@@ -24,7 +24,7 @@ import { type AddressFeature } from "@/lib/api";
 // =============================================================================
 
 /** États de la machine à états */
-export type FormState = 
+export type FormState =
   | "IDLE"           // Attente initiale
   | "TYPING"         // Saisie en cours (debounce)
   | "SEARCHING"      // Recherche adresse
@@ -75,16 +75,16 @@ export interface UseSmartFormReturn {
   formData: SmartFormData;
   progress: number;
   error: string | null;
-  
+
   // Enrichissement
   enrichmentSources: EnrichmentSources;
   isEnriching: boolean;
-  
+
   // Recherche d'adresse
   searchQuery: string;
   searchResults: HybridSearchResult[];
   selectedAddress: string | null;
-  
+
   // Actions
   setSearchQuery: (query: string) => void;
   selectAddress: (result: HybridSearchResult) => void;
@@ -92,7 +92,7 @@ export interface UseSmartFormReturn {
   verifyField: (field: keyof DiagnosticInput) => void;
   submit: () => Promise<void>;
   reset: () => void;
-  
+
   // Dérivés
   autoFilledFields: string[];
   missingRequiredFields: string[];
@@ -161,10 +161,6 @@ type FormAction =
 
 function createInitialState(initialData?: Partial<DiagnosticInput>): FormStateReducer {
   const defaultValues: Partial<DiagnosticInput> = {
-    currentDPE: "F" as DPELetter,
-    targetDPE: "C" as DPELetter,
-    numberOfUnits: 20,
-    estimatedCostHT: 400000,
     commercialLots: 0,
     localAidAmount: 0,
     alurFund: 0,
@@ -221,7 +217,7 @@ function formReducer(state: FormStateReducer, action: FormAction): FormStateRedu
       newValues.address = address;
       newValues.postalCode = result.postalCode;
       newValues.city = result.city;
-      
+
       if (result.coordinates) {
         newValues.coordinates = result.coordinates;
       }
@@ -230,15 +226,24 @@ function formReducer(state: FormStateReducer, action: FormAction): FormStateRedu
       newMeta.postalCode = { status: "verified", source: result.sourceType, touched: true };
       newMeta.city = { status: "verified", source: result.sourceType, touched: true };
 
-      // Si DPE trouvé, l'enregistrer
+      // Si DPE trouvé, l'enregistrer, sinon valeur par défaut
       if (result.dpeData) {
         newValues.currentDPE = result.dpeData.dpe as DPELetter;
-        newMeta.currentDPE = { 
-          status: "auto-filled", 
+        newMeta.currentDPE = {
+          status: "auto-filled",
           source: "DPE Local",
           confidence: 95,
-          touched: false 
+          touched: false
         };
+      } else {
+        newValues.currentDPE = "F";
+        newMeta.currentDPE = { status: "manual", touched: false };
+      }
+
+      // Initialiser DPE Cible par défaut
+      if (!newValues.targetDPE) {
+        newValues.targetDPE = "C";
+        newMeta.targetDPE = { status: "auto-filled", confidence: 100, touched: false };
       }
 
       return {
@@ -266,11 +271,11 @@ function formReducer(state: FormStateReducer, action: FormAction): FormStateRedu
 
       if (sources.marketData?.averagePricePerSqm) {
         newValues.averagePricePerSqm = sources.marketData.averagePricePerSqm;
-        newMeta.averagePricePerSqm = { 
-          status: "auto-filled", 
+        newMeta.averagePricePerSqm = {
+          status: "auto-filled",
           source: "DVF",
           confidence: sources.marketData.transactionCount > 10 ? 85 : 70,
-          touched: false 
+          touched: false
         };
       }
 
@@ -291,7 +296,7 @@ function formReducer(state: FormStateReducer, action: FormAction): FormStateRedu
       const { field, value, source } = action.payload;
       const newValues = { ...state.formData.values, [field]: value };
       const newMeta = { ...state.formData.meta };
-      
+
       newMeta[field as string] = {
         status: source ? "auto-filled" : "manual",
         source,
@@ -307,7 +312,7 @@ function formReducer(state: FormStateReducer, action: FormAction): FormStateRedu
     case "VERIFY_FIELD": {
       const field = action.payload;
       const currentMeta = state.formData.meta[field as string];
-      
+
       if (!currentMeta) return state;
 
       return {
@@ -342,9 +347,9 @@ function formReducer(state: FormStateReducer, action: FormAction): FormStateRedu
 
 export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormReturn {
   const { initialData, onSubmit, onError } = options;
-  
+
   const [reducerState, dispatch] = useReducer(formReducer, createInitialState(initialData));
-  
+
   // Debounce timer pour la recherche
   const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null);
 
@@ -360,7 +365,7 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     REQUIRED_FIELDS.forEach((field) => {
       const weight = FIELD_WEIGHTS[field] || 5;
       total += weight;
-      
+
       const value = reducerState.formData.values[field];
       if (value !== undefined && value !== null && value !== "") {
         filled += weight;
@@ -430,9 +435,9 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
 
   /** Sélectionne une adresse et lance l'enrichissement */
   const selectAddress = useCallback(async (result: HybridSearchResult) => {
-    dispatch({ 
-      type: "SELECT_ADDRESS", 
-      payload: { address: result.address, result } 
+    dispatch({
+      type: "SELECT_ADDRESS",
+      payload: { address: result.address, result }
     });
 
     // Lancer l'enrichissement en arrière-plan
@@ -466,12 +471,12 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
 
   /** Met à jour un champ */
   const updateField = useCallback(<K extends keyof DiagnosticInput>(
-    field: K, 
+    field: K,
     value: DiagnosticInput[K]
   ) => {
-    dispatch({ 
-      type: "UPDATE_FIELD", 
-      payload: { field, value } 
+    dispatch({
+      type: "UPDATE_FIELD",
+      payload: { field, value }
     });
   }, []);
 
@@ -483,9 +488,9 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
   /** Soumet le formulaire */
   const submit = useCallback(async () => {
     if (!isReadyToSubmit) {
-      dispatch({ 
-        type: "SET_ERROR", 
-        payload: `Champs manquants: ${missingRequiredFields.join(", ")}` 
+      dispatch({
+        type: "SET_ERROR",
+        payload: `Champs manquants: ${missingRequiredFields.join(", ")}`
       });
       return;
     }
@@ -494,7 +499,7 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
 
     try {
       const result = DiagnosticInputSchema.safeParse(reducerState.formData.values);
-      
+
       if (!result.success) {
         throw new Error(result.error.errors.map(e => e.message).join(", "));
       }

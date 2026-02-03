@@ -3,26 +3,18 @@
 import { useState, useEffect } from "react";
 import { Monitor, Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
+import { useProjectionMode } from "@/hooks/useProjectionMode";
 
 export function ProjectionModeToggle() {
-    const [isProjectionMode, setIsProjectionMode] = useState(false);
+    const { isProjectionMode, toggleProjectionMode } = useProjectionMode();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        // Check local storage or system preference on mount
-        const isProjector = document.body.classList.contains("projection-mode");
-        setIsProjectionMode(isProjector);
+        setMounted(true);
     }, []);
 
-    const toggleProjectionMode = () => {
-        const body = document.body;
-        if (body.classList.contains("projection-mode")) {
-            body.classList.remove("projection-mode");
-            setIsProjectionMode(false);
-        } else {
-            body.classList.add("projection-mode");
-            setIsProjectionMode(true);
-        }
-    };
+    // Prevent hydration mismatch
+    if (!mounted) return null;
 
     return (
         <button

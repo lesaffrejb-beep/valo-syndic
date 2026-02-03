@@ -51,7 +51,7 @@ export function AddressSearch({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) => 
+        setSelectedIndex((prev) =>
           prev < results.length - 1 ? prev + 1 : prev
         );
         break;
@@ -101,12 +101,12 @@ export function AddressSearch({
           ${disabled ? "opacity-50 cursor-not-allowed" : ""}
         `}
         animate={{
-          scale: isFocused ? 1.01 : 1,
+          scale: isFocused ? 1.02 : 1,
         }}
         transition={{ duration: 0.2 }}
       >
         <Search className={`w-5 h-5 ${isFocused ? "text-gold" : "text-muted"}`} />
-        
+
         <input
           ref={inputRef}
           type="text"
@@ -127,8 +127,8 @@ export function AddressSearch({
           "
           autoComplete="off"
           aria-autocomplete="list"
-          aria-expanded={showResults}
           aria-controls="address-results"
+          aria-haspopup="listbox"
         />
 
         {/* Indicateur d'état */}
@@ -167,7 +167,7 @@ export function AddressSearch({
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
             className="
               absolute z-50 top-full left-0 right-0 mt-2
               bg-[#0A0A0A]/95 backdrop-blur-xl
@@ -189,7 +189,7 @@ export function AddressSearch({
                 </p>
               </div>
             ) : (
-              <ul 
+              <ul
                 ref={listRef}
                 id="address-results"
                 className="max-h-80 overflow-y-auto py-2"
@@ -206,7 +206,7 @@ export function AddressSearch({
                       px-4 py-3 mx-2 rounded-xl cursor-pointer
                       transition-all duration-150
                       border border-transparent
-                      ${index === selectedIndex 
+                      ${index === selectedIndex
                         ? result.sourceType === "local"
                           ? "bg-gold/20 border-gold/30"
                           : "bg-white/10 border-white/20"
@@ -266,9 +266,9 @@ export function AddressSearch({
             <div className="px-4 py-2 bg-white/5 border-t border-white/5">
               <p className="text-[10px] text-muted/50 text-center">
                 Recherche locale + API Adresse (
-                <a 
-                  href="https://adresse.data.gouv.fr" 
-                  target="_blank" 
+                <a
+                  href="https://adresse.data.gouv.fr"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-gold/70 hover:text-gold"
                   onClick={(e) => e.stopPropagation()}
