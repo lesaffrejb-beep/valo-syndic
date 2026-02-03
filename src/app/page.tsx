@@ -11,7 +11,7 @@
 
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Building2, TrendingUp, AlertTriangle } from 'lucide-react';
 
@@ -122,11 +122,12 @@ export default function ScrollytellingPage() {
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<SavedSimulation | null>(null);
     const [showObjections, setShowObjections] = useState(false);
-    const [showManualForm, setShowManualForm] = useState(false);
+    const [showManualForm, setShowManualForm] = useState(true);
     const [isAddressSelected, setIsAddressSelected] = useState(false);
     const [showProfileDetails, setShowProfileDetails] = useState(false);
     const [activeSection, setActiveSection] = useState<'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action'>('diagnostic');
     const { saveProject, isLoading: isSaving, error: saveError, showAuthModal, setShowAuthModal } = useProjectSave();
+    const isManualNavigating = useRef(false);
 
     // --- DIAGNOSTIC STATE ---
     const [diagnosticInput, setDiagnosticInput] = useState<DiagnosticInput>(DEFAULT_DIAGNOSTIC_INPUT);
@@ -202,7 +203,17 @@ export default function ScrollytellingPage() {
     }, []);
 
     const scrollToSection = useCallback((id: string) => {
+        isManualNavigating.current = true;
+        // Immediate visual update
+        // Using explicit cast to match state type
+        setActiveSection(id as 'diagnostic' | 'projection' | 'my-pocket' | 'finance' | 'action');
+
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Reset lock after scroll animation finishes (approx 1000ms)
+        setTimeout(() => {
+            isManualNavigating.current = false;
+        }, 1000);
     }, []);
 
     useEffect(() => {
@@ -210,6 +221,8 @@ export default function ScrollytellingPage() {
 
         const observer = new IntersectionObserver(
             (entries) => {
+                if (isManualNavigating.current) return;
+
                 const visible = entries
                     .filter((e) => e.isIntersecting)
                     .sort((a, b) => b.intersectionRect.height - a.intersectionRect.height);
@@ -269,7 +282,7 @@ export default function ScrollytellingPage() {
             {/* ================================================================
                 ZONE 0 — THE HOOK (Hero)
                 ================================================================ */}
-            <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20">
+            <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20 transition-all duration-700">
                 {/* Background */}
                 <StreetViewHeader address={diagnosticInput.address} coordinates={diagnosticInput.coordinates} />
                 <div className="absolute inset-0 z-10 bg-gradient-to-b from-deep/90 via-deep/60 to-deep" />
@@ -283,24 +296,35 @@ export default function ScrollytellingPage() {
                     {/* Buttons hidden for cleanliness until interaction? kept as is but styled */}
                 </div>
 
-                <div className="relative z-20 w-full max-w-4xl mx-auto flex flex-col items-center gap-10 text-center">
+                <div className={`relative z-20 w-full max-w-4xl mx-auto flex flex-col items-center transition-all duration-700 ${isAddressSelected ? 'gap-6 pt-10' : 'gap-10 justify-center min-h-[60vh]'}`}>
+
+                    {/* TITLE: Fades out when address selected */}
+                    <AnimatePresence>
+                        {!isAddressSelected && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 30, height: 'auto' }}
+                                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                                exit={{ opacity: 0, y: -20, height: 0, overflow: 'hidden' }}
+                                transition={{ duration: 0.5 }}
+                                className="text-center"
+                            >
+                                <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
+                                    <span className="text-white">Révélez le potentiel</span><br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de vos copropriétés</span>
+                                </h1>
+                                <p className="text-lg md:text-2xl text-muted font-light max-w-none mx-auto whitespace-nowrap">
+                                    Transformez la rénovation énergétique en levier patrimonial pour vos mandants.
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* ADDRESS INPUT: Glides to top */}
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1 }}
+                        layout
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="w-full max-w-2xl relative z-30"
                     >
-
-                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-none mb-6 drop-shadow-2xl">
-                            <span className="text-white">Révélez le potentiel</span><br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-gold">de vos copropriétés</span>
-                        </h1>
-                        <p className="text-lg md:text-2xl text-muted font-light max-w-none mx-auto whitespace-nowrap">
-                            Transformez la rénovation énergétique en levier patrimonial pour vos mandants.
-                        </p>
-                    </motion.div>
-
-                    {/* Address Input */}
-                    <div className="w-full max-w-2xl relative z-30">
                         <AddressAutocomplete
                             defaultValue={diagnosticInput.address || ""}
                             placeholder="Rechercher un immeuble..."
@@ -308,168 +332,205 @@ export default function ScrollytellingPage() {
                             onSelect={(data) => {
                                 setIsAddressSelected(true);
                                 setDiagnosticInput((prev) => ({ ...prev, ...data }));
+                                setShowManualForm(true); // Reveal form MAGICALLY
                             }}
                         />
 
-                        <div className="mt-4">
-                            <button
-                                onClick={() => setShowManualForm((prev) => !prev)}
-                                className="w-full flex items-center justify-between gap-4 px-4 py-3 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all"
+                        {/* CSV IMPORT LINK (Only visible when NO address selected) */}
+                        {!isAddressSelected && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.5 }}
+                                className="mt-6 text-center"
                             >
-                                <div className="text-left">
-                                    <p className="text-xs uppercase tracking-[0.25em] text-white/50 font-semibold">Adresse introuvable</p>
-                                    <p className="text-sm text-white/80">Déployez la saisie manuelle premium</p>
-                                </div>
-                                <span className="text-xs uppercase tracking-[0.25em] text-gold font-semibold">
-                                    {showManualForm ? "Masquer" : "Déplier"}
-                                </span>
-                            </button>
-                            <AnimatePresence>
-                                {showManualForm && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="overflow-hidden"
-                                    >
-                                        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/[0.02] border border-white/10 rounded-2xl p-5">
-                                            <div className="md:col-span-2 space-y-2">
-                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Adresse</label>
-                                                <input
-                                                    type="text"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                                    value={diagnosticInput.address}
-                                                    onChange={(e) => {
-                                                        const nextValue = e.target.value;
-                                                        setDiagnosticInput((prev) => ({ ...prev, address: nextValue }));
-                                                        setIsAddressSelected(Boolean(nextValue));
-                                                    }}
-                                                    placeholder="Ex : 12 rue de la Paix, Angers"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Code postal</label>
-                                                <input
-                                                    type="text"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                                    value={diagnosticInput.postalCode || ""}
-                                                    onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, postalCode: e.target.value }))}
-                                                    placeholder="0000"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Ville</label>
-                                                <input
-                                                    type="text"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                                    value={diagnosticInput.city || ""}
-                                                    onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, city: e.target.value }))}
-                                                    placeholder="0000"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">DPE actuel</label>
-                                                <select
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                                    value={diagnosticInput.currentDPE}
-                                                    onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, currentDPE: e.target.value as DPELetter }))}
-                                                >
-                                                    {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => <option key={l} value={l}>{l}</option>)}
-                                                </select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Nombre de lots</label>
-                                                <input
-                                                    type="number"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                                    value={diagnosticInput.numberOfUnits}
-                                                    onChange={(e) => setDiagnosticInput(prev => ({ ...prev, numberOfUnits: parseInt(e.target.value || "0", 10) }))}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold">Travaux (€ HT)</label>
-                                                <input
-                                                    type="number"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none"
-                                                    value={diagnosticInput.estimatedCostHT}
-                                                    onChange={(e) => setDiagnosticInput(prev => ({ ...prev, estimatedCostHT: parseInt(e.target.value || "0", 10) }))}
-                                                />
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        <AnimatePresence>
-                            {isAddressSelected && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    transition={{ duration: 0.25 }}
-                                    className="mt-4"
+                                <button
+                                    onClick={() => alert("Fonctionnalité d'import CSV (Mass Audit) bientôt disponible ici !")}
+                                    className="text-gold/60 text-sm font-medium hover:text-gold hover:underline transition-colors flex items-center justify-center gap-2 mx-auto"
                                 >
-                                    <Card className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl overflow-hidden">
-                                        <CardContent className="py-4 flex items-center justify-between gap-4">
-                                            <div className="text-left">
-                                                <p className="text-xs uppercase tracking-widest text-muted">Adresse détectée</p>
-                                                <p className="text-sm font-bold text-white truncate">{diagnosticInput.address}</p>
-                                            </div>
-                                            <div className="shrink-0 flex items-center gap-2">
-                                                <span className="text-xs uppercase tracking-widest text-muted">DPE</span>
-                                                <span className="px-2 py-1 rounded-lg bg-danger text-white text-xs font-black">
-                                                    {diagnosticInput.currentDPE}
-                                                </span>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                    <TrendingUp className="w-3 h-3" />
+                                    Importer un portefeuille (CSV)
+                                </button>
+                            </motion.div>
+                        )}
+
+                        {/* MANUAL FORM: Reveals smoothly */}
+                        <AnimatePresence>
+                            {showManualForm && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0, y: 20 }}
+                                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.6, ease: "easeOut" }}
+                                    className="overflow-hidden"
+                                >
+                                    {/* Fallback Link if auto-open didn't happen (rare) or to toggle close */}
+                                    <div className="flex justify-end mt-2 mb-2">
+                                        <button
+                                            onClick={() => setShowManualForm(false)}
+                                            className="text-[10px] uppercase tracking-widest text-white/20 hover:text-white/40 transition-colors"
+                                        >
+                                            Masquer les détails
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-md shadow-2xl">
+                                        <div className="md:col-span-2 space-y-2">
+                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Adresse Complète</label>
+                                            <input
+                                                type="text"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-medium"
+                                                value={diagnosticInput.address}
+                                                onChange={(e) => {
+                                                    const nextValue = e.target.value;
+                                                    setDiagnosticInput((prev) => ({ ...prev, address: nextValue }));
+                                                }}
+                                                placeholder="Ex : 12 rue de la Paix, Angers"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Code postal</label>
+                                            <input
+                                                type="text"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-mono"
+                                                value={diagnosticInput.postalCode || ""}
+                                                onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, postalCode: e.target.value }))}
+                                                placeholder="00000"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Ville</label>
+                                            <input
+                                                type="text"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10"
+                                                value={diagnosticInput.city || ""}
+                                                onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, city: e.target.value }))}
+                                                placeholder="Ville"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">DPE actuel</label>
+                                            <select
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 appearance-none"
+                                                value={diagnosticInput.currentDPE}
+                                                onChange={(e) => setDiagnosticInput((prev) => ({ ...prev, currentDPE: e.target.value as DPELetter }))}
+                                            >
+                                                {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(l => <option key={l} value={l} className="bg-deep text-white">{l}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Nombre de lots</label>
+                                            <input
+                                                type="number"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-mono"
+                                                value={diagnosticInput.numberOfUnits}
+                                                onChange={(e) => setDiagnosticInput(prev => ({ ...prev, numberOfUnits: parseInt(e.target.value || "0", 10) }))}
+                                            />
+                                        </div>
+
+                                        {/* Added Travaux field back as it was in previous version but cleaner */}
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase tracking-[0.25em] text-muted font-semibold pl-1">Budget Travaux (€)</label>
+                                            <input
+                                                type="number"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold/50 outline-none transition-all focus:bg-white/10 font-mono"
+                                                value={diagnosticInput.estimatedCostHT}
+                                                onChange={(e) => setDiagnosticInput(prev => ({ ...prev, estimatedCostHT: parseInt(e.target.value || "0", 10) }))}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Manual Fallback for "Address Not Found" case */}
+                                    {!isAddressSelected && (
+                                        <div className="mt-4 text-center">
+                                            <p className="text-white/40 text-sm">L'adresse n'apparaît pas ? <button onClick={() => setShowManualForm(true)} className="text-gold hover:underline">Saisie manuelle</button></p>
+                                        </div>
+                                    )}
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </div>
 
-
-
-                    {/* Quick Stats - Glassmorphism */}
+                        {/* Explicit "Not found" trigger if form is hidden and address selected logic failed or user wants to force it */}
+                        {!showManualForm && !isAddressSelected && (
+                            <div className="mt-8 text-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                                <button
+                                    onClick={() => setShowManualForm(true)}
+                                    className="text-[10px] uppercase tracking-[0.2em] text-white/20 hover:text-gold transition-colors"
+                                >
+                                    Saisie manuelle forcée
+                                </button>
+                            </div>
+                        )}
+                    </motion.div>
                     <AnimatePresence>
                         {isAddressSelected && (
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-wrap justify-center gap-4 md:gap-8"
+                                exit={{ opacity: 0, y: 10 }}
+                                transition={{ duration: 0.25 }}
+                                className="mt-4"
                             >
-                                <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
-                                    <MapPin className="w-4 h-4 text-gold" />
-                                    <span className="text-sm font-bold">{diagnosticInput.city}</span>
-                                </div>
-                                <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
-                                    <TrendingUp className="w-4 h-4 text-gold" />
-                                    <span className="text-sm font-bold financial-num">{averagePriceDisplay} /m²</span>
-                                </div>
-                                <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
-                                    <Building2 className="w-4 h-4 text-gold" />
-                                    <span className="text-sm font-bold">DPE <span className="px-1.5 py-0.5 rounded bg-danger text-white ml-1">{diagnosticInput.currentDPE}</span></span>
-                                </div>
+                                <Card className="bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl overflow-hidden">
+                                    <CardContent className="py-4 flex items-center justify-between gap-4">
+                                        <div className="text-left">
+                                            <p className="text-xs uppercase tracking-widest text-muted">Adresse détectée</p>
+                                            <p className="text-sm font-bold text-white truncate">{diagnosticInput.address}</p>
+                                        </div>
+                                        <div className="shrink-0 flex items-center gap-2">
+                                            <span className="text-xs uppercase tracking-widest text-muted">DPE</span>
+                                            <span className="px-2 py-1 rounded-lg bg-danger text-white text-xs font-black">
+                                                {diagnosticInput.currentDPE}
+                                            </span>
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
 
-                {/* Scroll Indicator */}
-                <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
-                >
-                    <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
-                    <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-                </motion.div>
-            </section>
 
-            {/* ================================================================
+
+                {/* Quick Stats - Glassmorphism */}
+                <AnimatePresence>
+                    {isAddressSelected && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex flex-wrap justify-center gap-4 md:gap-8"
+                        >
+                            <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
+                                <MapPin className="w-4 h-4 text-gold" />
+                                <span className="text-sm font-bold">{diagnosticInput.city}</span>
+                            </div>
+                            <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
+                                <TrendingUp className="w-4 h-4 text-gold" />
+                                <span className="text-sm font-bold financial-num">{averagePriceDisplay} /m²</span>
+                            </div>
+                            <div className="px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-3">
+                                <Building2 className="w-4 h-4 text-gold" />
+                                <span className="text-sm font-bold">DPE <span className="px-1.5 py-0.5 rounded bg-danger text-white ml-1">{diagnosticInput.currentDPE}</span></span>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+        </div>
+
+                {/* Scroll Indicator */ }
+    <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
+    >
+        <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
+        <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+    </motion.div>
+            </section >
+
+    {/* ================================================================
                 ZONE 1 — THE DIAGNOSTIC (Risks)
                 ================================================================ */}
-            <Section id="diagnostic">
+        < Section id = "diagnostic" >
                 <SectionHeader
                     label="Le Diagnostic"
                     title={<>L&apos;Ingénierie Financière</>}
@@ -494,20 +555,20 @@ export default function ScrollytellingPage() {
                     </div>
                 </div>
 
-                {/* Benchmark Chart - Full Width (2 columns) */}
-                <div className="w-full mt-8">
-                    <BenchmarkChart
-                        currentDPE={diagnosticInput.currentDPE}
-                        city={diagnosticInput.city}
-                        className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
-                    />
-                </div>
-            </Section>
+    {/* Benchmark Chart - Full Width (2 columns) */ }
+    <div className="w-full mt-8">
+        <BenchmarkChart
+            currentDPE={diagnosticInput.currentDPE}
+            city={diagnosticInput.city}
+            className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
+        />
+    </div>
+            </Section >
 
-            {/* ================================================================
+    {/* ================================================================
                 ZONE 2 — THE PROJECTION (Vision)
                 ================================================================ */}
-            <Section id="projection" className="bg-gradient-to-b from-deep to-deep-light/20">
+        < Section id = "projection" className = "bg-gradient-to-b from-deep to-deep-light/20" >
                 <SectionHeader
                     label="La Projection"
                     title={<>Le point de <span className="text-success">bascule</span></>}
@@ -518,18 +579,18 @@ export default function ScrollytellingPage() {
                     valuation={valuation}
                     financing={financing}
                 />
-            </Section>
+            </Section >
 
-            {/* ================================================================
+    {/* ================================================================
                 ZONE 4 — DIAGNOSTIC PERSONNEL
                 ================================================================ */}
-            <Section id="my-pocket">
-                <SectionHeader
-                    label="Analyse Individuelle"
-                    title="Impact pour les copropriétaires"
-                />
+        < Section id = "my-pocket" >
+            <SectionHeader
+                label="Analyse Individuelle"
+                title="Impact pour les copropriétaires"
+            />
 
-                {/* Switcher */}
+    {/* Switcher */ }
                 <div className="flex justify-center mb-8">
                     <ViewModeToggle />
                 </div>
@@ -554,12 +615,12 @@ export default function ScrollytellingPage() {
                         />
                     </div>
                 </div>
-            </Section>
+            </Section >
 
-            {/* ================================================================
+    {/* ================================================================
                 ZONE 3 — THE FINANCING (Logic)
                 ================================================================ */}
-            <Section id="finance">
+        < Section id = "finance" >
                 <SectionHeader
                     label="L'Ingénierie Financière"
                     title={<>Trésorerie Positive <span className="text-gold">immédiate</span></>}
@@ -601,57 +662,57 @@ export default function ScrollytellingPage() {
                         </AnimatePresence>
                     </div>
                 </div>
-            </Section>
+            </Section >
 
-            {/* ================================================================
+    {/* ================================================================
                 ZONE 5 — ACTION
                 ================================================================ */}
-            <Section id="action" className="pb-40">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-10">
-                        Passez à l&apos;<span className="text-gold">action</span>.
-                    </h2>
+        < Section id = "action" className = "pb-40" >
+            <div className="max-w-4xl mx-auto text-center">
+                <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-10">
+                    Passez à l&apos;<span className="text-gold">action</span>.
+                </h2>
 
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                        <Button
-                            variant="outline"
-                            className="h-16 px-8 rounded-full border-white/10 hover:bg-white/5 text-white gap-3 transition-all duration-300"
-                            onClick={() => setShowObjections(!showObjections)}
-                        >
-                            <AlertTriangle className="w-5 h-5 text-muted" />
-                            <span className="font-semibold">Contrer les objections</span>
-                        </Button>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                    <Button
+                        variant="outline"
+                        className="h-16 px-8 rounded-full border-white/10 hover:bg-white/5 text-white gap-3 transition-all duration-300"
+                        onClick={() => setShowObjections(!showObjections)}
+                    >
+                        <AlertTriangle className="w-5 h-5 text-muted" />
+                        <span className="font-semibold">Contrer les objections</span>
+                    </Button>
 
-                        <DownloadPdfButton
-                            result={diagnosticResult}
-                            className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg shadow-neon-gold transition-all duration-300 hover:scale-105 flex items-center gap-3"
-                        />
+                    <DownloadPdfButton
+                        result={diagnosticResult}
+                        className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg shadow-neon-gold transition-all duration-300 hover:scale-105 flex items-center gap-3"
+                    />
 
-                        <DownloadPptxButton
-                            result={diagnosticResult}
-                            className="h-16 px-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition-all duration-300"
-                        />
-                    </div>
-
-                    <div className="mt-16 flex justify-center">
-                        <LegalWarning variant="inline" />
-                    </div>
-
-                    <AnimatePresence>
-                        {showObjections && (
-                            <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="w-full max-w-2xl mx-auto mt-12 overflow-hidden text-left"
-                            >
-                                <ObjectionHandler />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    <DownloadPptxButton
+                        result={diagnosticResult}
+                        className="h-16 px-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition-all duration-300"
+                    />
                 </div>
-            </Section>
 
-        </div>
+                <div className="mt-16 flex justify-center">
+                    <LegalWarning variant="inline" />
+                </div>
+
+                <AnimatePresence>
+                    {showObjections && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="w-full max-w-2xl mx-auto mt-12 overflow-hidden text-left"
+                        >
+                            <ObjectionHandler />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+            </Section >
+
+        </div >
     );
 }

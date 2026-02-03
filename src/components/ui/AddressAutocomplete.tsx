@@ -271,7 +271,7 @@ export function AddressAutocomplete({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute z-[100] w-full mt-1 bg-surface border border-boundary rounded-xl shadow-xl overflow-hidden max-h-80 overflow-y-auto"
+                        className="absolute z-[100] w-full mt-1 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto"
                         role="listbox"
                     >
                         {hybridResults.map((result, index) => (
@@ -279,7 +279,7 @@ export function AddressAutocomplete({
                                 key={`${result.sourceType}-${index}`}
                                 role="option"
                                 aria-selected={index === selectedIndex}
-                                className={`px-4 py-3 cursor-pointer transition-colors border-b border-boundary/50 ${index === selectedIndex
+                                className={`px-4 py-3 cursor-pointer transition-colors border-b border-white/[0.03] last:border-0 ${index === selectedIndex
                                     ? result.sourceType === 'local'
                                         ? "bg-primary/20 text-primary"
                                         : "bg-primary/10 text-primary"

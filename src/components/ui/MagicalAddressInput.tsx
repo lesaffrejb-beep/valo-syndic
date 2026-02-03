@@ -27,7 +27,7 @@ const DPE_OPTIONS: DPELetter[] = ["A", "B", "C", "D", "E", "F", "G"];
 export function MagicalAddressInput({ onStartSimulation, className = "" }: MagicalAddressInputProps) {
     const [inputValue, setInputValue] = useState("");
     const [isFocused, setIsFocused] = useState(false);
-    const [isUnfolded, setIsUnfolded] = useState(false);
+    const [isUnfolded, setIsUnfolded] = useState(true);
     const [hybridResults, setHybridResults] = useState<HybridSearchResult[]>([]);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [isLoading, setIsLoading] = useState(false);
@@ -100,9 +100,10 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                         />
                         <button
                             onClick={() => isUnfolded ? setIsUnfolded(false) : setIsUnfolded(true)}
-                            className="bg-white text-black rounded-2xl px-8 h-12 font-bold hover:bg-gray-100 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.2)] active:scale-95 shrink-0 flex items-center gap-2"
+                            className="bg-white text-black rounded-2xl px-6 h-12 font-bold hover:bg-gray-100 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.2)] active:scale-95 shrink-0 flex items-center gap-2"
                         >
-                            <span>{isUnfolded ? "Réduire" : "Déployer"}</span>
+                            <span className="hidden sm:inline text-sm">{isUnfolded ? "Masquer" : "Infos Manuelles"}</span>
+                            <span className="sm:hidden text-sm">{isUnfolded ? "Masq." : "Infos"}</span>
                             <motion.span
                                 animate={{ rotate: isUnfolded ? 180 : 0 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -119,7 +120,7 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                 initial={{ opacity: 0, y: 15, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                                className="absolute top-[calc(100%+12px)] left-0 w-full bg-surface/95 backdrop-blur-3xl border border-white/5 rounded-3xl shadow-2xl overflow-hidden z-[60] p-2"
+                                className="absolute top-[calc(100%+12px)] left-0 w-full bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden z-[60] p-2"
                             >
                                 {hybridResults.map((result, idx) => (
                                     <button
@@ -183,7 +184,6 @@ export function MagicalAddressInput({ onStartSimulation, className = "" }: Magic
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
                                             <label className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-bold">Volumes & Capacité</label>
-                                            <span className="text--[10px] font-mono text-gold/60 bg-gold/5 px-2 py-0.5 rounded border border-gold/10">Configuration manuelle</span>
                                         </div>
                                         <div className="bg-app/40 rounded-2xl p-4 border border-white/5 shadow-tactile-inner group hover:border-white/10 transition-all space-y-4">
                                             <div className="flex items-center justify-between">

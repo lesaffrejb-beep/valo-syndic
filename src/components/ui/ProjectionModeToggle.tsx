@@ -28,7 +28,7 @@ export function ProjectionModeToggle() {
         <button
             onClick={toggleProjectionMode}
             className={`
-                group flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300
+                group flex items-center gap-2 px-4 py-1.5 rounded-full transition-all duration-300
                 ${isProjectionMode
                     ? "bg-gold text-black shadow-[0_0_20px_rgba(229,192,123,0.4)]"
                     : "bg-transparent text-muted hover:text-white hover:bg-white/5"
@@ -36,8 +36,8 @@ export function ProjectionModeToggle() {
             `}
             title={isProjectionMode ? "Désactiver Mode Projection (AG)" : "Activer Mode Projection (AG)"}
         >
-            <div className="relative w-5 h-5">
-                <Monitor className={`w-5 h-5 transition-all ${isProjectionMode ? "scale-100" : "scale-100"}`} />
+            <div className="relative w-3.5 h-3.5">
+                <Monitor className={`w-3.5 h-3.5 transition-all ${isProjectionMode ? "scale-100" : "scale-100"}`} />
                 {isProjectionMode && (
                     <motion.div
                         layoutId="active-glow"
@@ -45,8 +45,9 @@ export function ProjectionModeToggle() {
                     />
                 )}
             </div>
-            <span className="hidden lg:inline text-xs font-bold tracking-wide uppercase">
-                {isProjectionMode ? "AG Mode ON" : "AG Mode"}
+            <span className="text-[10px] xl:text-[11px] font-medium tracking-[0.15em] uppercase">
+                <span className="hidden 2xl:inline">{isProjectionMode ? "Mode AG ON" : "Mode AG"}</span>
+                <span className="2xl:hidden">{isProjectionMode ? "AG ON" : "AG"}</span>
             </span>
         </button>
     );

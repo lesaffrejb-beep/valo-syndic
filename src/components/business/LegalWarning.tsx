@@ -17,7 +17,7 @@ export function LegalWarning({
     const baseStyles = "text-xs text-muted flex items-start gap-2";
 
     const variantStyles = {
-        inline: "border-l border-white/10 pl-3 italic py-2 opacity-60 hover:opacity-100 transition-opacity",
+        inline: "italic py-2 opacity-60",
         banner: "py-4 justify-center italic bg-white/5",
         footer: "py-4 justify-center border-t border-white/10 mt-8",
     };

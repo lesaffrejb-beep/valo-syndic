@@ -28,7 +28,7 @@ export const riskService = {
      * Récupère les risques naturels pour une position GPS donnée
      * API OPEN DATA : https://georisques.gouv.fr/api/v1/gaspar/risques
      */
-    async fetchRisks(lat: number, lon: number): Promise<GeoRisk | null> {
+    async fetchRisks(lat: number, lon: number, retries = 2): Promise<GeoRisk | null> {
         // Timeout de sécurité (8 secondes) pour ne pas bloquer l'app
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
@@ -41,14 +41,19 @@ export const riskService = {
 
             clearTimeout(timeoutId);
 
-            // Si l'API plante (500) ou ne trouve rien, on renvoie null proprement
             if (!response.ok) {
+                // Si erreur 500 et qu'il reste des retries, on réessaie
+                if (response.status === 500 && retries > 0) {
+                    console.warn(`Géorisques API 500, retrying... (${retries} attempts left)`);
+                    return this.fetchRisks(lat, lon, retries - 1);
+                }
+
                 console.warn(`Géorisques API failed: ${response.status}`);
                 return null;
             }
 
             const data = await response.json();
-            return this.normalizeData(data); // Assure-toi que normalizeData est bien défini dans ta classe
+            return this.normalizeData(data);
         } catch (error) {
             console.error("Erreur fetch risques:", error);
             return null; // On renvoie null pour afficher "Indisponible" au lieu de crasher

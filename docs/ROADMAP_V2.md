@@ -55,6 +55,19 @@
 | **Timeline Réglementaire** | Frise chronologique des interdictions | P2 |
 | **Micro-interactions** | Hover states, transitions fluides | P2 |
 
+**Focus Subvention Sniper (Ghost Metrics & Effet "Sniper")**
+| Tâche | Description | Priorité |
+|-------|-------------|----------|
+| **Badge de victoire** | Afficher "Projet Éligible MPR" + "Taux sécurisé 55%" en haut | P1 |
+| **Reste à charge 0€** | Mettre en avant le "0€ à sortir" (autofinancement total) | P1 |
+| **Détail MPR** | Scinder le taux: 30% base + 15% perf + 10% bonus passoire | P1 |
+| **Inflation vs PTZ** | Comparer coût attente vs PTZ 0% (inflation BT01) | P1 |
+| **Gain mensuel réel** | Confronter mensualité PTZ vs économies énergie | P1 |
+| **ROI net immédiat** | Valeur verte - coût travaux (après aides) | P1 |
+| **Coût du statu quo** | Remplacer le -47k€ par un "coût de l’attente" (€/an) | P1 |
+| **Trésorerie en escalier** | Timeline 3 barres + trésorerie cumulée + besoin FR | P2 |
+| **Switch Persona** | Vue Syndic (immeuble) vs Vue Copro (ma poche) | P2 |
+
 **Inspirations :**
 - Apple.com (produits financiers comme des iPhones)
 - Stripe (clarté des pricing pages)

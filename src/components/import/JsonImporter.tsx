@@ -72,7 +72,7 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
                     Importer depuis Ghost
                 </span>
                 <span className="text-sm font-medium text-main group-hover:text-primary transition-colors xl:hidden">
-                    Import
+                    Ghost
                 </span>
             </motion.button>
 
@@ -96,7 +96,7 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.95, opacity: 0, y: 20 }}
                             transition={DEFAULT_TRANSITION}
-                            className="relative w-full max-w-2xl bg-surface rounded-2xl border border-boundary 
+                            className="relative w-full max-w-2xl bg-[#0A0A0A]/95 backdrop-blur-xl rounded-2xl border border-white/10 
                                      shadow-2xl overflow-hidden"
                         >
                             {/* Header */}

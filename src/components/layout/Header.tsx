@@ -108,7 +108,8 @@ export function Header({
                             title="Sauvegarder le dossier"
                         >
                             <Save className="w-4 h-4" />
-                            <span className="hidden xl:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
+                            <span className="hidden 2xl:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
+                            <span className="2xl:hidden">{isSaving ? 'Sauv...' : 'Sauv.'}</span>
                         </button>
                     </div>
 
@@ -116,19 +117,27 @@ export function Header({
                     <div className="flex justify-center">
                         {/* Optional: Add Logo/Brand here if needed, but for now specific nav focus */}
                         {onNavigate && (
-                            <div className="hidden lg:flex items-center gap-1 xl:gap-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5">
-                                {navItems.map((item, index) => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => onNavigate(item.id)}
-                                        className={`text-[10px] xl:text-[11px] uppercase tracking-[0.15em] font-medium transition-all duration-300 px-3 py-1.5 rounded-full ${activeSection === item.id
-                                            ? 'text-white bg-white/10 shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)] border border-white/10'
-                                            : 'text-muted hover:text-white hover:bg-white/5'
-                                            }`}
-                                    >
-                                        {item.label}
-                                    </button>
-                                ))}
+                            <div className="hidden lg:flex items-center gap-1 xl:gap-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5 relative">
+                                {navItems.map((item) => {
+                                    const isActive = activeSection === item.id;
+                                    return (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => onNavigate(item.id)}
+                                            className={`relative z-10 px-4 py-1.5 rounded-full text-[10px] xl:text-[11px] uppercase tracking-[0.15em] font-medium transition-colors duration-200 ${isActive ? 'text-white' : 'text-muted hover:text-white'
+                                                }`}
+                                        >
+                                            {isActive && (
+                                                <motion.div
+                                                    layoutId="activeSection"
+                                                    className="absolute inset-0 bg-white/10 border border-white/10 rounded-full shadow-[0_0_15px_-5px_rgba(255,255,255,0.3)] -z-10"
+                                                    transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                                                />
+                                            )}
+                                            {item.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
