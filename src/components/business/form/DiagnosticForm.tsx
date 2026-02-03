@@ -202,9 +202,16 @@ export function DiagnosticForm({ onSubmit, isLoading = false, initialData }: Dia
                                 }
 
                                 // Auto-fill DPE from local data if available
-                                if (data.dpeData && DPE_OPTIONS.includes(data.dpeData.dpe)) {
+                                if (data.dpeData && DPE_OPTIONS.includes(data.dpeData.dpe as any)) {
                                     (form.elements.namedItem("currentDPE") as HTMLSelectElement).value = data.dpeData.dpe;
-                                    setLocalDpeData(data.dpeData);
+
+                                    // Check if we have full DPE data (ADEME/JSON) or just partial (RNIC)
+                                    // enriched data requires 'conso' and 'adresse' to function
+                                    if ('conso' in data.dpeData && 'adresse' in data.dpeData) {
+                                        setLocalDpeData(data.dpeData as DPEEntry);
+                                    } else {
+                                        setLocalDpeData(null);
+                                    }
                                 } else {
                                     setLocalDpeData(null);
                                 }

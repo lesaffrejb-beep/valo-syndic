@@ -148,7 +148,7 @@ export function SimulationForm({ onSubmit, onCsvImport, isLoading = false }: Sim
                 <div className="space-y-2">
                     <label className="text-xs uppercase tracking-widest font-bold text-gold/80 flex items-center gap-2">
                         <MapPin className="w-3 h-3" />
-                        Localisation de l'immeuble
+                        Localisation de l&apos;immeuble
                     </label>
                     <div className="relative group">
                         <div className="absolute inset-0 bg-gold/5 blur-xl group-hover:bg-gold/10 transition-all duration-500 rounded-2xl" />
@@ -330,7 +330,7 @@ export function SimulationForm({ onSubmit, onCsvImport, isLoading = false }: Sim
             </button>
 
             <p className="text-xs text-muted text-center">
-                Mode dégradé actif: le formulaire reste utilisable même sans données d'adresse.
+                Mode dégradé actif: le formulaire reste utilisable même sans données d&apos;adresse.
             </p>
         </form>
     );

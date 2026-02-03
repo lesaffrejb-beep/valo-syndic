@@ -21,7 +21,7 @@ export function useSimulationForm(addressData?: SimulationApiData | null) {
             targetDpeLabel: "C",
             pricePerSqm: DEFAULT_VALUES.pricePerSqm,
             workBudget: 0,
-        },
+        } as any,
         mode: "onChange",
     });
 
@@ -41,7 +41,7 @@ export function useSimulationForm(addressData?: SimulationApiData | null) {
         }
 
         if (!surfaceManuallySet) {
-            form.setValue("totalLivingArea", merged.totalSurface || undefined, { shouldValidate: true });
+            form.setValue("totalLivingArea", merged.totalSurface || undefined as any, { shouldValidate: true });
         }
 
         form.setValue("currentDpeLabel", merged.currentDpe, { shouldValidate: true });
