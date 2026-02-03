@@ -3,6 +3,22 @@ import fs from 'fs';
 import path from 'path';
 import { parse } from 'csv-parse/sync'; // npm install csv-parse
 
+function pickFirst(row: Record<string, any>, keys: string[]) {
+    for (const key of keys) {
+        const value = row[key];
+        if (value !== undefined && value !== null && value !== '') {
+            return value;
+        }
+    }
+    return undefined;
+}
+
+function toNumber(value: unknown, fallback = 0) {
+    if (value === undefined || value === null || value === '') return fallback;
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? fallback : parsed;
+}
+
 async function seedRNIC() {
     console.log("🚀 Démarrage de l'import RNIC 49...");
 
@@ -31,14 +47,41 @@ async function seedRNIC() {
 
     for (let i = 0; i < records.length; i += BATCH_SIZE) {
         const batch = records.slice(i, i + BATCH_SIZE).map((row: any) => ({
-            rnic_id: row.numero_d_immatriculation,
-            name: row.nom_d_usage_de_la_copropriete,
-            address: row.adresse_de_reference,
-            postal_code: row.code_postal_adresse_de_reference,
-            city: row.commune_adresse_de_reference,
-            city_code: row.code_officiel_commune,
-            number_of_units: parseInt(row.nombre_total_de_lots || '0'),
-            syndic_name: row.raison_sociale_du_representant_legal,
+            rnic_id: pickFirst(row, [
+                'numero_immatriculation',
+                'numero_d_immatriculation',
+                'rnic_id',
+            ]),
+            name: pickFirst(row, [
+                'nom_usage',
+                'nom_d_usage_de_la_copropriete',
+                'nom_copropriete',
+            ]),
+            address: pickFirst(row, [
+                'adresse_brute',
+                'adresse_de_reference',
+                'adresse',
+            ]),
+            postal_code: pickFirst(row, [
+                'code_postal',
+                'code_postal_adresse_de_reference',
+            ]),
+            city: pickFirst(row, [
+                'nom_commune',
+                'commune_adresse_de_reference',
+            ]),
+            city_code: pickFirst(row, [
+                'code_insee',
+                'code_officiel_commune',
+                'code_commune',
+            ]),
+            number_of_units: toNumber(
+                pickFirst(row, ['nombre_total_lots', 'nombre_total_de_lots'])
+            ),
+            syndic_name: pickFirst(row, [
+                'raison_sociale_syndic',
+                'raison_sociale_du_representant_legal',
+            ]),
             // Ajoute ici les mappings nécessaires
         }));
 

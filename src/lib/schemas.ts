@@ -93,6 +93,28 @@ export const DiagnosticInputSchema = z.object({
 export type DiagnosticInput = z.infer<typeof DiagnosticInputSchema>;
 
 // =============================================================================
+// 1.B SIMULATION FORM (SMART FALLBACK)
+// =============================================================================
+
+const zNumberPreprocess = (schema: z.ZodNumber) =>
+    z.preprocess((value) => {
+        if (value === "" || value === null || value === undefined) return undefined;
+        const parsed = typeof value === "number" ? value : Number(value);
+        return Number.isNaN(parsed) ? undefined : parsed;
+    }, schema);
+
+export const SimulationFormSchema = z.object({
+    numberOfLots: zNumberPreprocess(z.number().int().min(1, "Nombre de lots requis")),
+    totalLivingArea: zNumberPreprocess(z.number().min(10, "Surface requise (min 10m²)")),
+    currentDpeLabel: DPELetterSchema.default("F"),
+    targetDpeLabel: DPELetterSchema.default("C"),
+    pricePerSqm: zNumberPreprocess(z.number().min(1, "Requis")),
+    workBudget: zNumberPreprocess(z.number().min(1000, "Budget travaux requis (min 1000€)")),
+});
+
+export type SimulationFormValues = z.infer<typeof SimulationFormSchema>;
+
+// =============================================================================
 // 2. SORTIES CALCULATEUR
 // =============================================================================
 
