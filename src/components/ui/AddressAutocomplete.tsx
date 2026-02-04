@@ -271,7 +271,7 @@ export function AddressAutocomplete({
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
-                    disabled={disabled || isEnriching}
+                    disabled={disabled}
                     className="input w-full pr-10 h-12"
                     name="address"
                     autoComplete="street-address"
