@@ -9,14 +9,17 @@ export function middleware(request: NextRequest) {
     const response = NextResponse.next();
 
     // Content Security Policy
-    // Permet les scripts/styles inline (nécessaire pour Next.js et certaines libs)
+    // Durcir la politique : retirer 'unsafe-eval' et 'unsafe-inline'
     response.headers.set(
         'Content-Security-Policy',
         [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data:",
-            "worker-src 'self' blob: data: 'unsafe-eval' 'unsafe-inline'",
-            "style-src 'self' 'unsafe-inline'",
+            // Autoriser les scripts depuis self et blobs/ data (maps reste autorisé explicitement)
+            "script-src 'self' blob: data: https://maps.googleapis.com",
+            // Workers autorisés depuis self et blobs
+            "worker-src 'self' blob: data:",
+            // Interdire les styles inline pour durcir la CSP
+            "style-src 'self'",
             "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
             "font-src 'self' data:",
             "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",

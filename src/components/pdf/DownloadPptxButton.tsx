@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import pptxgen from "pptxgenjs";
 import { type DiagnosticResult } from "@/lib/schemas";
 import { formatCurrency, formatPercent } from "@/lib/calculator";
 import { useBrandStore } from "@/stores/useBrandStore";
@@ -51,7 +50,9 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
         setError(null);
 
         try {
-            const pptx = new pptxgen();
+                // Import dynamique pour éviter d'alourdir le bundle initial
+                const { default: PptxGenJS } = await import('pptxgenjs');
+                const pptx = new PptxGenJS();
 
             // Metadata
             pptx.author = brand.agencyName;
