@@ -32,12 +32,10 @@ export function middleware(request: NextRequest) {
 
     const prodCsp = [
         "default-src 'self'",
-        // Temporary relaxation: allow inline scripts/styles for deployed environments
-        // to avoid breaking third-party libs that inject inline styles/scripts.
-        // NOTE: this is a short-term fix — prefer migrating to non-inline assets or
-        // using hashes/nonces for production CSP hardening.
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
+        // Harden scripts in production: disallow inline scripts, keep blob/data for workers
+        "script-src 'self' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
         "worker-src 'self' blob: data:",
+        // Keep inline styles allowed temporarily; migrate style props to classes later
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com https://tile.openstreetmap.org",
         "font-src 'self' data:",
