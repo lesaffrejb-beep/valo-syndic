@@ -62,7 +62,7 @@ export function PptxButtonContent({ result }: PptxButtonContentProps) {
                     <>
                         <span>[PPTX]</span>
                         <span>PowerPoint AG</span>
-                        <span className="absolute -top-1.5 -right-1.5 rounded-full bg-gold text-black px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(229,192,123,0.6)]">
+                        <span className="absolute -top-1.5 -right-1.5 rounded-full bg-black text-gold px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(0,0,0,0.35)]">
                             V2
                         </span>
                     </>

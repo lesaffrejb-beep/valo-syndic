@@ -517,7 +517,7 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
       // On passe quand même en READY même si l'enrichissement échoue
       dispatch({ type: "ENRICHMENT_COMPLETE", payload: {} });
     }
-  }, []);
+  }, [searchTimer]);
 
   /** Met à jour un champ */
   const updateField = useCallback(<K extends keyof DiagnosticInput>(
