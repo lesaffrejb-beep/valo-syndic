@@ -109,6 +109,7 @@ export function AddressAutocomplete({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
+        console.debug("AddressAutocomplete: handleInputChange ->", value);
         setInputValue(value);
         setSelectedIndex(-1);
 
@@ -120,17 +121,29 @@ export function AddressAutocomplete({
         // Debounce search (300ms)
         searchTimeoutRef.current = setTimeout(() => {
             if (value.length >= 3) {
-                dpeService.hybridSearch(value, 6).then(setHybridResults);
-                searchCopro(value);
+                console.debug("AddressAutocomplete: triggering hybridSearch & searchCopro for", value);
+                dpeService.hybridSearch(value, 6).then((res) => {
+                    console.debug("AddressAutocomplete: hybridSearch results ->", res);
+                    setHybridResults(res);
+                }).catch(err => console.error("AddressAutocomplete: hybridSearch error ->", err));
 
-                // (previously emitted typed address and launched background enrichment)
-                // Keep behavior minimal: only run hybrid/local and RNIC searches
+                Promise.resolve(searchCopro(value))
+                    .then(() => console.debug("AddressAutocomplete: searchCopro triggered for", value))
+                    .catch(err => console.error("AddressAutocomplete: searchCopro error ->", err));
             } else {
                 setHybridResults([]);
                 clearRnicResults();
             }
         }, 300);
     };
+
+    useEffect(() => {
+        console.debug("AddressAutocomplete: rnicResults changed ->", rnicResults);
+    }, [rnicResults]);
+
+    useEffect(() => {
+        console.debug("AddressAutocomplete: hybridResults changed ->", hybridResults);
+    }, [hybridResults]);
 
     const handleSelect = (feature: AddressFeature) => {
         const props = feature.properties;
