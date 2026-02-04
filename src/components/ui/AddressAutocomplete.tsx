@@ -82,6 +82,7 @@ export function AddressAutocomplete({
         searchAddress,
         selectAddress,
         clearSuggestions,
+        enrichFromAddress,
         property,
     } = usePropertyEnrichment();
 
@@ -121,6 +122,21 @@ export function AddressAutocomplete({
             if (value.length >= 3) {
                 dpeService.hybridSearch(value, 6).then(setHybridResults);
                 searchCopro(value);
+
+                // Notify parent immediately with the typed address
+                if (onSelect) {
+                    onSelect({
+                        address: value,
+                        postalCode: "",
+                        city: "",
+                    });
+                }
+
+                // Launch background enrichment from the plain address
+                enrichFromAddress(value).catch((err) => {
+                    // swallow errors, enrichment will update via onEnriched
+                    console.error("Background enrichFromAddress failed:", err);
+                });
             } else {
                 setHybridResults([]);
                 clearRnicResults();
