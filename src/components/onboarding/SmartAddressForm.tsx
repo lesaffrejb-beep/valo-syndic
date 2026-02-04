@@ -28,6 +28,8 @@ import { DataSourcePills } from "./DataSourcePills";
 // TYPES
 // =============================================================================
 
+const parseOptionalNumber = (v: any) => Number(v) || 0;
+
 interface SmartAddressFormProps {
   initialData?: Partial<DiagnosticInput>;
   onSubmit: (data: DiagnosticInput, opts?: { userInitiated?: boolean }) => void;
@@ -54,7 +56,6 @@ export function SmartAddressForm({
   className = "",
 }: SmartAddressFormProps) {
   const form = useSmartForm({ initialData });
-  const parseOptionalNumber = (value: string) => (value === "" ? undefined : Number(value));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +84,10 @@ export function SmartAddressForm({
     if (!values.currentDPE || !values.targetDPE) return null;
     if (!values.numberOfUnits || !values.estimatedCostHT) return null;
 
-    return values as DiagnosticInput;
+    return {
+      ...values,
+      currentEnergyBill: values.currentEnergyBill ?? 0,
+    } as DiagnosticInput;
   };
 
   return (

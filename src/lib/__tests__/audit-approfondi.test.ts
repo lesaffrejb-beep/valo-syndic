@@ -274,6 +274,7 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             localAidAmount: 0,
             alurFund: 0,
             ceeBonus: 0,
+            currentEnergyBill: 3000,
             investorRatio: 0,
         };
 
@@ -314,6 +315,7 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             localAidAmount: 0,
             alurFund: 0,
             ceeBonus: 0,
+            currentEnergyBill: 3000,
             investorRatio: 0,
         };
 

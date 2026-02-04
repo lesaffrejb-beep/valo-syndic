@@ -136,6 +136,7 @@ export function SimulationForm({ onSubmit, onCsvImport, isLoading = false }: Sim
             localAidAmount: 0,
             alurFund: 0,
             ceeBonus: 0,
+            currentEnergyBill: 0,
             investorRatio: 0,
         };
 

@@ -131,6 +131,7 @@ describe("AUDIT MATHEMATIQUE - Cas #1: Petite copropriété F → C", () => {
         localAidAmount: 0,
         alurFund: 5000,
         ceeBonus: 0,
+        currentEnergyBill: 3000,
         investorRatio: 30,
     };
 
@@ -302,6 +303,7 @@ describe("AUDIT MATHEMATIQUE - Cas #2: Grande copropriété G → A", () => {
         localAidAmount: 25_000,
         alurFund: 0,
         ceeBonus: 15_000,
+        currentEnergyBill: 3000,
         investorRatio: 40,
     };
 
@@ -373,6 +375,7 @@ describe("AUDIT MATHEMATIQUE - Cas #3: Projet non éligible MPR", () => {
         localAidAmount: 5000,
         alurFund: 0,
         ceeBonus: 0,
+        currentEnergyBill: 3000,
         investorRatio: 0,
     };
 
@@ -428,6 +431,7 @@ describe("AUDIT MATHEMATIQUE - Cas #4: Test de stress plafonnements", () => {
         localAidAmount: 500_000,
         alurFund: 200_000,
         ceeBonus: 100_000,
+        currentEnergyBill: 3000,
         investorRatio: 0,
     };
 

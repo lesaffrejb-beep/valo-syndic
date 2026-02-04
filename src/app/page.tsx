@@ -113,6 +113,7 @@ const DEFAULT_DIAGNOSTIC_INPUT: DiagnosticInput = {
     localAidAmount: 10000,
     alurFund: 0,
     ceeBonus: 40000,
+    currentEnergyBill: 0,
     investorRatio: 30,
 };
 
