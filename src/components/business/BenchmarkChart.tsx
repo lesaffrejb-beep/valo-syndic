@@ -25,6 +25,7 @@ const DPE_CONSUMPTION: Record<DPELetter, number> = {
     A: 50, B: 90, C: 150, D: 250, E: 330, F: 420, G: 500,
 };
 
+
 export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: BenchmarkChartProps) {
     const analysis = useMemo(() => {
         const yourConsumption = DPE_CONSUMPTION[currentDPE];
