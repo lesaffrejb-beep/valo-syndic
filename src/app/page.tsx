@@ -325,6 +325,16 @@ export default function ScrollytellingPage() {
                         onSubmit={handleFormSubmit}
                         onCsvImport={() => setShowCsvModal(true)}
                     />
+                    {/* Tantième Calculator moved up for immediate personal impact (above the fold) */}
+                    {diagnosticResult && (
+                        <div className="mt-8 w-full max-w-4xl mx-auto">
+                            <TantiemeCalculator
+                                financing={financing}
+                                simulationInputs={simulationInputs}
+                                className="h-full bg-deep-light/30 border-white/5"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* CSV Import Modal */}
@@ -363,9 +373,7 @@ export default function ScrollytellingPage() {
                         <HeatingSystemAlert heatingType={diagnosticInput.heatingSystem || null} />
 
                         {diagnosticInput.coordinates && (
-                            <div className="h-[400px] rounded-3xl overflow-hidden border border-white/5 shadow-2xl relative">
-                                <RisksCard coordinates={diagnosticInput.coordinates} />
-                            </div>
+                            <RisksCard coordinates={diagnosticInput.coordinates} />
                         )}
                     </div>
 
@@ -391,7 +399,7 @@ export default function ScrollytellingPage() {
             <Section id="projection" className="bg-gradient-to-b from-deep to-deep-light/20">
                 <SectionHeader
                     label="La Projection"
-                    title={<>Le point de <span className="text-success">bascule</span></>}
+                    title={<>Le point de <span className="text-white">bascule</span></>}
                     subtitle="Comparatif direct entre le scénario du déclin et celui de la valorisation."
                 />
                 <ComparisonSplitScreen
@@ -433,13 +441,7 @@ export default function ScrollytellingPage() {
                             </div>
                         </CardContent>
                     </Card>
-                    <div className="h-full md:col-span-2">
-                        <TantiemeCalculator
-                            financing={financing}
-                            simulationInputs={simulationInputs}
-                            className="h-full bg-deep-light/30 border-white/5"
-                        />
-                    </div>
+                    {/* Tantième calculator moved to hero for immediate visibility */}
                 </div>
             </Section>
 
@@ -449,7 +451,7 @@ export default function ScrollytellingPage() {
             <Section id="finance">
                 <SectionHeader
                     label="L'Ingénierie Financière"
-                    title={<>Trésorerie Positive <span className="text-gold">immédiate</span></>}
+                    title={<>Trésorerie Positive <span className="text-white">immédiate</span></>}
                 />
 
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 w-full">
@@ -487,7 +489,7 @@ export default function ScrollytellingPage() {
 
                         <DownloadPdfButton
                             result={diagnosticResult}
-                            className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg shadow-neon-gold transition-all duration-300 hover:scale-105 flex items-center gap-3"
+                            className="h-16 px-10 rounded-full bg-gold hover:bg-gold-light text-black font-bold text-lg transition-all duration-300 flex items-center gap-3"
                         />
 
                         <DownloadPptxButton

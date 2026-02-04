@@ -10,7 +10,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Building2, Euro, Users, TrendingUp, ChevronDown, ChevronUp, FileUp } from "lucide-react";
 import { useSmartForm } from "@/hooks/useSmartForm";
@@ -264,41 +264,19 @@ export function SmartAddressForm({
                 {/* Options avancées (collapsible) */}
                 <AdvancedOptions form={form} />
 
-                {/* Bouton de soumission */}
-                <motion.button
-                  type="submit"
-                  disabled={!form.isReadyToSubmit || form.state === "SUBMITTING"}
-                  whileHover={{ scale: form.isReadyToSubmit ? 1.02 : 1 }}
-                  whileTap={{ scale: form.isReadyToSubmit ? 0.98 : 1 }}
-                  className={`
-                    w-full py-4 px-6 rounded-xl font-semibold text-lg
-                    transition-all duration-300
-                    flex items-center justify-center gap-3
-                    ${form.isReadyToSubmit
-                      ? "bg-gold hover:bg-gold-light text-black shadow-lg shadow-gold/20"
-                      : "bg-white/5 text-white/40 cursor-not-allowed"
-                    }
-                  `}
-                >
+                {/* Analyse automatique : suppression du bouton explicite 'Calculer' */}
+                <div className="w-full py-3 px-4 rounded-xl text-sm text-center">
                   {form.state === "SUBMITTING" ? (
-                    <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full"
-                      />
-                      Calcul en cours...
-                    </>
+                    <div className="text-muted">Calcul en cours…</div>
+                  ) : form.progress < 100 ? (
+                    <div className="text-muted">Complétez le formulaire ({form.progress}%)</div>
                   ) : (
-                    <>
-                      <TrendingUp className="w-5 h-5" />
-                      {form.progress < 100
-                        ? `Complétez le formulaire (${form.progress}%)`
-                        : "Lancer l'analyse"
-                      }
-                    </>
+                    <div className="text-gold font-medium">Analyse prête — résultats mis à jour automatiquement</div>
                   )}
-                </motion.button>
+                </div>
+
+                {/* Auto-submit when form is ready (debounced) */}
+                <AutoSubmitWhenReady form={form} onSubmit={onSubmit} validateFormData={validateFormData} />
 
                 {/* Message d'erreur */}
                 <AnimatePresence>
@@ -432,4 +410,28 @@ function AdvancedOptions({ form }: { form: UseSmartFormReturn }) {
       </AnimatePresence>
     </div>
   );
+}
+
+// =============================================================================
+// Helper: Auto-submit when ready (debounced)
+// =============================================================================
+import type { UseSmartFormReturn } from "@/hooks/useSmartForm";
+
+function AutoSubmitWhenReady({ form, onSubmit, validateFormData }: { form: UseSmartFormReturn; onSubmit: (data: DiagnosticInput) => void; validateFormData: (values: Partial<DiagnosticInput>) => DiagnosticInput | null; }) {
+  useEffect(() => {
+    if (!form.isReadyToSubmit) return;
+
+    // Debounce to avoid spamming rapid onChange events
+    const id = setTimeout(() => {
+      if (form.formData.values && Object.keys(form.formData.values).length > 0) {
+        const validated = validateFormData(form.formData.values);
+        if (validated) onSubmit(validated);
+      }
+    }, 350);
+
+    return () => clearTimeout(id);
+    // run when readiness or form values change
+  }, [form.isReadyToSubmit, form.formData.values, onSubmit, validateFormData]);
+
+  return null;
 }
