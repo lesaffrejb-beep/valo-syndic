@@ -99,8 +99,7 @@ export function MarketBenchmark({
 
     return (
         <div
-            className="card-bento p-6 transition-all duration-500 hover:border-white/10 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] animate-fadeIn"
-            style={{ animationDelay: "0.1s" }}
+            className="card-bento p-6 transition-all duration-500 hover:border-white/10 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] animate-fadeIn animate-delay-100"
         >
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">

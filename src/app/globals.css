@@ -402,6 +402,39 @@
     opacity: 0;
   }
 
+  /* Custom marker and profile utilities (used by refactor RFC) */
+  .marker-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+
+  .marker-danger { background-color: #EF4444; }
+  .marker-warning { background-color: #F59E0B; }
+  .marker-success { background-color: #10B981; }
+
+  /* Animation delay utilities */
+  .animate-delay-100 { animation-delay: 100ms; }
+
+  /* Profile-specific styles for SubsidyTable (avoid inline styles) */
+  .profile-Blue-border { border-color: rgba(96, 165, 250, 0.3); }
+  .profile-Blue-bg { background: linear-gradient(90deg, rgba(96,165,250,0.05), transparent); }
+  .profile-Blue-dot { background-color: #60A5FA; }
+
+  .profile-Yellow-border { border-color: rgba(217, 119, 6, 0.3); }
+  .profile-Yellow-bg { background: linear-gradient(90deg, rgba(217,119,6,0.05), transparent); }
+  .profile-Yellow-dot { background-color: #D97706; }
+
+  .profile-Purple-border { border-color: rgba(167, 139, 250, 0.3); }
+  .profile-Purple-bg { background: linear-gradient(90deg, rgba(167,139,250,0.05), transparent); }
+  .profile-Purple-dot { background-color: #A78BFA; }
+
+  .profile-Pink-border { border-color: rgba(229, 192, 123, 0.3); }
+  .profile-Pink-bg { background: linear-gradient(90deg, rgba(229,192,123,0.05), transparent); }
+  .profile-Pink-dot { background-color: #E0B976; }
+
   /* Staggered delays */
   .delay-100 {
     animation-delay: 100ms;
