@@ -15,13 +15,6 @@ interface AngersMapProps {
     results: BuildingAuditResult[];
 }
 
-// Design system colors (from tailwind.config.ts tokens)
-const MAP_COLORS = {
-    danger: "#EF4444",   // danger.DEFAULT
-    warning: "#F59E0B",  // warning.DEFAULT  
-    success: "#10B981",  // success.DEFAULT
-};
-
 export function AngersMap({ results }: AngersMapProps) {
     const [isMounted, setIsMounted] = useState(false);
     const [L, setL] = useState<typeof LeafletType | null>(null);
@@ -48,7 +41,8 @@ export function AngersMap({ results }: AngersMapProps) {
     const getIcon = (status: "danger" | "warning" | "success") => {
         return L.divIcon({
             className: "custom-marker",
-            html: `<div style="background-color: ${MAP_COLORS[status]}; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>`,
+            // Use CSS classes instead of inline styles so CSP won't block rendering
+            html: `<div class="marker-dot marker-${status}"></div>`,
             iconSize: [20, 20],
             iconAnchor: [10, 10],
         });
@@ -59,7 +53,7 @@ export function AngersMap({ results }: AngersMapProps) {
             <MapContainer
                 center={[47.47, -0.55]}
                 zoom={13}
-                style={{ height: "100%", width: "100%" }}
+                className="w-full h-full"
                 scrollWheelZoom={false}
             >
                 <TileLayer
@@ -76,7 +70,7 @@ export function AngersMap({ results }: AngersMapProps) {
                             <div className="p-2">
                                 <h4 className="font-bold text-slate-900 mb-1">{building.address}</h4>
                                 <div className="flex items-center gap-2 mb-2">
-                                    <span className={`px-2 py-0.5 rounded text-xs font-bold text-white`} style={{ backgroundColor: building.currentDPE === 'G' ? '#ef4444' : '#f59e0b' }}>
+                                    <span className={`px-2 py-0.5 rounded text-xs font-bold text-white ${building.currentDPE === 'G' ? 'bg-rose-500' : 'bg-amber-400'}`}>
                                         DPE {building.currentDPE}
                                     </span>
                                     <span className="text-xs text-slate-500">{building.numberOfUnits} lots</span>

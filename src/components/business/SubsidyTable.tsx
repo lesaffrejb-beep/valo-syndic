@@ -97,17 +97,15 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                                 transition={{ delay: index * 0.1 }}
                                 className={cn(
                                     "relative flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border transition-all duration-300 group",
-                                    "hover:bg-white/[0.04] hover:border-white/10"
+                                    "hover:bg-white/[0.04] hover:border-white/10",
+                                    `profile-${profile}-border`,
+                                    `profile-${profile}-bg`
                                 )}
-                                style={{
-                                    borderColor: config.borderColor,
-                                    background: `linear-gradient(90deg, ${config.borderColor.replace('0.3', '0.05')}, transparent)`
-                                }}
                             >
                                 {/* Profil Badge & Mobile Label */}
                                 <div className="flex items-center justify-between md:justify-start md:w-1/4 mb-3 md:mb-0">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-2 h-8 rounded-full" style={{ backgroundColor: config.color }} />
+                                        <div className={`w-2 h-8 rounded-full profile-${profile}-dot`} />
                                         <div>
                                             <p className="font-bold text-sm text-white">{config.label}</p>
                                         </div>
