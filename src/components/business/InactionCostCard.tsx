@@ -22,7 +22,7 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
     const depreciation = getAdjustedValue(inactionCost.valueDepreciation);
 
     return (
-        <Card variant="glass" className="h-full border-white/5 bg-white/[0.02] overflow-visible">
+        <Card variant="glass" className="h-full border-white/5 bg-white/[0.02] overflow-visible group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <CardContent className="flex flex-col items-center justify-center py-16 px-6 relative z-10 min-h-[520px]">
                 {/* Header Discret */}
                 <div className="flex items-center gap-2 mb-8 opacity-70">

@@ -32,7 +32,7 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
             {/* LEFT: THE CRASH (Inaction) */}
-            <Card variant="glass" className="border-danger/20 bg-danger/5 hover:border-danger/30 group relative overflow-hidden h-full">
+            <Card variant="glass" className="border-danger/20 bg-danger/5 hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] group relative overflow-hidden h-full">
                 {/* Subtle Radial Gradient for Depth */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(224,122,95,0.15),transparent_70%)] blur-3xl pointer-events-none opacity-50" />
                 <CardContent className="p-8 md:p-10 flex flex-col justify-between h-full">
@@ -74,7 +74,7 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
             </Card>
 
             {/* RIGHT: THE UPSIDE (Action) */}
-            <Card variant="premium" className="group relative overflow-hidden bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/30 h-full">
+            <Card variant="premium" className="group relative overflow-hidden bg-emerald-500/5 border-emerald-500/20 hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] h-full">
                 {/* Decorative Glow */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 

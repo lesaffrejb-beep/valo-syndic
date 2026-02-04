@@ -27,7 +27,7 @@ export function EnergyBenchmark({ stats, surface = 100 }: EnergyBenchmarkProps) 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
-            className="card-bento rounded-2xl p-4 border border-boundary"
+            className="card-bento rounded-2xl p-4 border border-boundary group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]"
         >
             {/* Header */}
             <div className="flex items-center justify-between mb-3">

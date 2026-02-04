@@ -63,7 +63,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
     const profileOrder: IncomeProfile[] = ["Blue", "Yellow", "Purple", "Pink"];
 
     return (
-        <Card variant="glass" className="overflow-visible border-white/5 bg-white/[0.02]">
+        <Card variant="glass" className="overflow-visible border-white/5 bg-white/[0.02] group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
                     <CardTitle className="text-lg text-white flex items-center gap-2">

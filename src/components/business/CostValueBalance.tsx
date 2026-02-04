@@ -47,7 +47,7 @@ export function CostValueBalance({ cost, valueGain, ecoPtzAmount = 0, monthlyPay
     const isPositive = netBalance >= 0;
 
     return (
-        <div className="card-bento p-6">
+        <div className="card-bento p-6 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             {/* Header */}
             <h3 className="text-lg font-semibold text-main mb-6 flex items-center gap-2">
                 <span className="text-xl">⚖️</span> Coût vs Plus-Value

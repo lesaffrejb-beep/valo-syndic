@@ -20,7 +20,7 @@ export function HeatingSystemAlert({ heatingType }: HeatingSystemAlertProps) {
     const fuelLabel = heatingType.includes('Gaz') || heatingType.includes('gaz') ? 'Gaz' : 'Fioul';
 
     return (
-        <Card variant="premium" className="relative overflow-hidden border-primary/30 group bg-surface/80">
+        <Card variant="premium" className="relative overflow-hidden border-primary/30 group bg-surface/80 hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             {/* Animated Gradient Border */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
 

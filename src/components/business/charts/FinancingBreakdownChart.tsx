@@ -97,7 +97,7 @@ export function FinancingBreakdownChart({ financing }: FinancingBreakdownChartPr
     const coveragePercent = Math.round((totalCoverage / totalCost) * 100);
 
     return (
-        <div className="card-bento p-6">
+        <div className="card-bento p-6 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-main flex items-center gap-2">

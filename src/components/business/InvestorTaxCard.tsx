@@ -13,7 +13,7 @@ export function InvestorTaxCard({ investorRatio, remainingCostPerUnit }: Investo
     if (investorRatio <= 40) return null;
 
     return (
-        <div className="card-bento p-6 border-l-4 border-primary-500">
+        <div className="card-bento p-6 border-l-4 border-primary-500 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary-900/30 rounded-xl flex items-center justify-center border border-primary-500/30 flex-shrink-0">
                     <span className="text-2xl">💡</span>

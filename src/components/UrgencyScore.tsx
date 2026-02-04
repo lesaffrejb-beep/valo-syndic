@@ -87,7 +87,7 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
     const offset = circumference - (animatedScore / 100) * circumference;
 
     return (
-        <div className={`card-bento ${colors.bg} rounded-3xl p-6 relative transition-colors duration-300 h-full flex flex-col`}>
+        <div className={`card-bento ${colors.bg} rounded-3xl p-6 relative transition-colors duration-300 h-full flex flex-col group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]`}>
             {/* Particle System for Critical Scores */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-3xl">
                 <ParticleEmitter active={score >= 80} color={colors.stroke} />

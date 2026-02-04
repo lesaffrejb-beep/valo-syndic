@@ -58,7 +58,7 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
 
     if (risks === null) {
         return (
-            <Card variant="glass" className="h-full flex items-center justify-center p-6">
+            <Card variant="glass" className="h-full flex items-center justify-center p-6 group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="text-center space-y-3">
                     <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto">
                         <AlertTriangle className="w-6 h-6 text-warning" />
@@ -71,7 +71,7 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
 
     if (loading && !risks) {
         return (
-            <Card variant="premium" className="h-full min-h-[400px] flex items-center justify-center">
+            <Card variant="premium" className="h-full min-h-[400px] flex items-center justify-center group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="z-10 flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-gold/30 border-t-gold rounded-full animate-spin" />
                     <p className="text-sm text-muted animate-pulse font-mono tracking-widest uppercase">Scanning...</p>
@@ -81,7 +81,7 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
     }
 
     return (
-        <Card variant="premium" className="h-full min-h-[400px] border-white/5 bg-deep/50 overflow-hidden group">
+        <Card variant="premium" className="h-full min-h-[400px] border-white/5 bg-deep/50 overflow-hidden group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             {/* GLASSMORPHISM BACKGROUND - NO MAP */}
             <div className="absolute inset-0 z-0">
                 {/* Abstract gradient background */}
@@ -137,7 +137,7 @@ const RiskGauge = ({ label, value, isDanger }: { label: string, value: number, i
     const color = isDanger ? "text-danger drop-shadow-lg" : "text-success drop-shadow-lg";
 
     return (
-        <div className="flex flex-col items-center p-3 rounded-xl bg-black/40 border border-white/5 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+            <div className="flex flex-col items-center p-3 rounded-xl bg-black/40 border border-white/5 backdrop-blur-sm relative overflow-hidden group">
             <div className="relative mb-2">
                 <svg className="w-14 h-14 transform -rotate-90">
                     <circle className="text-white/5" strokeWidth="3" stroke="currentColor" fill="transparent" r={radius} cx="28" cy="28" />

@@ -48,7 +48,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
     }, [benchmarkData, financing.worksCostHT, numberOfUnits]);
 
     return (
-        <Card variant="premium" className="h-full overflow-hidden group">
+        <Card variant="premium" className="h-full overflow-hidden group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full pointer-events-none" />
 
             <CardHeader className="relative z-10 pb-2">

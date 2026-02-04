@@ -40,7 +40,7 @@ export const ClimateRiskCard = ({ coordinates }: ClimateRiskCardProps) => {
     // Loading state
     if (loading) {
         return (
-            <div className="card-bento animate-pulse h-full min-h-[400px]">
+            <div className="card-bento animate-pulse h-full min-h-[400px] group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="flex justify-between mb-8">
                     <div className="h-8 bg-surface-hover rounded w-1/3" />
                     <div className="h-8 bg-surface-hover rounded w-12" />
@@ -56,7 +56,7 @@ export const ClimateRiskCard = ({ coordinates }: ClimateRiskCardProps) => {
     // Pas de données
     if (!projection) {
         return (
-            <div className="card-bento h-full flex items-center justify-center">
+            <div className="card-bento h-full flex items-center justify-center group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="flex flex-col items-center gap-2 text-muted text-sm">
                     <span className="text-2xl">☁️</span>
                     <span>Données climatiques indisponibles pour cette zone</span>
@@ -74,12 +74,12 @@ export const ClimateRiskCard = ({ coordinates }: ClimateRiskCardProps) => {
     const heatDaysIncrease = projection.future2050.heatDays - projection.current.heatDays;
     const isExtremeRisk = projection.future2050.uninhabitableDays > 10;
 
-    return (
-        <motion.div
-            className="card-bento h-full relative overflow-hidden group border-danger/10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-        >
+        return (
+            <motion.div
+                className="card-bento h-full relative overflow-hidden group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
             {/* Ambient Background Glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-danger/5 blur-[100px] rounded-full pointer-events-none" />
 

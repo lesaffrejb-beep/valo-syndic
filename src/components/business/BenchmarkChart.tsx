@@ -63,7 +63,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
     const avgBarWidth = (analysis.avgConsumption / maxVal) * 100;
 
     return (
-        <Card variant="glass" className={cn("border-white/5 bg-white/[0.02]", className)}>
+        <Card variant="glass" className={cn("border-white/5 bg-white/[0.02] group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]", className)}>
             <CardHeader className="pb-2">
                 <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-gold/10 border border-gold/20">
@@ -99,7 +99,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                     </div>
 
                     {/* Regional Average */}
-                    <div className="group opacity-60 hover:opacity-100 transition-opacity">
+                    <div className="group opacity-60">
                         <div className="flex justify-between items-end mb-2">
                             <span className="text-sm text-muted">Moyenne {city}</span>
                             <div className="text-right">

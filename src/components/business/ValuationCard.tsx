@@ -36,7 +36,7 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
     const isFullyFunded = financing ? financing.remainingCost === 0 : false;
 
     return (
-        <Card variant="premium" className={cn("overflow-hidden group hover:border-white/10 transition-all duration-500", className)}>
+        <Card variant="premium" className={cn("overflow-hidden group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]", className)}>
             {/* Header Section */}
             <div className="p-6 pb-4 border-b border-white/5 hover:bg-white/[0.02]">
                 <div className="flex items-start justify-between">
