@@ -582,6 +582,10 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     };
   }, [searchTimer]);
 
+  useEffect(() => {
+    stateRef.current = reducerState.state;
+  }, [reducerState.state]);
+
   return {
     state: reducerState.state,
     formData: reducerState.formData,
@@ -605,6 +609,3 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     fieldStatus,
   };
 }
-  useEffect(() => {
-    stateRef.current = reducerState.state;
-  }, [reducerState.state]);
