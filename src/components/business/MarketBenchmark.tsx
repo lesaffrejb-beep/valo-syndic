@@ -41,7 +41,7 @@ export function MarketBenchmark({
     // Loading state
     if (isLoading) {
         return (
-            <div className="card-bento p-6 opacity-50 animate-pulse">
+            <div className="card-bento p-6 opacity-50 animate-pulse group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="h-4 bg-surface-highlight rounded w-3/4 mb-3" />
                 <div className="h-8 bg-surface-highlight rounded w-1/2" />
             </div>
@@ -51,7 +51,7 @@ export function MarketBenchmark({
     // Insufficient data state
     if (!benchmark) {
         return (
-            <div className="card-bento p-6 border-boundary transition-all duration-300 hover:border-boundary-active">
+            <div className="card-bento p-6 border-boundary transition-all duration-500 hover:border-white/10 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0">🛠️</span>
                     <div>
@@ -99,7 +99,7 @@ export function MarketBenchmark({
 
     return (
         <div
-            className="card-bento p-6 transition-all duration-300 hover:border-boundary-active hover:-translate-y-0.5 hover:shadow-lg animate-fadeIn"
+            className="card-bento p-6 transition-all duration-500 hover:border-white/10 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] animate-fadeIn"
             style={{ animationDelay: "0.1s" }}
         >
             {/* Header */}

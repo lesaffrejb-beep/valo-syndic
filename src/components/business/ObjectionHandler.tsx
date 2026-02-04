@@ -96,7 +96,7 @@ export function ObjectionHandler({ className = "" }: ObjectionHandlerProps) {
     };
 
     return (
-        <Card variant="glass" className={cn("p-6 md:p-8", className)}>
+        <Card variant="glass" className={cn("p-6 md:p-8 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]", className)}>
             <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <span className="text-xl">💬</span> Réponses aux Objections

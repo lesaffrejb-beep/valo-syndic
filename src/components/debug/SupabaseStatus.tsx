@@ -35,7 +35,7 @@ export default function SupabaseStatus() {
     }, []);
 
     return (
-        <div className="card-bento max-w-md mx-auto my-8">
+        <div className="card-bento max-w-md mx-auto my-8 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-main">Debug : Supabase</h3>
                 <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${status === 'loading' ? 'bg-surface text-muted' :

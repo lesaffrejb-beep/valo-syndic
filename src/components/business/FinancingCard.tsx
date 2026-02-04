@@ -48,13 +48,13 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
     }, [benchmarkData, financing.worksCostHT, numberOfUnits]);
 
     return (
-        <Card variant="premium" className="h-full overflow-hidden group">
+        <Card variant="premium" className="h-full overflow-hidden group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full pointer-events-none" />
 
             <CardHeader className="relative z-10 pb-2">
                 <CardTitle className="text-xl font-bold text-white flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gold/10 border border-gold/20">
-                        <HandCoins className="w-5 h-5 text-gold" />
+                    <div className="p-2 rounded-lg bg-white/10 border border-white/20">
+                        <HandCoins className="w-5 h-5 text-white" />
                     </div>
                     <span>Plan de Financement</span>
                 </CardTitle>
@@ -196,7 +196,7 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
 
                     {/* Reste à Charge & Mensualité */}
                     <div className="mt-6 pt-4 border-t border-white/10">
-                        <div className="flex flex-col xl:flex-row items-end justify-between gap-6">
+                        <div className="flex flex-col md:flex-row items-end justify-between gap-6 min-w-0">
                             <div className="w-full sm:w-auto">
                                 <p className="text-xs text-muted mb-1 uppercase tracking-wide">
                                     Reste à charge {isMaPoche ? '(votre part)' : 'final'}
@@ -210,13 +210,15 @@ export function FinancingCard({ financing, numberOfUnits }: FinancingCardProps) 
                             </div>
 
                             <div className="text-right w-full sm:w-auto">
-                                <div className="inline-flex flex-col items-end p-3 bg-white/[0.05] rounded-xl border border-white/10 shadow-lg w-full sm:w-auto">
+                                <div className="inline-flex flex-col items-end p-3 bg-white/[0.05] rounded-xl border border-white/10 shadow-lg w-full sm:w-auto min-w-0">
                                     <span className="text-[10px] text-gold/80 font-bold uppercase tracking-wider mb-1">
                                         Mensualité {isMaPoche ? 'estimée' : 'Copro'}
                                     </span>
                                     <span className="text-2xl font-bold text-white financial-nums financial-nums">
-                                        <AnimatedCurrency value={getAdjustedValue(financing.monthlyPayment)} />
-                                        <span className="text-sm font-normal text-muted ml-1">/mois</span>
+                                        <span className="whitespace-nowrap">
+                                            <AnimatedCurrency value={getAdjustedValue(financing.monthlyPayment)} />
+                                            <span className="text-sm font-normal text-muted ml-1">/mois</span>
+                                        </span>
                                     </span>
                                 </div>
                             </div>

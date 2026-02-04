@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
 import {
     calculateSubsidies,
     type SimulationInputs,
@@ -57,27 +56,21 @@ interface SubsidyTableProps {
 }
 
 export function SubsidyTable({ inputs }: SubsidyTableProps) {
-    const [showLegend, setShowLegend] = useState(false);
+    // thresholds/legend intentionally hidden for clarity
     const result = calculateSubsidies(inputs);
     const { profiles } = result;
     const profileOrder: IncomeProfile[] = ["Blue", "Yellow", "Purple", "Pink"];
 
     return (
-        <Card variant="glass" className="overflow-visible border-white/5 bg-white/[0.02]">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card variant="glass" className="overflow-visible border-white/5 bg-white/[0.02] group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
                     <CardTitle className="text-lg text-white flex items-center gap-2">
                         🎯 Tableau Décisionnel 2026
                     </CardTitle>
                     <p className="text-xs text-gray-400 uppercase tracking-wider mt-1">Comparaison par profil fiscal</p>
                 </div>
-                <button
-                    onClick={() => setShowLegend(!showLegend)}
-                    className="flex items-center gap-1 text-xs text-muted hover:text-white transition-colors px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10"
-                >
-                    <Info className="w-3 h-3" />
-                    {showLegend ? "Masquer Seuils" : "Voir Seuils"}
-                </button>
+                {/* thresholds/legend toggle removed — always hide 'seuils' for users */}
             </CardHeader>
 
             <CardContent className="space-y-4">
@@ -117,7 +110,6 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                                         <div className="w-2 h-8 rounded-full" style={{ backgroundColor: config.color }} />
                                         <div>
                                             <p className="font-bold text-sm text-white">{config.label}</p>
-                                            {showLegend && <p className="text-[10px] text-gray-400">Seuil variable</p>}
                                         </div>
                                     </div>
                                     {/* Mobile Only: Reste à charge value shown prominently */}

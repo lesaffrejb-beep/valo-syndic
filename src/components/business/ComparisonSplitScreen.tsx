@@ -32,12 +32,12 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
             {/* LEFT: THE CRASH (Inaction) */}
-            <Card variant="glass" className="border-rose-500/20 bg-rose-500/5 hover:border-rose-500/30 group relative overflow-hidden h-full">
+            <Card variant="glass" className="border-danger/20 bg-danger/5 hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] group relative overflow-hidden h-full">
                 {/* Subtle Radial Gradient for Depth */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.15),transparent_70%)] blur-3xl pointer-events-none opacity-50" />
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(224,122,95,0.15),transparent_70%)] blur-3xl pointer-events-none opacity-50" />
                 <CardContent className="p-8 md:p-10 flex flex-col justify-between h-full">
                     <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-wider mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-danger/10 border border-danger/20 text-danger text-xs font-bold uppercase tracking-wider mb-6">
                             <AlertTriangle className="w-3 h-3" /> Scénario Inaction
                         </div>
                         <h3 className="text-3xl font-semibold text-white tracking-tight mb-2">
@@ -49,23 +49,23 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
                     </div>
 
                     <div className="mt-12 space-y-6">
-                        <div className="flex justify-between items-end border-b border-rose-500/10 pb-4">
+                        <div className="flex justify-between items-end border-b border-danger/10 pb-4">
                             <span className="text-muted text-sm uppercase tracking-wide">Surcoût Travaux (+3 ans)</span>
-                            <span className="text-xl font-semibold text-rose-400 tabular-nums">
+                            <span className="text-xl font-semibold text-danger tabular-nums">
                                 -<AnimatedCurrency value={getAdjustedValue(inactionCost.projectedCost3Years - inactionCost.currentCost)} />
                             </span>
                         </div>
                         {inactionCost.valueDepreciation > 0 && (
-                            <div className="flex justify-between items-end border-b border-rose-500/10 pb-4">
+                            <div className="flex justify-between items-end border-b border-danger/10 pb-4">
                                 <span className="text-muted text-sm uppercase tracking-wide">Décote Passoire</span>
-                                <span className="text-xl font-semibold text-rose-400 tabular-nums">
+                                <span className="text-xl font-semibold text-danger tabular-nums">
                                     -<AnimatedCurrency value={getAdjustedValue(inactionCost.valueDepreciation)} />
                                 </span>
                             </div>
                         )}
                         <div className="pt-2">
-                            <p className="text-xs font-bold text-rose-400/70 mb-1 uppercase tracking-widest">PERTE TOTALE ESTIMÉE</p>
-                            <p className="text-5xl md:text-6xl font-black bg-gradient-to-br from-rose-400 to-rose-600 bg-clip-text text-transparent tracking-tighter financial-num">
+                            <p className="text-xs font-bold text-danger/70 mb-1 uppercase tracking-widest">PERTE TOTALE ESTIMÉE</p>
+                            <p className="text-5xl md:text-6xl font-black bg-gradient-to-br from-danger to-danger/80 bg-clip-text text-transparent tracking-tighter financial-num">
                                 -<AnimatedCurrency value={totalLoss} />
                             </p>
                         </div>
@@ -74,7 +74,7 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
             </Card>
 
             {/* RIGHT: THE UPSIDE (Action) */}
-            <Card variant="premium" className="group relative overflow-hidden bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/30 h-full">
+            <Card variant="premium" className="group relative overflow-hidden bg-emerald-500/5 border-emerald-500/20 hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] h-full">
                 {/* Decorative Glow */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none" />
 

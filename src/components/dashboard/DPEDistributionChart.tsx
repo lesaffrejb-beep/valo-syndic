@@ -60,7 +60,7 @@ export function DPEDistributionChart({
         .reduce((acc, curr) => acc + curr.percentage, 0);
 
     return (
-        <div className="card-bento flex flex-col gap-6">
+        <div className="card-bento flex flex-col gap-6 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <div className="flex flex-col gap-1">
                 <h3 className="text-xl font-semibold text-main">
                     Benchmark de Quartier

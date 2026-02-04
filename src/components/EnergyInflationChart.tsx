@@ -61,7 +61,7 @@ export function EnergyInflationChart({
         }).format(value) + " €";
 
     return (
-        <div className="card-bento h-full flex flex-col">
+        <div className="card-bento h-full flex flex-col group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold text-main flex items-center gap-3">
                     <span className="text-2xl">📈</span> Projection Coûts Travaux

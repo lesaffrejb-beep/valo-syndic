@@ -188,7 +188,7 @@ export function MassAudit() {
 
     return (
         <div className="space-y-8">
-            <div className="card-bento p-8">
+            <div className="card-bento p-8 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div>
                         <h2 className="text-3xl font-bold text-main mb-2">Mass Audit &quot;God View&quot;</h2>
@@ -282,7 +282,7 @@ export function MassAudit() {
 
                         {/* Summary View */}
                         <div className="space-y-6">
-                            <div className="card-bento p-6">
+                            <div className="card-bento p-6 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                                 <h3 className="text-lg font-bold text-main mb-4">Synthèse du Parc</h3>
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between p-3 bg-danger/10 rounded-xl border border-danger/20">
@@ -313,7 +313,7 @@ export function MassAudit() {
                                 </button>
                             </div>
 
-                            <div className="card-bento p-6">
+                            <div className="card-bento p-6 group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                                 <h3 className="text-sm font-bold text-muted uppercase mb-4 tracking-wider">Top Priorities</h3>
                                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
                                     {results

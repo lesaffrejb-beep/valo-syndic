@@ -81,7 +81,7 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
     }, [financing, tantiemes, selectedProfile, profileData, simulationInputs]);
 
     return (
-        <Card variant="default" className={cn("overflow-visible", className)}>
+        <Card variant="default" className={cn("overflow-visible group hover:border-white/10 transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]", className)}>
             <CardHeader>
                 <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-gold/10 border border-gold/20">

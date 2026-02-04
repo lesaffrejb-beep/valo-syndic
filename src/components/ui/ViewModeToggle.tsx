@@ -47,25 +47,37 @@ export function ViewModeToggle({ className, totalUnits = 20, avgSurface = 65 }: 
         handleContainerClick(e);
     };
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging) return;
-        handleContainerClick(e);
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
+    // global mouse listeners while dragging: defined inside effect to avoid stale deps
     useEffect(() => {
-        if (isDragging) {
-            window.addEventListener('mouseup', handleMouseUp);
-            window.addEventListener('mousemove', handleMouseMove as any);
-        }
-        return () => {
-            window.removeEventListener('mouseup', handleMouseUp);
-            window.removeEventListener('mousemove', handleMouseMove as any);
+        if (!isDragging) return;
+
+        const onMouseUp = () => {
+            setIsDragging(false);
         };
-    }, [isDragging]);
+
+        const onMouseMove = (e: MouseEvent) => {
+            if (!containerRef.current) return;
+            const rect = containerRef.current.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            const tantiemes = Math.round((pct / 100) * 1000);
+
+            setUserTantiemes(Math.max(1, tantiemes));
+            if (tantiemes >= 995) {
+                setViewMode('immeuble');
+            } else {
+                setViewMode('maPoche');
+            }
+        };
+
+        window.addEventListener('mouseup', onMouseUp);
+        window.addEventListener('mousemove', onMouseMove);
+
+        return () => {
+            window.removeEventListener('mouseup', onMouseUp);
+            window.removeEventListener('mousemove', onMouseMove);
+        };
+    }, [isDragging, setUserTantiemes, setViewMode]);
 
     // Sync viewMode with value
     useEffect(() => {

@@ -27,51 +27,42 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        if (!coordinates) {
-            setRisks(riskService.getDefaultRisk());
-            return;
-        }
+        const doFetch = async () => {
+            if (!coordinates) {
+                setRisks(riskService.getDefaultRisk());
+                return;
+            }
 
-        setLoading(true);
-        setError(false);
+            setLoading(true);
+            setError(false);
 
-        riskService.fetchRisks(coordinates.latitude, coordinates.longitude)
-            .then((data) => {
+            try {
+                const data = await riskService.fetchRisks(coordinates.latitude, coordinates.longitude);
                 if (!data) {
                     setError(true);
                     setRisks(riskService.getDefaultRisk());
                     return;
                 }
                 setRisks(data);
-            })
-            .catch((err) => {
+            } catch (err) {
                 console.error("Risk fetch error:", err);
                 setError(true);
                 setRisks(riskService.getDefaultRisk());
-            })
-            .finally(() => setLoading(false));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        doFetch();
     }, [coordinates]);
 
     const safeRisks = risks || riskService.getDefaultRisk();
     const hasInondation = safeRisks.inondation;
-    const isDegraded = error || !coordinates || risks === null;
-
-    if (risks === null) {
-        return (
-            <Card variant="glass" className="h-full flex items-center justify-center p-6">
-                <div className="text-center space-y-3">
-                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto">
-                        <AlertTriangle className="w-6 h-6 text-warning" />
-                    </div>
-                    <p className="text-sm text-muted">Données Géorisques indisponibles</p>
-                </div>
-            </Card>
-        );
-    }
+    const isDegraded = error || !coordinates;
 
     if (loading && !risks) {
         return (
-            <Card variant="premium" className="h-full min-h-[400px] flex items-center justify-center">
+            <Card variant="premium" className="h-full min-h-[520px] flex items-center justify-center group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
                 <div className="z-10 flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-gold/30 border-t-gold rounded-full animate-spin" />
                     <p className="text-sm text-muted animate-pulse font-mono tracking-widest uppercase">Scanning...</p>
@@ -81,7 +72,7 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
     }
 
     return (
-        <Card variant="premium" className="h-full min-h-[400px] border-white/5 bg-deep/50 overflow-hidden group">
+        <Card variant="premium" className="h-full min-h-[520px] border-white/5 bg-deep/50 overflow-hidden group hover:border-white/10 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)]">
             {/* GLASSMORPHISM BACKGROUND - NO MAP */}
             <div className="absolute inset-0 z-0">
                 {/* Abstract gradient background */}
@@ -99,67 +90,57 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                             <ShieldAlert className="w-5 h-5 text-main" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-white tracking-tight">Vigilance Aléas</h3>
+                            <h3 className="text-xl font-bold text-white tracking-tight">Vigilance Aléas</h3>
                             <p className="text-xs text-muted uppercase tracking-wider">Georisques.gouv.fr</p>
                         </div>
                     </div>
-
-                    <div className={cn("px-3 py-1 rounded-full border backdrop-blur-md shadow-lg flex items-center gap-2",
-                        isDegraded ? "bg-white/5 border-white/10 text-white/50" :
-                            hasInondation ? "bg-danger/20 border-danger/50 text-danger-200" :
-                                "bg-success/20 border-success/30 text-success-200"
-                    )}>
-                        <div className={cn("w-2 h-2 rounded-full animate-pulse", isDegraded ? "bg-gray-500" : hasInondation ? "bg-danger" : "bg-success")} />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">
-                            {isDegraded ? 'Indisponible' : hasInondation ? 'Zone à Risque' : 'Zone Sûre'}
-                        </span>
+                    {/* Right header area: removed manual refresh and unavailable badge (show default data silently) */}
+                    <div className="flex items-center gap-3" />
+                </div>
+                {/* NEW: Vertical list layout for clarity */}
+                    <div className="flex flex-col gap-3 mb-auto">
+                        <RiskListItem label="Inondation" value={safeRisks.inondation ? 100 : 0} isDanger={safeRisks.inondation} />
+                        <RiskListItem label="Argiles" value={Math.round((safeRisks.argile / 3) * 100)} isDanger={safeRisks.argile >= 2} />
+                        <RiskListItem label="Sismicité" value={Math.round((safeRisks.sismicite / 5) * 100)} isDanger={safeRisks.sismicite >= 3} />
+                        <RiskListItem label="Radon" value={Math.round((safeRisks.radon / 3) * 100)} isDanger={safeRisks.radon >= 3} />
+                        <RiskListItem label="Industriel" value={safeRisks.technologique ? 80 : 0} isDanger={safeRisks.technologique} />
                     </div>
-                </div>
-
-                {/* Gauges Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-auto">
-                    <RiskGauge label="Inondation" value={safeRisks.inondation ? 100 : 0} isDanger={safeRisks.inondation} />
-                    <RiskGauge label="Argiles" value={safeRisks.argile * 33} isDanger={safeRisks.argile >= 2} />
-                    <RiskGauge label="Sismicité" value={safeRisks.sismicite * 20} isDanger={safeRisks.sismicite >= 3} />
-                    <RiskGauge label="Radon" value={safeRisks.radon * 33} isDanger={safeRisks.radon >= 3} />
-                    <RiskGauge label="Industriel" value={safeRisks.technologique ? 80 : 0} isDanger={safeRisks.technologique} />
-                </div>
+                    {/* Source note */}
+                    <div className="absolute bottom-3 right-4 text-[10px] text-muted/70">
+                        Source: georisques.gouv.fr
+                    </div>
             </div>
         </Card>
     );
 };
 
 // Simplified SVG Gauge Component
-const RiskGauge = ({ label, value, isDanger }: { label: string, value: number, isDanger: boolean }) => {
-    const radius = 22;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (value / 100) * circumference;
-    const color = isDanger ? "text-danger drop-shadow-lg" : "text-success drop-shadow-lg";
-
+const RiskListItem = ({ label, value, isDanger }: { label: string, value: number, isDanger: boolean }) => {
+    const pct = Math.max(0, Math.min(100, Math.round(value)));
     return (
-        <div className="flex flex-col items-center p-3 rounded-xl bg-black/40 border border-white/5 backdrop-blur-sm relative overflow-hidden group hover:scale-105 transition-transform duration-300">
-            <div className="relative mb-2">
-                <svg className="w-14 h-14 transform -rotate-90">
-                    <circle className="text-white/5" strokeWidth="3" stroke="currentColor" fill="transparent" r={radius} cx="28" cy="28" />
-                    <motion.circle
-                        className={color}
-                        strokeWidth="3"
-                        strokeDasharray={circumference}
-                        strokeDashoffset={offset}
-                        strokeLinecap="round"
-                        stroke="currentColor"
-                        fill="transparent"
-                        r={radius} cx="28" cy="28"
-                        initial={{ strokeDashoffset: circumference }}
-                        animate={{ strokeDashoffset: offset }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
-                    />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                    {isDanger ? <AlertTriangle className="w-4 h-4 text-danger" /> : <ShieldCheck className="w-4 h-4 text-success" />}
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5 backdrop-blur-sm relative overflow-hidden">
+            <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${isDanger ? 'bg-danger/20 text-danger' : 'bg-success/10 text-success'}`}>
+                    {isDanger ? <AlertTriangle className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
+                </div>
+                <div>
+                    <div className="text-sm font-bold text-white">{label}</div>
+                    <div className="text-xs text-muted">{isDanger ? 'Niveau élevé' : 'Niveau faible'}</div>
                 </div>
             </div>
-            <span className="text-[10px] uppercase font-bold text-white/60 tracking-wider">{label}</span>
+
+            <div className="w-32">
+                <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-2">
+                    <motion.div
+                        className={`${isDanger ? 'bg-danger' : 'bg-success'}`}
+                        style={{ width: `${pct}%` }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 1.2, ease: 'easeOut' }}
+                    />
+                </div>
+                <div className="text-xs text-right font-bold text-white tabular-nums">{pct}%</div>
+            </div>
         </div>
-    )
+    );
 }
