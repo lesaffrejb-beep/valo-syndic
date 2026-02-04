@@ -63,8 +63,8 @@ export function middleware(request: NextRequest) {
 
     const prodCsp = [
         "default-src 'self'",
-        // Harden scripts in production: disallow inline scripts, keep blob/data for workers
-        "script-src 'self' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
+        // Allow inline scripts in production for Next.js bootstrap and Maps until we add nonces/hashes
+        "script-src 'self' 'unsafe-inline' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
         "worker-src 'self' blob: data:",
         // Keep inline styles allowed temporarily; migrate style props to classes later
         "style-src 'self' 'unsafe-inline'",
