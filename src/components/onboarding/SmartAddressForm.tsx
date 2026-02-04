@@ -31,6 +31,13 @@ import { DataSourcePills } from "./DataSourcePills";
 interface SmartAddressFormProps {
   initialData?: Partial<DiagnosticInput>;
   onSubmit: (data: DiagnosticInput, opts?: { userInitiated?: boolean }) => void;
+  onAddressSelected?: (data: {
+    address: string;
+    postalCode: string;
+    city: string;
+    cityCode?: string;
+    coordinates?: { latitude: number; longitude: number };
+  }) => void;
   onCsvImport?: () => void;
   className?: string;
 }
@@ -42,6 +49,7 @@ interface SmartAddressFormProps {
 export function SmartAddressForm({
   initialData,
   onSubmit,
+  onAddressSelected,
   onCsvImport,
   className = "",
 }: SmartAddressFormProps) {
@@ -115,7 +123,17 @@ export function SmartAddressForm({
           <AddressSearch
             value={form.searchQuery}
             onChange={form.setSearchQuery}
-            onSelect={form.selectAddress}
+            onSelect={async (result) => {
+              form.setSearchQuerySilent(result.address);
+              await form.selectAddress(result);
+              onAddressSelected?.({
+                address: result.address,
+                postalCode: result.postalCode,
+                city: result.city,
+                ...(result.cityCode ? { cityCode: result.cityCode } : {}),
+                ...(result.coordinates ? { coordinates: result.coordinates } : {}),
+              });
+            }}
             results={form.searchResults}
             isSearching={form.state === "SEARCHING"}
             placeholder="12 rue de la Paix, 75002 Paris..."

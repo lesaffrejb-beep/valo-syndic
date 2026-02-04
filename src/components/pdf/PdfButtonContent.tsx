@@ -77,6 +77,9 @@ export function PdfButtonContent({
                     <>
                         <FileText className="w-5 h-5" />
                         <span>Télécharger le Rapport</span>
+                        <span className="ml-2 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white/70">
+                            V2
+                        </span>
                     </>
                 );
             }}

@@ -91,7 +91,9 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-white tracking-tight">Vigilance Aléas</h3>
-                            <p className="text-xs text-muted uppercase tracking-wider">Georisques.gouv.fr</p>
+                            <p className="text-[10px] text-white/20 uppercase tracking-widest font-mono mt-1">
+                                Source: georisques.gouv.fr
+                            </p>
                         </div>
                     </div>
                     {/* Right header area: removed manual refresh and unavailable badge (show default data silently) */}
@@ -104,10 +106,6 @@ export const RisksCard = ({ coordinates }: RisksCardProps) => {
                         <RiskListItem label="Sismicité" value={Math.round((safeRisks.sismicite / 5) * 100)} isDanger={safeRisks.sismicite >= 3} />
                         <RiskListItem label="Radon" value={Math.round((safeRisks.radon / 3) * 100)} isDanger={safeRisks.radon >= 3} />
                         <RiskListItem label="Industriel" value={safeRisks.technologique ? 80 : 0} isDanger={safeRisks.technologique} />
-                    </div>
-                    {/* Source note */}
-                    <div className="absolute bottom-3 right-4 text-[10px] text-muted/70">
-                        Source: georisques.gouv.fr
                     </div>
             </div>
         </Card>

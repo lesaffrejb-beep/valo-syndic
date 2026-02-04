@@ -87,6 +87,7 @@ export interface UseSmartFormReturn {
 
   // Actions
   setSearchQuery: (query: string) => void;
+  setSearchQuerySilent: (query: string) => void;
   selectAddress: (result: HybridSearchResult) => void;
   updateField: <K extends keyof DiagnosticInput>(field: K, value: DiagnosticInput[K]) => void;
   verifyField: (field: keyof DiagnosticInput) => void;
@@ -149,6 +150,7 @@ interface FormStateReducer {
 type FormAction =
   | { type: "SET_STATE"; payload: FormState }
   | { type: "SET_SEARCH_QUERY"; payload: string }
+  | { type: "SET_SEARCH_QUERY_SILENT"; payload: string }
   | { type: "SET_SEARCH_RESULTS"; payload: HybridSearchResult[] }
   | { type: "SELECT_ADDRESS"; payload: { address: string; result: HybridSearchResult } }
   | { type: "START_ENRICHING" }
@@ -199,6 +201,12 @@ function formReducer(state: FormStateReducer, action: FormAction): FormStateRedu
         ...state,
         searchQuery: action.payload,
         state: action.payload.length > 0 ? "TYPING" : "IDLE",
+      };
+
+    case "SET_SEARCH_QUERY_SILENT":
+      return {
+        ...state,
+        searchQuery: action.payload,
       };
 
     case "SET_SEARCH_RESULTS":
@@ -450,7 +458,7 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
           console.error("Erreur recherche:", error);
           dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
         }
-      }, 300);
+      }, 150);
 
       setSearchTimer(timer);
     } else {
@@ -458,8 +466,16 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     }
   }, [searchTimer]);
 
+  const setSearchQuerySilent = useCallback((query: string) => {
+    dispatch({ type: "SET_SEARCH_QUERY_SILENT", payload: query });
+  }, []);
+
   /** Sélectionne une adresse et lance l'enrichissement */
   const selectAddress = useCallback(async (result: HybridSearchResult) => {
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+      setSearchTimer(null);
+    }
     dispatch({
       type: "SELECT_ADDRESS",
       payload: { address: result.address, result }
@@ -568,6 +584,7 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     searchResults: reducerState.searchResults,
     selectedAddress: reducerState.selectedAddress,
     setSearchQuery,
+    setSearchQuerySilent,
     selectAddress,
     updateField,
     verifyField,

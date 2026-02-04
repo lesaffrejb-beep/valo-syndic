@@ -117,7 +117,7 @@ export function Header({
                     <div className="flex justify-center">
                         {/* Optional: Add Logo/Brand here if needed, but for now specific nav focus */}
                         {onNavigate && (
-                            <div className="hidden md:flex items-center gap-1 xl:gap-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5 relative">
+                            <div className="header-nav hidden md:flex items-center gap-1 xl:gap-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5 relative">
                                 {navItems.map((item) => {
                                     const isActive = activeSection === item.id;
                                     return (
@@ -224,10 +224,13 @@ export function Header({
                             /* Login Button */
                             <button
                                 onClick={onOpenAuth}
-                                className="h-10 flex items-center gap-2 px-5 rounded-lg text-sm font-semibold bg-gold text-[#050507] hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10"
+                                className="h-10 flex items-center gap-2 px-4 rounded-lg text-sm font-semibold bg-gold text-[#050507] hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10"
                             >
                                 <span>🔐</span>
                                 <span className="hidden sm:inline">Connexion</span>
+                                <span className="ml-1 rounded-full border border-black/10 bg-black/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black/70">
+                                    V2
+                                </span>
                             </button>
                         )}
                     </div>

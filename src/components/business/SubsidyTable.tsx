@@ -96,7 +96,7 @@ export function SubsidyTable({ inputs }: SubsidyTableProps) {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
                                 className={cn(
-                                    "relative flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border transition-all duration-300 group",
+                                    "relative flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-white/5 transition-all duration-300 group",
                                     "hover:bg-white/[0.04] hover:border-white/10",
                                     `profile-${profile}-border`,
                                     `profile-${profile}-bg`

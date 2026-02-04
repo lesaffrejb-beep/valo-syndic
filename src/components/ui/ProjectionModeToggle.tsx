@@ -20,10 +20,10 @@ export function ProjectionModeToggle() {
         <button
             onClick={toggleProjectionMode}
             className={`
-                group flex items-center gap-2 px-4 py-1.5 rounded-full transition-all duration-300
+                group flex items-center gap-2 h-10 px-3 rounded-lg transition-all duration-300 border border-transparent
                 ${isProjectionMode
-                    ? "bg-gold text-black shadow-[0_0_20px_rgba(229,192,123,0.4)]"
-                    : "bg-transparent text-muted hover:text-white hover:bg-white/5"
+                    ? "bg-gold text-black shadow-[0_0_20px_rgba(229,192,123,0.4)] border-gold/30"
+                    : "bg-transparent text-muted hover:text-white hover:bg-white/5 hover:border-white/10"
                 }
             `}
             title={isProjectionMode ? "Désactiver Mode Projection (AG)" : "Activer Mode Projection (AG)"}

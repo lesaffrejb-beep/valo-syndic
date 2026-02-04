@@ -136,6 +136,10 @@ export default function ScrollytellingPage() {
     // HYDRATION FIX: Initialize synchronously to allow SSR/first render to be populated
     const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(() => generateDiagnostic(DEFAULT_DIAGNOSTIC_INPUT));
     const [calculationError, setCalculationError] = useState<string | null>(null);
+    const [previewAddress, setPreviewAddress] = useState<string | undefined>(DEFAULT_DIAGNOSTIC_INPUT.address);
+    const [previewCoordinates, setPreviewCoordinates] = useState<{ latitude: number; longitude: number } | undefined>(
+        DEFAULT_DIAGNOSTIC_INPUT.coordinates
+    );
 
     // --- VIEW MODE STORE ---
     const { viewMode, getAdjustedValue } = useViewModeStore();
@@ -155,6 +159,11 @@ export default function ScrollytellingPage() {
     useEffect(() => {
         runCalculation(diagnosticInput);
     }, [diagnosticInput, runCalculation]);
+
+    useEffect(() => {
+        setPreviewAddress(diagnosticInput.address);
+        setPreviewCoordinates(diagnosticInput.coordinates);
+    }, [diagnosticInput.address, diagnosticInput.coordinates]);
 
 
     // --- PROJECT LOADING ---
@@ -190,6 +199,11 @@ export default function ScrollytellingPage() {
         if (opts?.userInitiated) {
             document.getElementById('diagnostic')?.scrollIntoView({ behavior: 'smooth' });
         }
+    }, []);
+
+    const handleAddressPreview = useCallback((data: { address: string; coordinates?: { latitude: number; longitude: number } }) => {
+        setPreviewAddress(data.address);
+        setPreviewCoordinates(data.coordinates);
     }, []);
 
     const handleCsvImport = useCallback((data: Array<{ address: string; postalCode: string; city: string }>) => {
@@ -308,7 +322,10 @@ export default function ScrollytellingPage() {
                 ================================================================ */}
             <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20 transition-all duration-700">
                 {/* Background */}
-                <StreetViewHeader address={diagnosticInput.address} coordinates={diagnosticInput.coordinates} />
+                <StreetViewHeader
+                    address={previewAddress || diagnosticInput.address}
+                    coordinates={previewCoordinates || diagnosticInput.coordinates}
+                />
                 <div className="absolute inset-0 z-10 bg-gradient-to-b from-deep/90 via-deep/60 to-deep" />
                 {/* Top Spotlight */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
@@ -325,6 +342,7 @@ export default function ScrollytellingPage() {
                     <SmartAddressForm
                         initialData={diagnosticInput}
                         onSubmit={handleFormSubmit}
+                        onAddressSelected={handleAddressPreview}
                         onCsvImport={() => setShowCsvModal(true)}
                     />
                     {/* Tantième Calculator moved up for immediate personal impact (above the fold) */}

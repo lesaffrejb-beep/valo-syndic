@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { type InactionCost } from "@/lib/schemas";
 import { AnimatedCurrency } from "@/components/ui/AnimatedNumber";
 import { useViewModeStore } from "@/stores/useViewModeStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils"; // Will adapt based on check results
 
 interface InactionCostCardProps {
@@ -15,7 +14,6 @@ interface InactionCostCardProps {
 
 export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
     const { getAdjustedValue } = useViewModeStore();
-    const [isExpanded, setIsExpanded] = useState(false);
 
     const totalCost = getAdjustedValue(inactionCost.totalInactionCost);
     const inflationCost = getAdjustedValue(inactionCost.projectedCost3Years - inactionCost.currentCost);
@@ -43,47 +41,21 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                     <p className="text-sm text-muted font-medium">Perte de valeur estimée</p>
                 </motion.div>
 
-                {/* Action / Details */}
+                {/* Details (always visible) */}
                 <div className="mt-12 w-full max-w-xs">
-                    <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.05] transition-all group"
-                    >
-                        <span className="text-xs text-white/60 font-medium uppercase tracking-wider group-hover:text-white transition-colors">
-                            {isExpanded ? "Masquer le détail" : "Voir le détail"}
-                        </span>
-                        {isExpanded ? (
-                            <ChevronUp className="w-4 h-4 text-white/40" />
-                        ) : (
-                            <ChevronDown className="w-4 h-4 text-white/40" />
-                        )}
-                    </button>
-
-                    <div className="relative mt-3 h-[116px]">
-                        <AnimatePresence mode="wait">
-                            {isExpanded && (
-                                <motion.div
-                                    key="details"
-                                    initial={{ opacity: 0, y: -6 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -6 }}
-                                    className="absolute inset-0 flex flex-col gap-2"
-                                >
-                                    <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
-                                        <span className="text-xs text-muted">Surcoût travaux (inflation)</span>
-                                        <span className="text-sm text-danger financial-num">
-                                            <AnimatedCurrency value={inflationCost} />
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
-                                        <span className="text-xs text-muted">Décote valeur verte</span>
-                                        <span className="text-sm text-danger financial-num">
-                                            <AnimatedCurrency value={depreciation} />
-                                        </span>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
+                            <span className="text-xs text-muted">Surcoût travaux (inflation)</span>
+                            <span className="text-sm text-danger financial-num">
+                                <AnimatedCurrency value={inflationCost} />
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02]">
+                            <span className="text-xs text-muted">Décote valeur verte</span>
+                            <span className="text-sm text-danger financial-num">
+                                <AnimatedCurrency value={depreciation} />
+                            </span>
+                        </div>
                     </div>
                 </div>
 

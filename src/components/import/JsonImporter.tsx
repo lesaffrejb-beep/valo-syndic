@@ -65,9 +65,6 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
             >
-                <span className="text-lg group-hover:scale-110 transition-transform duration-200">
-                    🕵️
-                </span>
                 <span className="text-sm font-medium text-main group-hover:text-primary transition-colors hidden xl:inline">
                     Importer depuis Ghost
                 </span>
@@ -103,13 +100,9 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
                             <div className="px-6 py-5 border-b border-boundary bg-gradient-to-r from-white/[0.02] to-transparent">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 
-                                                      flex items-center justify-center border border-primary/20">
-                                            <span className="text-xl">🕵️</span>
-                                        </div>
                                         <div>
-                                            <h2 className="text-lg font-semibold text-main">Importer des Lots</h2>
-                                            <p className="text-xs text-muted mt-0.5">VALO-SYNDIC Ghost Extension</p>
+                                            <h2 className="text-lg font-semibold text-main">Importer depuis Ghost</h2>
+                                            <p className="text-xs text-muted mt-0.5">Extension VALO‑SYNDIC</p>
                                         </div>
                                     </div>
                                     <button
@@ -128,7 +121,7 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
                                 {/* Instructions */}
                                 <div className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.06]">
                                     <p className="text-sm text-muted leading-relaxed">
-                                        <span className="text-primary font-medium">📋 Instructions:</span>{" "}
+                                        <span className="text-primary font-medium">Instructions:</span>{" "}
                                         Collez le JSON généré par l&apos;extension Ghost ci-dessous, puis cliquez sur &quot;Importer&quot;.
                                     </p>
                                 </div>
@@ -149,17 +142,19 @@ export function JsonImporter({ onImport }: JsonImporterProps) {
                                 </div>
 
                                 {/* Error Message */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="p-3 rounded-lg bg-danger/10 border border-danger/30"
-                                >
-                                    <p className="text-sm text-danger flex items-center gap-2">
-                                        <span>⚠️</span>
-                                        {error}
-                                    </p>
-                                </motion.div>
+                                {error && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="p-3 rounded-lg bg-danger/10 border border-danger/30"
+                                    >
+                                        <p className="text-sm text-danger flex items-center gap-2">
+                                            <span>⚠️</span>
+                                            {error}
+                                        </p>
+                                    </motion.div>
+                                )}
 
                                 {/* Success Message */}
                                 <AnimatePresence>

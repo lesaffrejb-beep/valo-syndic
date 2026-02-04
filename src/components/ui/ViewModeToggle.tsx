@@ -123,20 +123,9 @@ export function ViewModeToggle({ className, totalUnits = 20, avgSurface = 65 }: 
 
                 {/* Label MA POCHE - Toujours lisible */}
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10 pointer-events-none">
-                    <div className={cn(
-                        "px-2 py-1 rounded-lg flex items-center gap-2 transition-colors duration-300",
-                        percentage < 35 
-                            ? "bg-transparent" 
-                            : "bg-black/40 backdrop-blur-sm"
-                    )}>
-                        <User className={cn(
-                            "w-4 h-4 transition-colors duration-300",
-                            percentage < 35 ? "text-black" : "text-white"
-                        )} />
-                        <span className={cn(
-                            "text-xs font-bold uppercase tracking-wider transition-colors duration-300",
-                            percentage < 35 ? "text-black" : "text-white"
-                        )}>
+                    <div className="px-2 py-1 rounded-lg flex items-center gap-2 bg-black/45 backdrop-blur-sm ring-1 ring-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                        <User className="w-4 h-4 text-white/90" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-white/90">
                             Ma Poche
                         </span>
                     </div>
@@ -144,22 +133,11 @@ export function ViewModeToggle({ className, totalUnits = 20, avgSurface = 65 }: 
 
                 {/* Label IMMEUBLE - Toujours lisible */}
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10 pointer-events-none">
-                    <div className={cn(
-                        "px-2 py-1 rounded-lg flex items-center gap-2 transition-colors duration-300",
-                        percentage > 85 
-                            ? "bg-transparent" 
-                            : "bg-black/40 backdrop-blur-sm"
-                    )}>
-                        <span className={cn(
-                            "text-xs font-bold uppercase tracking-wider transition-colors duration-300",
-                            percentage > 85 ? "text-black" : "text-white"
-                        )}>
+                    <div className="px-2 py-1 rounded-lg flex items-center gap-2 bg-black/45 backdrop-blur-sm ring-1 ring-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.35)]">
+                        <span className="text-xs font-bold uppercase tracking-wider text-white/90">
                             Immeuble
                         </span>
-                        <Building2 className={cn(
-                            "w-4 h-4 transition-colors duration-300",
-                            percentage > 85 ? "text-black" : "text-white"
-                        )} />
+                        <Building2 className="w-4 h-4 text-white/90" />
                     </div>
                 </div>
 
