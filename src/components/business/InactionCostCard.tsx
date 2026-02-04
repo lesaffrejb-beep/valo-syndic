@@ -37,8 +37,8 @@ export function InactionCostCard({ inactionCost }: InactionCostCardProps) {
                     transition={{ duration: 0.8, type: "spring" }}
                     className="text-center"
                 >
-                    <div className="text-6xl md:text-7xl font-light text-transparent bg-clip-text bg-gradient-to-b from-danger via-danger/90 to-danger/50 tracking-tighter financial-num mb-2">
-                        <AnimatedCurrency value={totalCost} />
+                    <div className="text-6xl md:text-7xl font-light text-danger tracking-tighter financial-num mb-2">
+                        -<AnimatedCurrency value={totalCost} />
                     </div>
                     <p className="text-sm text-muted font-medium">Perte de valeur estimée</p>
                 </motion.div>
