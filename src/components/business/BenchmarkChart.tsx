@@ -84,7 +84,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                         <div className="flex justify-between items-end mb-2">
                             <span className="text-sm text-white font-medium">Votre Copropriété</span>
                             <div className="text-right">
-                                <span className={cn("text-2xl font-light tracking-tighter financial-num", analysis.isAboveAverage ? "text-terracotta" : "text-success")}>
+                                <span className={cn("text-2xl font-light tracking-tighter financial-num", analysis.isAboveAverage ? "text-danger" : "text-success")}>
                                     {analysis.yourConsumption}
                                 </span>
                                 <span className="text-xs text-muted ml-1">kWh/m²</span>
@@ -93,7 +93,7 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                             <div
                                 className="h-full rounded-full transition-all duration-1000 ease-out"
-                                style={{ width: `${yourBarWidth}%`, backgroundColor: getDPEColor(currentDPE) }}
+                                style={{ width: `${yourBarWidth}%`, backgroundColor: analysis.isAboveAverage ? "rgb(224, 122, 95)" : getDPEColor(currentDPE) }}
                             />
                         </div>
                     </div>
@@ -119,22 +119,22 @@ export function BenchmarkChart({ currentDPE, city = "Angers", className = "" }: 
                 </div>
 
                 {/* Insight / Analysis */}
-                <div className={cn(
-                    "rounded-xl p-4 border flex items-start gap-3",
-                    analysis.isAboveAverage
-                        ? "bg-terracotta/5 border-terracotta/10"
-                        : "bg-success/5 border-success/10"
-                )}>
-                    {analysis.isAboveAverage ? (
-                        <TrendingUp className="w-5 h-5 text-terracotta mt-0.5" />
-                    ) : (
-                        <CheckCircle2 className="w-5 h-5 text-success mt-0.5" />
-                    )}
+                    <div className={cn(
+                        "rounded-xl p-4 border flex items-start gap-3",
+                        analysis.isAboveAverage
+                            ? "bg-danger/5 border-danger/10"
+                            : "bg-success/5 border-success/10"
+                    )}>
+                        {analysis.isAboveAverage ? (
+                            <TrendingUp className="w-5 h-5 text-danger mt-0.5" />
+                        ) : (
+                            <CheckCircle2 className="w-5 h-5 text-success mt-0.5" />
+                        )}
 
-                    <div className="space-y-1">
-                        <p className={cn("text-sm font-medium", analysis.isAboveAverage ? "text-terracotta" : "text-success")}>
-                            {analysis.isAboveAverage ? "Surconsommation détectée" : "Performance excellente"}
-                        </p>
+                        <div className="space-y-1">
+                            <p className={cn("text-sm font-medium", analysis.isAboveAverage ? "text-danger" : "text-success")}>
+                                {analysis.isAboveAverage ? "Surconsommation détectée" : "Performance excellente"}
+                            </p>
                         <p className="text-xs text-muted leading-relaxed">
                             {analysis.isAboveAverage
                                 ? `Vous consommez ${analysis.excessPercent}% de plus que la moyenne locale. C'est un levier de valorisation immédiat.`
