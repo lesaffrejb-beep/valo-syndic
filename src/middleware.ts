@@ -13,7 +13,8 @@ export function middleware(request: NextRequest) {
     // and a strict policy in production.
     // Determine dev mode: prefer explicit NODE_ENV, but also treat localhost/lan hosts as dev
     const hostHeader = request.headers.get('host') || '';
-    const isLocalHostHeader = /(^localhost$)|(^127\.)|(^(?:192\.168\.|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[0-1]\.))/i.test(hostHeader);
+    // Accept hostnames with ports (eg. localhost:3000) and IPv6 loopback
+    const isLocalHostHeader = /localhost|^127\.|^::1|^(?:192\.168\.|10\.|172\.(?:1[6-9]|2[0-9]|3[0-1])\.)/i.test(hostHeader);
     const isDev = process.env.NODE_ENV !== 'production' || isLocalHostHeader;
 
     const devCsp = [
@@ -21,7 +22,7 @@ export function middleware(request: NextRequest) {
         "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data: https://maps.googleapis.com",
         "worker-src 'self' blob: data: 'unsafe-eval' 'unsafe-inline'",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
+        "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com https://tile.openstreetmap.org",
         "font-src 'self' data:",
         "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",
         "frame-ancestors 'none'",
@@ -34,7 +35,7 @@ export function middleware(request: NextRequest) {
         "script-src 'self' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
         "worker-src 'self' blob: data:",
         "style-src 'self'",
-        "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
+        "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com https://tile.openstreetmap.org",
         "font-src 'self' data:",
         "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com https://data.ademe.fr *.sentry.io data:",
         "frame-ancestors 'none'",
