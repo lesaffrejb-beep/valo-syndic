@@ -9,25 +9,37 @@ export function middleware(request: NextRequest) {
     const response = NextResponse.next();
 
     // Content Security Policy
-    // Durcir la politique : retirer 'unsafe-eval' et 'unsafe-inline'
-    response.headers.set(
-        'Content-Security-Policy',
-        [
-            "default-src 'self'",
-            // Autoriser les scripts depuis self et blobs/ data (maps reste autorisé explicitement)
-            "script-src 'self' blob: data: https://maps.googleapis.com",
-            // Workers autorisés depuis self et blobs
-            "worker-src 'self' blob: data:",
-            // Interdire les styles inline pour durcir la CSP
-            "style-src 'self'",
-            "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
-            "font-src 'self' data:",
-            "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",
-            "frame-ancestors 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-        ].join('; ')
-    );
+    // Use a relaxed policy in development (Next.js dev & HMR require eval/inline)
+    // and a strict policy in production.
+    const isDev = process.env.NODE_ENV !== 'production';
+
+    const devCsp = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data: https://maps.googleapis.com",
+        "worker-src 'self' blob: data: 'unsafe-eval' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
+        "font-src 'self' data:",
+        "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ].join('; ');
+
+    const prodCsp = [
+        "default-src 'self'",
+        "script-src 'self' blob: data: https://maps.googleapis.com",
+        "worker-src 'self' blob: data:",
+        "style-src 'self'",
+        "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
+        "font-src 'self' data:",
+        "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ].join('; ');
+
+    response.headers.set('Content-Security-Policy', isDev ? devCsp : prodCsp);
 
     // Empêche l'inclusion dans un iframe (clickjacking protection)
     response.headers.set('X-Frame-Options', 'DENY');
