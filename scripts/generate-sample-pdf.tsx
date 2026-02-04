@@ -67,13 +67,8 @@ async function run() {
 
   console.log('Generating PDF to', outPath);
   try {
-    const stream = await pdf(doc).toStream();
-    await new Promise<void>((resolve, reject) => {
-      const out = fs.createWriteStream(outPath);
-      stream.pipe(out);
-      out.on('finish', () => resolve());
-      out.on('error', (err) => reject(err));
-    });
+    const buffer = (await pdf(doc).toBuffer()) as unknown as Buffer;
+    await fs.promises.writeFile(outPath, buffer);
     console.log('PDF generated:', outPath);
   } catch (err) {
     console.error('PDF generation failed:', err);
