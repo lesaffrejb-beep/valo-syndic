@@ -101,17 +101,15 @@ describe("🔍 AUDIT APPROFONDI - Incohérences inter-modules", () => {
         expect(amoCeilingCalculator).not.toEqual(amoCeilingSubsidy);
     });
 
-    it("vérifie que MPR_COPRO.exitPassoireBonus est utilisé correctement", () => {
-        // Le bonus devrait être de 10% = 0.10
+    it("vérifie que le bonus passoire n'est pas appliqué en mode strict", () => {
+        // Le barème garde le bonus théorique
         expect(MPR_COPRO.exitPassoireBonus).toBe(0.10);
 
-        // Test: F→D doit avoir le bonus, F→E ne doit PAS l'avoir
+        // Test: bonus non appliqué dans le calcul strict
         const resultFD = simulateFinancing(100_000, 10, "F", "D");
         const resultFE = simulateFinancing(100_000, 10, "F", "E");
 
-        // F→D: D est ≥ D donc bonus appliqué
-        expect(resultFD.exitPassoireBonus).toBe(0.10);
-        // F→E: E < D donc pas de bonus (reste une passoire)
+        expect(resultFD.exitPassoireBonus).toBe(0);
         expect(resultFE.exitPassoireBonus).toBe(0);
     });
 
@@ -149,8 +147,8 @@ describe("🔍 AUDIT APPROFONDI - Edge Cases", () => {
     it("gère le cas maximal: 500 lots (limite schéma)", () => {
         const result = simulateFinancing(50_000_000, 500, "G", "A");
 
-        // MPR max = 500 × 25k€ × 55% = 6,875,000€
-        const maxMPR = 500 * 25_000 * 0.55;
+        // MPR max = 500 × 25k€ = 12,500,000€
+        const maxMPR = 500 * 25_000;
         expect(result.mprAmount).toBeLessThanOrEqual(maxMPR);
 
         // Éco-PTZ max = 500 × 50k€ = 25,000,000€
@@ -262,7 +260,7 @@ describe("🔍 AUDIT APPROFONDI - Précision numérique", () => {
 
 describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
 
-    it("vérifie les impacts DPE sur le prix au m²", () => {
+    it("vérifie que le DPE n'impacte pas la valeur actuelle (mode strict)", () => {
         const inputBase: DiagnosticInput = {
             currentDPE: "D",
             targetDPE: "C",
@@ -280,7 +278,6 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
 
         // Test chaque classe DPE
         const dpeClasses: DPELetter[] = ["G", "F", "E", "D", "C", "B", "A"];
-        const impacts = [-0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15];
 
         dpeClasses.forEach((dpe, index) => {
             const input = { ...inputBase, currentDPE: dpe };
@@ -292,8 +289,8 @@ describe("🔍 AUDIT APPROFONDI - Valorisation immobilière", () => {
             );
             const valuation = calculateValuation(input, financing);
 
-            // Vérifier que l'impact correspond
-            const expectedPrice = 3000 * (1 + impacts[index]!);
+            // Valeur actuelle = surface × prix de base (pas d'impact DPE)
+            const expectedPrice = 3000;
             const totalSurface = 10 * 50; // 500m²
             const expectedValue = totalSurface * expectedPrice;
 
