@@ -32,9 +32,13 @@ export function middleware(request: NextRequest) {
 
     const prodCsp = [
         "default-src 'self'",
-        "script-src 'self' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
+        // Temporary relaxation: allow inline scripts/styles for deployed environments
+        // to avoid breaking third-party libs that inject inline styles/scripts.
+        // NOTE: this is a short-term fix — prefer migrating to non-inline assets or
+        // using hashes/nonces for production CSP hardening.
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
         "worker-src 'self' blob: data:",
-        "style-src 'self'",
+        "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com https://tile.openstreetmap.org",
         "font-src 'self' data:",
         "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com https://data.ademe.fr *.sentry.io data:",
