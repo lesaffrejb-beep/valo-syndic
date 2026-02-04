@@ -123,20 +123,8 @@ export function AddressAutocomplete({
                 dpeService.hybridSearch(value, 6).then(setHybridResults);
                 searchCopro(value);
 
-                // Notify parent immediately with the typed address
-                if (onSelect) {
-                    onSelect({
-                        address: value,
-                        postalCode: "",
-                        city: "",
-                    });
-                }
-
-                // Launch background enrichment from the plain address
-                enrichFromAddress(value).catch((err) => {
-                    // swallow errors, enrichment will update via onEnriched
-                    console.error("Background enrichFromAddress failed:", err);
-                });
+                // (previously emitted typed address and launched background enrichment)
+                // Keep behavior minimal: only run hybrid/local and RNIC searches
             } else {
                 setHybridResults([]);
                 clearRnicResults();
