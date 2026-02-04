@@ -184,10 +184,12 @@ export default function ScrollytellingPage() {
         console.log("Ghost import:", data);
     }, []);
 
-    const handleFormSubmit = useCallback((data: DiagnosticInput) => {
+    const handleFormSubmit = useCallback((data: DiagnosticInput, opts?: { userInitiated?: boolean }) => {
         setDiagnosticInput(data);
-        // Scroll to diagnostic section
-        document.getElementById('diagnostic')?.scrollIntoView({ behavior: 'smooth' });
+        // Only scroll when the user explicitly submitted the form
+        if (opts?.userInitiated) {
+            document.getElementById('diagnostic')?.scrollIntoView({ behavior: 'smooth' });
+        }
     }, []);
 
     const handleCsvImport = useCallback((data: Array<{ address: string; postalCode: string; city: string }>) => {
@@ -326,15 +328,7 @@ export default function ScrollytellingPage() {
                         onCsvImport={() => setShowCsvModal(true)}
                     />
                     {/* Tantième Calculator moved up for immediate personal impact (above the fold) */}
-                    {diagnosticResult && (
-                        <div className="mt-8 w-full max-w-4xl mx-auto">
-                            <TantiemeCalculator
-                                financing={financing}
-                                simulationInputs={simulationInputs}
-                                className="h-full bg-deep-light/30 border-white/5"
-                            />
-                        </div>
-                    )}
+                    {/* Tantième calculator restored to personal section (see "my-pocket") */}
                 </div>
 
                 {/* CSV Import Modal */}
@@ -441,7 +435,13 @@ export default function ScrollytellingPage() {
                             </div>
                         </CardContent>
                     </Card>
-                    {/* Tantième calculator moved to hero for immediate visibility */}
+                    <div>
+                        <TantiemeCalculator
+                            financing={financing}
+                            simulationInputs={simulationInputs}
+                            className="h-full bg-deep-light/30 border-white/5"
+                        />
+                    </div>
                 </div>
             </Section>
 

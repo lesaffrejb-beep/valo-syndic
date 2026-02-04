@@ -41,10 +41,10 @@ export function ComparisonSplitScreen({ inactionCost, valuation, financing }: Co
                             <AlertTriangle className="w-3 h-3" /> Scénario Inaction
                         </div>
                         <h3 className="text-3xl font-semibold text-white tracking-tight mb-2">
-                            L'Enlisement
+                            L&apos;Enlisement
                         </h3>
                         <p className="text-muted text-lg leading-relaxed">
-                            Votre patrimoine s'érode chaque année sous l'effet de l'inflation travaux et de la décote énergétique.
+                            Votre patrimoine s&apos;érode chaque année sous l&apos;effet de l&apos;inflation travaux et de la décote énergétique.
                         </p>
                     </div>
 

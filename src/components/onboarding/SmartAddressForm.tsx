@@ -30,7 +30,7 @@ import { DataSourcePills } from "./DataSourcePills";
 
 interface SmartAddressFormProps {
   initialData?: Partial<DiagnosticInput>;
-  onSubmit: (data: DiagnosticInput) => void;
+  onSubmit: (data: DiagnosticInput, opts?: { userInitiated?: boolean }) => void;
   onCsvImport?: () => void;
   className?: string;
 }
@@ -53,7 +53,7 @@ export function SmartAddressForm({
     if (form.formData.values && Object.keys(form.formData.values).length > 0) {
       const validated = validateFormData(form.formData.values);
       if (validated) {
-        onSubmit(validated);
+        onSubmit(validated, { userInitiated: true });
       }
     }
   };
@@ -425,7 +425,7 @@ function AutoSubmitWhenReady({ form, onSubmit, validateFormData }: { form: UseSm
     const id = setTimeout(() => {
       if (form.formData.values && Object.keys(form.formData.values).length > 0) {
         const validated = validateFormData(form.formData.values);
-        if (validated) onSubmit(validated);
+        if (validated) onSubmit(validated, { userInitiated: false });
       }
     }, 350);
 
