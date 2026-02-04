@@ -419,7 +419,32 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     if (query.length >= 3) {
       const timer = setTimeout(async () => {
         try {
-          const results = await dpeService.hybridSearch(query, 6);
+          let results = await dpeService.hybridSearch(query, 6);
+
+          // Fallback direct vers l'API Adresse (data.gouv.fr) si la recherche hybride ne retourne rien
+          if ((!results || results.length === 0)) {
+            try {
+              const resp = await fetch(
+                `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=6`
+              );
+              if (resp.ok) {
+                const data = await resp.json();
+                const apiResults = (data.features || []).map((f: any) => ({
+                  address: f.properties.label,
+                  postalCode: f.properties.postcode,
+                  city: f.properties.city,
+                  cityCode: f.properties.citycode,
+                  coordinates: f.geometry ? { latitude: f.geometry.coordinates[1], longitude: f.geometry.coordinates[0] } : undefined,
+                  sourceType: 'api',
+                  score: f.properties.score,
+                }));
+                results = apiResults as any;
+              }
+            } catch (err) {
+              console.warn('Fallback API Adresse failed', err);
+            }
+          }
+
           dispatch({ type: "SET_SEARCH_RESULTS", payload: results });
         } catch (error) {
           console.error("Erreur recherche:", error);
