@@ -430,6 +430,4 @@ function AdvancedOptions({ form }: { form: UseSmartFormReturn }) {
 // =============================================================================
 // Helper: Auto-submit when ready (debounced)
 // =============================================================================
-import type { UseSmartFormReturn } from "@/hooks/useSmartForm";
-
 // Auto-submit removed: replaced by explicit 'Lancer le diagnostic' button in the form
