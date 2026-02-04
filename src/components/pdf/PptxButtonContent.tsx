@@ -13,6 +13,11 @@ export function PptxButtonContent({ result }: PptxButtonContentProps) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const brand = useBrandStore((state) => state.brand);
+    const v2Badge = (
+        <span className="absolute -top-1.5 -right-1.5 rounded-full bg-black text-gold px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(0,0,0,0.35)]">
+            V2
+        </span>
+    );
 
     const metadata = getPresentationMetadata(result);
 
@@ -57,14 +62,13 @@ export function PptxButtonContent({ result }: PptxButtonContentProps) {
                     <>
                         <span className="animate-spin">*</span>
                         <span>Génération...</span>
+                        {v2Badge}
                     </>
                 ) : (
                     <>
                         <span>[PPTX]</span>
                         <span>PowerPoint AG</span>
-                        <span className="absolute -top-1.5 -right-1.5 rounded-full bg-black text-gold px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(0,0,0,0.35)]">
-                            V2
-                        </span>
+                        {v2Badge}
                     </>
                 )}
             </button>

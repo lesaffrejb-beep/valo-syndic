@@ -104,8 +104,8 @@ export const riskService = {
         return {
             argile: 0,
             inondation: false,
-            radon: 1,
-            sismicite: 1,
+            radon: 0,
+            sismicite: 0,
             mouvementTerrain: false,
             technologique: false,
             minier: false,

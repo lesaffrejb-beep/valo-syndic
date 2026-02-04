@@ -22,14 +22,18 @@ export const useViewModeStore = create<ViewModeState>((set, get) => ({
 
     setViewMode: (mode) => set({ viewMode: mode }),
 
-    setUserTantiemes: (tantiemes) => set({ userTantiemes: Math.max(1, Math.min(1000, tantiemes)) }),
+    setUserTantiemes: (tantiemes) => set(() => {
+        const clamped = Math.max(1, Math.min(1000, tantiemes));
+        const nextMode: ViewMode = clamped >= 995 ? 'immeuble' : 'maPoche';
+        return { userTantiemes: clamped, viewMode: nextMode };
+    }),
 
     getAdjustedValue: (globalValue) => {
         const { viewMode, userTantiemes } = get();
-        if (viewMode === 'immeuble') {
+        if (viewMode === 'immeuble' && userTantiemes >= 995) {
             return globalValue;
         }
-        // "Ma Poche" mode: calculate individual share
+        // "Ma Poche" mode (or any partial quote-part): calculate individual share
         return (globalValue * userTantiemes) / 1000;
     },
 }));

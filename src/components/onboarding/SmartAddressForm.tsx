@@ -163,7 +163,7 @@ export function SmartAddressForm({
 
         {/* ÉTAPE 2: Formulaire détaillé (apparaît après sélection) */}
         <AnimatePresence>
-          {form.state !== "IDLE" && form.state !== "TYPING" && form.state !== "SEARCHING" && (
+          {(!!form.selectedAddress || (form.state !== "IDLE" && form.state !== "TYPING" && form.state !== "SEARCHING")) && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}

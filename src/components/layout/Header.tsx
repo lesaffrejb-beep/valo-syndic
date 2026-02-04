@@ -104,12 +104,15 @@ export function Header({
                         <button
                             onClick={onSave}
                             disabled={!hasResult || isSaving}
-                            className="h-10 flex items-center gap-2 px-4 rounded-lg bg-gold text-[#050507] font-semibold text-sm hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                            className="relative h-10 flex items-center gap-2 px-4 rounded-lg bg-gold text-[#050507] font-semibold text-sm hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                             title="Sauvegarder le dossier"
                         >
                             <Save className="w-4 h-4" />
                             <span className="hidden 2xl:inline">{isSaving ? 'Sauvegarde...' : 'Sauvegarder'}</span>
                             <span className="2xl:hidden">{isSaving ? 'Sauv...' : 'Sauv.'}</span>
+                            <span className="absolute -top-1.5 -right-1.5 rounded-full bg-black text-gold px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(0,0,0,0.35)]">
+                                V2
+                            </span>
                         </button>
                     </div>
 

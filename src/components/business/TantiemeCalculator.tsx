@@ -65,17 +65,17 @@ export function TantiemeCalculator({ financing, simulationInputs, className = ""
         }
 
         // Default legacy calculation (Global Average)
-        const partLotCashCalc = (financing.remainingCost * tantiemes) / 1000;
-        const partLotLoanCalc = (financing.ecoPtzAmount * tantiemes) / 1000;
-        const durationMonths = ECO_PTZ_COPRO.maxDurationYears * 12;
-        const monthlyPaymentCalc = partLotLoanCalc / durationMonths;
+        const shareRatio = tantiemes / 1000;
+        const partLotCashCalc = financing.remainingCost * shareRatio;
+        const partLotLoanCalc = financing.ecoPtzAmount * shareRatio;
+        const monthlyPaymentCalc = financing.monthlyPayment * shareRatio;
 
         return {
             partLotCash: partLotCashCalc,
             partLotLoan: partLotLoanCalc,
             monthlyPayment: monthlyPaymentCalc,
             durationYears: ECO_PTZ_COPRO.maxDurationYears,
-            partLotTotal: (financing.remainingCost * tantiemes) / 1000, // Simplification
+            partLotTotal: financing.remainingCost * shareRatio, // Simplification
             aid: 0
         };
     }, [financing, tantiemes, selectedProfile, profileData, simulationInputs]);
