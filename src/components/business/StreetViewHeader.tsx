@@ -36,11 +36,23 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
         setImageError(false);
     }, [streetViewUrl, apiKey]);
 
-    // Fallback: Elegant gradient with subtle texture (no text overlay - handled by parent)
-    if (!streetViewUrl || imageError) {
+    // If no Street View or it failed, try an OpenStreetMap tile as a background (no API key)
+    const osmTileUrlForCoordinates = (lat?: number, lon?: number, zoom = 16) => {
+        if (lat === undefined || lon === undefined) return null;
+        // Convert lat/lon to OSM tile numbers
+        const latRad = (lat * Math.PI) / 180;
+        const n = Math.pow(2, zoom);
+        const xtile = Math.floor(((lon + 180) / 360) * n);
+        const ytile = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+        return `https://tile.openstreetmap.org/${zoom}/${xtile}/${ytile}.png`;
+    };
+
+    const osmUrl = !streetViewUrl || imageError ? (coordinates ? osmTileUrlForCoordinates(coordinates.latitude, coordinates.longitude) : null) : null;
+
+    // Fallback: Elegant gradient with subtle texture when nothing else is available
+    if ((!streetViewUrl && !osmUrl) || imageError && !osmUrl) {
         return (
             <div className="absolute inset-0 bg-gradient-to-br from-deep via-deep-light to-deep">
-                {/* Subtle radial gradient for depth */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)]" />
             </div>
         );
@@ -48,15 +60,22 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
 
     return (
         <div className="absolute inset-0 overflow-hidden">
-            {/* Image Street View - Full cover */}
+            {/* Image Street View - Full cover (preferred) or OSM tile fallback */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-                src={streetViewUrl}
+                src={streetViewUrl || osmUrl || undefined}
                 alt={`Façade - ${address}`}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 scale-105 ${imageLoaded ? 'opacity-70' : 'opacity-0'
-                    }`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 scale-105 ${imageLoaded ? 'opacity-70' : 'opacity-0'} `}
                 onLoad={() => setImageLoaded(true)}
-                onError={() => setImageError(true)}
+                onError={() => {
+                    // If streetView failed, try OSM once
+                    if (streetViewUrl && !osmUrl && coordinates) {
+                        setImageError(false);
+                        setImageLoaded(false);
+                    } else {
+                        setImageError(true);
+                    }
+                }}
             />
 
             {/* Loading state */}

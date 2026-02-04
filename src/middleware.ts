@@ -11,7 +11,10 @@ export function middleware(request: NextRequest) {
     // Content Security Policy
     // Use a relaxed policy in development (Next.js dev & HMR require eval/inline)
     // and a strict policy in production.
-    const isDev = process.env.NODE_ENV !== 'production';
+    // Determine dev mode: prefer explicit NODE_ENV, but also treat localhost/lan hosts as dev
+    const hostHeader = request.headers.get('host') || '';
+    const isLocalHostHeader = /(^localhost$)|(^127\.)|(^(?:192\.168\.|10\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[0-1]\.))/i.test(hostHeader);
+    const isDev = process.env.NODE_ENV !== 'production' || isLocalHostHeader;
 
     const devCsp = [
         "default-src 'self'",
@@ -28,12 +31,12 @@ export function middleware(request: NextRequest) {
 
     const prodCsp = [
         "default-src 'self'",
-        "script-src 'self' blob: data: https://maps.googleapis.com",
+        "script-src 'self' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
         "worker-src 'self' blob: data:",
         "style-src 'self'",
         "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com",
         "font-src 'self' data:",
-        "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com *.sentry.io data:",
+        "connect-src 'self' https://api-adresse.data.gouv.fr https://georisques.gouv.fr https://maps.googleapis.com https://data.ademe.fr *.sentry.io data:",
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
