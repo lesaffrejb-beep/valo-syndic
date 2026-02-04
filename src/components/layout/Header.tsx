@@ -224,11 +224,11 @@ export function Header({
                             /* Login Button */
                             <button
                                 onClick={onOpenAuth}
-                                className="h-10 flex items-center gap-2 px-4 rounded-lg text-sm font-semibold bg-gold text-[#050507] hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10"
+                                className="relative h-10 flex items-center gap-2 px-4 rounded-lg text-sm font-semibold bg-gold text-[#050507] hover:bg-gold-light hover:shadow-[0_0_20px_-5px_rgba(229,192,123,0.4)] hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-black/10"
                             >
                                 <span>🔐</span>
                                 <span className="hidden sm:inline">Connexion</span>
-                                <span className="ml-1 rounded-full border border-black/10 bg-black/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black/70">
+                                <span className="absolute -top-1.5 -right-1.5 rounded-full bg-black text-gold px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(0,0,0,0.35)]">
                                     V2
                                 </span>
                             </button>

@@ -37,6 +37,7 @@ export function PdfButtonContent({
 
     // Default class if none provided
     const buttonClass = className || "btn-primary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-lg hover:shadow-xl";
+    const wrapperClass = `relative ${buttonClass}`;
 
     return (
         <PDFDownloadLink
@@ -49,7 +50,7 @@ export function PdfButtonContent({
                 />
             }
             fileName={`audit-valo-syndic-${new Date().toISOString().split('T')[0]}.pdf`}
-            className={buttonClass}
+            className={wrapperClass}
         >
             {/* @ts-ignore */}
             {({ loading, error }: { loading: boolean; error: Error | null }) => {
@@ -77,7 +78,7 @@ export function PdfButtonContent({
                     <>
                         <FileText className="w-5 h-5" />
                         <span>Télécharger le Rapport</span>
-                        <span className="ml-2 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white/70">
+                        <span className="absolute -top-1.5 -right-1.5 rounded-full bg-gold text-black px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(229,192,123,0.6)]">
                             V2
                         </span>
                     </>

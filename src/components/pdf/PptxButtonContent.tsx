@@ -51,7 +51,7 @@ export function PptxButtonContent({ result }: PptxButtonContentProps) {
                 disabled={isGenerating}
                 onMouseEnter={() => setShowPreview(true)}
                 onMouseLeave={() => setShowPreview(false)}
-                className="btn-secondary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative btn-secondary flex items-center justify-center gap-2 group cursor-pointer hover:opacity-90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {isGenerating ? (
                     <>
@@ -62,7 +62,7 @@ export function PptxButtonContent({ result }: PptxButtonContentProps) {
                     <>
                         <span>[PPTX]</span>
                         <span>PowerPoint AG</span>
-                        <span className="ml-1 rounded-full border border-white/10 bg-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white/70">
+                        <span className="absolute -top-1.5 -right-1.5 rounded-full bg-gold text-black px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(229,192,123,0.6)]">
                             V2
                         </span>
                     </>

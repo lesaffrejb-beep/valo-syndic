@@ -13,7 +13,7 @@
 
 "use client";
 
-import { useState, useCallback, useMemo, useReducer, useEffect } from "react";
+import { useState, useCallback, useMemo, useReducer, useEffect, useRef } from "react";
 import { type DPELetter } from "@/lib/constants";
 import { type DiagnosticInput, DiagnosticInputSchema } from "@/lib/schemas";
 import { dpeService, type DPEEntry, type HybridSearchResult } from "@/services/dpeService";
@@ -357,6 +357,8 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
   const { initialData, onSubmit, onError } = options;
 
   const [reducerState, dispatch] = useReducer(formReducer, createInitialState(initialData));
+  const stateRef = useRef(reducerState.state);
+  const searchVersionRef = useRef(0);
 
   // Debounce timer pour la recherche
   const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null);
@@ -425,7 +427,13 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     }
 
     if (query.length >= 3) {
+      const version = searchVersionRef.current + 1;
+      searchVersionRef.current = version;
       const timer = setTimeout(async () => {
+        if (searchVersionRef.current !== version) return;
+        if (["SELECTED", "ENRICHING", "READY", "SUBMITTING", "RESULT"].includes(stateRef.current)) {
+          return;
+        }
         try {
           let results = await dpeService.hybridSearch(query, 6);
 
@@ -458,7 +466,7 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
           console.error("Erreur recherche:", error);
           dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
         }
-      }, 150);
+      }, 120);
 
       setSearchTimer(timer);
     } else {
@@ -476,6 +484,7 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
       clearTimeout(searchTimer);
       setSearchTimer(null);
     }
+    searchVersionRef.current += 1;
     dispatch({
       type: "SELECT_ADDRESS",
       payload: { address: result.address, result }
@@ -596,3 +605,6 @@ export function useSmartForm(options: UseSmartFormOptions = {}): UseSmartFormRet
     fieldStatus,
   };
 }
+  useEffect(() => {
+    stateRef.current = reducerState.state;
+  }, [reducerState.state]);

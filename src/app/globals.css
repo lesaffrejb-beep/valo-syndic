@@ -551,26 +551,6 @@
   transform-origin: bottom right;
 }
 
-/* Badge mode projection Discret */
-.projection-mode::after {
-  content: "MODE PROJECTION";
-  position: fixed;
-  top: 88px;
-  right: 24px;
-  left: auto;
-  transform: none;
-  background: #E5C07B;
-  color: #000;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  z-index: 9999;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  opacity: 0.5; /* Non-intrusive */
-}
-
 /* Focus states ULTRA visibles (laser pointer style) */
 .projection-mode :focus-visible {
   outline: 4px solid #E5C07B;
