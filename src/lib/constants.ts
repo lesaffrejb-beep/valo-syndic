@@ -16,17 +16,17 @@
 // 1. CALENDRIER LOI CLIMAT — Interdiction de Location
 // =============================================================================
 
-export const DPE_PROHIBITION_DATES = {
-    G: new Date("2025-01-01"), // INTERDIT depuis 01/01/2025
-    F: new Date("2028-01-01"), // Interdit au 01/01/2028
-    E: new Date("2034-01-01"), // Interdit au 01/01/2034
-    D: null, // Pas d'interdiction prévue
+export type DPELetter = "A" | "B" | "C" | "D" | "E" | "F" | "G";
+
+export const DPE_PROHIBITION_DATES: Record<DPELetter, Date | null> = {
+    G: new Date("2025-01-01"), // Déjà interdit
+    F: new Date("2028-01-01"),
+    E: new Date("2034-01-01"),
+    D: null,
     C: null,
     B: null,
     A: null,
-} as const;
-
-export type DPELetter = keyof typeof DPE_PROHIBITION_DATES;
+};
 
 export const DPE_STATUS_LABELS = {
     G: { label: "INTERDIT", color: "danger", emoji: "🔴" },
@@ -139,25 +139,20 @@ export const AMO_PARAMS = {
     /** Coût forfaitaire moyen AMO par lot (€ HT) */
     costPerLot: 600,
 
-    /** 
-     * Plafond d'assiette subventionnable par lot (€ HT)
-     * - ≤ 20 lots : 1 000€ HT par logement
-     * - > 20 lots : 600€ HT par logement
-     */
-    ceilingPerLotSmall: 1_000,  // ≤ 20 lots
-    ceilingPerLotLarge: 600,    // > 20 lots
-
-    /** 
-     * Seuil de distinction petite/grande copropriété
-     * Les copros de 20 lots ou moins ont un plafond plus élevé
-     */
-    smallCoproThreshold: 20,
-
     /** Taux de prise en charge (50%) */
     aidRate: 0.50,
 
     /** Montant plancher global minimum (3 000€) */
     minTotal: 3_000,
+
+    /** Plafond d'assiette subventionnable par lot (≤ 20 lots) */
+    ceilingPerLotSmall: 1_000,
+
+    /** Plafond d'assiette subventionnable par lot (> 20 lots) */
+    ceilingPerLotLarge: 600,
+
+    /** Seuil de distinction petite/grande copropriété */
+    smallCoproThreshold: 20,
 } as const;
 
 // =============================================================================

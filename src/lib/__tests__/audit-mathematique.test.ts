@@ -562,7 +562,7 @@ describe("AUDIT MATHEMATIQUE - Cas #6: Détection de bugs potentiels", () => {
 
         auditAssert("Bug#3a", "Avant 1948 = G", estimateDPEByYear(1900) === "G", "G", estimateDPEByYear(1900));
         auditAssert("Bug#3b", "1960 = F", estimateDPEByYear(1960) === "F", "F", estimateDPEByYear(1960));
-        auditAssert("Bug#3c", "1985 = D", estimateDPEByYear(1985) === "D", "D", estimateDPEByYear(1985));
+        auditAssert("Bug#3c", "1985 = E", estimateDPEByYear(1985) === "E", "E", estimateDPEByYear(1985));
         auditAssert("Bug#3d", "2015 = B", estimateDPEByYear(2015) === "B", "B", estimateDPEByYear(2015));
         auditAssert("Bug#3e", "2022 = A", estimateDPEByYear(2022) === "A", "A", estimateDPEByYear(2022));
     });

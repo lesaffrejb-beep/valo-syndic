@@ -163,20 +163,22 @@ export function simulateFinancing(
     const energyGainPercent = estimateEnergyGain(currentDPE, targetDPE);
 
     // --- Aide AMO (Aide Ingénierie) ---
-    // Source: https://www.economie.gouv.fr/particuliers/maprimerenov-copropriete
-    // 50% de prise en charge, plafond selon taille de la copro
+    // Correction suite audit 30/01 : Distinction Petites/Grandes Copros
+    const AMO_CEILING_SMALL = 1000; // ≤ 20 lots
+    const AMO_CEILING_LARGE = 600;  // > 20 lots
 
-    // Plafond d'assiette AMO selon taille de la copro
-    const amoCeilingPerLot = nbLots <= AMO_PARAMS.smallCoproThreshold
-        ? AMO_PARAMS.ceilingPerLotSmall  // ≤ 20 lots: 1 000€/lot
-        : AMO_PARAMS.ceilingPerLotLarge; // > 20 lots: 600€/lot
+    // 1. Déterminer le plafond par lot applicable
+    const amoCeilingPerLot = nbLots <= 20 ? AMO_CEILING_SMALL : AMO_CEILING_LARGE;
 
+    // 2. Plafond global AMO (ex: 8 lots * 1000€ = 8000€)
     const amoCeilingGlobal = nbLots * amoCeilingPerLot;
 
-    // Assiette éligible AMO (coût réel plafonné)
-    const eligibleBaseAMO = Math.min(amoCostHT, amoCeilingGlobal);
+    // 3. Assiette éligible (Le coût réel de l'AMO, plafonné)
+    // Note: On suppose ici que AMO_PARAMS.costPerLot est le coût facturé
+    const amoCostEstimated = nbLots * AMO_PARAMS.costPerLot;
+    const eligibleBaseAMO = Math.min(amoCostEstimated, amoCeilingGlobal);
 
-    // Montant Aide AMO (50% de l'éligible, avec plancher global de 3 000€)
+    // 4. Calcul de l'aide (50% du montant éligible, avec plancher 3000€)
     const amoAmountRaw = eligibleBaseAMO * AMO_PARAMS.aidRate;
     const amoAmount = Math.max(amoAmountRaw, AMO_PARAMS.minTotal);
 
@@ -483,14 +485,14 @@ export function sanitizeText(text: string): string {
 /**
  * Estime le DPE probable d'une copropriété en fonction de son année de construction
  */
-export function estimateDPEByYear(year: number): DPELetter {
-    if (year < 1948) return "G";
-    if (year < 1975) return "F";
-    if (year < 1982) return "E";
-    if (year < 2000) return "D";
-    if (year < 2012) return "C";
-    if (year < 2020) return "B";
-    return "A";
+export function estimateDPEByYear(constructionYear: number): DPELetter {
+    if (constructionYear < 1948) return "G";
+    if (constructionYear <= 1974) return "F"; // Avant premier choc pétrolier
+    if (constructionYear <= 1989) return "E"; // Premières RT
+    if (constructionYear <= 2000) return "D";
+    if (constructionYear <= 2010) return "C"; // RT 2005
+    if (constructionYear <= 2020) return "B"; // RT 2012
+    return "A"; // RE 2020
 }
 
 export interface BuildingAuditResult {
