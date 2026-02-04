@@ -86,6 +86,9 @@ export const DiagnosticInputSchema = z.object({
     /** Primes CEE estimées (€) - Certificats d'Économie d'Énergie */
     ceeBonus: z.number().min(0).optional().default(0),
 
+    /** Facture énergétique annuelle globale (€) */
+    currentEnergyBill: z.number().min(0).optional().default(0),
+
     /** Pourcentage de bailleurs investisseurs (0-100%) - Variable Sociologique */
     investorRatio: z.number().min(0).max(100).optional().default(0),
 });
@@ -182,6 +185,12 @@ export const FinancingPlanSchema = z.object({
 
     /** Mensualité Éco-PTZ (sur 20 ans) */
     monthlyPayment: z.number(),
+
+    /** Économies mensuelles estimées sur facture énergétique */
+    monthlyEnergySavings: z.number().default(0),
+
+    /** Flux net mensuel (économie - mensualité) */
+    netMonthlyCashFlow: z.number().default(0),
 
     /** Reste à charge par lot */
     remainingCostPerUnit: z.number(),

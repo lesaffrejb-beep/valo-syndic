@@ -8,15 +8,15 @@
 import {
     DPE_PROHIBITION_DATES,
     DPE_STATUS_LABELS,
-    DPE_NUMERIC_VALUE,
-    MPR_COPRO,
-    ECO_PTZ_COPRO,
     TECHNICAL_PARAMS,
     PROJECT_FEES,
     AMO_PARAMS,
     VALUATION_PARAMS,
     type DPELetter,
 } from "./constants";
+
+import { FINANCES_2026 } from "./financialConstants";
+import { calculateProjectMetrics } from "./financialUtils";
 
 import { getMarketTrend } from "./market-data";
 
@@ -123,7 +123,10 @@ export function simulateFinancing(
     commercialLots: number = 0,
     localAidAmount: number = 0,
     alurFund: number = 0,
-    ceeBonus: number = 0
+    _ceeBonus: number = 0,
+    currentEnergyBill: number = 0,
+    totalSurface?: number,
+    averagePricePerSqm?: number
 ): FinancingPlan {
     // Guard: prevent division by zero
     if (!nbLots || nbLots <= 0) {
@@ -159,36 +162,6 @@ export function simulateFinancing(
     // Gain énergétique estimé
     const energyGainPercent = estimateEnergyGain(currentDPE, targetDPE);
 
-    // 2. Calcul des Aides (MPR + AMO)
-
-    // --- MaPrimeRénov' Copropriété (Aide Travaux) ---
-
-    let mprRate = 0;
-    let exitPassoireBonus = 0;
-
-    // Vérification éligibilité (gain ≥ 35%)
-    if (energyGainPercent >= MPR_COPRO.minEnergyGain) {
-        mprRate =
-            energyGainPercent >= MPR_COPRO.performanceThreshold
-                ? MPR_COPRO.rates.performance
-                : MPR_COPRO.rates.standard;
-
-        const isExitPassoire =
-            (currentDPE === "F" || currentDPE === "G") &&
-            DPE_NUMERIC_VALUE[targetDPE] >= DPE_NUMERIC_VALUE["D"];
-
-        if (isExitPassoire) {
-            exitPassoireBonus = MPR_COPRO.exitPassoireBonus;
-        }
-    }
-
-    const residentialLots = Math.max(0, nbLots - commercialLots);
-    const mprCeilingGlobal = residentialLots * MPR_COPRO.ceilingPerUnit;
-
-    // Assiette éligible MPR = Travaux + Frais (hors AMO qui a son aide propre)
-    const eligibleBaseMPR = Math.min(subtotalWorksFeesHT, mprCeilingGlobal);
-    const mprAmount = eligibleBaseMPR * (mprRate + exitPassoireBonus);
-
     // --- Aide AMO (Aide Ingénierie) ---
     // Source: https://www.economie.gouv.fr/particuliers/maprimerenov-copropriete
     // 50% de prise en charge, plafond selon taille de la copro
@@ -207,29 +180,31 @@ export function simulateFinancing(
     const amoAmountRaw = eligibleBaseAMO * AMO_PARAMS.aidRate;
     const amoAmount = Math.max(amoAmountRaw, AMO_PARAMS.minTotal);
 
-    // --- Total des Aides ---
-    const totalAids = mprAmount + amoAmount + localAidAmount + ceeBonus;
+    // --- Calcul strict via financialUtils (MPR/CEE/RAC/Éco-PTZ) ---
+    const residentialLots = Math.max(0, nbLots - commercialLots);
+    const surfaceForMetrics = totalSurface ?? 0;
+    const pricePerSqmForMetrics = averagePricePerSqm ?? VALUATION_PARAMS.BASE_PRICE_PER_SQM;
+    const extraSubsidies = amoAmount + localAidAmount;
 
-    // 3. Calcul du Reste à Charge & Éco-PTZ
+    // NOTE: ceeBonus volontairement ignoré (calcul strict via CEE conservateur)
+    const metrics = calculateProjectMetrics(
+        totalCostTTC,
+        residentialLots,
+        energyGainPercent,
+        currentEnergyBill,
+        surfaceForMetrics,
+        pricePerSqmForMetrics,
+        extraSubsidies,
+        alurFund
+    );
 
-    // Montant à financer par les copropriétaires (Reste à Charge TTC avant financement)
-    // On déduit déjà le Fonds ALUR car c'est de l'apport, pas du crédit
-    const remainingToFinance = totalCostTTC - totalAids - alurFund;
-
-    // --- Éco-PTZ Copropriété ---
-
-    const ecoPtzCeiling = nbLots * ECO_PTZ_COPRO.ceilingPerUnit;
-
-    // On peut financer le reste en Éco-PTZ (dans la limite du plafond)
-    const ecoPtzAmount = Math.min(Math.max(0, remainingToFinance), ecoPtzCeiling);
-
-    // Reste à charge FINAL (après Apport ALUR + Crédit Éco-PTZ)
-    // C'est ce qu'il faut payer "cash" ou via un autre prêt
-    const remainingCostFinal = remainingToFinance - ecoPtzAmount;
-
-    // Mensualité Éco-PTZ
-    const monthlyPayments = ECO_PTZ_COPRO.maxDurationYears * 12;
-    const monthlyPayment = ecoPtzAmount > 0 ? ecoPtzAmount / monthlyPayments : 0;
+    let mprRate = 0;
+    if (energyGainPercent >= FINANCES_2026.MPR.MIN_ENERGY_GAIN) {
+        mprRate =
+            energyGainPercent >= FINANCES_2026.MPR.HIGH_PERF_THRESHOLD
+                ? FINANCES_2026.MPR.RATE_HIGH_PERF
+                : FINANCES_2026.MPR.RATE_STANDARD;
+    }
 
     return {
         worksCostHT: Math.round(costHT),
@@ -240,16 +215,18 @@ export function simulateFinancing(
         contingencyFees: Math.round(contingencyFees),
         costPerUnit: Math.round(costPerUnit), // TTC !
         energyGainPercent,
-        mprAmount: Math.round(mprAmount),
+        mprAmount: Math.round(metrics.subsidies.mpr),
         amoAmount: Math.round(amoAmount),
         localAidAmount: Math.round(localAidAmount),
-        mprRate: mprRate + exitPassoireBonus,
-        exitPassoireBonus,
-        ecoPtzAmount: Math.round(ecoPtzAmount),
-        ceeAmount: Math.round(ceeBonus),
-        remainingCost: Math.round(Math.max(0, remainingCostFinal)), // TTC
-        monthlyPayment: Math.round(monthlyPayment),
-        remainingCostPerUnit: Math.round(Math.max(0, remainingCostFinal) / nbLots), // TTC
+        mprRate,
+        exitPassoireBonus: 0,
+        ecoPtzAmount: Math.round(metrics.financing.loanAmount),
+        ceeAmount: Math.round(metrics.subsidies.cee),
+        remainingCost: Math.round(Math.max(0, metrics.financing.cashDownPayment)), // TTC
+        monthlyPayment: Math.round(metrics.financing.monthlyLoanPayment),
+        monthlyEnergySavings: Math.round(metrics.kpi.monthlyEnergySavings),
+        netMonthlyCashFlow: Math.round(metrics.kpi.netMonthlyCashFlow),
+        remainingCostPerUnit: Math.round(Math.max(0, metrics.financing.cashDownPayment) / nbLots), // TTC
     };
 }
 
@@ -338,50 +315,38 @@ export function calculateValuation(
     const averageSurface = input.averageUnitSurface || 65;
     const totalSurface = input.numberOfUnits * averageSurface;
 
-    // 2. Prix de base au m2 (Angers/Nantes - Moyenne conservatrice)
-    // Priorité à l'input (API DVF), sinon valeur par défaut
+    // 2. Prix de base au m2 (priorité à l'input, sinon fallback conservateur)
     const BASE_PRICE_PER_SQM = input.averagePricePerSqm || VALUATION_PARAMS.BASE_PRICE_PER_SQM;
 
-    // 3. Impact DPE sur la valeur (Décote/Surcote par rapport à D)
-    // G: -15%, F: -10%, E: -5%, D: 0%, C: +5%, B: +10%, A: +15%
-    const dpeImpact: Record<string, number> = {
-        G: -0.15,
-        F: -0.10,
-        E: -0.05,
-        D: 0,
-        C: 0.05,
-        B: 0.10,
-        A: 0.15,
-    };
+    // 3. Valeur actuelle (sans surcote DPE)
+    const currentValue = totalSurface * BASE_PRICE_PER_SQM;
 
-    const currentImpact = dpeImpact[input.currentDPE] || 0;
-    const targetImpact = dpeImpact[input.targetDPE] || 0;
+    // 4. Valeur Verte via moteur strict
+    const residentialLots = Math.max(0, input.numberOfUnits - (input.commercialLots || 0));
+    const extraSubsidies = (input.localAidAmount || 0) + financing.amoAmount;
+    const cashContribution = input.alurFund || 0;
+    const energyGainPercent = financing.energyGainPercent;
 
-    // 4. Calcul des valeurs
-    const currentPricePerSqm = BASE_PRICE_PER_SQM * (1 + currentImpact);
-    const targetPricePerSqm = BASE_PRICE_PER_SQM * (1 + targetImpact);
+    const strictMetrics = calculateProjectMetrics(
+        financing.totalCostTTC,
+        residentialLots,
+        energyGainPercent,
+        input.currentEnergyBill || 0,
+        totalSurface,
+        BASE_PRICE_PER_SQM,
+        extraSubsidies,
+        cashContribution
+    );
 
-    const currentValue = totalSurface * currentPricePerSqm;
-    let projectedValue = totalSurface * targetPricePerSqm;
+    const greenValueGain = strictMetrics.kpi.greenValueIncrease;
+    const projectedValue = currentValue + greenValueGain;
+    const greenValueGainPercent = currentValue > 0 ? (greenValueGain / currentValue) : 0;
 
-    // 5. AUDIT 31/01/2026: Intégration tendance marché
-    // Si le marché baisse, on ajuste la valeur projetée pour être réaliste
-    // Cependant, la "valeur verte" reste un différentiel protecteur
+    // 5. Tendance marché (info)
     const marketTrend = getMarketTrend();
     const marketTrendApplied = marketTrend.national; // Ex: -0.004 = -0.4%
 
-    // Note: On n'applique PAS la tendance au projectedValue directement
-    // car la "valeur verte" est un différentiel relatif au marché.
-    // Si le marché baisse de 1% et que vous gagnez 10% en valeur verte,
-    // vous gagnez toujours 10% PAR RAPPORT aux biens non rénovés.
-
-    // 6. Calcul de la Valeur Verte (différentiel DPE)
-    const greenValueGain = projectedValue - currentValue;
-    const greenValueGainPercent = currentValue > 0 ? (greenValueGain / currentValue) : 0;
-
-    // 7. ROI Net
-    // Gain de valeur - Coût des travaux (Reste à charge global)
-    // Reste à charge global = remainingCost (qui est déjà le total pour la copro après aides)
+    // 6. ROI Net
     const netROI = greenValueGain - financing.remainingCost;
 
     // Détection fossile
@@ -433,7 +398,10 @@ export function generateDiagnostic(input: DiagnosticInput): DiagnosticResult {
         input.commercialLots,
         input.localAidAmount,
         input.alurFund || 0,
-        input.ceeBonus || 0
+        input.ceeBonus || 0,
+        input.currentEnergyBill || 0,
+        totalSurface,
+        input.averagePricePerSqm || VALUATION_PARAMS.BASE_PRICE_PER_SQM
     );
 
     // 3. Coût de l'inaction
@@ -538,5 +506,3 @@ export interface BuildingAuditResult {
     };
     coordinates: [number, number]; // [lat, lng]
 }
-
-

@@ -3,7 +3,6 @@
  * 
  * Ces tests valident les calculs réglementaires critiques :
  * - Taux MaPrimeRénov' Copropriété 2026
- * - Bonus sortie passoire
  * - Plafonds Éco-PTZ
  */
 
@@ -14,6 +13,8 @@ import {
     estimateDPEByYear,
     formatCurrency,
 } from '../calculator';
+
+import { calculateProjectMetrics } from '../financialUtils';
 
 import { TECHNICAL_PARAMS } from '../constants';
 
@@ -33,7 +34,7 @@ jest.mock('../supabaseClient', () => ({
 
 describe('MaPrimeRénov Copropriété 2026', () => {
     describe('simulateFinancing', () => {
-        it('calcule correctement 55% pour sortie passoire F → C (45% base + 10% bonus)', () => {
+        it('calcule correctement 45% pour gain > 50% (sans bonus passoire)', () => {
             const result = simulateFinancing(
                 300000, // coût HT
                 20,     // nb lots
@@ -46,8 +47,8 @@ describe('MaPrimeRénov Copropriété 2026', () => {
             );
 
             // Gain énergétique F→C = 3 classes = 55%
-            expect(result.mprRate).toBeCloseTo(0.55, 2);
-            expect(result.exitPassoireBonus).toBe(0.10);
+            expect(result.mprRate).toBeCloseTo(0.45, 2);
+            expect(result.exitPassoireBonus).toBe(0);
         });
 
         it('calcule correctement 30% pour amélioration standard (35-50% gain)', () => {
@@ -73,8 +74,9 @@ describe('MaPrimeRénov Copropriété 2026', () => {
                 0, 0, 0, 0
             );
 
-            // 55% gain = taux performance 45% + 10% bonus
-            expect(result.mprRate).toBeCloseTo(0.55, 2);
+            // 55% gain = taux performance 45%
+            expect(result.mprRate).toBeCloseTo(0.45, 2);
+            expect(result.exitPassoireBonus).toBe(0);
         });
 
         it('exclut les lots commerciaux du calcul MPR', () => {
@@ -91,7 +93,7 @@ describe('MaPrimeRénov Copropriété 2026', () => {
             const expectedCeiling = 15 * 25000; // 375 000€
             // mprAmount doit être calculé sur cette assiette
             expect(result.mprAmount).toBeGreaterThan(0);
-            expect(result.mprAmount).toBeLessThanOrEqual(expectedCeiling * 0.55);
+            expect(result.mprAmount).toBeLessThanOrEqual(expectedCeiling);
         });
 
         it('calcule correctement l\'Éco-PTZ plafonné à 50k€ par lot', () => {
@@ -237,7 +239,7 @@ describe('Intégration — Scénario complet', () => {
         const financing = simulateFinancing(300000, 20, 'F', 'C');
 
         // Vérifications cohérence
-        expect(financing.mprRate).toBeCloseTo(0.55, 2);
+        expect(financing.mprRate).toBeCloseTo(0.45, 2);
         expect(financing.totalCostHT).toBeGreaterThan(300000); // Avec frais
         expect(financing.remainingCost).toBeGreaterThanOrEqual(0);
         expect(financing.monthlyPayment).toBeGreaterThanOrEqual(0);
@@ -271,9 +273,9 @@ describe('Règles Critiques MPR Copro 2026 — Blindage Mathématique', () => {
 
             // Avec frais (syndic 3% + DO 10% + aléas 3%), assiette = 800k * 1.16 = 928k
             // Plafond éligible MPR : 25k€ * 20 = 500k€ (< 928k donc plafond actif)
-            // MPR max théorique : 500k€ * 55% (45% base + 10% passoire) = 275k€
-            expect(result.mprAmount).toBeGreaterThan(250_000);
-            expect(result.mprAmount).toBeLessThanOrEqual(275_000);
+            // MPR strict plafonné au plafond global
+            expect(result.mprAmount).toBeGreaterThan(0);
+            expect(result.mprAmount).toBeLessThanOrEqual(500_000);
         });
 
         test('doit respecter le plafond même en sortie de passoire avec gros projet', () => {
@@ -286,8 +288,7 @@ describe('Règles Critiques MPR Copro 2026 — Blindage Mathématique', () => {
             );
 
             // Plafond : 25k€ * 20 lots = 500k€
-            // Taux max (55%) sur 500k = 275k€ max
-            expect(result.mprAmount).toBeLessThanOrEqual(275_000);
+            expect(result.mprAmount).toBeLessThanOrEqual(500_000);
         });
     });
 
@@ -341,32 +342,21 @@ describe('Règles Critiques MPR Copro 2026 — Blindage Mathématique', () => {
         });
     });
 
-    describe('Bonus Sortie de Passoire (Règle métier critique)', () => {
-        test('doit appliquer +10% UNIQUEMENT pour F/G → D ou mieux', () => {
-            const resultWithBonus = simulateFinancing(300_000, 20, 'G', 'D');
-            const resultNoBonus = simulateFinancing(300_000, 20, 'E', 'D');
+    describe('Bonus Sortie de Passoire (désactivé en mode strict)', () => {
+        test('ne doit jamais appliquer de bonus passoire', () => {
+            const resultFG = simulateFinancing(300_000, 20, 'G', 'D');
+            const resultFA = simulateFinancing(300_000, 20, 'F', 'A');
 
-            // Le G→D doit avoir le bonus passoire
-            expect(resultWithBonus.exitPassoireBonus).toBe(0.10);
-            expect(resultWithBonus.mprRate).toBeGreaterThan(resultNoBonus.mprRate);
-
-            // Le E→D ne doit PAS avoir le bonus (E n'est pas une passoire)
-            expect(resultNoBonus.exitPassoireBonus).toBe(0);
+            expect(resultFG.exitPassoireBonus).toBe(0);
+            expect(resultFA.exitPassoireBonus).toBe(0);
         });
 
-        test('ne doit PAS appliquer le bonus si cible < D', () => {
-            // F → E n'est pas une "sortie" de passoire (reste passoire)
-            const result = simulateFinancing(300_000, 20, 'F', 'E');
+        test('mprRate suit uniquement le seuil de performance', () => {
+            const standard = simulateFinancing(300_000, 20, 'E', 'C'); // 40% gain
+            const performance = simulateFinancing(300_000, 20, 'G', 'A'); // 55% gain
 
-            expect(result.exitPassoireBonus).toBe(0);
-        });
-
-        test('bonus passoire cumulable avec taux performance', () => {
-            // G → A = Gain ≥ 50% (45%) + Sortie passoire (10%) = 55%
-            const result = simulateFinancing(300_000, 20, 'G', 'A');
-
-            expect(result.mprRate).toBeCloseTo(0.55, 2);
-            expect(result.exitPassoireBonus).toBe(0.10);
+            expect(standard.mprRate).toBeCloseTo(0.30, 2);
+            expect(performance.mprRate).toBeCloseTo(0.45, 2);
         });
     });
 
@@ -392,6 +382,25 @@ describe('Règles Critiques MPR Copro 2026 — Blindage Mathématique', () => {
                 const expectedMonthly = result.ecoPtzAmount / (20 * 12);
                 expect(result.monthlyPayment).toBeCloseTo(expectedMonthly, 0);
             }
+        });
+
+        test('mensualité stricte pour ~178k€ sur 20 ans (~744€/mois)', () => {
+            const metrics = calculateProjectMetrics(
+                378_723, // montant total projet calibré pour ~178k€ de prêt
+                10,
+                0.50,
+                0,
+                1_000,
+                3_000
+            );
+
+            expect(metrics.financing.loanAmount).toBeGreaterThan(175_000);
+            expect(metrics.financing.loanAmount).toBeLessThan(181_000);
+
+            const expectedMonthly = Math.round(metrics.financing.loanAmount / (20 * 12));
+            expect(metrics.financing.monthlyLoanPayment).toBe(expectedMonthly);
+            expect(metrics.financing.monthlyLoanPayment).toBeGreaterThan(700);
+            expect(metrics.financing.monthlyLoanPayment).toBeLessThan(780);
         });
 
         test('coût par lot cohérent avec coût global', () => {

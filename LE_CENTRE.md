@@ -158,6 +158,8 @@ Le cœur du réacteur est une **librairie de fonctions pures** (`calculator.ts` 
 | `src/lib/subsidy-calculator.ts` | **Moteur granulaire** — Calcul des aides individuelles par profil |
 | `src/services/riskService.ts` | **Normalisation risques** — Gaspar/Géorisques en scores 0-3 |
 | `src/lib/constants.ts` | **Source unique de vérité** — Taux, dates, barèmes 2026 |
+| `src/lib/financialConstants.ts` | **Barèmes financiers ANAH 2026** — Plafonds MPR/CEE/Éco-PTZ |
+| `src/lib/financialUtils.ts` | **Calculateur financier strict** — MPR/CEE/RAC/Éco-PTZ + KPI cash |
 | `src/lib/schemas.ts` | **Validation Zod** — Types stricts DiagnosticInput/Result |
 
 ## 3.3 Flux de Données (Unidirectional)
@@ -1284,6 +1286,9 @@ mv docs/VERIFICATION_MATHEMATIQUE_MPR_2026.md docs/archive/
 | 2026-01-31 | JB | Ajout §7.4 Déploiement CI/CD (Vercel) | §7.4 |
 | 2026-01-31 | JB | Complétion §13.11.3 Variables d'environnement | §13.11.3 |
 | 2026-02-02 | OpenAI Assistant | Raffinement du hero premium, panneau de saisie manuelle dépliable, et refonte de l'impact individuel (valeur verte déplacée, carte ROI retirée). | §5, §10 |
+| 2026-02-04 | OpenAI Assistant | Ajout des modules financiers stricts (financialConstants/financialUtils) pour plafonds MPR/CEE/Éco-PTZ et KPI cash. | §3.2 |
+| 2026-02-04 | OpenAI Assistant | Branchement du calculateur strict dans `calculator.ts`, valeur verte conservatrice (8%/12%) et Éco-PTZ dynamique selon gain énergétique. | §3.1, §6 |
+| 2026-02-04 | OpenAI Assistant | Ajout `currentEnergyBill`, KPI cashflow mensuel (économies - mensualité) et mise à jour des tests unitaires du moteur. | §3.1, §8 |
 
 **Comment ajouter une entrée :**
 ```
