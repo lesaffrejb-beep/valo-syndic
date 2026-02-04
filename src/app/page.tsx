@@ -435,7 +435,7 @@ export default function ScrollytellingPage() {
                             </div>
                         </CardContent>
                     </Card>
-                    <div>
+                    <div className="md:col-span-2">
                         <TantiemeCalculator
                             financing={financing}
                             simulationInputs={simulationInputs}

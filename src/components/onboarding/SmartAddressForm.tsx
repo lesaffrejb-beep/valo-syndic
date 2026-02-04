@@ -58,6 +58,16 @@ export function SmartAddressForm({
     }
   };
 
+  const triggerSubmit = async (userInitiated = false) => {
+    const result = await form.submit();
+    if (form.formData.values && Object.keys(form.formData.values).length > 0) {
+      const validated = validateFormData(form.formData.values);
+      if (validated) {
+        onSubmit(validated, { userInitiated });
+      }
+    }
+  };
+
   const validateFormData = (values: Partial<DiagnosticInput>): DiagnosticInput | null => {
     // Validation basique - dans une vraie app, utiliser Zod
     if (!values.address || !values.postalCode || !values.city) return null;
@@ -271,12 +281,17 @@ export function SmartAddressForm({
                   ) : form.progress < 100 ? (
                     <div className="text-muted">Complétez le formulaire ({form.progress}%)</div>
                   ) : (
-                    <div className="text-gold font-medium">Analyse prête — résultats mis à jour automatiquement</div>
+                    <div className="flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => void triggerSubmit(true)}
+                        className="px-6 py-3 rounded-full bg-gold hover:bg-gold-light text-black font-semibold"
+                      >
+                        Lancer le diagnostic
+                      </button>
+                    </div>
                   )}
                 </div>
-
-                {/* Auto-submit when form is ready (debounced) */}
-                <AutoSubmitWhenReady form={form} onSubmit={onSubmit} validateFormData={validateFormData} />
 
                 {/* Message d'erreur */}
                 <AnimatePresence>
@@ -417,21 +432,4 @@ function AdvancedOptions({ form }: { form: UseSmartFormReturn }) {
 // =============================================================================
 import type { UseSmartFormReturn } from "@/hooks/useSmartForm";
 
-function AutoSubmitWhenReady({ form, onSubmit, validateFormData }: { form: UseSmartFormReturn; onSubmit: (data: DiagnosticInput) => void; validateFormData: (values: Partial<DiagnosticInput>) => DiagnosticInput | null; }) {
-  useEffect(() => {
-    if (!form.isReadyToSubmit) return;
-
-    // Debounce to avoid spamming rapid onChange events
-    const id = setTimeout(() => {
-      if (form.formData.values && Object.keys(form.formData.values).length > 0) {
-        const validated = validateFormData(form.formData.values);
-        if (validated) onSubmit(validated, { userInitiated: false });
-      }
-    }, 350);
-
-    return () => clearTimeout(id);
-    // run when readiness or form values change
-  }, [form.isReadyToSubmit, form.formData.values, onSubmit, validateFormData]);
-
-  return null;
-}
+// Auto-submit removed: replaced by explicit 'Lancer le diagnostic' button in the form
