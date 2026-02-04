@@ -53,7 +53,7 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
             <img
                 src={streetViewUrl}
                 alt={`Façade - ${address}`}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 scale-105 ${imageLoaded ? 'opacity-40' : 'opacity-0'
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 scale-105 ${imageLoaded ? 'opacity-70' : 'opacity-0'
                     }`}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
@@ -61,11 +61,11 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
 
             {/* Loading state */}
             {!imageLoaded && !imageError && (
-                <div className="absolute inset-0 bg-gradient-to-br from-deep via-deep-light to-deep animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-br from-deep/30 via-deep-light/20 to-deep/30 animate-pulse" />
             )}
 
-            {/* Subtle vignette for depth */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(5,5,7,0.8)_100%)]" />
+            {/* Subtle vignette for depth (less dark to brighten the view) */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(5,5,7,0.45)_100%)]" />
         </div>
     );
 };

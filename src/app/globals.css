@@ -32,7 +32,8 @@
     font-family: var(--font-sans);
     scroll-behavior: smooth;
     /* Obsidian Background - Pure Deep Black with extremely subtle gradient */
-    background: linear-gradient(to bottom, #0A0A0A, #000000);
+    /* slightly lighter to reduce extreme contrast and white flash on overscroll */
+    background: linear-gradient(to bottom, #151515, #050505);
     background-attachment: fixed;
   }
 
@@ -41,7 +42,14 @@
     /* Ultra-subtle noise texture - lowered opacity for cleaner look */
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
     background-attachment: fixed;
-    background-color: #030303;
+    /* Brighter base to reduce perceived darkness by ~20% */
+    background-color: #0b0b0b;
+  }
+
+  /* Prevent white frames when overscrolling on macOS; keep background consistent */
+  html, body, #__next {
+    background-color: #0b0b0b;
+    overscroll-behavior: none;
   }
 
   /* Swiss Style Typography */
