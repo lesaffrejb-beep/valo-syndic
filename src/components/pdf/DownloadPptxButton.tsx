@@ -117,7 +117,7 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
             const targetDPEColor = DPE_COLORS[result.input.targetDPE] || COLORS.slate;
 
             // Current DPE
-            slide2.addShape(pptxgen.ShapeType.roundRect, {
+            slide2.addShape(PptxGenJS.ShapeType.roundRect, {
                 x: 1.5, y: 1.5, w: 1.5, h: 1.5,
                 fill: { color: currentDPEColor },
                 line: { color: currentDPEColor },
@@ -138,7 +138,7 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
             });
 
             // Target DPE
-            slide2.addShape(pptxgen.ShapeType.roundRect, {
+            slide2.addShape(PptxGenJS.ShapeType.roundRect, {
                 x: 5, y: 1.5, w: 1.5, h: 1.5,
                 fill: { color: targetDPEColor },
                 line: { color: targetDPEColor },
@@ -180,7 +180,7 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
             // Monthly payment hero
             const monthlyPayment = Math.round((result.financing.ecoPtzAmount * 0.1) / (20 * 12));
 
-            slide3.addShape(pptxgen.ShapeType.roundRect, {
+            slide3.addShape(PptxGenJS.ShapeType.roundRect, {
                 x: 2, y: 1.2, w: 6, h: 1.8,
                 fill: { color: "1a4d1a" },
                 line: { color: COLORS.success, pt: 2 },
@@ -246,7 +246,7 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
             });
 
             // Inaction cost box
-            slide4.addShape(pptxgen.ShapeType.roundRect, {
+            slide4.addShape(PptxGenJS.ShapeType.roundRect, {
                 x: 0.5, y: 1.2, w: 4.2, h: 2,
                 fill: { color: "4a1515" },
                 line: { color: COLORS.danger, pt: 2 },
@@ -265,7 +265,7 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
             });
 
             // Green value box
-            slide4.addShape(pptxgen.ShapeType.roundRect, {
+            slide4.addShape(PptxGenJS.ShapeType.roundRect, {
                 x: 5.3, y: 1.2, w: 4.2, h: 2,
                 fill: { color: "1a4d1a" },
                 line: { color: COLORS.success, pt: 2 },
@@ -285,7 +285,7 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
 
             // ROI box
             const roiColor = result.valuation.netROI >= 0 ? COLORS.success : COLORS.danger;
-            slide4.addShape(pptxgen.ShapeType.roundRect, {
+            slide4.addShape(PptxGenJS.ShapeType.roundRect, {
                 x: 2, y: 3.5, w: 6, h: 1.2,
                 fill: { color: COLORS.slate },
                 line: { color: COLORS.gold, pt: 2 },
@@ -308,7 +308,7 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
             });
 
             // Key phrase
-            slide5.addShape(pptxgen.ShapeType.roundRect, {
+            slide5.addShape(PptxGenJS.ShapeType.roundRect, {
                 x: 0.5, y: 1.2, w: 9, h: 1.8,
                 fill: { color: "2d2a1a" },
                 line: { color: COLORS.gold, pt: 2 },
