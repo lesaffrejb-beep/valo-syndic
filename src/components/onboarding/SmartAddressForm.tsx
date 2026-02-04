@@ -54,6 +54,7 @@ export function SmartAddressForm({
   className = "",
 }: SmartAddressFormProps) {
   const form = useSmartForm({ initialData });
+  const parseOptionalNumber = (value: string) => (value === "" ? undefined : Number(value));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -411,8 +412,8 @@ function AdvancedOptions({ form }: { form: UseSmartFormReturn }) {
                 >
                   <input
                     type="number"
-                    value={form.formData.values.commercialLots || 0}
-                    onChange={(e) => form.updateField("commercialLots", parseInt(e.target.value) || 0)}
+                    value={form.formData.values.commercialLots ?? ""}
+                    onChange={(e) => form.updateField("commercialLots", parseOptionalNumber(e.target.value) as number)}
                     className="w-full bg-transparent px-4 py-3 text-white focus:outline-none"
                     min={0}
                   />
@@ -429,8 +430,8 @@ function AdvancedOptions({ form }: { form: UseSmartFormReturn }) {
                     <Euro className="w-4 h-4 text-muted" />
                     <input
                       type="number"
-                      value={form.formData.values.alurFund || 0}
-                      onChange={(e) => form.updateField("alurFund", parseInt(e.target.value) || 0)}
+                      value={form.formData.values.alurFund ?? ""}
+                      onChange={(e) => form.updateField("alurFund", parseOptionalNumber(e.target.value) as number)}
                       className="flex-1 bg-transparent text-white focus:outline-none"
                       step={1000}
                     />

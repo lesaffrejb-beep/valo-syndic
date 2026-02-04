@@ -364,23 +364,31 @@ export function DownloadPptxButton({ result, className = "" }: DownloadPptxButto
 
 
 
+    const v2Badge = (
+        <span className="absolute -top-1.5 -right-1.5 rounded-full bg-black text-gold px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(0,0,0,0.35)]">
+            V2
+        </span>
+    );
+
     return (
         <div className="relative">
             <button
                 onClick={generatePptx}
                 disabled={isGenerating}
-                className={`btn-secondary flex items-center justify-center gap-3 ${className}`}
+                className={`relative btn-secondary flex items-center justify-center gap-3 ${className}`}
                 title="Télécharger présentation PowerPoint"
             >
                 {isGenerating ? (
                     <>
                         <span className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                         <span className="hidden sm:inline">Génération...</span>
+                        {v2Badge}
                     </>
                 ) : (
                     <>
                         <Presentation className="w-5 h-5 text-current" />
                         <span className="hidden sm:inline">PowerPoint</span>
+                        {v2Badge}
                     </>
                 )}
             </button>

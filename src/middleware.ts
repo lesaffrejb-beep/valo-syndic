@@ -39,7 +39,7 @@ export function middleware(request: NextRequest) {
 
     const devCsp = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data: https://maps.googleapis.com",
+        "script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob: data: https://maps.googleapis.com",
         "worker-src 'self' blob: data: 'unsafe-eval' 'unsafe-inline'",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob: maps.googleapis.com maps.gstatic.com https://tile.openstreetmap.org",
@@ -63,8 +63,8 @@ export function middleware(request: NextRequest) {
 
     const prodCsp = [
         "default-src 'self'",
-        // Allow inline scripts in production for Next.js bootstrap and Maps until we add nonces/hashes
-        "script-src 'self' 'unsafe-inline' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
+        // Allow inline/eval in production so PDF (WASM) can run
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://maps.googleapis.com https://maps.gstatic.com",
         "worker-src 'self' blob: data:",
         // Keep inline styles allowed temporarily; migrate style props to classes later
         "style-src 'self' 'unsafe-inline'",
