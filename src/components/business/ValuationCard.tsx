@@ -42,7 +42,7 @@ export function ValuationCard({ valuation, financing, marketTrend, isPassoire = 
                 <div className="flex items-start justify-between">
                     <div>
                         <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                            {isMarketDown ? <ShieldAlert className="w-5 h-5 text-cyan-400" /> : <TrendingUp className="w-5 h-5 text-success" />}
+                            {isMarketDown ? <ShieldAlert className="w-5 h-5 text-white" /> : <TrendingUp className="w-5 h-5 text-white" />}
                             {title}
                         </h3>
                         <p className="text-sm text-muted mt-1">

@@ -98,8 +98,8 @@ export function UrgencyScore({ compliance, currentDPE }: UrgencyScoreProps) {
 
             {/* HEADER STANDARD */}
             <div className="relative z-10 mb-2">
-                <h3 className="text-lg font-bold text-main flex items-center gap-2">
-                    🎯 Score d&apos;urgence
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    🎯 Score d'urgence
                 </h3>
             </div>
 

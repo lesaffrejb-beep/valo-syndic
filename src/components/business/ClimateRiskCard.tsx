@@ -86,9 +86,9 @@ export const ClimateRiskCard = ({ coordinates }: ClimateRiskCardProps) => {
             {/* Header */}
             <div className="relative z-10 flex items-start justify-between mb-8">
                 <div>
-                    <h3 className="text-lg font-bold text-main mb-1 flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
                         <span className="text-xl">🌡️</span>
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-danger-400 to-danger-600">
+                        <span className="text-white">
                             Climate Time Bomb
                         </span>
                     </h3>
