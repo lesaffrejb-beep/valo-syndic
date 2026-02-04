@@ -20,7 +20,8 @@ export const StreetViewHeader = ({ address, coordinates }: StreetViewHeaderProps
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
 
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
+    // Accept both public and non-prefixed env names (template uses GOOGLE_MAPS_API_KEY)
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || process.env.GOOGLE_MAPS_API_KEY;
 
     // Construire l'URL Street View - larger image for full background
     const streetViewUrl = apiKey && (coordinates || address)
