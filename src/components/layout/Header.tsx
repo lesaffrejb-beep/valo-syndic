@@ -52,7 +52,7 @@ export function Header({
     };
 
     const navItems = [
-        { id: 'diagnostic', label: 'Diagnostique' },
+        { id: 'diagnostic', label: 'Diagnostic' },
         { id: 'projection', label: 'Projection' },
         { id: 'my-pocket', label: 'Analyse' },
         { id: 'finance', label: 'Financement' },
