@@ -99,7 +99,7 @@ export interface SubsidyBreakdown {
     /** Reste à charge final (€) */
     remainingCost: number;
 
-    /** Effort mensuel estimé (prêt 20 ans, 4% nominal) */
+    /** Effort mensuel estimé (Éco-PTZ 20 ans, 0% taux zéro) */
     monthlyPayment: number;
 }
 
@@ -204,12 +204,15 @@ const INDIVIDUAL_PREMIUMS: Record<IncomeProfile, number> = {
     Pink: 0,
 } as const;
 
-/** Paramètres de calcul mensualité */
-const LOAN_PARAMS = {
+/** 
+ * Paramètres Éco-PTZ Copropriété 2026
+ * Source: ANAH / Bercy - Prêt à taux 0%
+ */
+const ECO_PTZ_PARAMS = {
     /** Durée du prêt en années */
     durationYears: 20,
-    /** Taux nominal annuel (4%) */
-    nominalRate: 0.04,
+    /** Taux nominal annuel Éco-PTZ (0% - prêt aidé) */
+    nominalRate: 0.00,
 } as const;
 
 // =============================================================================
@@ -251,7 +254,12 @@ function calculateMonthlyPayment(
     annualRate: number,
     years: number
 ): number {
-    if (principal <= 0 || annualRate <= 0) return 0;
+    if (principal <= 0 || annualRate < 0) return 0;
+
+    // Éco-PTZ: taux 0%, mensualité = capital / durée
+    if (annualRate === 0) {
+        return principal / (years * 12);
+    }
 
     const monthlyRate = annualRate / 12;
     const numberOfPayments = years * 12;
@@ -405,11 +413,11 @@ export function calculateSubsidies(inputs: SimulationInputs): SubsidyResult {
         const totalCostPerUnit = workSharePerUnit + amoSharePerUnit;
         const remainingCost = Math.max(0, totalCostPerUnit - totalSubsidies);
 
-        // Effort mensuel (Prêt 20 ans, 4% taux nominal)
+        // Effort mensuel (Éco-PTZ 20 ans, 0% taux zéro)
         const monthlyPayment = calculateMonthlyPayment(
             remainingCost,
-            LOAN_PARAMS.nominalRate,
-            LOAN_PARAMS.durationYears
+            ECO_PTZ_PARAMS.nominalRate,
+            ECO_PTZ_PARAMS.durationYears
         );
 
         profiles[profile] = {

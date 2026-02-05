@@ -45,7 +45,7 @@ import { InactionCostCard } from '@/components/business/InactionCostCard';
 import { ComparisonSplitScreen } from '@/components/business/ComparisonSplitScreen';
 import { BenchmarkChart } from '@/components/business/BenchmarkChart';
 import { FinancingCard } from '@/components/business/FinancingCard';
-import { SubsidyTable } from '@/components/business/SubsidyTable';
+
 import { TantiemeCalculator } from '@/components/business/TantiemeCalculator';
 import { ObjectionHandler } from '@/components/business/ObjectionHandler';
 import { LegalWarning } from '@/components/business/LegalWarning';
@@ -360,17 +360,17 @@ export default function ScrollytellingPage() {
 
 
 
-            {/* Scroll Indicator */}
-            <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
-            >
-                <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
-                <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-            </motion.div>
-        </section>
+                {/* Scroll Indicator */}
+                <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 1 }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted/50"
+                >
+                    <span className="text-[10px] uppercase tracking-widest">Diagnostic</span>
+                    <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+                </motion.div>
+            </section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 1 — THE DIAGNOSTIC (Risks)
                 ================================================================ */}
             <Section id="diagnostic">
@@ -396,17 +396,17 @@ export default function ScrollytellingPage() {
                     </div>
                 </div>
 
-                    {/* Benchmark Chart - Full Width (2 columns) */}
-                    <div className="w-full mt-8">
-                        <BenchmarkChart
-                            currentDPE={diagnosticInput.currentDPE}
-                            city={diagnosticInput.city}
-                            className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
-                        />
-                    </div>
-                </Section>
+                {/* Benchmark Chart - Full Width (2 columns) */}
+                <div className="w-full mt-8">
+                    <BenchmarkChart
+                        currentDPE={diagnosticInput.currentDPE}
+                        city={diagnosticInput.city}
+                        className="bg-white/[0.02] border border-white/5 rounded-3xl p-6"
+                    />
+                </div>
+            </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 2 — THE PROJECTION (Vision)
                 ================================================================ */}
             <Section id="projection" className="bg-gradient-to-b from-deep to-deep-light/20">
@@ -422,7 +422,7 @@ export default function ScrollytellingPage() {
                 />
             </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 4 — DIAGNOSTIC PERSONNEL
                 ================================================================ */}
             <Section id="my-pocket">
@@ -436,7 +436,7 @@ export default function ScrollytellingPage() {
                     <div className="text-center mb-4">
                         <span className="text-[10px] uppercase tracking-[0.3em] text-gold/60 font-semibold">Votre quote-part</span>
                     </div>
-                    <ViewModeToggle 
+                    <ViewModeToggle
                         totalUnits={diagnosticInput.numberOfUnits}
                         avgSurface={diagnosticInput.averageUnitSurface || 65}
                     />
@@ -464,7 +464,7 @@ export default function ScrollytellingPage() {
                 </div>
             </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 3 — THE FINANCING (Logic)
                 ================================================================ */}
             <Section id="finance">
@@ -481,13 +481,11 @@ export default function ScrollytellingPage() {
                         />
                     </div>
 
-                    <div className="xl:col-span-12 mt-8">
-                        <SubsidyTable inputs={simulationInputs} />
-                    </div>
+
                 </div>
             </Section>
 
-    {/* ================================================================
+            {/* ================================================================
                 ZONE 5 — ACTION
                 ================================================================ */}
             <Section id="action" className="pb-40">
