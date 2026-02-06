@@ -78,6 +78,56 @@
 
 ---
 
+# 🚀 QUICK START — Onboarding Développeur
+
+> **Pour les humains qui rejoignent le projet**
+
+## Installation
+
+```bash
+# 1. Cloner le repository
+git clone https://github.com/lesaffrejb-beep/valo-syndic.git
+cd valo-syndic
+
+# 2. Installer les dépendances
+# Version Node.js requise : Node v20+ (voir package.json engines si spécifié)
+npm install
+
+# 3. Configuration des variables d'environnement
+cp .env.example .env.local
+```
+
+## Configuration des Clés
+
+Éditez `.env.local` et renseignez les variables suivantes :
+
+```bash
+# SUPABASE — Obligatoire
+NEXT_PUBLIC_SUPABASE_URL=https://[votre-projet].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+
+# Trouvez ces clés dans : Dashboard Supabase > Settings > API
+```
+
+## Lancement
+
+```bash
+# Mode développement
+npm run dev
+
+# L'application sera accessible sur http://localhost:3000
+```
+
+## Vérification
+
+- ✅ La page d'accueil s'affiche correctement
+- ✅ Le formulaire de diagnostic est opérationnel
+- ✅ La connexion Supabase fonctionne (voir badge en bas de page)
+
+**En cas de problème :** Consultez §7 (Stack Technique) et §13.11.3 (Variables d'environnement).
+
+---
+
 # 1. IDENTITÉ & PHILOSOPHIE
 
 ## 1.1 Définition Produit
@@ -139,16 +189,140 @@ Le produit est conçu pour être utilisé à **3 moments clés** du cycle de dé
 
 Le cœur du réacteur est une **librairie de fonctions pures** (`calculator.ts` & `subsidy-calculator.ts`) qui exécute la logique IOBSP.
 
-## 3.1 Logique de Calcul & Conformité (V2)
+## 3.1 Logique de Calcul & Conformité ANAH 2026 (V3)
 
-| Règle | Description |
-|-------|-------------|
-| **Séparation Stricte** | Distinction absolue entre "Aides" (Subventions) et "Financement" (Prêts) |
-| **Wording Obligatoire** | "0€ d'apport requis (Financé par Éco-PTZ à 0%)" — Jamais "Coût 0€" |
-| **Croisement IOBSP** | Intégration des règles d'octroi (Taux d'usure, taux nominaux, durée 20 ans, endettement) |
-| **Algorithme Aides (Cascade)** | CEE (BAR-TH-164) → MPR Copro (Socle 30-45%) → Bonus Individuel (Profils Modestes) → Aides Locales |
-| **Segmentation Fiscale** | Catégorisation automatique des copropriétaires (RFR / Parts fiscales) en profils **Bleu/Jaune/Violet/Rose** |
-| **Sécurité Réglementaire** | Banner automatique `MprSuspensionAlert` si la Loi de Finances n'est pas votée |
+> **Principe fondamental :** Distinction stricte entre **RÈGLES OFFICIELLES** (Loi — Hard-coded) et **ESTIMATIONS PRUDENTES** (Configurable).
+
+### A. RÈGLES OFFICIELLES (LOI DE FINANCES 2026 — CONFIRMÉ)
+
+#### MaPrimeRénov' Copropriété (Le Socle)
+
+| Paramètre | Valeur | Source |
+|-----------|--------|--------|
+| **Assiette de calcul** | Plafond strict : **25 000 € HT par logement** | Loi de Finances 2026 |
+| **Taux de subvention** | • 30% si gain énergétique entre 35% et 50%<br>• 45% si gain énergétique > 50% | ANAH 2026 |
+| **Bonus "Sortie de Passoire"** | +10% additionnels si passage F/G → D minimum | ANAH 2026 |
+| **Bonus AMO** | 50% du montant AMO<br>Plafond : 600 € HT/lot<br>Plancher : 3 000 € par copropriété | ANAH 2026 |
+
+**Formule officielle :**
+
+```
+MPR = min(
+  (Travaux HT × Taux MPR),
+  (25 000 € × Nombre de logements)
+)
+```
+
+#### Plafond d'Écrêtement (Capping Légal)
+
+> **RÈGLE CRITIQUE** — Le cumul des aides publiques **ne peut JAMAIS dépasser 80% du montant TTC** des travaux pour le Syndicat des Copropriétaires.
+
+```
+Si (MPR + CEE + Aides Locales) > (Travaux TTC × 0.80)
+  → Écrêter le montant MPR pour respecter le plafond
+```
+
+**Fichier source :** `src/lib/financialUtils.ts` — Fonction `applyCapping()`
+
+#### Éco-PTZ Copropriété (Financement)
+
+| Paramètre | Valeur | Règle |
+|-----------|--------|-------|
+| **Plafond capital** | 50 000 € par lot | Condition : Rénovation Globale avec gain > 35% |
+| **Durée** | 20 ans (240 mois) | Fixe |
+| **Taux nominal** | 0,00% | Garanti par l'État |
+| **Mensualité** | `Capital Emprunté / 240` | Pas d'intérêts |
+
+**Formule stricte :**
+
+```
+Éco-PTZ = min(
+  Reste à Charge Après Aides,
+  50 000 € × Nombre de logements
+)
+
+Mensualité = Éco-PTZ / 240
+```
+
+⚠️ **Attention :** La mensualité DOIT être calculée avec cette formule stricte. Toute autre méthode produit des résultats faux.
+
+---
+
+### B. RÈGLES DE GESTION PRUDENTE (ESTIMATIONS MARCHÉ)
+
+#### CEE (Certificats d'Économies d'Énergie)
+
+> **Ne pas utiliser de valeur fixe** — Estimation dynamique basée sur le type de travaux.
+
+| Paramètre | Valeur par défaut | Configuration |
+|-----------|------------------|---------------|
+| **Estimation** | 8% à 10% du montant travaux HT | Rénovation Globale (BAR-TH-164) |
+| **Override** | Surchargeable par l'utilisateur | Input manuel prioritaire |
+
+**Implémentation :** `src/lib/financialUtils.ts` — `estimateCEE()`
+
+#### Écrêtement Individuel (Profils Couleurs)
+
+La grille **Bleu 100% / Jaune 90% / Violet 80% / Rose 50%** s'applique aux **dossiers individuels MPR**, pas à l'aide collective.
+
+| Usage | Règle |
+|-------|-------|
+| **Aide Collective** | Ne PAS appliquer l'écrêtement | La copro reçoit le taux plein (30% ou 45%) |
+| **Warning Simulator** | Utiliser pour calculer le Reste à Charge final **théorique** par copropriétaire | Scénario pessimiste pour information uniquement |
+
+**Fichier source :** `src/lib/subsidy-calculator.ts`
+
+---
+
+### C. KPIs & FORMULES (ANTI-BULLSHIT)
+
+#### Algorithme de calcul du Reste à Charge (Ordre immuable)
+
+```
+1. Montant Travaux TTC
+2. MINUS CEE (Est. 8-10% HT)
+3. MINUS MPR Copro (Calculé sur HT, plafonné 25k/lot, écrêté à 80% TTC)
+4. EQUAL Reste à Charge Collectif
+5. DIVIDED BY Tantièmes = Quote-part Reste à Charge
+6. FINANCING : Quote-part couverte à 100% par Éco-PTZ (dans la limite de 50k€)
+```
+
+#### KPI 1 : Flux de Trésorerie (Cashflow)
+
+> **Impact mensuel sur le budget**
+
+```
+Cashflow = Économie Énergie Mensuelle Estimée - Mensualité Éco-PTZ
+```
+
+**Type :** Flux de trésorerie (Cash) — Impact mensuel réel sur le budget du copropriétaire.
+
+#### KPI 2 : Valeur Patrimoniale (Stock)
+
+> **Plus-value latente du bien**
+
+```
+Valeur Verte = Prix m² × Surface × % Valeur Verte
+```
+
+**Type :** Valorisation patrimoniale (Stock) — Gain théorique de valeur vénale.
+
+⚠️ **INTERDICTION FORMELLE** d'additionner ce montant au Cashflow ou de le soustraire du coût des travaux.
+
+**Wording obligatoire :** "Votre bien prend de la valeur, mais cette plus-value se réalise à la vente."
+
+---
+
+### D. Fichiers d'Implémentation
+
+| Fichier | Rôle |
+|---------|------|
+| `src/lib/financialConstants.ts` | Barèmes ANAH 2026 (MPR, CEE, Éco-PTZ) |
+| `src/lib/financialUtils.ts` | Calculateur strict (applyCapping, calculateEcoPTZ) |
+| `src/lib/calculator.ts` | Orchestrateur principal |
+| `src/lib/constants.ts` | Constantes réglementaires (dates, taux) |
+
+---
 
 ## 3.2 Fichiers Clés
 
@@ -156,7 +330,7 @@ Le cœur du réacteur est une **librairie de fonctions pures** (`calculator.ts` 
 |---------|------|
 | `src/lib/calculator.ts` | **Orchestrateur principal** — Pipeline Input → Compliance → Financing → Valuation |
 | `src/lib/subsidy-calculator.ts` | **Moteur granulaire** — Calcul des aides individuelles par profil |
-| `src/services/riskService.ts` | **Normalisation risques** — Gaspar/Géorisques en scores 0-3 |
+| `src/lib/services/riskService.ts` | **Normalisation risques** — Gaspar/Géorisques en scores 0-3 |
 | `src/lib/constants.ts` | **Source unique de vérité** — Taux, dates, barèmes 2026 |
 | `src/lib/financialConstants.ts` | **Barèmes financiers ANAH 2026** — Plafonds MPR/CEE/Éco-PTZ |
 | `src/lib/financialUtils.ts` | **Calculateur financier strict** — MPR/CEE/RAC/Éco-PTZ + KPI cash |
@@ -300,6 +474,161 @@ L'extension Chrome/Firefox permet d'**aspirer automatiquement les données** dep
 
 ---
 
+## 4.5 Modèles de Données Cœurs
+
+> **Source de vérité TypeScript** — Extraits de `src/lib/schemas.ts`
+
+Cette section documente les interfaces TypeScript principales utilisées dans le moteur de calcul. Elle sert de référence pour éviter les hallucinations sur les noms de champs.
+
+### 4.5.1 DiagnosticInput
+
+Données d'entrée fournies par l'utilisateur :
+
+```typescript
+interface DiagnosticInput {
+  // Localisation
+  address?: string;                    // Adresse normalisée
+  postalCode?: string;                 // Code postal (5 chiffres)
+  city?: string;                       // Ville
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+
+  // DPE
+  currentDPE: "A" | "B" | "C" | "D" | "E" | "F" | "G";
+  targetDPE: "A" | "B" | "C" | "D" | "E" | "F" | "G";
+
+  // Copropriété
+  numberOfUnits: number;               // Nombre de lots (2-500)
+  commercialLots?: number;             // Lots commerciaux (non éligibles MPR)
+  averageUnitSurface?: number;         // Surface moyenne d'un lot (m²)
+
+  // Finances
+  estimatedCostHT: number;             // Coût travaux HT
+  alurFund?: number;                   // Fonds ALUR disponible
+  ceeBonus?: number;                   // Primes CEE estimées
+  localAidAmount?: number;             // Aides locales
+  currentEnergyBill?: number;          // Facture énergétique annuelle globale
+
+  // Immobilier
+  averagePricePerSqm?: number;         // Prix m² quartier
+  priceSource?: string;                // Source du prix ("DVF", "Manuel")
+  salesCount?: number;                 // Nombre de ventes (crédibilité)
+
+  // Contexte
+  heatingSystem?: "electrique" | "gaz" | "fioul" | "bois" | "urbain" | "autre";
+  investorRatio?: number;              // % bailleurs (0-100)
+}
+```
+
+### 4.5.2 FinancingPlan
+
+Plan de financement calculé par le moteur :
+
+```typescript
+interface FinancingPlan {
+  // Coûts de base
+  worksCostHT: number;                 // Coût travaux HT (base)
+  totalCostHT: number;                 // Total HT (Travaux + Honoraires + Aléas)
+  totalCostTTC: number;                // Total TTC (TVA 5,5%)
+  
+  // Honoraires
+  syndicFees: number;                  // Honoraires Syndic (3%)
+  doFees: number;                      // Assurance DO (2%)
+  contingencyFees: number;             // Aléas (3%)
+  costPerUnit: number;                 // Coût par lot
+  
+  // Gain énergétique
+  energyGainPercent: number;           // Gain énergétique estimé (%)
+  
+  // Aides
+  mprAmount: number;                   // MaPrimeRénov' Copropriété
+  mprRate: number;                     // Taux MPR appliqué (0.30 ou 0.45)
+  amoAmount: number;                   // Aide AMO
+  exitPassoireBonus: number;           // Bonus sortie passoire
+  ceeAmount: number;                   // CEE
+  localAidAmount: number;              // Aides locales
+  
+  // Financement
+  remainingCost: number;               // Reste à charge après aides
+  ecoPtzAmount: number;                // Montant Éco-PTZ disponible
+  monthlyPayment: number;              // Mensualité Éco-PTZ (20 ans)
+  
+  // KPI Cash
+  monthlyEnergySavings: number;        // Économies mensuelles estimées
+  netMonthlyCashFlow: number;          // Flux net (économie - mensualité)
+  
+  remainingCostPerUnit: number;        // Reste à charge par lot
+}
+```
+
+### 4.5.3 DiagnosticResult
+
+Résultat complet retour né par `calculator.ts` :
+
+```typescript
+interface DiagnosticResult {
+  input: DiagnosticInput;              // Entrée utilisateur (echo)
+  compliance: ComplianceStatus;        // Statut réglementaire (Loi Climat)
+  financing: FinancingPlan;            // Plan de financement détaillé
+  inactionCost: InactionCost;          // Coût de l'inaction (projection 3 ans)
+  valuation: ValuationResult;          // Valorisation patrimoniale
+  generatedAt: Date;                   // Timestamp génération
+}
+```
+
+**Usage :** Ces types garantissent la cohérence entre le moteur de calcul, l'UI et les exports PDF/PPTX.
+
+**Fichier source :** [`src/lib/schemas.ts`](file:///Users/jb/Documents/01_Gestionnaire%20de%20copro/valo-syndic/src/lib/schemas.ts)
+
+---
+
+## 4.6 Stratégie de Résilience & Cache
+
+> **Principe :** L'application ne doit jamais planter à cause d'un service externe indisponible.
+
+### Contexte
+
+L'application s'appuie sur plusieurs APIs gouvernementales et services externes :
+- API Adresse (BAN) pour l'autocomplétion
+- API Géorisques pour les risques climatiques
+- Supabase pour l'enrichissement DPE
+- API DVF pour les prix m²
+
+### Règles de Résilience
+
+| Scénario | Comportement | Implémentation |
+|----------|-------------|----------------|
+| **API BAN down** | Fallback sur saisie manuelle | Form affiche input texte simple |
+| **API Géorisques down** | Carte risques masquée, warning utilisateur | Composant `RisksCard` affiche placeholder |
+| **Supabase DPE indisponible** | Utilisation données locales fallback | `dpeLocalService.ts` + cache JSON |
+| **API DVF timeout** | Prix m² manuel ou estimé par défaut | Input override toujours disponible |
+
+### Stratégie de Cache
+
+| Données | Durée cache | Invalidation |
+|---------|-------------|--------------|
+| **DPE local** | Permanent | Mise à jour mensuelle (script) |
+| **Prix m² DVF** | 24h | Force refresh disponible |
+| **Market benchmarks** | 7 jours | Mise à jour hebdo |
+| **Risques Géorisques** | Session | Stockage sessionStorage |
+
+### Mode Dégradé
+
+Si l'application détecte plusieurs services down :
+1. Affichage banner informatif (jaune)
+2. Désactivation auto-complétion → Saisie manuelle activée
+3. Calculs continuent avec données fournies par utilisateur
+
+**Fichiers concernés :**
+- `src/hooks/useAddressSearch.ts` — Fallback saisie manuelle
+- `src/components/business/RisksCard.tsx` — Gestion erreur fetch
+- `src/lib/data/dpeLocalService.ts` — Cache local
+- `src/lib/api/*Service.ts` — Wrappers API avec try/catch
+
+---
+
 # 5. COMPONENT LAYER — UI BENTO
 
 L'UI est construite en **composants isolés** (`src/components/business/`) prêts à être exportés en rapport PDF.
@@ -438,7 +767,8 @@ Effort Réel = Mensualité Crédit − (Économie Énergie Mensuelle)
 
 | Composant | Technologie | Usage |
 |-----------|-------------|-------|
-| **Framework** | Next.js 14+ (App Router) | SSR, performance, React Server Components |
+| **Framework** | Next.js 16+ (App Router) | SSR, performance, React Server Components |
+| **UI Library** | React 19+ | Latest React features |
 | **Langage** | TypeScript Strict | "Code is Law" — Pas de `any` |
 | **Styling** | Tailwind CSS + Framer Motion | UI "Bento", animations fluides |
 | **State Management** | Zustand | Stores simples (ViewMode, Simulation) |
@@ -533,8 +863,14 @@ Manipuler des **revenus fiscaux (RFR)** et données financières exige une hygi�
 | Méthode | Description |
 |---------|-------------|
 | **Tests Unitaires IA** | Génération auto de fichiers `.test.ts` par Claude Sonnet pour chaque fonction de calcul |
-| **"Golden Master" Testing** | Comparaison résultats moteur avec fichier Excel de référence (IOBSP) validé manuellement |
+| **"Golden Master" Testing** | Scénarios de référence générés et validés par IA (Cross-check Kimi/Claude), pas de fichier Excel manuel |
 | **Non-Régression** | Avant chaque commit : "Exécute les tests Vitest et confirme que le calcul de l'Éco-PTZ renvoie toujours 0% d'intérêts" |
+
+**Processus Golden Master :**
+1. L'IA génère des scénarios de test avec des paramètres réalistes
+2. Cross-validation entre Kimi (mathématiques) et Claude (logique métier)
+3. Résultats validés intégrés comme tests de référence dans `src/lib/__tests__/`
+4. Toute modification du moteur de calcul doit passer ces tests
 
 ---
 
@@ -736,7 +1072,8 @@ valo-syndic/
 ├── scripts/              # Scripts Node.js (imports data)
 │   └── data-import/      # Import ADEME, BDNB
 ├── src/
-│   ├── actions/          # Next.js Server Actions
+│   ├── app/
+│   │   ├── actions/      # Next.js Server Actions
 │   ├── app/              # Next.js App Router (pages)
 │   ├── components/
 │   │   ├── auth/         # Authentification
@@ -1295,121 +1632,3 @@ mv docs/VERIFICATION_MATHEMATIQUE_MPR_2026.md docs/archive/
 ```
 | YYYY-MM-DD | [Votre nom] | [Description concise] | [§X, §Y] |
 ```
-
-------------
-
-Voici le Super-Prompt de Refactorisation destiné à ton LLM de code (Cursor, Windsurf, Copilot).
-
-Il est conçu pour nettoyer toute la "mathématique marketing" et la remplacer par un moteur IOBSP/ANAH 2026 Compliant. Il intègre les corrections critiques relevées par Qwen et Kimi (plafonds MPR, calcul de mensualité, distinction Flux/Stock).
-
-Tu peux copier-coller ce bloc directement dans ton IDE.
-
-PROMPT MASTER : REFACTORISATION MOTEUR FINANCIER (Valo-Syndic)
-Role : Tu es un Lead Developer Fintech spécialisé en Rénovation Énergétique et un expert IOBSP (Intermédiaire en Opérations de Banque et en Services de Paiement).
-
-Contexte : Le moteur de calcul actuel de l'application Valo-Syndic contient des erreurs critiques de logique financière et réglementaire (Loi de Finances 2026). Il produit des résultats "marketing" juridiquement risqués (ex: mensualité incohérente avec le capital emprunté, plafonds de subventions dépassés).
-
-Objectif : Refactoriser complètement le fichier de logique financière (ex: financeEngine.ts ou useSimulation.ts) pour le rendre rigoureux, conservateur et conforme aux normes ANAH/Banque de France.
-
-Tâches Prioritaires & Spécifications Mathématiques :
-
-Correction des Plafonds Subventions (Règle ANAH 2026) :
-
-MaPrimeRénov' Copropriété (MPR) :
-
-Appliquer strictement le plafond par logement : 25 000 € x Nombre_Logements.
-
-Appliquer le taux selon le gain énergétique : 30% (si gain 35-50%) ou 45% (si gain > 50%).
-
-Règle d'écrêtement : MPR ne peut jamais dépasser le plafond global. Si le calcul actuel (242k) dépasse 25k * 10 lots, on coupe.
-
-CEE (Certificats Économies d'Énergie) :
-
-Supprimer le forfait arbitraire. Implémenter une valeur conservatrice : Montant_Travaux_HT * 0.08 (approx 8-10%) OU un plafond dur à 5 000 € / lot si rénovation globale.
-
-Fiabilisation du Prêt Collectif (Éco-PTZ) :
-
-Capital Empruntable : min(Reste_A_Charge_Apres_Subventions, 30 000 € * Nombre_Logements).
-
-Mensualité (Formule Bancaire Stricte) :
-
-Le calcul actuel est faux (408€ pour 178k est impossible).
-
-Nouvelle formule : Mensualité = Capital_Emprunté / Durée_Mois. (Hypothèse Taux 0% pour Éco-PTZ).
-
-Si Taux > 0 (Prêt Copro complémentaire) : Utiliser la formule standard des annuités constantes.
-
-Distinction Flux vs Patrimoine (Anti-Bullshit) :
-
-Ne jamais additionner "Plus-value verte" et "Cash flow".
-
-Créer deux indicateurs distincts :
-
-KPI 1 : Impact Trésorerie Mensuel (Cash) = (Économie Énergie Mensuelle estimée) - (Mensualité Prêt).
-
-KPI 2 : ROI Patrimonial (Latent) = Valorisation Verte (Valeur Vénale +X%).
-
-Logique du "Reste à Charge" (RAC) :
-
-Le RAC affiché doit être le "Besoin de Financement Bancaire".
-
-Si Subventions + Éco-PTZ >= Travaux, alors Apport Cash Immédiat = 0.
-
-Mais le "Coût Total Réel" pour le copropriétaire = Mensualité_Prêt * Durée.
-
-Structure du Code attendue (TypeScript) :
-
-Je veux que tu crées/modifies un fichier financialConstants.ts et financialUtils.ts.
-
-A. financialConstants.ts Définit les constantes de loi (faciles à mettre à jour l'année prochaine).
-
-TypeScript
-export const FINANCES_2026 = {
-  MPR: {
-    CEILING_PER_LOT: 25000,
-    RATE_STANDARD: 0.30,
-    RATE_HIGH_PERF: 0.45,
-  },
-  CEE: {
-    AVG_RATE_WORKS: 0.08, // 8% du montant travaux
-    MAX_PER_LOT: 5000,
-  },
-  LOAN: {
-    ECO_PTZ_MAX_PER_LOT: 50000, // Si rénovation globale
-    ECO_PTZ_DURATION_MONTHS: 240, // 20 ans
-    RATE_ECO_PTZ: 0,
-  }
-};
-B. financialUtils.ts Écris la fonction calculateProjectMetrics qui prend en entrée :
-
-totalWorksAmount (Montant Travaux)
-
-numberOfLots (Nb Lots)
-
-energyGainPercent (ex: 0.45 pour 45%)
-
-currentEnergyBill (Facture actuelle globale)
-
-Et retourne un objet structuré :
-
-TypeScript
-interface FinancialResult {
-  subsidies: {
-    mpr: number;
-    cee: number;
-    total: number;
-  };
-  financing: {
-    initialRac: number; // Reste à charge AVANT emprunt
-    loanAmount: number; // Montant Éco-PTZ
-    cashDownPayment: number; // Reste à payer cash immédiat (si prêt insuffisant)
-    monthlyLoanPayment: number; // La VRAIE mensualité
-  };
-  kpi: {
-    monthlyEnergySavings: number;
-    netMonthlyCashFlow: number; // Économie - Crédit
-    greenValueIncrease: number; // Valeur vénale
-  };
-  alerts: string[]; // Liste des incohérences détectées (ex: "Attention, plafond MPR atteint")
-}
-Instruction d'exécution : Génère le code TypeScript complet pour ces deux fichiers. Assure-toi que la formule de la mensualité est mathématiquement irréfutable (Loan / Months). Ajoute des commentaires expliquant chaque ligne réglementaire.
