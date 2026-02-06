@@ -1627,6 +1627,9 @@ mv docs/VERIFICATION_MATHEMATIQUE_MPR_2026.md docs/archive/
 | 2026-02-04 | OpenAI Assistant | Branchement du calculateur strict dans `calculator.ts`, valeur verte conservatrice (8%/12%) et Éco-PTZ dynamique selon gain énergétique. | §3.1, §6 |
 | 2026-02-04 | OpenAI Assistant | Ajout `currentEnergyBill`, KPI cashflow mensuel (économies - mensualité) et mise à jour des tests unitaires du moteur. | §3.1, §8 |
 | 2026-02-04 | OpenAI Assistant | Correction AMO (plafonds 20 lots), mapping DPE par année et constantes DPE/AMO alignées audit. | §3.1, §7 |
+| 2026-02-06 | Antigravity AI | Ajout Quick Start (installation, Node.js v20+), section 4.5 Modèles de Données Cœurs (TypeScript types), section 4.6 Résilience & Cache. | §0, §4.5, §4.6 |
+| 2026-02-06 | Antigravity AI | Durcissement section 3.1 règles ANAH 2026 (MPR plafonds, Éco-PTZ strict, CEE configurable, distinction Flux/Stock), correction Golden Master (§8.5). | §3.1, §8.5 |
+| 2026-02-06 | Antigravity AI | Audit complet & corrections : Next.js 16+, React 19+, paths corrigés (riskService, file tree), ajout engines node dans package.json. | §7.1, §3.2, §13.0 |
 
 **Comment ajouter une entrée :**
 ```
